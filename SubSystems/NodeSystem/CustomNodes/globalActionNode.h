@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FEEditorNodeSystem.h"
+#include "../FEVisualNodeSystem/FEEditorNodeSystem.h"
 #include "../SubSystems/FETPInput.h"
 #include "../Windows/screenshootEditor.h"
 #include "../Windows/textInputPopup.h"

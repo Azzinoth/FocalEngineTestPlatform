@@ -8,6 +8,12 @@ void keyButtonCallback(int key, int scancode, int action, int mods)
 			return;
 
 		ACTION_SYSTEM.run(TEST_MANAGER.getSelectedTest());
+
+		while (TEST_MANAGER.getSelectedTest()->getLoopCount() > 1)
+		{
+			TEST_MANAGER.getSelectedTest()->setLoopCount(TEST_MANAGER.getSelectedTest()->getLoopCount() - 1);
+			ACTION_SYSTEM.run(TEST_MANAGER.getSelectedTest());
+		}
 	}
 }
 

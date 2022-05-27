@@ -48,6 +48,14 @@ void testPropertiesWindow::render()
 			TEST_MANAGER.getSelectedTest()->setSpeedFactor(speedFactor);
 
 			ImGui::TableNextColumn();
+			ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y + 5.0f));
+			ImGui::Text("Loop count");
+
+			int loopCount = TEST_MANAGER.getSelectedTest()->getLoopCount();
+			ImGui::DragInt("##loopCount", &loopCount);
+			TEST_MANAGER.getSelectedTest()->setLoopCount(loopCount);
+
+			ImGui::TableNextColumn();
 			ImGui::Text("Last run time");
 			FETestResult* lastTestResult = TEST_MANAGER.getSelectedTest()->getLastTestResult();
 			if (lastTestResult == nullptr)

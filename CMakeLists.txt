@@ -51,27 +51,27 @@ file(GLOB SubWindows_SRC
 )
 
 file(GLOB FEEditorNodeSystem_SRC
-	"SubSystems/NodeSystem/FEEditorNodeSystem.cpp"
-	"SubSystems/NodeSystem/FEEditorNodeSystem.h"
-	"SubSystems/NodeSystem/FEEditorNodeArea.cpp"
-	"SubSystems/NodeSystem/FEEditorNodeArea.h"
-	"SubSystems/NodeSystem/FEEditorNode.cpp"
-	"SubSystems/NodeSystem/FEEditorNode.h"
-	"SubSystems/NodeSystem/FEEditorNodeSocket.cpp"
-	"SubSystems/NodeSystem/FEEditorNodeSocket.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSystem.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSystem.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeArea.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeArea.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNode.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNode.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSocket.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSocket.h"
 )
 
-file(GLOB FEEditorNodeSystem_StandardNodes_SRC
-	"SubSystems/NodeSystem/StandardNodes/beginNode.h"
-	"SubSystems/NodeSystem/StandardNodes/beginNode.cpp"
-	"SubSystems/NodeSystem/StandardNodes/combinedActionNode.h"
-	"SubSystems/NodeSystem/StandardNodes/combinedActionNode.cpp"
-	"SubSystems/NodeSystem/StandardNodes/endNode.h"
-	"SubSystems/NodeSystem/StandardNodes/endNode.cpp"
-	"SubSystems/NodeSystem/StandardNodes/globalActionNode.h"
-	"SubSystems/NodeSystem/StandardNodes/globalActionNode.cpp"
-	"SubSystems/NodeSystem/StandardNodes/regionNode.h"
-	"SubSystems/NodeSystem/StandardNodes/regionNode.cpp"
+file(GLOB FEEditorNodeSystem_CustomNodes_SRC
+	"SubSystems/NodeSystem/CustomNodes/beginNode.h"
+	"SubSystems/NodeSystem/CustomNodes/beginNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.h"
+	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/endNode.h"
+	"SubSystems/NodeSystem/CustomNodes/endNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/globalActionNode.h"
+	"SubSystems/NodeSystem/CustomNodes/globalActionNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/regionNode.h"
+	"SubSystems/NodeSystem/CustomNodes/regionNode.cpp"
 )
 
 # *************** SUB_SYSTEM ***************
@@ -96,16 +96,21 @@ file(GLOB SubSystems_SRC
 	"SubSystems/TestManager.h"
 )
 
+file(GLOB BasicApplicationSubSystem_SRC
+	"SubSystems/FEBasicApplication/FEBasicApplication.cpp"
+	"SubSystems/FEBasicApplication/FEBasicApplication.h"
+)
+
 # *************** THIRD_PARTY ***************
 
 file(GLOB imgui_SRC
-	"ThirdParty/imgui/imgui.cpp"
-	"ThirdParty/imgui/imgui_demo.cpp"
-	"ThirdParty/imgui/imgui_draw.cpp"
-	"ThirdParty/imgui/imgui_impl_glfw.cpp"
-	"ThirdParty/imgui/imgui_impl_opengl3.cpp"
-	"ThirdParty/imgui/imgui_tables.cpp"
-	"ThirdParty/imgui/imgui_widgets.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_demo.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_draw.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_impl_glfw.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_impl_opengl3.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_tables.cpp"
+	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_widgets.cpp"
 )
 
 file(GLOB jsoncpp_SRC
@@ -127,8 +132,8 @@ file(GLOB source_SRC
 	"main.cpp"
 )
 
-link_directories("ThirdParty/glew2/lib")
-link_directories("ThirdParty/GLFW/lib")
+link_directories("SubSystems/FEBasicApplication/ThirdParty/glew2/lib/$(PlatformTarget)")
+link_directories("SubSystems/FEBasicApplication/ThirdParty/GLFW/lib/$(PlatformTarget)")
 
 # add the executable
 add_executable(FETestPlatform WIN32
@@ -137,9 +142,10 @@ add_executable(FETestPlatform WIN32
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
 							  ${FEEditorNodeSystem_SRC}
-							  ${FEEditorNodeSystem_StandardNodes_SRC}
+							  ${FEEditorNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
+							  ${BasicApplicationSubSystem_SRC}
 							  # *************** THIRD_PARTY ***************
 							  ${imgui_SRC}
 							  ${jsoncpp_SRC}
@@ -155,10 +161,11 @@ source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
-source_group("Source Files/SubSystems/NodeSystem" FILES ${FEEditorNodeSystem_SRC})
-source_group("Source Files/SubSystems/NodeSystem/StandardNodes" FILES ${FEEditorNodeSystem_StandardNodes_SRC})
+source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEEditorNodeSystem_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEEditorNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
+source_group("Source Files/SubSystems/BasicApplication" FILES ${BasicApplicationSubSystem_SRC})
 # *************** THIRD_PARTY ***************
 source_group("Source Files/ThirdParty/imgui" FILES ${imgui_SRC})
 source_group("Source Files/ThirdParty/jsoncpp" FILES ${jsoncpp_SRC})
@@ -167,6 +174,8 @@ source_group("Source Files/ThirdParty/lodepng" FILES ${lodepng_SRC})
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT FETestPlatform)
 
 include_directories(
-	"ThirdParty/glew2/include"
+	"SubSystems/FEBasicApplication/ThirdParty/glew2/include"
+	"SubSystems/FEBasicApplication/ThirdParty/"
+	"SubSystems/FEBasicApplication/"
 	"ThirdParty/"
 )

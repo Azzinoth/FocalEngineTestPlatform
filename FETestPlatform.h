@@ -30,13 +30,12 @@ public:
 private:
 	SINGLETON_PRIVATE_PART(FETestPlatform)
 
-	GLFWwindow* window;
 	size_t screenW = 0;
 	size_t screenH = 0;
 	void setImguiStyle();
 	void screenDataInitialization();
 
-	static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void keyboardCallback(int key, int scancode, int action, int mods);
 	static std::function<void(int key, int scancode, int action, int mods)> clientKeyboardCallback;
 };
 

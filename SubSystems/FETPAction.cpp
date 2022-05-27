@@ -1,12 +1,11 @@
 #include "FETPAction.h"
-
-//std::unordered_map<std::string, bool> FETPAction::seenIDs;
+using namespace FocalEngine;
 
 FETPAction::FETPAction(FETP_ACTION_TYPE type)
 {
 	internalType = type;
 	time = 0;
-	ID = getUniqueHexID();
+	ID = APPLICATION.getUniqueHexID();
 }
 
 FETPAction::FETPAction(const FETPAction& src)

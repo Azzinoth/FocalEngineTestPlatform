@@ -2,7 +2,6 @@
 
 #include "beginNode.h"
 #include "endNode.h"
-#include "../FEEditorNodeSystem.h"
 #include "../Windows/textInputPopup.h"
 #include "../Windows/actionEditPopup.h"
 

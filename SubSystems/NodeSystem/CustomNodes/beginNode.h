@@ -1,26 +1,23 @@
 #pragma once
 
-#include "../FEEditorNodeSystem.h"
+#include "../FEVisualNodeSystem/FEEditorNodeSystem.h"
+#include "../../FETPImage.h"
 
-class regionNode;
-EDITOR_NODE_CHILD_PRIVATE_PART(endNode)
-	friend regionNode;
+EDITOR_NODE_CHILD_PRIVATE_PART(beginNode)
 	float data = 0.0f;
-	
+
 	bool canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser);
 	void socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType);
 
 	FETPImage* icon = nullptr;
-	FEEditorNode* nextNode = nullptr;
 public:
-	endNode();
-	endNode(const endNode& src);
+	beginNode();
+	beginNode(const beginNode& src);
 
 	void draw();
 	float getData();
 
 	FEEditorNode* getNextNode();
-	FEEditorNode* getLogicallyNextNode();
 };
 
-EDITOR_NODE_CHILD_AFTER_CLASS(endNode)
+EDITOR_NODE_CHILD_AFTER_CLASS(beginNode)

@@ -223,7 +223,7 @@ void FETest::validateImagePathes(FEEditorNodeArea* nodeArea, std::string filePat
 		globalActionNode* node = reinterpret_cast<globalActionNode*>(list[i]);
 
 		if (actionSeenIDs.find(node->getData()->getID()) != actionSeenIDs.end())
-			node->getData()->setID(getUniqueHexID());
+			node->getData()->setID(APPLICATION.getUniqueHexID());
 		actionSeenIDs[node->getData()->getID()] = true;
 
 		if (node->getData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
@@ -278,7 +278,7 @@ void FETest::validateImagePathes(FEEditorNodeArea* nodeArea, std::string filePat
 				globalActionNode* node = reinterpret_cast<globalActionNode*>(list[j]);
 
 				if (actionSeenIDs.find(node->getData()->getID()) != actionSeenIDs.end())
-					node->getData()->setID(getUniqueHexID());
+					node->getData()->setID(APPLICATION.getUniqueHexID());
 				actionSeenIDs[node->getData()->getID()] = true;
 
 				if (node->getData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
@@ -408,4 +408,17 @@ bool FETest::replaceMacro(std::string& text)
 	}
 
 	return wasChanged;
+}
+
+int FETest::getLoopCount()
+{
+	return loopCount;
+}
+
+void FETest::setLoopCount(int newValue)
+{
+	if (newValue <= 0)
+		newValue = 1;
+
+	loopCount = newValue;
 }

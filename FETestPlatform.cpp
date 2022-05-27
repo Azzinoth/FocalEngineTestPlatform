@@ -1,4 +1,5 @@
 #include "FETestPlatform.h"
+using namespace FocalEngine;
 
 FETestPlatform* FETestPlatform::_instance = nullptr;
 std::function<void(int key, int scancode, int action, int mods)> FETestPlatform::clientKeyboardCallback = nullptr;
@@ -90,23 +91,11 @@ void FETestPlatform::setImguiStyle()
 
 void FETestPlatform::createWindow()
 {
-	glfwInit();
-
-	window = glfwCreateWindow(1500, 1000, "FETestPlatform", NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-		return;
-	}
-
-	glfwMakeContextCurrent(window);
-	glfwSetKeyCallback(window, &FETestPlatform::keyboardCallback);
-	glewInit();
+	APPLICATION.createWindow(1500, 1000, "FETestPlatform");
+	APPLICATION.setKeyCallback(keyboardCallback);
 
 	screenDataInitialization();
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 
 	size_t pathLen = strlen("Resources//imgui.ini") + 1;
@@ -124,35 +113,26 @@ void FETestPlatform::createWindow()
 	io.DisplaySize = ImVec2(float(screenW), float(screenH));
 	ImGui::StyleColorsDark();
 
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 410");
-
 	setImguiStyle();
 }
 
 bool FETestPlatform::isWindowOpened()
 {
-	return !glfwWindowShouldClose(window);
+	return APPLICATION.isWindowOpened();
 }
 
 void FETestPlatform::beginFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	ImGui::GetIO().DeltaTime = 1.0f / 60.0f;
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	APPLICATION.beginFrame();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 }
 
 void FETestPlatform::endFrame()
 {
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	glfwSwapBuffers(window);
-	glfwPollEvents();
+	APPLICATION.endFrame();
 }
 
 size_t FETestPlatform::getScreenWidth()
@@ -167,17 +147,17 @@ size_t FETestPlatform::getScreenHeight()
 
 void FETestPlatform::setWindowTitle(std::string newTitle)
 {
-	glfwSetWindowTitle(window, newTitle.c_str());
+	APPLICATION.setWindowCaption(newTitle);
 }
 
 void FETestPlatform::minimizeWindow()
 {
-	glfwIconifyWindow(window);
+	APPLICATION.minimizeWindow();
 }
 
 void FETestPlatform::restoreWindow()
 {
-	glfwRestoreWindow(window);
+	APPLICATION.restoreWindow();
 }
 
 void FETestPlatform::setKeyboardCallback(std::function<void(int key, int scancode, int action, int mods)> func)
@@ -185,7 +165,7 @@ void FETestPlatform::setKeyboardCallback(std::function<void(int key, int scancod
 	clientKeyboardCallback = func;
 }
 
-void FETestPlatform::keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void FETestPlatform::keyboardCallback(int key, int scancode, int action, int mods)
 {
 	if (clientKeyboardCallback != nullptr)
 		clientKeyboardCallback(key, scancode, action, mods);
@@ -194,13 +174,13 @@ void FETestPlatform::keyboardCallback(GLFWwindow* window, int key, int scancode,
 size_t FETestPlatform::getWindowWidth()
 {
 	int width, height;
-	glfwGetWindowSize(window, &width, &height);
+	APPLICATION.getWindowSize(&width, &height);
 	return width;
 }
 
 size_t FETestPlatform::getWindowHeight()
 {
 	int width, height;
-	glfwGetWindowSize(window, &width, &height);
+	APPLICATION.getWindowSize(&width, &height);
 	return height;
 }

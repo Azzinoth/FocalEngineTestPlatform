@@ -343,11 +343,17 @@ bool FEPTActionSystem::run(FETest* testToRun)
 		currentNode = currentNode->getLogicallyNextNode();
 	}
 
+
 	currentTestResult->success = true;
 	currentTestResult->endTime = GetTickCount();
 	currentlyRunning->addResult(currentTestResult);
-	currentlyRunning = nullptr;
-	TEST_PLATFORM.restoreWindow();
+
+	if (currentlyRunning->getLoopCount() <= 1)
+	{
+		currentlyRunning = nullptr;
+		TEST_PLATFORM.restoreWindow();
+	}
+	
 	return true;
 }
 

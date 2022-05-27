@@ -2,9 +2,10 @@
 
 #include "FEFileSystem.h"
 #include "FETPInput.h"
-#include "NodeSystem/StandardNodes/beginNode.h"
-#include "NodeSystem/StandardNodes/combinedActionNode.h"
-#include "NodeSystem/StandardNodes/regionNode.h"
+#include "FEDearImguiWrapper/FEDearImguiWrapper.h"
+#include "NodeSystem/CustomNodes/beginNode.h"
+#include "NodeSystem/CustomNodes/combinedActionNode.h"
+#include "NodeSystem/CustomNodes/regionNode.h"
 
 enum FE_TEST_FAIL_REASON
 {
@@ -131,6 +132,7 @@ class FETest
 	friend testPropertiesWindow;
 
 	std::string name;
+	int loopCount = 1;
 	float speedFactor = 1.0f;
 
 	beginNode* begin = nullptr;
@@ -167,6 +169,9 @@ public:
 
 	float getSpeedFactor();
 	void setSpeedFactor(float newValue);
+
+	int getLoopCount();
+	void setLoopCount(int newValue);
 
 	void addBeforeStartAction(FETestBeforeAction* action);
 	void beforeBegin();
