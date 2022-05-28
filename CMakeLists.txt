@@ -50,18 +50,18 @@ file(GLOB SubWindows_SRC
 	"Windows/textInputPopup.cpp"
 )
 
-file(GLOB FEEditorNodeSystem_SRC
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSystem.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSystem.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeArea.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeArea.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNode.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNode.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSocket.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEEditorNodeSocket.h"
+file(GLOB FEVisualNodeSystem_SRC
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSystem.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSystem.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeArea.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeArea.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNode.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNode.h"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSocket.cpp"
+	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSocket.h"
 )
 
-file(GLOB FEEditorNodeSystem_CustomNodes_SRC
+file(GLOB FEVisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/beginNode.h"
 	"SubSystems/NodeSystem/CustomNodes/beginNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.h"
@@ -141,8 +141,8 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
-							  ${FEEditorNodeSystem_SRC}
-							  ${FEEditorNodeSystem_CustomNodes_SRC}
+							  ${FEVisualNodeSystem_SRC}
+							  ${FEVisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
 							  ${BasicApplicationSubSystem_SRC}
@@ -161,8 +161,8 @@ source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
-source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEEditorNodeSystem_SRC})
-source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEEditorNodeSystem_CustomNodes_SRC})
+source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEVisualNodeSystem_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEVisualNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
 source_group("Source Files/SubSystems/BasicApplication" FILES ${BasicApplicationSubSystem_SRC})

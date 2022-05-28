@@ -26,7 +26,7 @@ void FEPTActionSystem::takeScreenshoot()
 	}
 }
 
-FEEditorNode* FEPTActionSystem::getNextNode(FEEditorNode* currentNode)
+FEVisualNode* FEPTActionSystem::getNextNode(FEVisualNode* currentNode)
 {
 	if (currentNode->getType() == "beginNode")
 	{
@@ -47,7 +47,7 @@ FEEditorNode* FEPTActionSystem::getNextNode(FEEditorNode* currentNode)
 	return nullptr;
 }
 
-std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(FEEditorNode* currentNode)
+std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(FEVisualNode* currentNode)
 {
 	std::vector<FETPAction*> result;
 
@@ -318,7 +318,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 
 	currentlyRunning->beforeBegin();
 
-	FEEditorNode* currentNode = currentlyRunning->getBeginNode();
+	FEVisualNode* currentNode = currentlyRunning->getBeginNode();
 	while (currentNode != nullptr)
 	{
 		std::string originalText = "";
@@ -357,7 +357,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	return true;
 }
 
-void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FEEditorNodeArea* nodeArea, bool copyActions)
+void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FEVisualNodeArea* nodeArea, bool copyActions)
 {
 	static int leftPadding = 15;
 	static int nodesPerW = 4;
@@ -368,7 +368,7 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FE
 	FETPAction* testAction = new FETPAction();
 	globalActionNode* testNode = new globalActionNode(testAction);
 
-	if (testNode->getStyle() == FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE)
+	if (testNode->getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
 		nodesPerW = 6;
 		nodesPerH = 6;
@@ -385,10 +385,10 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FE
 	delete testNode;
 
 	int showedIndex = 0;
-	FEEditorNode* prevNode = nullptr;
+	FEVisualNode* prevNode = nullptr;
 	for (size_t i = 0; i < actions.size(); i++)
 	{
-		FEEditorNode* newNode = nullptr;
+		FEVisualNode* newNode = nullptr;
 
 		if (!copyActions)
 		{
@@ -762,7 +762,7 @@ bool FEPTActionSystem::keyboardPressActionFilter(FETPAction* action, int outputC
 	return false;
 }
 
-FEEditorNode* FEPTActionSystem::tryToPackActions(size_t& index)
+FEVisualNode* FEPTActionSystem::tryToPackActions(size_t& index)
 {
 	std::vector<FETPAction*> actionsToCombine;
 

@@ -361,7 +361,7 @@ void screenshootEditor::useCompleteImage()
 void screenshootEditor::replaceCurrentNode()
 {
 	FETest* currentTest = TEST_MANAGER.getTestByAction(currentAction);
-	FEEditorNode* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
+	FEVisualNode* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
 
 	globalActionNode* newNode = new globalActionNode(currentAction);
 	newNode->setPosition(currentNode->getPosition());

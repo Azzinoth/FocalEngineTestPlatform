@@ -1,7 +1,7 @@
 #include "TestManager.h"
 
 TestManager* TestManager::_instance = nullptr;
-FEEditorNode* TestManager::foundNode = nullptr;
+FEVisualNode* TestManager::foundNode = nullptr;
 FETPAction* TestManager::searchedAction = nullptr;
 
 TestManager::TestManager()
@@ -35,7 +35,7 @@ void TestManager::addTest(std::string filePath)
 	}
 }
 
-FEEditorNode* TestManager::getNodeByAction(FETPAction* action)
+FEVisualNode* TestManager::getNodeByAction(FETPAction* action)
 {
 	if (action == nullptr)
 		return nullptr;
@@ -48,7 +48,7 @@ FEEditorNode* TestManager::getNodeByAction(FETPAction* action)
 		if (list[i]->nodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->runOnEachNode([](FEEditorNode* node) {
+		list[i]->nodeArea->runOnEachNode([](FEVisualNode* node) {
 			if (node->getType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
@@ -97,7 +97,7 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 		if (list[i]->nodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->runOnEachNode([](FEEditorNode* node) {
+		list[i]->nodeArea->runOnEachNode([](FEVisualNode* node) {
 			if (node->getType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);

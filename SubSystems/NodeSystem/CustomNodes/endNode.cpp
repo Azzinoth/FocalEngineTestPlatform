@@ -1,13 +1,13 @@
 #include "endNode.h"
 
-EDITOR_NODE_CHILD_CPP(endNode)
+VISUAL_NODE_CHILD_CPP(endNode)
 
-endNode::endNode() : FEEditorNode()
+endNode::endNode() : FEVisualNode()
 {
 	type = "endNode";
 	couldBeDestroyed = false;
 
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 
 	setSize(ImVec2(220, 78));
 	setName("endNode");
@@ -15,18 +15,18 @@ endNode::endNode() : FEEditorNode()
 	titleBackgroundColor = ImColor(31, 117, 208);
 	titleBackgroundColorHovered = ImColor(35, 145, 255);
 	
-	addInputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, "in"));
+	addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, "in"));
 
 	if (icon == nullptr)
 		icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-endNode::endNode(const endNode& src) : FEEditorNode(src)
+endNode::endNode(const endNode& src) : FEVisualNode(src)
 {
 	data = src.data;
 	couldBeDestroyed = false;
 
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 
 	if (icon == nullptr)
 		icon = new FETPImage("Resources//beginNodeIcon.png");
@@ -34,15 +34,15 @@ endNode::endNode(const endNode& src) : FEEditorNode(src)
 
 void endNode::draw()
 {	
-	FEEditorNode::draw();
+	FEVisualNode::draw();
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
 	ImGui::Image((void*)(intptr_t)icon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void endNode::socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType)
+void endNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
 {
-	FEEditorNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
 }
 
 float endNode::getData()
@@ -50,20 +50,20 @@ float endNode::getData()
 	return data;
 }
 
-bool endNode::canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser)
+bool endNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
 {
-	if (!FEEditorNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
 		return false;
 
 	return true;
 }
 
-FEEditorNode* endNode::getNextNode()
+FEVisualNode* endNode::getNextNode()
 {
 	return getLogicallyNextNode();
 }
 
-FEEditorNode* endNode::getLogicallyNextNode()
+FEVisualNode* endNode::getLogicallyNextNode()
 {
 	return nextNode;
 }

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../FEVisualNodeSystem/FEEditorNodeSystem.h"
+#include "../FEVisualNodeSystem/FEVisualNodeSystem.h"
 #include "../../FETPImage.h"
 
-EDITOR_NODE_CHILD_PRIVATE_PART(beginNode)
+VISUAL_NODE_CHILD_PRIVATE_PART(beginNode)
 	float data = 0.0f;
 
-	bool canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType);
+	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
+	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
 
 	FETPImage* icon = nullptr;
 public:
@@ -17,7 +17,7 @@ public:
 	void draw();
 	float getData();
 
-	FEEditorNode* getNextNode();
+	FEVisualNode* getNextNode();
 };
 
-EDITOR_NODE_CHILD_AFTER_CLASS(beginNode)
+VISUAL_NODE_CHILD_AFTER_CLASS(beginNode)

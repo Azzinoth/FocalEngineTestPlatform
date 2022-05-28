@@ -28,7 +28,7 @@ void testEditorWinow::render()
 
 	if (TEST_MANAGER.getSelectedTest() != nullptr)
 	{
-		FEEditorNodeArea* currentNodeArea = TEST_MANAGER.getSelectedTest()->nodeArea;
+		FEVisualNodeArea* currentNodeArea = TEST_MANAGER.getSelectedTest()->nodeArea;
 
 		currentNodeArea->setMainContextMenuFunc(mainContextMenu);
 		currentNodeArea->setNodeEventCallback(nodeCallback);
@@ -274,16 +274,16 @@ void testEditorWinow::mainContextMenu()
 	}
 }
 
-void testEditorWinow::nodeCallback(FEEditorNode* node, FE_EDITOR_NODE_EVENT eventWithNode)
+void testEditorWinow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT eventWithNode)
 {
 	if (node == nullptr)
 		return;
 
-	if (eventWithNode == FE_EDITOR_NODE_BEFORE_CONNECTED || eventWithNode == FE_EDITOR_NODE_BEFORE_DISCONNECTED)
+	if (eventWithNode == FE_VISUAL_NODE_BEFORE_CONNECTED || eventWithNode == FE_VISUAL_NODE_BEFORE_DISCONNECTED)
 		return;
 
 	// Change color of all connections to default.
-	TEST_MANAGER.getSelectedTest()->nodeArea->runOnEachNode([](FEEditorNode* node) {
+	TEST_MANAGER.getSelectedTest()->nodeArea->runOnEachNode([](FEVisualNode* node) {
 		size_t outSocketCount = node->outSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
@@ -296,7 +296,7 @@ void testEditorWinow::nodeCallback(FEEditorNode* node, FE_EDITOR_NODE_EVENT even
 		return;
 
 	TEST_MANAGER.getSelectedTest()->nodeArea->runOnEachConnectedNode(TEST_MANAGER.getSelectedTest()->getBeginNode(),
-		[](FEEditorNode* node) {
+		[](FEVisualNode* node) {
 			size_t outSocketCount = node->outSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
 			{

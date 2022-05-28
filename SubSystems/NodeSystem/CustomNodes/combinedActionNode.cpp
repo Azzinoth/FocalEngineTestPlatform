@@ -1,6 +1,6 @@
 #include "combinedActionNode.h"
 
-EDITOR_NODE_CHILD_CPP(combinedActionNode)
+VISUAL_NODE_CHILD_CPP(combinedActionNode)
 combinedActionNode* combinedActionNode::nodeForCallback = nullptr;
 FETPImage* combinedActionNode::moveMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::leftMouseCombineIcon = nullptr;
@@ -10,12 +10,12 @@ FETPImage* combinedActionNode::wheelMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::keyCombinedIcon = nullptr;
 FETPImage* combinedActionNode::textCombinedIcon = nullptr;
 
-combinedActionNode::combinedActionNode() : FEEditorNode()
+combinedActionNode::combinedActionNode() : FEVisualNode()
 {
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
-combinedActionNode::combinedActionNode(const combinedActionNode& src) : FEEditorNode(src)
+combinedActionNode::combinedActionNode(const combinedActionNode& src) : FEVisualNode(src)
 {
 	data = src.data;
 	actionType = src.actionType;
@@ -23,18 +23,18 @@ combinedActionNode::combinedActionNode(const combinedActionNode& src) : FEEditor
 	endPosition = src.endPosition;
 	text = src.text;
 
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
 void combinedActionNode::initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE type)
 {
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 	setSize(ImVec2(330, 140));
 
 	if (input.size() == 0 && output.size() == 0)
 	{
-		addInputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		addOutputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+		addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
 	}
 
 	data = Data;
@@ -123,16 +123,16 @@ void combinedActionNode::initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 	}
 }
 
-combinedActionNode::combinedActionNode(std::vector<FETPAction*> data, FETP_COMBINED_ACTION_TYPE type) : FEEditorNode()
+combinedActionNode::combinedActionNode(std::vector<FETPAction*> data, FETP_COMBINED_ACTION_TYPE type) : FEVisualNode()
 {
 	initialize(data, type);
 }
 
 void combinedActionNode::draw()
 {	
-	FEEditorNode::draw();
+	FEVisualNode::draw();
 
-	if (getStyle() == FE_EDITOR_NODE_VISUAL_STYLE_DEFAULT)
+	if (getStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
@@ -228,7 +228,7 @@ void combinedActionNode::draw()
 			ImGui::Text(text.c_str());
 		}
 	}
-	else if (getStyle() == FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE)
+	else if (getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
 		checkIcons();
 
@@ -268,9 +268,9 @@ void combinedActionNode::draw()
 	ImGui::PopStyleVar();*/
 }
 
-void combinedActionNode::socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType)
+void combinedActionNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
 {
-	FEEditorNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
 }
 
 std::vector<FETPAction*> combinedActionNode::getData()
@@ -278,9 +278,9 @@ std::vector<FETPAction*> combinedActionNode::getData()
 	return data;
 }
 
-bool combinedActionNode::canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser)
+bool combinedActionNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
 {
-	if (!FEEditorNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
 		return false;
 
 	if (candidateSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && ownSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
@@ -291,7 +291,7 @@ bool combinedActionNode::canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeS
 
 Json::Value combinedActionNode::toJson()
 {
-	Json::Value result = FEEditorNode::toJson();
+	Json::Value result = FEVisualNode::toJson();
 	result["actionType"] = actionType;
 
 	for (size_t i = 0; i < data.size(); i++)
@@ -307,7 +307,7 @@ Json::Value combinedActionNode::toJson()
 	return result;
 }
 
-FEEditorNode* combinedActionNode::getNextNode()
+FEVisualNode* combinedActionNode::getNextNode()
 {
 	if (output.size() > 0 && output[0]->getConnections().size() > 0)
 		return output[0]->getConnections()[0]->getParent();
@@ -317,7 +317,7 @@ FEEditorNode* combinedActionNode::getNextNode()
 
 void combinedActionNode::fromJson(Json::Value json)
 {
-	FEEditorNode::fromJson(json);
+	FEVisualNode::fromJson(json);
 
 	actionType = FETP_COMBINED_ACTION_TYPE(json["actionType"].asInt());
 

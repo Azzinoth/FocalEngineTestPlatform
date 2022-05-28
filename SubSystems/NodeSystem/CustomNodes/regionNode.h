@@ -5,11 +5,11 @@
 #include "../Windows/textInputPopup.h"
 #include "../Windows/actionEditPopup.h"
 
-EDITOR_NODE_CHILD_PRIVATE_PART(regionNode)
-	FEEditorNodeArea* data;
+VISUAL_NODE_CHILD_PRIVATE_PART(regionNode)
+	FEVisualNodeArea* data;
 
-	bool canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType);
+	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
+	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
 
 	static FETPImage* regionIcon;
 
@@ -24,13 +24,13 @@ public:
 	regionNode(const regionNode& src);
 
 	void draw();
-	FEEditorNodeArea* getData();
+	FEVisualNodeArea* getData();
 
-	FEEditorNode* getNextNode();
-	FEEditorNode* getLogicallyNextNode();
+	FEVisualNode* getNextNode();
+	FEVisualNode* getLogicallyNextNode();
 
 	Json::Value toJson();
 	void fromJson(Json::Value json);
 };
 
-EDITOR_NODE_CHILD_AFTER_CLASS(regionNode)
+VISUAL_NODE_CHILD_AFTER_CLASS(regionNode)

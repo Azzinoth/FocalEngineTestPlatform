@@ -4,7 +4,7 @@
 
 class testEditorWinow;
 class nodeRegionWindow;
-EDITOR_NODE_CHILD_PRIVATE_PART(combinedActionNode)
+VISUAL_NODE_CHILD_PRIVATE_PART(combinedActionNode)
 	friend testEditorWinow;
 	friend nodeRegionWindow;
 
@@ -20,8 +20,8 @@ EDITOR_NODE_CHILD_PRIVATE_PART(combinedActionNode)
 	//bool contextMenu = false;
 	//bool openContextMenu();
 
-	bool canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType);
+	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
+	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
 
 	static combinedActionNode* nodeForCallback;
 	static void changeTextCallback(std::string newText);
@@ -44,7 +44,7 @@ public:
 
 	void draw();
 	std::vector<FETPAction*> getData();
-	FEEditorNode* getNextNode();
+	FEVisualNode* getNextNode();
 
 	Json::Value toJson();
 	void fromJson(Json::Value json);
@@ -54,4 +54,4 @@ public:
 	void remove();
 };
 
-EDITOR_NODE_CHILD_AFTER_CLASS(combinedActionNode)
+VISUAL_NODE_CHILD_AFTER_CLASS(combinedActionNode)

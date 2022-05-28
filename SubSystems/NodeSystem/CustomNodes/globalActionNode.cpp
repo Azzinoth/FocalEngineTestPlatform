@@ -1,6 +1,6 @@
 #include "globalActionNode.h"
 
-EDITOR_NODE_CHILD_CPP(globalActionNode)
+VISUAL_NODE_CHILD_CPP(globalActionNode)
 FETPImage* globalActionNode::sleepIcon = nullptr;
 
 FETPImage* globalActionNode::keyDownIcon = nullptr;
@@ -16,9 +16,9 @@ FETPImage* globalActionNode::scrollMouseIcon = nullptr;
 FETPImage* globalActionNode::lunchApplicationIcon = nullptr;
 FETPImage* globalActionNode::screenshotIcon = nullptr;
 
-globalActionNode::globalActionNode() : FEEditorNode()
+globalActionNode::globalActionNode() : FEVisualNode()
 {
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
 void globalActionNode::copyData(FETPAction* src)
@@ -49,10 +49,10 @@ void globalActionNode::copyData(FETPAction* src)
 	}
 }
 
-globalActionNode::globalActionNode(const globalActionNode& src) : FEEditorNode(src)
+globalActionNode::globalActionNode(const globalActionNode& src) : FEVisualNode(src)
 {
 	copyData(src.data);
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
 globalActionNode::~globalActionNode()
@@ -63,7 +63,7 @@ globalActionNode::~globalActionNode()
 
 void globalActionNode::initialize(FETPAction* data)
 {
-	setStyle(FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE);
+	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 	type = "globalActionNode";
 	this->data = data;
 
@@ -134,12 +134,12 @@ void globalActionNode::initialize(FETPAction* data)
 
 		if (input.size() == 0 && output.size() == 0)
 		{
-			addInputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+			addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
 
 			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
 			for (size_t i = 0; i < action->imagesInfo.size(); i++)
 			{
-				addOutputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "next_" + std::to_string(i + 1)));
+				addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "next_" + std::to_string(i + 1)));
 			}
 		}
 	}
@@ -156,21 +156,21 @@ void globalActionNode::initialize(FETPAction* data)
 
 	if (input.size() == 0 && output.size() == 0)
 	{
-		addInputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		addOutputSocket(new FEEditorNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+		addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
 	}
 }
 
-globalActionNode::globalActionNode(FETPAction* data) : FEEditorNode()
+globalActionNode::globalActionNode(FETPAction* data) : FEVisualNode()
 {
 	initialize(data);
 }
 
 void globalActionNode::draw()
 {	
-	FEEditorNode::draw();
+	FEVisualNode::draw();
 
-	if (getStyle() == FE_EDITOR_NODE_VISUAL_STYLE_DEFAULT)
+	if (getStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
@@ -281,7 +281,7 @@ void globalActionNode::draw()
 			ImGui::Text(action->applicationPath.c_str());
 		}
 	}
-	else if (getStyle() == FE_EDITOR_NODE_VISUAL_STYLE_CIRCLE)
+	else if (getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
 		checkIcons();
 
@@ -336,9 +336,9 @@ void globalActionNode::draw()
 	ImGui::PopStyleVar();
 }
 
-void globalActionNode::socketEvent(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* connectedSocket, FE_EDITOR_NODE_SOCKET_EVENT eventType)
+void globalActionNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
 {
-	FEEditorNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
 }
 
 FETPAction* globalActionNode::getData()
@@ -346,9 +346,9 @@ FETPAction* globalActionNode::getData()
 	return data;
 }
 
-bool globalActionNode::canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSocket* candidateSocket, char** msgToUser)
+bool globalActionNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
 {
-	if (!FEEditorNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
 		return false;
 
 	if (candidateSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && ownSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
@@ -359,7 +359,7 @@ bool globalActionNode::canConnect(FEEditorNodeSocket* ownSocket, FEEditorNodeSoc
 
 Json::Value globalActionNode::toJson()
 {
-	Json::Value result = FEEditorNode::toJson();
+	Json::Value result = FEVisualNode::toJson();
 
 	if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
@@ -371,7 +371,7 @@ Json::Value globalActionNode::toJson()
 	return result;
 }
 
-FEEditorNode* globalActionNode::getNextNode()
+FEVisualNode* globalActionNode::getNextNode()
 {
 	if (output.size() > 0 && output[0]->getConnections().size() > 0)
 	{
@@ -397,7 +397,7 @@ FEEditorNode* globalActionNode::getNextNode()
 
 void globalActionNode::fromJson(Json::Value json)
 {
-	FEEditorNode::fromJson(json);
+	FEVisualNode::fromJson(json);
 
 	if (FETP_ACTION_TYPE(json["action"]["internalType"].asInt()) == FETP_KEYBOARD_ACTION)
 	{
@@ -427,10 +427,10 @@ void globalActionNode::fromJson(Json::Value json)
 	}
 }
 
-FEEditorNode* globalActionNode::getLogicallyNextNode()
+FEVisualNode* globalActionNode::getLogicallyNextNode()
 {
 	if (data->getType() != FETP_SCREENSHOOT_COMPARE_ACTION)
-		return FEEditorNode::getLogicallyNextNode();
+		return FEVisualNode::getLogicallyNextNode();
 
 	ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
 	for (size_t i = 0; i < action->imagesInfo.size(); i++)
