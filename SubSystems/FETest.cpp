@@ -255,7 +255,7 @@ void FETest::validateImagePathes(FEVisualNodeArea* nodeArea, std::string filePat
 	}
 
 	// Validate nodes in node regions.
-	/*std::vector<FEEditorNode*> regionList = nodeArea->getNodesByType("regionNode");
+	/*std::vector<FEVisualNode*> regionList = nodeArea->getNodesByType("regionNode");
 	for (size_t i = 0; i < regionList.size(); i++)
 	{
 		regionNode* node = reinterpret_cast<regionNode*>(regionList[i]);
