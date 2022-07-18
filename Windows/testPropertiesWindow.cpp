@@ -1,6 +1,6 @@
 #include "testPropertiesWindow.h"
 
-testPropertiesWindow* testPropertiesWindow::_instance = nullptr;
+testPropertiesWindow* testPropertiesWindow::Instance = nullptr;
 
 testPropertiesWindow::testPropertiesWindow()
 {
@@ -201,12 +201,12 @@ void testPropertiesWindow::render()
 				currentTest = TEST_MANAGER.list[i];
 				currentNodeArea = TEST_MANAGER.list[i]->nodeArea;
 
-				currentNodeArea->setMainContextMenuFunc(mainContextMenu);
-				currentNodeArea->setNodeEventCallback(nodeCallback);
+				currentNodeArea->SetMainContextMenuFunc(mainContextMenu);
+				currentNodeArea->SetNodeEventCallback(nodeCallback);
 
-				currentNodeArea->setAreaPosition(ImVec2(0, 50.0f));
-				currentNodeArea->setAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 50.0f));
-				currentNodeArea->update();
+				currentNodeArea->SetAreaPosition(ImVec2(0, 50.0f));
+				currentNodeArea->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 50.0f));
+				currentNodeArea->Update();
 
 				ImGui::EndTabItem();
 			}

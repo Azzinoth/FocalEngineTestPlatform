@@ -1,7 +1,7 @@
 #include "FETestPlatform.h"
 using namespace FocalEngine;
 
-FETestPlatform* FETestPlatform::_instance = nullptr;
+FETestPlatform* FETestPlatform::Instance = nullptr;
 std::function<void(int key, int scancode, int action, int mods)> FETestPlatform::clientKeyboardCallback = nullptr;
 
 FETestPlatform::FETestPlatform() {};
@@ -91,8 +91,8 @@ void FETestPlatform::setImguiStyle()
 
 void FETestPlatform::createWindow()
 {
-	APPLICATION.createWindow(1500, 1000, "FETestPlatform");
-	APPLICATION.setKeyCallback(keyboardCallback);
+	APPLICATION.InitWindow(1500, 1000, "FETestPlatform");
+	APPLICATION.SetKeyCallback(keyboardCallback);
 
 	screenDataInitialization();
 
@@ -118,21 +118,21 @@ void FETestPlatform::createWindow()
 
 bool FETestPlatform::isWindowOpened()
 {
-	return APPLICATION.isWindowOpened();
+	return APPLICATION.IsWindowOpened();
 }
 
 void FETestPlatform::beginFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	APPLICATION.beginFrame();
+	APPLICATION.BeginFrame();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 }
 
 void FETestPlatform::endFrame()
 {
-	APPLICATION.endFrame();
+	APPLICATION.EndFrame();
 }
 
 size_t FETestPlatform::getScreenWidth()
@@ -147,17 +147,17 @@ size_t FETestPlatform::getScreenHeight()
 
 void FETestPlatform::setWindowTitle(std::string newTitle)
 {
-	APPLICATION.setWindowCaption(newTitle);
+	APPLICATION.SetWindowCaption(newTitle);
 }
 
 void FETestPlatform::minimizeWindow()
 {
-	APPLICATION.minimizeWindow();
+	APPLICATION.MinimizeWindow();
 }
 
 void FETestPlatform::restoreWindow()
 {
-	APPLICATION.restoreWindow();
+	APPLICATION.RestoreWindow();
 }
 
 void FETestPlatform::setKeyboardCallback(std::function<void(int key, int scancode, int action, int mods)> func)
@@ -174,13 +174,13 @@ void FETestPlatform::keyboardCallback(int key, int scancode, int action, int mod
 size_t FETestPlatform::getWindowWidth()
 {
 	int width, height;
-	APPLICATION.getWindowSize(&width, &height);
+	APPLICATION.GetWindowSize(&width, &height);
 	return width;
 }
 
 size_t FETestPlatform::getWindowHeight()
 {
 	int width, height;
-	APPLICATION.getWindowSize(&width, &height);
+	APPLICATION.GetWindowSize(&width, &height);
 	return height;
 }

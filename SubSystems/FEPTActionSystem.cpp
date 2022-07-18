@@ -1,6 +1,6 @@
 #include "FEPTActionSystem.h"
 
-FEPTActionSystem* FEPTActionSystem::_instance = nullptr;
+FEPTActionSystem* FEPTActionSystem::Instance = nullptr;
 
 FEPTActionSystem::FEPTActionSystem()
 {
@@ -28,20 +28,20 @@ void FEPTActionSystem::takeScreenshoot()
 
 FEVisualNode* FEPTActionSystem::getNextNode(FEVisualNode* currentNode)
 {
-	if (currentNode->getType() == "beginNode")
+	if (currentNode->GetType() == "beginNode")
 	{
 		beginNode* node = reinterpret_cast<beginNode*>(currentNode);
-		return node->getNextNode();
+		return node->GetNextNode();
 	}
-	else if (currentNode->getType() == "globalActionNode")
+	else if (currentNode->GetType() == "globalActionNode")
 	{
 		globalActionNode* node = reinterpret_cast<globalActionNode*>(currentNode);
-		return node->getNextNode();
+		return node->GetNextNode();
 	}
-	else if (currentNode->getType() == "combinedActionNode")
+	else if (currentNode->GetType() == "combinedActionNode")
 	{
 		combinedActionNode* node = reinterpret_cast<combinedActionNode*>(currentNode);
-		return node->getNextNode();
+		return node->GetNextNode();
 	}
 
 	return nullptr;
@@ -51,19 +51,19 @@ std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(FEVisualNode* curr
 {
 	std::vector<FETPAction*> result;
 
-	if (currentNode->getType() == "beginNode")
+	if (currentNode->GetType() == "beginNode")
 	{
 		return result;
 	}
-	else if (currentNode->getType() == "globalActionNode")
+	else if (currentNode->GetType() == "globalActionNode")
 	{
 		globalActionNode* node = reinterpret_cast<globalActionNode*>(currentNode);
-		result.push_back(node->getData());
+		result.push_back(node->GetData());
 	}
-	else if (currentNode->getType() == "combinedActionNode")
+	else if (currentNode->GetType() == "combinedActionNode")
 	{
 		combinedActionNode* node = reinterpret_cast<combinedActionNode*>(currentNode);
-		return node->getData();
+		return node->GetData();
 	}
 
 	return result;
@@ -183,7 +183,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					{
 						size_t x = 0;
 						size_t y = 0;
-						bool found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+						bool found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
 
 						if (found)
 						{
@@ -323,7 +323,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	{
 		std::string originalText = "";
 		std::vector<FETPAction*> actions = getActionsFromNode(currentNode);
-		if (currentNode->getType() == "combinedActionNode")
+		if (currentNode->GetType() == "combinedActionNode")
 		{
 			std::string originalText = ACTION_SYSTEM.extractText(actions);
 			if (currentlyRunning->replaceMacro(originalText))
@@ -340,7 +340,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 			return false;
 		}
 
-		currentNode = currentNode->getLogicallyNextNode();
+		currentNode = currentNode->GetLogicallyNextNode();
 	}
 
 
@@ -368,7 +368,7 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FE
 	FETPAction* testAction = new FETPAction();
 	globalActionNode* testNode = new globalActionNode(testAction);
 
-	if (testNode->getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	if (testNode->GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
 		nodesPerW = 6;
 		nodesPerH = 6;
@@ -404,17 +404,17 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FE
 		}
 
 		int xPosition = leftPadding;
-		xPosition += (showedIndex % nodesPerW * int(newNode->getSize().x + disBetweenOnW));
+		xPosition += (showedIndex % nodesPerW * int(newNode->GetSize().x + disBetweenOnW));
 		xPosition %= TEST_PLATFORM.getWindowWidth();
 
 		int yPosition = showedIndex / nodesPerH;
 		yPosition *= disBetweenOnH;
 
-		newNode->setPosition(ImVec2(float(xPosition), float(yPosition)));
-		nodeArea->addNode(newNode);
+		newNode->SetPosition(ImVec2(float(xPosition), float(yPosition)));
+		nodeArea->AddNode(newNode);
 
 		if (prevNode != nullptr)
-			nodeArea->tryToConnect(prevNode, 0, newNode, 0);
+			nodeArea->TryToConnect(prevNode, 0, newNode, 0);
 		prevNode = newNode;
 		showedIndex++;
 	}

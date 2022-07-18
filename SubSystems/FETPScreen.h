@@ -15,7 +15,7 @@ public:
 	size_t getScreenHeight();
 
 	int compare(size_t width, size_t height, unsigned char* firstData, unsigned char* secondData, unsigned char* diffData, int maxColorShift);
-	bool searchOnScreen(size_t width, size_t height, unsigned char* data, size_t& x, size_t& y, float correctnessThreshold, int maxColorShift);
+	bool searchOnScreen(size_t width, size_t height, unsigned char* data, size_t& x, size_t& y, float correctnessThreshold, int maxColorShift, int* maxSimilarity = nullptr);
 
 	glm::vec2 imageSizeInRegion(size_t imageW, size_t imageH, size_t regionW, size_t regionH);
 

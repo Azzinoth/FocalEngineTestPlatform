@@ -4,20 +4,20 @@
 #include "../../FETPImage.h"
 
 VISUAL_NODE_CHILD_PRIVATE_PART(beginNode)
-	float data = 0.0f;
+	float Data = 0.0f;
 
-	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
+	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
 
-	FETPImage* icon = nullptr;
+	FETPImage* Icon = nullptr;
 public:
 	beginNode();
-	beginNode(const beginNode& src);
+	beginNode(const beginNode& Src);
 
-	void draw();
-	float getData();
+	void Draw();
+	float GetData();
 
-	FEVisualNode* getNextNode();
+	FEVisualNode* GetNextNode();
 };
 
 VISUAL_NODE_CHILD_AFTER_CLASS(beginNode)

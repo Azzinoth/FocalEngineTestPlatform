@@ -1,6 +1,6 @@
 #include "testStartPreparationsWindow.h"
 
-testStartPreparationsWindow* testStartPreparationsWindow::_instance = nullptr;
+testStartPreparationsWindow* testStartPreparationsWindow::Instance = nullptr;
 
 testStartPreparationsWindow::testStartPreparationsWindow()
 {

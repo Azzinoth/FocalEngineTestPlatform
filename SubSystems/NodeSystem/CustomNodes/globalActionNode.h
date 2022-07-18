@@ -7,52 +7,52 @@
 #include "../Windows/actionEditPopup.h"
 
 VISUAL_NODE_CHILD_PRIVATE_PART(globalActionNode)
-	FETPAction* data;
-	void initialize(FETPAction* data);
+	FETPAction* Data;
+	void Initialize(FETPAction* Data);
 
-	bool contextMenu = false;
-	bool openContextMenu();
+	bool ContextMenu = false;
+	bool OpenContextMenu();
 
-	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
+	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
 
-	void mouseClick(int mouseButton);
+	void MouseClick(int MouseButton);
 
-	static FETPImage* sleepIcon;
+	static FETPImage* SleepIcon;
 
-	static FETPImage* keyDownIcon;
-	static FETPImage* keyUpIcon;
+	static FETPImage* KeyDownIcon;
+	static FETPImage* KeyUpIcon;
 
-	static FETPImage* moveMouseIcon;
-	static FETPImage* leftMouseDownIcon;
-	static FETPImage* leftMouseUpIcon;
-	static FETPImage* rightMouseDownIcon;
-	static FETPImage* rightMouseUpIcon;
-	static FETPImage* scrollMouseIcon;
+	static FETPImage* MoveMouseIcon;
+	static FETPImage* LeftMouseDownIcon;
+	static FETPImage* LeftMouseUpIcon;
+	static FETPImage* RightMouseDownIcon;
+	static FETPImage* RightMouseUpIcon;
+	static FETPImage* ScrollMouseIcon;
 
-	static FETPImage* lunchApplicationIcon;
-	static FETPImage* screenshotIcon;
+	static FETPImage* LunchApplicationIcon;
+	static FETPImage* ScreenshotIcon;
 
-	void showTooltip();
-	void checkIcons();
-	void renderIcon();
+	void ShowTooltip();
+	void CheckIcons();
+	void RenderIcon();
 
-	void copyData(FETPAction* src);
+	void CopyData(FETPAction* Src);
 public:
 	globalActionNode();
-	globalActionNode(const globalActionNode& src);
-	globalActionNode(FETPAction* data);
+	globalActionNode(const globalActionNode& Src);
+	globalActionNode(FETPAction* Data);
 
 	~globalActionNode();
 
-	void draw();
-	FETPAction* getData();
+	void Draw();
+	FETPAction* GetData();
 
-	FEVisualNode* getNextNode();
-	FEVisualNode* getLogicallyNextNode();
+	FEVisualNode* GetNextNode();
+	FEVisualNode* GetLogicallyNextNode();
 
-	Json::Value toJson();
-	void fromJson(Json::Value json);
+	Json::Value ToJson();
+	void FromJson(Json::Value Json);
 };
 
 VISUAL_NODE_CHILD_AFTER_CLASS(globalActionNode)

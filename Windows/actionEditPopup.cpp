@@ -1,6 +1,6 @@
 #include "actionEditPopup.h"
 
-actionEditPopup* actionEditPopup::_instance = nullptr;
+actionEditPopup* actionEditPopup::Instance = nullptr;
 
 actionEditPopup::actionEditPopup()
 {

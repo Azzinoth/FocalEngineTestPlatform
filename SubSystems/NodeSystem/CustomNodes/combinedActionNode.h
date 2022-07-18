@@ -8,50 +8,50 @@ VISUAL_NODE_CHILD_PRIVATE_PART(combinedActionNode)
 	friend testEditorWinow;
 	friend nodeRegionWindow;
 
-	std::vector<FETPAction*> data;
-	void initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE type);
-	FETP_COMBINED_ACTION_TYPE actionType;
+	std::vector<FETPAction*> Data;
+	void Initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type);
+	FETP_COMBINED_ACTION_TYPE ActionType;
 
-	glm::vec2 beginPosition;
-	glm::vec2 endPosition;
+	glm::vec2 BeginPosition;
+	glm::vec2 EndPosition;
 
-	std::string text;
+	std::string Text;
 
 	//bool contextMenu = false;
 	//bool openContextMenu();
 
-	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
+	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
 
-	static combinedActionNode* nodeForCallback;
-	static void changeTextCallback(std::string newText);
+	static combinedActionNode* NodeForCallback;
+	static void ChangeTextCallback(std::string NewText);
 
-	static FETPImage* moveMouseCombineIcon;
-	static FETPImage* leftMouseCombineIcon;
-	static FETPImage* rightMouseCombineIcon;
-	static FETPImage* wheelMouseCombineIcon;
+	static FETPImage* MoveMouseCombineIcon;
+	static FETPImage* LeftMouseCombineIcon;
+	static FETPImage* RightMouseCombineIcon;
+	static FETPImage* WheelMouseCombineIcon;
 
-	static FETPImage* keyCombinedIcon;
-	static FETPImage* textCombinedIcon;
+	static FETPImage* KeyCombinedIcon;
+	static FETPImage* TextCombinedIcon;
 
-	void showTooltip();
-	void checkIcons();
-	void renderIcon();
+	void ShowTooltip();
+	void CheckIcons();
+	void RenderIcon();
 public:
 	combinedActionNode();
-	combinedActionNode(const combinedActionNode& src);
-	combinedActionNode(std::vector<FETPAction*> data, FETP_COMBINED_ACTION_TYPE type);
+	combinedActionNode(const combinedActionNode& Src);
+	combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type);
 
-	void draw();
-	std::vector<FETPAction*> getData();
-	FEVisualNode* getNextNode();
+	void Draw();
+	std::vector<FETPAction*> GetData();
+	FEVisualNode* GetNextNode();
 
-	Json::Value toJson();
-	void fromJson(Json::Value json);
+	Json::Value ToJson();
+	void FromJson(Json::Value Json);
 
-	void changeText(std::string newText, int avarageDelay = -1);
-	FETP_COMBINED_ACTION_TYPE getCombinedActionType();
-	void remove();
+	void ChangeText(std::string NewText, int AvarageDelay = -1);
+	FETP_COMBINED_ACTION_TYPE GetCombinedActionType();
+	void Remove();
 };
 
 VISUAL_NODE_CHILD_AFTER_CLASS(combinedActionNode)

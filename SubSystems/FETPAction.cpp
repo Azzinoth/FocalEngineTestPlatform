@@ -5,7 +5,7 @@ FETPAction::FETPAction(FETP_ACTION_TYPE type)
 {
 	internalType = type;
 	time = 0;
-	ID = APPLICATION.getUniqueHexID();
+	ID = APPLICATION.GetUniqueHexID();
 }
 
 FETPAction::FETPAction(const FETPAction& src)

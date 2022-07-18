@@ -1,6 +1,6 @@
 #include "previewWindow.h"
 
-previewWindow* previewWindow::_instance = nullptr;
+previewWindow* previewWindow::Instance = nullptr;
 ImVec2 previewWindow::nodeGridRelativePosition = ImVec2(0, 0);
 ImVec2 previewWindow::windowPosition = ImVec2(0, 0);
 ImVec2 previewWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
@@ -33,9 +33,9 @@ void previewWindow::show(bool isReadOnly)
 
 	if (currentNodeArea == nullptr)
 	{
-		currentNodeArea = NODE_SYSTEM.createNodeArea();
-		currentNodeArea->setMainContextMenuFunc(mainContextMenu);
-		currentNodeArea->setNodeEventCallback(nodeCallback);
+		currentNodeArea = NODE_SYSTEM.CreateNodeArea();
+		currentNodeArea->SetMainContextMenuFunc(mainContextMenu);
+		currentNodeArea->SetNodeEventCallback(nodeCallback);
 
 		cancelButton = new ImGuiButton("Cancel");
 		cancelButton->setPosition(ImVec2(popupSize.x - popupSize.x / 6.0f - cancelButton->getSize().x / 2.0f, popupSize.y - 30.0f));
@@ -60,7 +60,7 @@ void previewWindow::show(bool isReadOnly)
 void previewWindow::close()
 {
 	ImGuiModalPopup::close();
-	NODE_SYSTEM.deleteNodeArea(currentNodeArea);
+	NODE_SYSTEM.DeleteNodeArea(currentNodeArea);
 	currentNodeArea = nullptr;
 }
 
@@ -77,8 +77,8 @@ void previewWindow::render()
 	{
 		ImGui::SetWindowPos(ImVec2(TEST_PLATFORM.getWindowWidth() / 2 - popupSize.x / 2.0f, TEST_PLATFORM.getWindowHeight() / 2 - popupSize.y / 2.0f));
 
-		currentNodeArea->setAreaPosition(nodeGridRelativePosition);
-		currentNodeArea->setAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
+		currentNodeArea->SetAreaPosition(nodeGridRelativePosition);
+		currentNodeArea->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
 
 		if (firstFrame)
 		{
@@ -86,10 +86,10 @@ void previewWindow::render()
 			positionNodesInCenter();
 		}
 
-		currentNodeArea->update();
+		currentNodeArea->Update();
 
 		if (ImGui::GetIO().MouseReleased[1])
-			mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y) - currentNodeArea->getAreaRenderOffset();
+			mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y) - currentNodeArea->GetAreaRenderOffset();
 
 		if (!readOnly)
 		{
@@ -102,7 +102,7 @@ void previewWindow::render()
 				// Shift all nodes in order to place them in view center of selected test node area.
 				positionNodesInTargetCenter();
 
-				NODE_SYSTEM.moveNodesTo(currentNodeArea, TEST_MANAGER.getSelectedTest()->nodeArea, true);
+				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.getSelectedTest()->nodeArea, true);
 				close();
 			}
 
@@ -114,7 +114,7 @@ void previewWindow::render()
 			{
 				TEST_MANAGER.addTest();
 
-				NODE_SYSTEM.moveNodesTo(currentNodeArea, TEST_MANAGER.list.back()->nodeArea);
+				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.list.back()->nodeArea);
 				close();
 			}
 		}
@@ -123,7 +123,7 @@ void previewWindow::render()
 		cancelButton->render();
 		if (cancelButton->getWasClicked())
 		{
-			currentNodeArea->clear();
+			currentNodeArea->Clear();
 			close();
 		}
 
@@ -147,9 +147,9 @@ void previewWindow::mainContextMenu()
 		{
 			SleepAction* newAction = new SleepAction(10);
 			globalActionNode* newNode = new globalActionNode(newAction);
-			newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+			newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-			currentNodeArea->addNode(newNode);
+			currentNodeArea->AddNode(newNode);
 		}
 
 		if (ImGui::MenuItem("Screen compare node..."))
@@ -171,9 +171,9 @@ void previewWindow::mainContextMenu()
 					delete[] tempData;
 
 					globalActionNode* newNode = new globalActionNode(newAction);
-					newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-					currentNodeArea->addNode(newNode);
+					currentNodeArea->AddNode(newNode);
 				}
 			}
 		}
@@ -187,9 +187,9 @@ void previewWindow::mainContextMenu()
 			{
 				LunchApplicationAction* newAction = new LunchApplicationAction(path);
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 		}
 
@@ -199,9 +199,9 @@ void previewWindow::mainContextMenu()
 			{
 				MouseAction* newAction = new MouseAction();
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("LeftButtonDown"))
@@ -209,9 +209,9 @@ void previewWindow::mainContextMenu()
 				MouseAction* newAction = new MouseAction();
 				newAction->wParam = WM_LBUTTONDOWN;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("LeftButtonUp"))
@@ -219,9 +219,9 @@ void previewWindow::mainContextMenu()
 				MouseAction* newAction = new MouseAction();
 				newAction->wParam = WM_LBUTTONUP;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("RightButtonDown"))
@@ -229,9 +229,9 @@ void previewWindow::mainContextMenu()
 				MouseAction* newAction = new MouseAction();
 				newAction->wParam = WM_RBUTTONDOWN;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("RightButtonUp"))
@@ -239,9 +239,9 @@ void previewWindow::mainContextMenu()
 				MouseAction* newAction = new MouseAction();
 				newAction->wParam = WM_RBUTTONUP;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("WheelRotation"))
@@ -249,9 +249,9 @@ void previewWindow::mainContextMenu()
 				MouseAction* newAction = new MouseAction();
 				newAction->wParam = WM_MOUSEWHEEL;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			ImGui::EndMenu();
@@ -264,9 +264,9 @@ void previewWindow::mainContextMenu()
 				KeyboardAction* newAction = new KeyboardAction();
 				newAction->wParam = WM_KEYDOWN;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("KeyUp"))
@@ -274,9 +274,9 @@ void previewWindow::mainContextMenu()
 				KeyboardAction* newAction = new KeyboardAction();
 				newAction->wParam = WM_KEYUP;
 				globalActionNode* newNode = new globalActionNode(newAction);
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
-				currentNodeArea->addNode(newNode);
+				currentNodeArea->AddNode(newNode);
 			}
 
 			/*if (ImGui::MenuItem("Combined text input..."))
@@ -298,14 +298,14 @@ void previewWindow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT eventW
 
 void previewWindow::positionNodesInCenter()
 {
-	ImVec2 viewCenter = currentNodeArea->getRenderedViewCenter();
-	ImVec2 nodesAABBCenter = currentNodeArea->getAllNodesAABBCenter();
+	ImVec2 viewCenter = currentNodeArea->GetRenderedViewCenter();
+	ImVec2 nodesAABBCenter = currentNodeArea->GetAllNodesAABBCenter();
 
 	neededShift = viewCenter - nodesAABBCenter;
 
-	currentNodeArea->runOnEachNode([](FEVisualNode* node) {
-		size_t outSocketCount = node->outSocketCount();
-		node->setPosition(node->getPosition() + neededShift);
+	currentNodeArea->RunOnEachNode([](FEVisualNode* node) {
+		size_t outSocketCount = node->OutSocketCount();
+		node->SetPosition(node->GetPosition() + neededShift);
 	});
 
 	neededShift = ImVec2(0, 0);
@@ -316,15 +316,15 @@ void previewWindow::positionNodesInTargetCenter()
 	if (TEST_MANAGER.getSelectedTest() == nullptr)
 		return;
 
-	ImVec2 viewCenter = TEST_MANAGER.getSelectedTest()->nodeArea->getRenderedViewCenter();
-	ImVec2 nodesAABBCenter = currentNodeArea->getAllNodesAABBCenter();
-	nodesAABBCenter -= currentNodeArea->getAreaRenderOffset();
+	ImVec2 viewCenter = TEST_MANAGER.getSelectedTest()->nodeArea->GetRenderedViewCenter();
+	ImVec2 nodesAABBCenter = currentNodeArea->GetAllNodesAABBCenter();
+	nodesAABBCenter -= currentNodeArea->GetAreaRenderOffset();
 
 	neededShift = viewCenter - nodesAABBCenter;
 
-	currentNodeArea->runOnEachNode([](FEVisualNode* node) {
-		size_t outSocketCount = node->outSocketCount();
-		node->setPosition(node->getPosition() + neededShift);
+	currentNodeArea->RunOnEachNode([](FEVisualNode* node) {
+		size_t outSocketCount = node->OutSocketCount();
+		node->SetPosition(node->GetPosition() + neededShift);
 	});
 
 	neededShift = ImVec2(0, 0);

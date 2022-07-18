@@ -1,6 +1,6 @@
 #include "FEDearImguiWrapper.h"
 
-WindowsManager* WindowsManager::_instance = nullptr;
+WindowsManager* WindowsManager::Instance = nullptr;
 
 ImGuiModalPopup::ImGuiModalPopup()
 {
@@ -704,7 +704,7 @@ void FERangeConfigurator::clear()
 	ranges.clear();
 }
 
-messagePopUp* messagePopUp::_instance = nullptr;
+messagePopUp* messagePopUp::Instance = nullptr;
 
 messagePopUp::messagePopUp() {};
 

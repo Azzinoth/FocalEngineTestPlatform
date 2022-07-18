@@ -6,31 +6,31 @@
 #include "../Windows/actionEditPopup.h"
 
 VISUAL_NODE_CHILD_PRIVATE_PART(regionNode)
-	FEVisualNodeArea* data;
+	FEVisualNodeArea* Data;
 
-	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
+	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
 
-	static FETPImage* regionIcon;
+	static FETPImage* RegionIcon;
 
-	void showTooltip();
-	void checkIcons();
-	void renderIcon();
+	void ShowTooltip();
+	void CheckIcons();
+	void RenderIcon();
 
-	beginNode* begin;
-	endNode* end;
+	beginNode* Begin;
+	endNode* End;
 public:
 	regionNode();
-	regionNode(const regionNode& src);
+	regionNode(const regionNode& Src);
 
-	void draw();
-	FEVisualNodeArea* getData();
+	void Draw();
+	FEVisualNodeArea* GetData();
 
-	FEVisualNode* getNextNode();
-	FEVisualNode* getLogicallyNextNode();
+	FEVisualNode* GetNextNode();
+	FEVisualNode* GetLogicallyNextNode();
 
-	Json::Value toJson();
-	void fromJson(Json::Value json);
+	Json::Value ToJson();
+	void FromJson(Json::Value Json);
 };
 
 VISUAL_NODE_CHILD_AFTER_CLASS(regionNode)

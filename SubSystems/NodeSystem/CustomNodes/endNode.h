@@ -5,22 +5,22 @@
 class regionNode;
 VISUAL_NODE_CHILD_PRIVATE_PART(endNode)
 	friend regionNode;
-	float data = 0.0f;
+	float Data = 0.0f;
 	
-	bool canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser);
-	void socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType);
+	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
 
-	FETPImage* icon = nullptr;
-	FEVisualNode* nextNode = nullptr;
+	FETPImage* Icon = nullptr;
+	FEVisualNode* NextNode = nullptr;
 public:
 	endNode();
-	endNode(const endNode& src);
+	endNode(const endNode& Src);
 
-	void draw();
-	float getData();
+	void Draw();
+	float GetData();
 
-	FEVisualNode* getNextNode();
-	FEVisualNode* getLogicallyNextNode();
+	FEVisualNode* GetNextNode();
+	FEVisualNode* GetLogicallyNextNode();
 };
 
 VISUAL_NODE_CHILD_AFTER_CLASS(endNode)

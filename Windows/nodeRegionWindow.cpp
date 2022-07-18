@@ -1,6 +1,6 @@
 #include "nodeRegionWindow.h"
 
-nodeRegionWindow* nodeRegionWindow::_instance = nullptr;
+nodeRegionWindow* nodeRegionWindow::Instance = nullptr;
 ImVec2 nodeRegionWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
 regionNode* nodeRegionWindow::currentRegion = nullptr;
 
@@ -46,13 +46,13 @@ void nodeRegionWindow::render()
 	if (!isVisible())
 		return;
 
-	if (currentRegion->getData() != nullptr)
+	if (currentRegion->GetData() != nullptr)
 	{
-		currentRegion->getData()->setMainContextMenuFunc(mainContextMenu);
-		//currentRegion->getData()->setNodeEventCallback(nodeCallback);
-		//currentNodeArea->setAreaPosition(ImVec2(0.0f, 0.0f));
-		currentRegion->getData()->setAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
-		currentRegion->getData()->update();
+		currentRegion->GetData()->SetMainContextMenuFunc(mainContextMenu);
+		//currentRegion->getData()->SetNodeEventCallback(nodeCallback);
+		//currentNodeArea->SetAreaPosition(ImVec2(0.0f, 0.0f));
+		currentRegion->GetData()->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
+		currentRegion->GetData()->Update();
 	}
 
 	ImGui::SetItemDefaultFocus();
@@ -62,7 +62,7 @@ void nodeRegionWindow::render()
 		FEImGuiWindow::close();
 
 	if (ImGui::GetIO().MouseReleased[1])
-		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - currentRegion->getData()->getAreaRenderOffset();
+		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - currentRegion->GetData()->GetAreaRenderOffset();
 
 	FEImGuiWindow::onRenderEnd();
 }
@@ -72,7 +72,7 @@ void nodeRegionWindow::mainContextMenu()
 	if (currentRegion == nullptr)
 		return;
 
-	if (currentRegion->getData()->getHovered() == nullptr && currentRegion->getData()->getSelected().size() == 0)
+	if (currentRegion->GetData()->GetHovered() == nullptr && currentRegion->GetData()->GetSelected().size() == 0)
 	{
 		if (ImGui::BeginMenu("Add"))
 		{
@@ -191,36 +191,36 @@ void nodeRegionWindow::mainContextMenu()
 
 			if (newNode != nullptr)
 			{
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
-				currentRegion->getData()->addNode(newNode);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				currentRegion->GetData()->AddNode(newNode);
 			}
 
 			ImGui::EndMenu();
 		}
 	}
-	else if (currentRegion->getData()->getSelected().size() == 1 &&
-			 currentRegion->getData()->getSelected()[0]->getType() == "combinedActionNode")
+	else if (currentRegion->GetData()->GetSelected().size() == 1 &&
+			 currentRegion->GetData()->GetSelected()[0]->GetType() == "combinedActionNode")
 	{
-		combinedActionNode* currentNode = reinterpret_cast<combinedActionNode*>(currentRegion->getData()->getSelected()[0]);
-		if (currentNode->getCombinedActionType() == FETP_COMBINED_TEXT_INPUT_ACTION)
+		combinedActionNode* currentNode = reinterpret_cast<combinedActionNode*>(currentRegion->GetData()->GetSelected()[0]);
+		if (currentNode->GetCombinedActionType() == FETP_COMBINED_TEXT_INPUT_ACTION)
 		{
 			if (ImGui::MenuItem(std::string("Change input text").c_str()))
 			{
-				combinedActionNode::nodeForCallback = currentNode;
-				textInputPopup::getInstance().show(combinedActionNode::changeTextCallback, currentNode->text);
+				combinedActionNode::NodeForCallback = currentNode;
+				textInputPopup::getInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
 			}
 		}
 
 		if (ImGui::MenuItem(std::string("Remove").c_str()))
 		{
-			currentNode->remove();
+			currentNode->Remove();
 		}
 
 		if (ImGui::MenuItem(std::string("Look inside").c_str()))
 		{
 			previewWindow::getInstance().show(true);
-			previewWindow::getInstance().currentNodeArea->clear();
-			ACTION_SYSTEM.placeStructuredNodes(currentNode->data, previewWindow::getInstance().currentNodeArea, true);
+			previewWindow::getInstance().currentNodeArea->Clear();
+			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::getInstance().currentNodeArea, true);
 		}
 	}
 }
@@ -230,9 +230,9 @@ void nodeRegionWindow::textInputCallback(std::string text)
 	if (text != "")
 	{
 		combinedActionNode* newNode = new combinedActionNode(std::vector<FETPAction*>(), FETP_COMBINED_TEXT_INPUT_ACTION);
-		newNode->changeText(text);
+		newNode->ChangeText(text);
 
-		newNode->setPosition(mousePositionWhenContextMenuWasOpened);
-		currentRegion->getData()->addNode(newNode);
+		newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+		currentRegion->GetData()->AddNode(newNode);
 	}
 }

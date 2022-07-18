@@ -1,6 +1,6 @@
 #include "failedTestWindow.h"
 
-failedTestWindow* failedTestWindow::_instance = nullptr;
+failedTestWindow* failedTestWindow::Instance = nullptr;
 
 failedTestWindow::failedTestWindow()
 {

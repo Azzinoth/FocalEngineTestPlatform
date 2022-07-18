@@ -1,183 +1,183 @@
 #include "globalActionNode.h"
 
 VISUAL_NODE_CHILD_CPP(globalActionNode)
-FETPImage* globalActionNode::sleepIcon = nullptr;
+FETPImage* globalActionNode::SleepIcon = nullptr;
 
-FETPImage* globalActionNode::keyDownIcon = nullptr;
-FETPImage* globalActionNode::keyUpIcon = nullptr;
+FETPImage* globalActionNode::KeyDownIcon = nullptr;
+FETPImage* globalActionNode::KeyUpIcon = nullptr;
 
-FETPImage* globalActionNode::moveMouseIcon = nullptr;
-FETPImage* globalActionNode::leftMouseDownIcon = nullptr;
-FETPImage* globalActionNode::leftMouseUpIcon = nullptr;
-FETPImage* globalActionNode::rightMouseDownIcon = nullptr;
-FETPImage* globalActionNode::rightMouseUpIcon = nullptr;
-FETPImage* globalActionNode::scrollMouseIcon = nullptr;
+FETPImage* globalActionNode::MoveMouseIcon = nullptr;
+FETPImage* globalActionNode::LeftMouseDownIcon = nullptr;
+FETPImage* globalActionNode::LeftMouseUpIcon = nullptr;
+FETPImage* globalActionNode::RightMouseDownIcon = nullptr;
+FETPImage* globalActionNode::RightMouseUpIcon = nullptr;
+FETPImage* globalActionNode::ScrollMouseIcon = nullptr;
 
-FETPImage* globalActionNode::lunchApplicationIcon = nullptr;
-FETPImage* globalActionNode::screenshotIcon = nullptr;
+FETPImage* globalActionNode::LunchApplicationIcon = nullptr;
+FETPImage* globalActionNode::ScreenshotIcon = nullptr;
 
 globalActionNode::globalActionNode() : FEVisualNode()
 {
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
-void globalActionNode::copyData(FETPAction* src)
+void globalActionNode::CopyData(FETPAction* Src)
 {
-	if (src->getType() == FETP_KEYBOARD_ACTION)
+	if (Src->getType() == FETP_KEYBOARD_ACTION)
 	{
-		data = new KeyboardAction(*reinterpret_cast<KeyboardAction*>(src));
+		Data = new KeyboardAction(*reinterpret_cast<KeyboardAction*>(Src));
 	}
-	else if (src->getType() == FETP_MOUSE_ACTION)
+	else if (Src->getType() == FETP_MOUSE_ACTION)
 	{
-		data = new MouseAction(*reinterpret_cast<MouseAction*>(src));
+		Data = new MouseAction(*reinterpret_cast<MouseAction*>(Src));
 	}
-	else if (src->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (Src->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		data = new ScreenshootCompareAction(*reinterpret_cast<ScreenshootCompareAction*>(src));
+		Data = new ScreenshootCompareAction(*reinterpret_cast<ScreenshootCompareAction*>(Src));
 	}
-	else if (src->getType() == FETP_SLEEP_ACTION)
+	else if (Src->getType() == FETP_SLEEP_ACTION)
 	{
-		data = new SleepAction(*reinterpret_cast<SleepAction*>(src));
+		Data = new SleepAction(*reinterpret_cast<SleepAction*>(Src));
 	}
-	else if (src->getType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (Src->getType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
-		data = new LunchApplicationAction(*reinterpret_cast<LunchApplicationAction*>(src));
+		Data = new LunchApplicationAction(*reinterpret_cast<LunchApplicationAction*>(Src));
 	}
 	else
 	{
-		data = new FETPAction(*src);
+		Data = new FETPAction(*Src);
 	}
 }
 
-globalActionNode::globalActionNode(const globalActionNode& src) : FEVisualNode(src)
+globalActionNode::globalActionNode(const globalActionNode& Src) : FEVisualNode(Src)
 {
-	copyData(src.data);
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	CopyData(Src.Data);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
 globalActionNode::~globalActionNode()
 {
-	if (data != nullptr)
-		delete data;
+	if (Data != nullptr)
+		delete Data;
 }
 
-void globalActionNode::initialize(FETPAction* data)
+void globalActionNode::Initialize(FETPAction* Data)
 {
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
-	type = "globalActionNode";
-	this->data = data;
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	Type = "globalActionNode";
+	this->Data = Data;
 
-	titleBackgroundColor = ImColor(31, 117, 208);
-	titleBackgroundColorHovered = ImColor(35, 145, 255);
+	TitleBackgroundColor = ImColor(31, 117, 208);
+	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	if (data->getType() == FETP_KEYBOARD_ACTION)
+	if (Data->getType() == FETP_KEYBOARD_ACTION)
 	{
-		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(data);
+		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
 		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
 		{
-			setName("keyDown");
-			titleBackgroundColor = ImColor(34, 177, 76);
-			titleBackgroundColorHovered = ImColor(32, 166, 72);
+			SetName("keyDown");
+			TitleBackgroundColor = ImColor(34, 177, 76);
+			TitleBackgroundColorHovered = ImColor(32, 166, 72);
 		}
 		else if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
 		{
-			setName("keyUp");
-			titleBackgroundColor = ImColor(181, 230, 29);
-			titleBackgroundColorHovered = ImColor(174, 224, 24);
+			SetName("keyUp");
+			TitleBackgroundColor = ImColor(181, 230, 29);
+			TitleBackgroundColorHovered = ImColor(174, 224, 24);
 		}
 	}
-	else if (data->getType() == FETP_MOUSE_ACTION)
+	else if (Data->getType() == FETP_MOUSE_ACTION)
 	{
-		MouseAction* action = reinterpret_cast<MouseAction*>(data);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
 		if (action->wParam == WM_LBUTTONUP)
 		{
-			setName("mouseLeftUp");
-			titleBackgroundColor = ImColor(153, 217, 234);
-			titleBackgroundColorHovered = ImColor(124, 207, 228);
+			SetName("mouseLeftUp");
+			TitleBackgroundColor = ImColor(153, 217, 234);
+			TitleBackgroundColorHovered = ImColor(124, 207, 228);
 		}
 		else if (action->wParam == WM_RBUTTONUP)
 		{
-			setName("mouseRightUp");
-			titleBackgroundColor = ImColor(200, 191, 231);
-			titleBackgroundColorHovered = ImColor(171, 157, 219);
+			SetName("mouseRightUp");
+			TitleBackgroundColor = ImColor(200, 191, 231);
+			TitleBackgroundColorHovered = ImColor(171, 157, 219);
 		}
 		else if (action->wParam == WM_LBUTTONDOWN)
 		{
-			setName("mouseLeftDown");
-			titleBackgroundColor = ImColor(0, 162, 232);
-			titleBackgroundColorHovered = ImColor(0, 152, 217);
+			SetName("mouseLeftDown");
+			TitleBackgroundColor = ImColor(0, 162, 232);
+			TitleBackgroundColorHovered = ImColor(0, 152, 217);
 		}
 		else if (action->wParam == WM_RBUTTONDOWN)
 		{
-			setName("mouseRightDown");
-			titleBackgroundColor = ImColor(163, 73, 164);
-			titleBackgroundColorHovered = ImColor(147, 66, 147);
+			SetName("mouseRightDown");
+			TitleBackgroundColor = ImColor(163, 73, 164);
+			TitleBackgroundColorHovered = ImColor(147, 66, 147);
 		}
 		else if (action->wParam == WM_MOUSEMOVE)
 		{
-			setName("mouseMove");
-			titleBackgroundColor = ImColor(136, 0, 21);
-			titleBackgroundColorHovered = ImColor(113, 0, 17);
+			SetName("mouseMove");
+			TitleBackgroundColor = ImColor(136, 0, 21);
+			TitleBackgroundColorHovered = ImColor(113, 0, 17);
 		}
 		else if (action->wParam == WM_MOUSEWHEEL)
 		{
-			setName("mouseWheel");
-			titleBackgroundColor = ImColor(136, 0, 21);
-			titleBackgroundColorHovered = ImColor(113, 0, 17);
+			SetName("mouseWheel");
+			TitleBackgroundColor = ImColor(136, 0, 21);
+			TitleBackgroundColorHovered = ImColor(113, 0, 17);
 		}
 	}
-	else if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		setName("screenshoot");
-		titleBackgroundColor = ImColor(136, 0, 21);
-		titleBackgroundColorHovered = ImColor(111, 0, 17);
+		SetName("screenshoot");
+		TitleBackgroundColor = ImColor(136, 0, 21);
+		TitleBackgroundColorHovered = ImColor(111, 0, 17);
 
-		if (input.size() == 0 && output.size() == 0)
+		if (Input.size() == 0 && Output.size() == 0)
 		{
-			addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+			AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
 
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
+			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 			for (size_t i = 0; i < action->imagesInfo.size(); i++)
 			{
-				addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "next_" + std::to_string(i + 1)));
+				AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "next_" + std::to_string(i + 1)));
 			}
 		}
 	}
-	else if (data->getType() == FETP_SLEEP_ACTION)
+	else if (Data->getType() == FETP_SLEEP_ACTION)
 	{
-		setName("sleep");
+		SetName("sleep");
 	}
-	else if (data->getType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
-		setName("lunch application");
+		SetName("lunch application");
 	}
 
-	setSize(ImVec2(330, 140));
+	SetSize(ImVec2(330, 140));
 
-	if (input.size() == 0 && output.size() == 0)
+	if (Input.size() == 0 && Output.size() == 0)
 	{
-		addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+		AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
 	}
 }
 
-globalActionNode::globalActionNode(FETPAction* data) : FEVisualNode()
+globalActionNode::globalActionNode(FETPAction* Data) : FEVisualNode()
 {
-	initialize(data);
+	Initialize(Data);
 }
 
-void globalActionNode::draw()
+void globalActionNode::Draw()
 {	
-	FEVisualNode::draw();
+	FEVisualNode::Draw();
 
-	if (getStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
 								  ImGui::GetCursorScreenPos().y + this->getClientRegionPosition().y);
 
-		ImVec2 regionMax = ImVec2(regionMin.x + this->getClientRegionSize().x,
-								  regionMin.y + this->getClientRegionSize().y);
+		ImVec2 regionMax = ImVec2(regionMin.x + this->GetClientRegionSize().x,
+								  regionMin.y + this->GetClientRegionSize().y);
 
 		ImGui::GetWindowDrawList()->AddRectFilled(regionMin, regionMax, IM_COL32(175, 175, 175, 125), 8.0f);*/
 
@@ -187,21 +187,21 @@ void globalActionNode::draw()
 		yPosition += NODE_TITLE_HEIGHT + 13.0f;
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
-		if (data->getType() == FETP_KEYBOARD_ACTION)
+		if (Data->getType() == FETP_KEYBOARD_ACTION)
 		{
-			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(data);
+			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
 			ImGui::SetNextItemWidth(80);
 			int keyCode = action->additionalInfo.vkCode;
 			if (ImGui::InputInt("key code", &keyCode))
 			{
-				parentArea->propagateUpdateToConnectedNodes(this);
+				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 
 			action->additionalInfo.vkCode = keyCode;
 		}
-		else if (data->getType() == FETP_MOUSE_ACTION)
+		else if (Data->getType() == FETP_MOUSE_ACTION)
 		{
-			MouseAction* action = reinterpret_cast<MouseAction*>(data);
+			MouseAction* action = reinterpret_cast<MouseAction*>(Data);
 
 			if (action->wParam == WM_MOUSEMOVE)
 			{
@@ -212,7 +212,7 @@ void globalActionNode::draw()
 
 				if (ImGui::InputInt2("position", position))
 				{
-					parentArea->propagateUpdateToConnectedNodes(this);
+					ParentArea->PropagateUpdateToConnectedNodes(this);
 				}
 
 				action->additionalInfo.pt.x = position[0];
@@ -232,17 +232,17 @@ void globalActionNode::draw()
 				ImGui::InputInt("wheel movement", &value);
 			}
 		}
-		else if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		else if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
+			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 
 			if (action->imagesInfo.size() > 0 && action->imagesInfo[0] != nullptr)
 			{
 				ImGui::SetCursorScreenPos(ImVec2(xPosition - 10.0f, yPosition - 10.0f));
 				glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(action->imagesInfo[0]->image->getWidth(),
 					action->imagesInfo[0]->image->getHeight(),
-					size_t(this->getClientRegionSize().x * 0.95f),
-					size_t(this->getClientRegionSize().y * 0.55f));
+					size_t(this->GetClientRegionSize().x * 0.95f),
+					size_t(this->GetClientRegionSize().y * 0.55f));
 
 				ImGui::Image((void*)(intptr_t)action->imagesInfo[0]->image->getTextureID(),
 					ImVec2(imageSize.x, imageSize.y),
@@ -264,37 +264,37 @@ void globalActionNode::draw()
 					ImGui::EndDisabled();
 			}
 		}
-		else if (data->getType() == FETP_SLEEP_ACTION)
+		else if (Data->getType() == FETP_SLEEP_ACTION)
 		{
-			SleepAction* action = reinterpret_cast<SleepAction*>(data);
+			SleepAction* action = reinterpret_cast<SleepAction*>(Data);
 			ImGui::SetNextItemWidth(80);
 			int sleepFor = action->sleepFor;
 			if (ImGui::InputInt("sleep for", &sleepFor))
 			{
 				action->sleepFor = sleepFor;
-				parentArea->propagateUpdateToConnectedNodes(this);
+				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 		}
-		else if (data->getType() == FETP_LUNCH_APPLICATION_ACTION)
+		else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 		{
-			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(data);
+			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
 			ImGui::Text(action->applicationPath.c_str());
 		}
 	}
-	else if (getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
-		checkIcons();
+		CheckIcons();
 
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
-		renderIcon();
+		RenderIcon();
 
-		if (parentArea->isMouseHovered() && isHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened() /*&& !screenshootEditor::getInstance().isVisible()*/)
-			showTooltip();
+		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened() /*&& !screenshootEditor::getInstance().isVisible()*/)
+			ShowTooltip();
 	}
 
-	if (contextMenu)
+	if (ContextMenu)
 	{
-		contextMenu = false;
+		ContextMenu = false;
 		ImGui::OpenPopup("##context_menu");
 	}
 
@@ -303,31 +303,31 @@ void globalActionNode::draw()
 	{
 		if (ImGui::MenuItem(std::string("Edit...").c_str()))
 		{
-			if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+			if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 			{
-				ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
+				ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 				screenshootEditor::getInstance().show(action);
 			}
-			else if (data->getType() == FETP_LUNCH_APPLICATION_ACTION)
+			else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 			{
 				std::string path;
 				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, applicationLoadFilter, 1);
 
 				if (path != "")
 				{
-					LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(data);
+					LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
 					action->applicationPath = path;
 				}
 			}
 			else
 			{
-				actionEditPopup::getInstance().show(data);
+				actionEditPopup::getInstance().show(Data);
 			}
 		}
 
 		if (ImGui::MenuItem(std::string("Remove").c_str()))
 		{
-			shouldBeDestroyed = true;
+			bShouldBeDestroyed = true;
 		}
 
 		ImGui::EndPopup();
@@ -336,129 +336,129 @@ void globalActionNode::draw()
 	ImGui::PopStyleVar();
 }
 
-void globalActionNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
+void globalActionNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-FETPAction* globalActionNode::getData()
+FETPAction* globalActionNode::GetData()
 {
-	return data;
+	return Data;
 }
 
-bool globalActionNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
+bool globalActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
-	if (candidateSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && ownSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
+	if (CandidateSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && OwnSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
 		return true;
 
 	return false;
 }
 
-Json::Value globalActionNode::toJson()
+Json::Value globalActionNode::ToJson()
 {
-	Json::Value result = FEVisualNode::toJson();
+	Json::Value result = FEVisualNode::ToJson();
 
-	if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
+		ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 		action->saveImagesToDisk();
 	}
-	result["action"] = data->toJson();
+	result["action"] = Data->toJson();
 
 	return result;
 }
 
-FEVisualNode* globalActionNode::getNextNode()
+FEVisualNode* globalActionNode::GetNextNode()
 {
-	if (output.size() > 0 && output[0]->getConnections().size() > 0)
+	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
 	{
-		if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
+			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 			for (size_t i = 0; i < action->imagesInfo.size(); i++)
 			{
 				if (action->imagesInfo[i]->lastRunResult)
-					return output[i]->getConnections()[0]->getParent();
+					return Output[i]->GetConnections()[0]->GetParent();
 			}
 
-			return output[0]->getConnections()[0]->getParent();
+			return Output[0]->GetConnections()[0]->GetParent();
 		}
 		else
 		{
-			return output[0]->getConnections()[0]->getParent();
+			return Output[0]->GetConnections()[0]->GetParent();
 		}
 	}
 
 	return nullptr;
 }
 
-void globalActionNode::fromJson(Json::Value json)
+void globalActionNode::FromJson(Json::Value Json)
 {
-	FEVisualNode::fromJson(json);
+	FEVisualNode::FromJson(Json);
 
-	if (FETP_ACTION_TYPE(json["action"]["internalType"].asInt()) == FETP_KEYBOARD_ACTION)
+	if (FETP_ACTION_TYPE(Json["action"]["internalType"].asInt()) == FETP_KEYBOARD_ACTION)
 	{
-		data = new KeyboardAction();
+		Data = new KeyboardAction();
 	}
-	else if (FETP_ACTION_TYPE(json["action"]["internalType"].asInt()) == FETP_MOUSE_ACTION)
+	else if (FETP_ACTION_TYPE(Json["action"]["internalType"].asInt()) == FETP_MOUSE_ACTION)
 	{
-		data = new MouseAction();
+		Data = new MouseAction();
 	}
-	else if (FETP_ACTION_TYPE(json["action"]["internalType"].asInt()) == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (FETP_ACTION_TYPE(Json["action"]["internalType"].asInt()) == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		data = new ScreenshootCompareAction();
+		Data = new ScreenshootCompareAction();
 	}
-	else if (FETP_ACTION_TYPE(json["action"]["internalType"].asInt()) == FETP_LUNCH_APPLICATION_ACTION)
+	else if (FETP_ACTION_TYPE(Json["action"]["internalType"].asInt()) == FETP_LUNCH_APPLICATION_ACTION)
 	{
-		data = new LunchApplicationAction();
+		Data = new LunchApplicationAction();
 	}
-	else if (FETP_ACTION_TYPE(json["action"]["internalType"].asInt()) == FETP_SLEEP_ACTION)
+	else if (FETP_ACTION_TYPE(Json["action"]["internalType"].asInt()) == FETP_SLEEP_ACTION)
 	{
-		data = new SleepAction();
+		Data = new SleepAction();
 	}
 
-	if (data != nullptr)
+	if (Data != nullptr)
 	{
-		data->fromJson(json["action"]);
-		initialize(data);
+		Data->fromJson(Json["action"]);
+		Initialize(Data);
 	}
 }
 
-FEVisualNode* globalActionNode::getLogicallyNextNode()
+FEVisualNode* globalActionNode::GetLogicallyNextNode()
 {
-	if (data->getType() != FETP_SCREENSHOOT_COMPARE_ACTION)
-		return FEVisualNode::getLogicallyNextNode();
+	if (Data->getType() != FETP_SCREENSHOOT_COMPARE_ACTION)
+		return FEVisualNode::GetLogicallyNextNode();
 
-	ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data);
+	ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 	for (size_t i = 0; i < action->imagesInfo.size(); i++)
 	{
 		if (action->imagesInfo[i]->lastRunResult)
 		{
-			if (output[i]->getConnections().size() > 0)
-				return output[i]->getConnections()[0]->getParent();
+			if (Output[i]->GetConnections().size() > 0)
+				return Output[i]->GetConnections()[0]->GetParent();
 		}
 	}
 
 	return nullptr;
 }
 
-bool globalActionNode::openContextMenu()
+bool globalActionNode::OpenContextMenu()
 {
-	contextMenu = true;
+	ContextMenu = true;
 	return true;
 }
 
-void globalActionNode::showTooltip()
+void globalActionNode::ShowTooltip()
 {
-	std::string textToShow = "Name: " + getName() + "\nAction type: " + FETPAction::FETPActionTypeToString(data->getType());
-	textToShow += "\nID: " + data->getID();
+	std::string textToShow = "Name: " + GetName() + "\nAction type: " + FETPAction::FETPActionTypeToString(Data->getType());
+	textToShow += "\nID: " + Data->getID();
 
-	if (data->getType() == FETP_KEYBOARD_ACTION)
+	if (Data->getType() == FETP_KEYBOARD_ACTION)
 	{
-		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(data);
+		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
 		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
 			textToShow += "\nSub type: Key down";
 		if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
@@ -466,9 +466,9 @@ void globalActionNode::showTooltip()
 
 		textToShow += "\nKey code: " + std::to_string(int(action->additionalInfo.vkCode));
 	}
-	else if (data->getType() == FETP_MOUSE_ACTION)
+	else if (Data->getType() == FETP_MOUSE_ACTION)
 	{
-		MouseAction* action = reinterpret_cast<MouseAction*>(data);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
 		if (action->wParam == WM_MOUSEMOVE)
 		{
 			textToShow += "\nSub type: Move";
@@ -496,19 +496,19 @@ void globalActionNode::showTooltip()
 			textToShow += "\nScroll amount: " + std::to_string((short)HIWORD(action->additionalInfo.mouseData));
 		}
 	}
-	else if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
 		textToShow += "\nSub type: Screenshot";
 	}
-	else if (data->getType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
-		LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(data);
+		LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
 		textToShow += "\nSub type: Lunch Application";
 		textToShow += "\nPath: " + action->applicationPath;
 	}
-	else if (data->getType() == FETP_SLEEP_ACTION)
+	else if (Data->getType() == FETP_SLEEP_ACTION)
 	{
-		SleepAction* action = reinterpret_cast<SleepAction*>(data);
+		SleepAction* action = reinterpret_cast<SleepAction*>(Data);
 		textToShow += "\nDuration: " + std::to_string(action->sleepFor);
 	}
 
@@ -521,98 +521,98 @@ void globalActionNode::showTooltip()
 	ImGui::PopFont();
 }
 
-void globalActionNode::checkIcons()
+void globalActionNode::CheckIcons()
 {
-	if (sleepIcon == nullptr)
-		sleepIcon = new FETPImage("Resources//sleepIcon.png");
+	if (SleepIcon == nullptr)
+		SleepIcon = new FETPImage("Resources//sleepIcon.png");
 
-	if (keyDownIcon == nullptr)
-		keyDownIcon = new FETPImage("Resources//keyDownIcon.png");
+	if (KeyDownIcon == nullptr)
+		KeyDownIcon = new FETPImage("Resources//keyDownIcon.png");
 
-	if (keyUpIcon == nullptr)
-		keyUpIcon = new FETPImage("Resources//keyUpIcon.png");
+	if (KeyUpIcon == nullptr)
+		KeyUpIcon = new FETPImage("Resources//keyUpIcon.png");
 
-	if (moveMouseIcon == nullptr)
-		moveMouseIcon = new FETPImage("Resources//moveMouseIcon.png");
+	if (MoveMouseIcon == nullptr)
+		MoveMouseIcon = new FETPImage("Resources//moveMouseIcon.png");
 
-	if (leftMouseDownIcon == nullptr)
-		leftMouseDownIcon = new FETPImage("Resources//leftMouseDownIcon.png");
+	if (LeftMouseDownIcon == nullptr)
+		LeftMouseDownIcon = new FETPImage("Resources//leftMouseDownIcon.png");
 
-	if (leftMouseUpIcon == nullptr)
-		leftMouseUpIcon = new FETPImage("Resources//leftMouseUpIcon.png");
+	if (LeftMouseUpIcon == nullptr)
+		LeftMouseUpIcon = new FETPImage("Resources//leftMouseUpIcon.png");
 
-	if (rightMouseDownIcon == nullptr)
-		rightMouseDownIcon = new FETPImage("Resources//rightMouseDownIcon.png");
+	if (RightMouseDownIcon == nullptr)
+		RightMouseDownIcon = new FETPImage("Resources//rightMouseDownIcon.png");
 
-	if (rightMouseUpIcon == nullptr)
-		rightMouseUpIcon = new FETPImage("Resources//rightMouseUpIcon.png");
+	if (RightMouseUpIcon == nullptr)
+		RightMouseUpIcon = new FETPImage("Resources//rightMouseUpIcon.png");
 
-	if (scrollMouseIcon == nullptr)
-		scrollMouseIcon = new FETPImage("Resources//scrollMouseIcon.png");
+	if (ScrollMouseIcon == nullptr)
+		ScrollMouseIcon = new FETPImage("Resources//scrollMouseIcon.png");
 
-	if (lunchApplicationIcon == nullptr)
-		lunchApplicationIcon = new FETPImage("Resources//lunchApplicationIcon.png");
+	if (LunchApplicationIcon == nullptr)
+		LunchApplicationIcon = new FETPImage("Resources//lunchApplicationIcon.png");
 
-	if (screenshotIcon == nullptr)
-		screenshotIcon = new FETPImage("Resources//screenshotIcon.png");
+	if (ScreenshotIcon == nullptr)
+		ScreenshotIcon = new FETPImage("Resources//screenshotIcon.png");
 }
 
-void globalActionNode::renderIcon()
+void globalActionNode::RenderIcon()
 {
-	if (data->getType() == FETP_KEYBOARD_ACTION)
+	if (Data->getType() == FETP_KEYBOARD_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 7.0f, ImGui::GetCursorScreenPos().y + 7.0f));
-		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(data);
+		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
 		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
-			ImGui::Image((void*)(intptr_t)keyDownIcon->getTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)KeyDownIcon->getTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
-			ImGui::Image((void*)(intptr_t)keyUpIcon->getTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)KeyUpIcon->getTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (data->getType() == FETP_MOUSE_ACTION)
+	else if (Data->getType() == FETP_MOUSE_ACTION)
 	{
-		MouseAction* action = reinterpret_cast<MouseAction*>(data);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
 		if (action->wParam == WM_MOUSEMOVE)
 		{
-			ImGui::Image((void*)(intptr_t)moveMouseIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)MoveMouseIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_LBUTTONDOWN)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)leftMouseDownIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)LeftMouseDownIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_LBUTTONUP)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)leftMouseUpIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)LeftMouseUpIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_RBUTTONDOWN)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)rightMouseDownIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)RightMouseDownIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_RBUTTONUP)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)rightMouseUpIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)RightMouseUpIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_MOUSEWHEEL)
 		{
-			ImGui::Image((void*)(intptr_t)scrollMouseIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)ScrollMouseIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 	}
-	else if (data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 14.0f, ImGui::GetCursorScreenPos().y + 14.0f));
-		ImGui::Image((void*)(intptr_t)screenshotIcon->getTextureID(), ImVec2(86.0f, 86.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)ScreenshotIcon->getTextureID(), ImVec2(86.0f, 86.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (data->getType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f, ImGui::GetCursorScreenPos().y + 10.0f));
-		ImGui::Image((void*)(intptr_t)lunchApplicationIcon->getTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)LunchApplicationIcon->getTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (data->getType() == FETP_SLEEP_ACTION)
+	else if (Data->getType() == FETP_SLEEP_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 4.0f, ImGui::GetCursorScreenPos().y + 4.0f));
-		ImGui::Image((void*)(intptr_t)sleepIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)SleepIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 }

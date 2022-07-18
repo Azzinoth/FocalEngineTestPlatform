@@ -1,111 +1,111 @@
 #include "combinedActionNode.h"
 
 VISUAL_NODE_CHILD_CPP(combinedActionNode)
-combinedActionNode* combinedActionNode::nodeForCallback = nullptr;
-FETPImage* combinedActionNode::moveMouseCombineIcon = nullptr;
-FETPImage* combinedActionNode::leftMouseCombineIcon = nullptr;
-FETPImage* combinedActionNode::rightMouseCombineIcon = nullptr;
-FETPImage* combinedActionNode::wheelMouseCombineIcon = nullptr;
+combinedActionNode* combinedActionNode::NodeForCallback = nullptr;
+FETPImage* combinedActionNode::MoveMouseCombineIcon = nullptr;
+FETPImage* combinedActionNode::LeftMouseCombineIcon = nullptr;
+FETPImage* combinedActionNode::RightMouseCombineIcon = nullptr;
+FETPImage* combinedActionNode::WheelMouseCombineIcon = nullptr;
 
-FETPImage* combinedActionNode::keyCombinedIcon = nullptr;
-FETPImage* combinedActionNode::textCombinedIcon = nullptr;
+FETPImage* combinedActionNode::KeyCombinedIcon = nullptr;
+FETPImage* combinedActionNode::TextCombinedIcon = nullptr;
 
 combinedActionNode::combinedActionNode() : FEVisualNode()
 {
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
-combinedActionNode::combinedActionNode(const combinedActionNode& src) : FEVisualNode(src)
+combinedActionNode::combinedActionNode(const combinedActionNode& Src) : FEVisualNode(Src)
 {
-	data = src.data;
-	actionType = src.actionType;
-	beginPosition = src.beginPosition;
-	endPosition = src.endPosition;
-	text = src.text;
+	Data = Src.Data;
+	ActionType = Src.ActionType;
+	BeginPosition = Src.BeginPosition;
+	EndPosition = Src.EndPosition;
+	Text = Src.Text;
 
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
-void combinedActionNode::initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE type)
+void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type)
 {
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
-	setSize(ImVec2(330, 140));
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetSize(ImVec2(330, 140));
 
-	if (input.size() == 0 && output.size() == 0)
+	if (Input.size() == 0 && Output.size() == 0)
 	{
-		addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+		AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
 	}
 
-	data = Data;
+	Data = Data;
 
-	titleBackgroundColor = ImColor(31, 117, 208);
-	titleBackgroundColorHovered = ImColor(35, 145, 255);
+	TitleBackgroundColor = ImColor(31, 117, 208);
+	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	this->type = "combinedActionNode";
-	actionType = type;
+	this->Type = "combinedActionNode";
+	ActionType = Type;
 
-	if (actionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
+	if (ActionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
 	{
-		setName("COMBINED_MOUSE_MOVE");
+		SetName("COMBINED_MOUSE_MOVE");
 
-		MouseAction* action = reinterpret_cast<MouseAction*>(data[0]);
-		beginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
+		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 
-		endPosition = glm::vec2(0);
-		for (int i = data.size() - 1; i >= 0; i--)
+		EndPosition = glm::vec2(0);
+		for (int i = Data.size() - 1; i >= 0; i--)
 		{
-			if (data[i]->getType() == FETP_MOUSE_ACTION)
+			if (Data[i]->getType() == FETP_MOUSE_ACTION)
 			{
-				action = reinterpret_cast<MouseAction*>(data[i]);
-				endPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+				action = reinterpret_cast<MouseAction*>(Data[i]);
+				EndPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 
 				break;
 			}
 		}
 	}
-	else if (actionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
 	{
-		setName("COMBINED_LEFT_MOUSE_CLICK");
-		titleBackgroundColor = ImColor(0, 162, 232);
-		titleBackgroundColorHovered = ImColor(0, 152, 217);
+		SetName("COMBINED_LEFT_MOUSE_CLICK");
+		TitleBackgroundColor = ImColor(0, 162, 232);
+		TitleBackgroundColorHovered = ImColor(0, 152, 217);
 
-		MouseAction* action = reinterpret_cast<MouseAction*>(data[0]);
-		beginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
+		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 	}
-	else if (actionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
 	{
-		setName("COMBINED_RIGHT_MOUSE_CLICK");
-		titleBackgroundColor = ImColor(163, 73, 164);
-		titleBackgroundColorHovered = ImColor(147, 66, 147);
+		SetName("COMBINED_RIGHT_MOUSE_CLICK");
+		TitleBackgroundColor = ImColor(163, 73, 164);
+		TitleBackgroundColorHovered = ImColor(147, 66, 147);
 
-		MouseAction* action = reinterpret_cast<MouseAction*>(data[0]);
-		beginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
+		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 	}
-	else if (actionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
 	{
-		setName("COMBINED_WHEEL_MOUSE_ROTATION");
-		titleBackgroundColor = ImColor(163, 73, 164);
-		titleBackgroundColorHovered = ImColor(147, 66, 147);
+		SetName("COMBINED_WHEEL_MOUSE_ROTATION");
+		TitleBackgroundColor = ImColor(163, 73, 164);
+		TitleBackgroundColorHovered = ImColor(147, 66, 147);
 
-		MouseAction* action = reinterpret_cast<MouseAction*>(data[0]);
-		beginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
+		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 	}
-	else if (actionType == FETP_COMBINED_KEY_PRESS_ACTION)
+	else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
 	{
-		setName("COMBINED_KEY_PRESS");
-		if (data[0]->getType() == FETP_KEYBOARD_ACTION)
+		SetName("COMBINED_KEY_PRESS");
+		if (Data[0]->getType() == FETP_KEYBOARD_ACTION)
 		{
-			text = "vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(data[0])->additionalInfo.vkCode));
+			Text = "vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->additionalInfo.vkCode));
 		}
 	}
-	else if (actionType == FETP_COMBINED_TEXT_INPUT_ACTION)
+	else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
 	{
-		setName("COMBINED_TEXT_INPUT");
-		titleBackgroundColor = ImColor(163, 73, 164);
-		titleBackgroundColorHovered = ImColor(147, 66, 147);
+		SetName("COMBINED_TEXT_INPUT");
+		TitleBackgroundColor = ImColor(163, 73, 164);
+		TitleBackgroundColorHovered = ImColor(147, 66, 147);
 
-		text = ACTION_SYSTEM.extractText(data);
+		Text = ACTION_SYSTEM.extractText(Data);
 		/*text = "";
 		for (size_t i = 0; i < data.size(); i++)
 		{
@@ -123,23 +123,23 @@ void combinedActionNode::initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 	}
 }
 
-combinedActionNode::combinedActionNode(std::vector<FETPAction*> data, FETP_COMBINED_ACTION_TYPE type) : FEVisualNode()
+combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : FEVisualNode()
 {
-	initialize(data, type);
+	Initialize(Data, Type);
 }
 
-void combinedActionNode::draw()
+void combinedActionNode::Draw()
 {	
-	FEVisualNode::draw();
+	FEVisualNode::Draw();
 
-	if (getStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
 								  ImGui::GetCursorScreenPos().y + this->getClientRegionPosition().y);
 
-		ImVec2 regionMax = ImVec2(regionMin.x + this->getClientRegionSize().x,
-								  regionMin.y + this->getClientRegionSize().y);
+		ImVec2 regionMax = ImVec2(regionMin.x + this->GetClientRegionSize().x,
+								  regionMin.y + this->GetClientRegionSize().y);
 
 		ImGui::GetWindowDrawList()->AddRectFilled(regionMin, regionMax, IM_COL32(175, 175, 175, 125), 8.0f);*/
 
@@ -150,24 +150,24 @@ void combinedActionNode::draw()
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 		ImGui::SetNextItemWidth(80);
-		int count = data.size();
+		int count = Data.size();
 		ImGui::BeginDisabled();
 		ImGui::InputInt("actions count", &count);
 		ImGui::EndDisabled();
 
-		if (actionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
+		if (ActionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
 		{
 			yPosition += 20.0f;
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
 			static int begin_Position[] = { 0 };
-			begin_Position[0] = int(beginPosition.x);
-			begin_Position[1] = int(beginPosition.y);
+			begin_Position[0] = int(BeginPosition.x);
+			begin_Position[1] = int(BeginPosition.y);
 
 			if (ImGui::InputInt2("begin position", begin_Position))
 			{
-				parentArea->propagateUpdateToConnectedNodes(this);
+				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 
 			yPosition += 20.0f;
@@ -175,68 +175,68 @@ void combinedActionNode::draw()
 
 			ImGui::SetNextItemWidth(140);
 			static int end_Position[] = { 0 };
-			end_Position[0] = int(endPosition.x);
-			end_Position[1] = int(endPosition.y);
+			end_Position[0] = int(EndPosition.x);
+			end_Position[1] = int(EndPosition.y);
 
 			if (ImGui::InputInt2("end position", end_Position))
 			{
-				parentArea->propagateUpdateToConnectedNodes(this);
+				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 		}
-		else if (actionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
+		else if (ActionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
 		{
 			yPosition += 20.0f;
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
 			static int position[] = { 0 };
-			position[0] = int(beginPosition.x);
-			position[1] = int(beginPosition.y);
+			position[0] = int(BeginPosition.x);
+			position[1] = int(BeginPosition.y);
 
 			if (ImGui::InputInt2("position", position))
 			{
-				parentArea->propagateUpdateToConnectedNodes(this);
+				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 		}
-		else if (actionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
+		else if (ActionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
 		{
 			yPosition += 20.0f;
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
 			static int position[] = { 0 };
-			position[0] = int(beginPosition.x);
-			position[1] = int(beginPosition.y);
+			position[0] = int(BeginPosition.x);
+			position[1] = int(BeginPosition.y);
 
 			if (ImGui::InputInt2("position", position))
 			{
-				parentArea->propagateUpdateToConnectedNodes(this);
+				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 		}
-		else if (actionType == FETP_COMBINED_KEY_PRESS_ACTION)
+		else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
 		{
 			yPosition += 20.0f;
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
-			ImGui::Text(("vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(data[0])->additionalInfo.vkCode))).c_str());
+			ImGui::Text(("vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->additionalInfo.vkCode))).c_str());
 		}
-		else if (actionType == FETP_COMBINED_TEXT_INPUT_ACTION)
+		else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
 		{
 			yPosition += 20.0f;
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
-			ImGui::Text(text.c_str());
+			ImGui::Text(Text.c_str());
 		}
 	}
-	else if (getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
-		checkIcons();
+		CheckIcons();
 
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
-		renderIcon();
+		RenderIcon();
 
-		if (parentArea->isMouseHovered() && isHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened())
-			showTooltip();
+		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened())
+			ShowTooltip();
 	}
 
 	/*if (contextMenu)
@@ -259,7 +259,7 @@ void combinedActionNode::draw()
 
 		if (ImGui::MenuItem(std::string("Remove").c_str()))
 		{
-			shouldBeDestroyed = true;
+			bShouldBeDestroyed = true;
 		}
 
 		ImGui::EndPopup();
@@ -268,38 +268,38 @@ void combinedActionNode::draw()
 	ImGui::PopStyleVar();*/
 }
 
-void combinedActionNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
+void combinedActionNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-std::vector<FETPAction*> combinedActionNode::getData()
+std::vector<FETPAction*> combinedActionNode::GetData()
 {
-	return data;
+	return Data;
 }
 
-bool combinedActionNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
+bool combinedActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
-	if (candidateSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && ownSocket->getType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
+	if (CandidateSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && OwnSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
 		return true;
 
 	return false;
 }
 
-Json::Value combinedActionNode::toJson()
+Json::Value combinedActionNode::ToJson()
 {
-	Json::Value result = FEVisualNode::toJson();
-	result["actionType"] = actionType;
+	Json::Value result = FEVisualNode::ToJson();
+	result["actionType"] = ActionType;
 
-	for (size_t i = 0; i < data.size(); i++)
+	for (size_t i = 0; i < Data.size(); i++)
 	{
-		result["actions"][std::to_string(i)] = data[i]->toJson();
-		if (data[i]->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		result["actions"][std::to_string(i)] = Data[i]->toJson();
+		if (Data[i]->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(data[i]);
+			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data[i]);
 			action->saveImagesToDisk();
 		}
 	}
@@ -307,81 +307,81 @@ Json::Value combinedActionNode::toJson()
 	return result;
 }
 
-FEVisualNode* combinedActionNode::getNextNode()
+FEVisualNode* combinedActionNode::GetNextNode()
 {
-	if (output.size() > 0 && output[0]->getConnections().size() > 0)
-		return output[0]->getConnections()[0]->getParent();
+	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
+		return Output[0]->GetConnections()[0]->GetParent();
 
 	return nullptr;
 }
 
-void combinedActionNode::fromJson(Json::Value json)
+void combinedActionNode::FromJson(Json::Value Json)
 {
-	FEVisualNode::fromJson(json);
+	FEVisualNode::FromJson(Json);
 
-	actionType = FETP_COMBINED_ACTION_TYPE(json["actionType"].asInt());
+	ActionType = FETP_COMBINED_ACTION_TYPE(Json["actionType"].asInt());
 
-	std::vector<Json::String> actionsList = json["actions"].getMemberNames();
-	data.resize(actionsList.size());
-	for (size_t i = 0; i < data.size(); i++)
+	std::vector<Json::String> actionsList = Json["actions"].getMemberNames();
+	Data.resize(actionsList.size());
+	for (size_t i = 0; i < Data.size(); i++)
 	{
 		size_t index = atoi(actionsList[i].c_str());
-		if (FETP_ACTION_TYPE(json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_KEYBOARD_ACTION)
+		if (FETP_ACTION_TYPE(Json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_KEYBOARD_ACTION)
 		{
-			data[index] = new KeyboardAction();
+			Data[index] = new KeyboardAction();
 		}
-		else if (FETP_ACTION_TYPE(json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_MOUSE_ACTION)
+		else if (FETP_ACTION_TYPE(Json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_MOUSE_ACTION)
 		{
-			data[index] = new MouseAction();
+			Data[index] = new MouseAction();
 		}
-		else if (FETP_ACTION_TYPE(json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_SCREENSHOOT_COMPARE_ACTION)
+		else if (FETP_ACTION_TYPE(Json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
-			data[index] = new ScreenshootCompareAction();
+			Data[index] = new ScreenshootCompareAction();
 		}
-		else if (FETP_ACTION_TYPE(json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_LUNCH_APPLICATION_ACTION)
+		else if (FETP_ACTION_TYPE(Json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_LUNCH_APPLICATION_ACTION)
 		{
-			data[index] = new LunchApplicationAction();
+			Data[index] = new LunchApplicationAction();
 		}
-		else if (FETP_ACTION_TYPE(json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_SLEEP_ACTION)
+		else if (FETP_ACTION_TYPE(Json["actions"][actionsList[i]]["internalType"].asInt()) == FETP_SLEEP_ACTION)
 		{
-			data[index] = new SleepAction();
+			Data[index] = new SleepAction();
 		}
 		
-		data[index]->fromJson(json["actions"][actionsList[i]]);
+		Data[index]->fromJson(Json["actions"][actionsList[i]]);
 	}
 
-	initialize(data, actionType);
+	Initialize(Data, ActionType);
 }
 
-void combinedActionNode::changeText(std::string newText, int avarageDelay)
+void combinedActionNode::ChangeText(std::string NewText, int AvarageDelay)
 {
-	if (actionType != FETP_COMBINED_TEXT_INPUT_ACTION)
+	if (ActionType != FETP_COMBINED_TEXT_INPUT_ACTION)
 		return;
 
-	if (avarageDelay < 0)
+	if (AvarageDelay < 0)
 	{
 		int totalSleepTime = 0;
 		int totalSleepNodes = 0;
-		for (size_t i = 0; i < data.size(); i++)
+		for (size_t i = 0; i < Data.size(); i++)
 		{
-			if (data[i]->getType() == FETP_SLEEP_ACTION)
+			if (Data[i]->getType() == FETP_SLEEP_ACTION)
 			{
-				totalSleepTime += reinterpret_cast<SleepAction*>(data[i])->sleepFor;
+				totalSleepTime += reinterpret_cast<SleepAction*>(Data[i])->sleepFor;
 				totalSleepNodes++;
 			}
 		}
 
-		avarageDelay = 0;
+		AvarageDelay = 0;
 		if (totalSleepNodes != 0)
-			avarageDelay = totalSleepTime / totalSleepNodes;
+			AvarageDelay = totalSleepTime / totalSleepNodes;
 	}
 
 	// Clear all previous data.
-	for (size_t i = 0; i < data.size(); i++)
-		delete data[i];
-	data.clear();
+	for (size_t i = 0; i < Data.size(); i++)
+		delete Data[i];
+	Data.clear();
 
-	data = ACTION_SYSTEM.generateInputTextActions(newText, 20);
+	Data = ACTION_SYSTEM.generateInputTextActions(NewText, 20);
 
 	//for (size_t i = 0; i < newText.size(); i++)
 	//{
@@ -427,13 +427,13 @@ void combinedActionNode::changeText(std::string newText, int avarageDelay)
 	//	}
 	//}
 
-	text = newText;
+	Text = NewText;
 }
 
-void combinedActionNode::changeTextCallback(std::string newText)
+void combinedActionNode::ChangeTextCallback(std::string NewText)
 {
-	if (nodeForCallback != nullptr)
-		nodeForCallback->changeText(newText);
+	if (NodeForCallback != nullptr)
+		NodeForCallback->ChangeText(NewText);
 }
 
 //bool combinedActionNode::openContextMenu()
@@ -442,90 +442,90 @@ void combinedActionNode::changeTextCallback(std::string newText)
 //	return true;
 //}
 
-void combinedActionNode::checkIcons()
+void combinedActionNode::CheckIcons()
 {
-	if (moveMouseCombineIcon == nullptr)
-		moveMouseCombineIcon = new FETPImage("Resources//moveMouseCombineIcon.png");
+	if (MoveMouseCombineIcon == nullptr)
+		MoveMouseCombineIcon = new FETPImage("Resources//moveMouseCombineIcon.png");
 
-	if (leftMouseCombineIcon == nullptr)
-		leftMouseCombineIcon = new FETPImage("Resources//leftMouseCombineIcon.png");
+	if (LeftMouseCombineIcon == nullptr)
+		LeftMouseCombineIcon = new FETPImage("Resources//leftMouseCombineIcon.png");
 
-	if (rightMouseCombineIcon == nullptr)
-		rightMouseCombineIcon = new FETPImage("Resources//rightMouseCombineIcon.png");
+	if (RightMouseCombineIcon == nullptr)
+		RightMouseCombineIcon = new FETPImage("Resources//rightMouseCombineIcon.png");
 
-	if (wheelMouseCombineIcon == nullptr)
-		wheelMouseCombineIcon = new FETPImage("Resources//scrollMouseCombinedIcon.png");
+	if (WheelMouseCombineIcon == nullptr)
+		WheelMouseCombineIcon = new FETPImage("Resources//scrollMouseCombinedIcon.png");
 
-	if (keyCombinedIcon == nullptr)
-		keyCombinedIcon = new FETPImage("Resources//keyCombinedIcon.png");
+	if (KeyCombinedIcon == nullptr)
+		KeyCombinedIcon = new FETPImage("Resources//keyCombinedIcon.png");
 
-	if (textCombinedIcon == nullptr)
-		textCombinedIcon = new FETPImage("Resources//textCombinedIcon.png");
+	if (TextCombinedIcon == nullptr)
+		TextCombinedIcon = new FETPImage("Resources//textCombinedIcon.png");
 }
 
-void combinedActionNode::renderIcon()
+void combinedActionNode::RenderIcon()
 {
-	if (actionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
+	if (ActionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
 	{
-		ImGui::Image((void*)(intptr_t)moveMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)MoveMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (actionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
-	{
-		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
-		ImGui::Image((void*)(intptr_t)leftMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
-	}
-	else if (actionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
-		ImGui::Image((void*)(intptr_t)rightMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)LeftMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (actionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
-		ImGui::Image((void*)(intptr_t)wheelMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)RightMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (actionType == FETP_COMBINED_KEY_PRESS_ACTION)
+	else if (ActionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
 	{
-		ImGui::Image((void*)(intptr_t)keyCombinedIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
+		ImGui::Image((void*)(intptr_t)WheelMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
-	else if (actionType == FETP_COMBINED_TEXT_INPUT_ACTION)
+	else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
+	{
+		ImGui::Image((void*)(intptr_t)KeyCombinedIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	}
+	else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 14.0f, ImGui::GetCursorScreenPos().y + 14.0f));
-		ImGui::Image((void*)(intptr_t)textCombinedIcon->getTextureID(), ImVec2(88.0f, 88.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)TextCombinedIcon->getTextureID(), ImVec2(88.0f, 88.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 }
 
-void combinedActionNode::showTooltip()
+void combinedActionNode::ShowTooltip()
 {
-	std::string textToShow = "Name: " + getName();
+	std::string textToShow = "Name: " + GetName();
 
-	if (actionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
+	if (ActionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
 	{
 		textToShow += "\nType: COMBINED_MOUSE_MOVE";
 
-		textToShow += "\nstart: x = " + std::to_string(int(beginPosition.x)) + " y = " + std::to_string(int(beginPosition.y));
-		textToShow += "\nend: x = " + std::to_string(int(endPosition.x)) + " y = " + std::to_string(int(endPosition.y));
+		textToShow += "\nstart: x = " + std::to_string(int(BeginPosition.x)) + " y = " + std::to_string(int(BeginPosition.y));
+		textToShow += "\nend: x = " + std::to_string(int(EndPosition.x)) + " y = " + std::to_string(int(EndPosition.y));
 	}
-	else if (actionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
 	{
 		textToShow += "\nType: COMBINED_LEFT_MOUSE";
 	}
-	else if (actionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
 	{
 		textToShow += "\nType: COMBINED_RIGHT_MOUSE";
 	}
-	else if (actionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
+	else if (ActionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
 	{
 		textToShow += "\nType: COMBINED_WHEEL_MOUSE";
 	}
-	else if (actionType == FETP_COMBINED_KEY_PRESS_ACTION)
+	else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
 	{
 		textToShow += "\nType: COMBINED_KEY_PRESS";
 	}
-	else if (actionType == FETP_COMBINED_TEXT_INPUT_ACTION)
+	else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
 	{
 		textToShow += "\nType: COMBINED_TEXT_INPUT";
-		textToShow += "\nText: " + text;
+		textToShow += "\nText: " + Text;
 	}
 
 	ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
@@ -537,12 +537,12 @@ void combinedActionNode::showTooltip()
 	ImGui::PopFont();
 }
 
-FETP_COMBINED_ACTION_TYPE combinedActionNode::getCombinedActionType()
+FETP_COMBINED_ACTION_TYPE combinedActionNode::GetCombinedActionType()
 {
-	return actionType;
+	return ActionType;
 }
 
-void combinedActionNode::remove()
+void combinedActionNode::Remove()
 {
-	shouldBeDestroyed = true;
+	bShouldBeDestroyed = true;
 }

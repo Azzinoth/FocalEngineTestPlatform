@@ -1,6 +1,6 @@
 #include "screenshootEditor.h"
 
-screenshootEditor* screenshootEditor::_instance = nullptr;
+screenshootEditor* screenshootEditor::Instance = nullptr;
 
 screenshootEditor::screenshootEditor()
 {
@@ -364,10 +364,10 @@ void screenshootEditor::replaceCurrentNode()
 	FEVisualNode* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
 
 	globalActionNode* newNode = new globalActionNode(currentAction);
-	newNode->setPosition(currentNode->getPosition());
+	newNode->SetPosition(currentNode->GetPosition());
 
-	currentTest->nodeArea->deleteNode(currentNode);
-	currentTest->nodeArea->addNode(newNode);
+	currentTest->nodeArea->DeleteNode(currentNode);
+	currentTest->nodeArea->AddNode(newNode);
 }
 
 void screenshootEditor::GUIComboboxImageVariant()

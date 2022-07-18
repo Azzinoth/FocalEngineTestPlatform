@@ -5,13 +5,13 @@ ImColor* FETest::mainPathConnectionColor = new ImColor(150, 255, 150);
 
 FETest::FETest()
 {
-	nodeArea = NODE_SYSTEM.createNodeArea();
+	nodeArea = NODE_SYSTEM.CreateNodeArea();
 
 	begin = new beginNode();
-	begin->setName("Begin node");
-	begin->setPosition(ImVec2(300.0f, 430.0f));
+	begin->SetName("Begin node");
+	begin->SetPosition(ImVec2(300.0f, 430.0f));
 
-	nodeArea->addNode(begin);
+	nodeArea->AddNode(begin);
 
 	//addMacro("$(RESOURCES)", "C:\\Users\\Kindr\\Desktop\\Tests\\Resources - Copy\\");
 	//addMacro("$(RESOURC234ES)", "C:\\Users\\Kin4dr\\Desktop\\Test435s\\Resources - Copy\\");
@@ -28,7 +28,7 @@ void FETest::save(const char* fileName)
 	filePath = fileName;
 	// Before saving node area we should check if all images in nodes have correct file path.
 	validateImagePathes();
-	nodeArea->saveToFile(fileName);
+	nodeArea->SaveToFile(fileName);
 
 	Json::Value root;
 	std::ofstream saveFile;
@@ -73,10 +73,10 @@ void FETest::load()
 
 	validateImagePathesInFile(filePath);
 	
-	nodeArea->clear();
-	nodeArea->loadFromFile(filePath.c_str());
+	nodeArea->Clear();
+	nodeArea->LoadFromFile(filePath.c_str());
 
-	auto result = nodeArea->getNodesByType("beginNode");
+	auto result = nodeArea->GetNodesByType("beginNode");
 	if (result.size() == 1)
 		begin = reinterpret_cast<beginNode*>(result[0]);
 
@@ -129,11 +129,11 @@ beginNode* FETest::getBeginNode()
 void FETest::reColorMainTestPath()
 {
 	// Change color of all connections to default.
-	nodeArea->runOnEachNode([](FEVisualNode* node) {
-		size_t outSocketCount = node->outSocketCount();
+	nodeArea->RunOnEachNode([](FEVisualNode* node) {
+		size_t outSocketCount = node->OutSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
-			node->setForcedOutSocketColor(FETest::defaultConnectionColor, i);
+			node->SetForcedOutSocketColor(FETest::defaultConnectionColor, i);
 		}
 	});
 
@@ -141,12 +141,12 @@ void FETest::reColorMainTestPath()
 	if (getBeginNode() == nullptr)
 		return;
 
-	nodeArea->runOnEachConnectedNode(getBeginNode(),
+	nodeArea->RunOnEachConnectedNode(getBeginNode(),
 		[](FEVisualNode* node) {
-			size_t outSocketCount = node->outSocketCount();
+			size_t outSocketCount = node->OutSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
 			{
-				node->setForcedOutSocketColor(FETest::mainPathConnectionColor, i);
+				node->SetForcedOutSocketColor(FETest::mainPathConnectionColor, i);
 			}
 		}
 	);
@@ -216,19 +216,19 @@ void FETest::validateImagePathes(FEVisualNodeArea* nodeArea, std::string filePat
 		filePath = this->filePath;
 
 	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-	std::vector<FEVisualNode*> list = nodeArea->getNodesByType("globalActionNode");
+	std::vector<FEVisualNode*> list = nodeArea->GetNodesByType("globalActionNode");
 	std::unordered_map<std::string, bool> actionSeenIDs;
 	for (size_t i = 0; i < list.size(); i++)
 	{
 		globalActionNode* node = reinterpret_cast<globalActionNode*>(list[i]);
 
-		if (actionSeenIDs.find(node->getData()->getID()) != actionSeenIDs.end())
-			node->getData()->setID(APPLICATION.getUniqueHexID());
-		actionSeenIDs[node->getData()->getID()] = true;
+		if (actionSeenIDs.find(node->GetData()->getID()) != actionSeenIDs.end())
+			node->GetData()->setID(APPLICATION.GetUniqueHexID());
+		actionSeenIDs[node->GetData()->getID()] = true;
 
-		if (node->getData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		if (node->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(node->getData());
+			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(node->GetData());
 			for (size_t j = 0; j < action->imagesInfo.size(); j++)
 			{
 				if (action->imagesInfo[j]->image != nullptr)
@@ -265,25 +265,25 @@ void FETest::validateImagePathes(FEVisualNodeArea* nodeArea, std::string filePat
 	}*/
 
 	// Validate nodes IDs in node regions with IDs in main node area.
-	std::vector<FEVisualNode*> regionList = nodeArea->getNodesByType("regionNode");
+	std::vector<FEVisualNode*> regionList = nodeArea->GetNodesByType("regionNode");
 	for (size_t i = 0; i < regionList.size(); i++)
 	{
 		regionNode* rNode = reinterpret_cast<regionNode*>(regionList[i]);
 
-		if (rNode->getData() != nullptr)
+		if (rNode->GetData() != nullptr)
 		{
-			std::vector<FEVisualNode*> list = rNode->getData()->getNodesByType("globalActionNode");
+			std::vector<FEVisualNode*> list = rNode->GetData()->GetNodesByType("globalActionNode");
 			for (size_t j = 0; j < list.size(); j++)
 			{
 				globalActionNode* node = reinterpret_cast<globalActionNode*>(list[j]);
 
-				if (actionSeenIDs.find(node->getData()->getID()) != actionSeenIDs.end())
-					node->getData()->setID(APPLICATION.getUniqueHexID());
-				actionSeenIDs[node->getData()->getID()] = true;
+				if (actionSeenIDs.find(node->GetData()->getID()) != actionSeenIDs.end())
+					node->GetData()->setID(APPLICATION.GetUniqueHexID());
+				actionSeenIDs[node->GetData()->getID()] = true;
 
-				if (node->getData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+				if (node->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 				{
-					ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(node->getData());
+					ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(node->GetData());
 					for (size_t k = 0; k < action->imagesInfo.size(); k++)
 					{
 						if (action->imagesInfo[k]->image != nullptr)

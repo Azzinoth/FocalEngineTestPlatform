@@ -1,6 +1,6 @@
 #include "testsOverviewWindow.h"
 
-testsOverviewWindow* testsOverviewWindow::_instance = nullptr;
+testsOverviewWindow* testsOverviewWindow::Instance = nullptr;
 int testsOverviewWindow::hoveredTestIndex = -1;
 
 testsOverviewWindow::testsOverviewWindow()

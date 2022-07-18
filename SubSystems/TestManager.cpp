@@ -1,6 +1,6 @@
 #include "TestManager.h"
 
-TestManager* TestManager::_instance = nullptr;
+TestManager* TestManager::Instance = nullptr;
 FEVisualNode* TestManager::foundNode = nullptr;
 FETPAction* TestManager::searchedAction = nullptr;
 
@@ -48,20 +48,20 @@ FEVisualNode* TestManager::getNodeByAction(FETPAction* action)
 		if (list[i]->nodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->runOnEachNode([](FEVisualNode* node) {
-			if (node->getType() == "globalActionNode")
+		list[i]->nodeArea->RunOnEachNode([](FEVisualNode* node) {
+			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
-				if (actionNode->getData()->getID() == searchedAction->getID())
+				if (actionNode->GetData()->getID() == searchedAction->getID())
 				{
 					foundNode = node;
 				}
 			}
-			else if (node->getType() == "combinedActionNode")
+			else if (node->GetType() == "combinedActionNode")
 			{
 				combinedActionNode* actionNode = reinterpret_cast<combinedActionNode*>(node);
 
-				std::vector<FETPAction*> actionList = actionNode->getData();
+				std::vector<FETPAction*> actionList = actionNode->GetData();
 				for (size_t j = 0; j < actionList.size(); j++)
 				{
 					if (actionList[j]->getID() == searchedAction->getID())
@@ -97,20 +97,20 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 		if (list[i]->nodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->runOnEachNode([](FEVisualNode* node) {
-			if (node->getType() == "globalActionNode")
+		list[i]->nodeArea->RunOnEachNode([](FEVisualNode* node) {
+			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
-				if (actionNode->getData()->getID() == searchedAction->getID())
+				if (actionNode->GetData()->getID() == searchedAction->getID())
 				{
 					foundNode = node;
 				}
 			}
-			else if (node->getType() == "combinedActionNode")
+			else if (node->GetType() == "combinedActionNode")
 			{
 				combinedActionNode* actionNode = reinterpret_cast<combinedActionNode*>(node);
 
-				std::vector<FETPAction*> actionList = actionNode->getData();
+				std::vector<FETPAction*> actionList = actionNode->GetData();
 				for (size_t j = 0; j < actionList.size(); j++)
 				{
 					if (actionList[j]->getID() == searchedAction->getID())

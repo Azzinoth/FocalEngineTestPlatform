@@ -1,6 +1,6 @@
 #include "testEditorWindow.h"
 
-testEditorWinow* testEditorWinow::_instance = nullptr;
+testEditorWinow* testEditorWinow::Instance = nullptr;
 ImVec2 testEditorWinow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
 
 testEditorWinow::testEditorWinow()
@@ -30,16 +30,16 @@ void testEditorWinow::render()
 	{
 		FEVisualNodeArea* currentNodeArea = TEST_MANAGER.getSelectedTest()->nodeArea;
 
-		currentNodeArea->setMainContextMenuFunc(mainContextMenu);
-		currentNodeArea->setNodeEventCallback(nodeCallback);
+		currentNodeArea->SetMainContextMenuFunc(mainContextMenu);
+		currentNodeArea->SetNodeEventCallback(nodeCallback);
 
-		currentNodeArea->setAreaPosition(ImVec2(0.0f, 0.0f));
-		currentNodeArea->setAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
-		currentNodeArea->update();
+		currentNodeArea->SetAreaPosition(ImVec2(0.0f, 0.0f));
+		currentNodeArea->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
+		currentNodeArea->Update();
 	}
 
 	if (ImGui::GetIO().MouseReleased[1] && TEST_MANAGER.getSelectedTest() != nullptr)
-		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - TEST_MANAGER.getSelectedTest()->nodeArea->getAreaRenderOffset();
+		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - TEST_MANAGER.getSelectedTest()->nodeArea->GetAreaRenderOffset();
 
 	ImGui::PopStyleVar();
 	ImGui::End();
@@ -50,7 +50,7 @@ void testEditorWinow::mainContextMenu()
 	if (TEST_MANAGER.getSelectedTest() == nullptr || TEST_MANAGER.getSelectedTest()->nodeArea == nullptr)
 		return;
 
-	if (TEST_MANAGER.getSelectedTest()->nodeArea->getHovered() == nullptr && TEST_MANAGER.getSelectedTest()->nodeArea->getSelected().size() == 0)
+	if (TEST_MANAGER.getSelectedTest()->nodeArea->GetHovered() == nullptr && TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected().size() == 0)
 	{
 		if (ImGui::BeginMenu("Add"))
 		{
@@ -59,8 +59,8 @@ void testEditorWinow::mainContextMenu()
 			if (ImGui::MenuItem("Region node"))
 			{
 				regionNode* newRegionNode = new regionNode();
-				newRegionNode->setPosition(mousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.getSelectedTest()->nodeArea->addNode(newRegionNode);
+				newRegionNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newRegionNode);
 			}
 
 			if (ImGui::MenuItem("Sleep node"))
@@ -176,67 +176,67 @@ void testEditorWinow::mainContextMenu()
 
 			if (newNode != nullptr)
 			{
-				newNode->setPosition(mousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.getSelectedTest()->nodeArea->addNode(newNode);
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
 			ImGui::EndMenu();
 		}
 	}
-	else if (TEST_MANAGER.getSelectedTest()->nodeArea->getSelected().size() == 1 &&
-			 TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]->getType() == "regionNode")
+	else if (TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected().size() == 1 &&
+			 TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->GetType() == "regionNode")
 	{
 		if (ImGui::MenuItem("Open region"))
 		{
-			nodeRegionWindow::getInstance().show(reinterpret_cast<regionNode*>(TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]));
+			nodeRegionWindow::getInstance().show(reinterpret_cast<regionNode*>(TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]));
 		}
 
 		if (ImGui::MenuItem("Rename"))
 		{
-			textInputPopup::getInstance().show(textInputChangeNameCallback, TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]->getName());
+			textInputPopup::getInstance().show(textInputChangeNameCallback, TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->GetName());
 		}
 
 		if (ImGui::MenuItem("Remove"))
 		{
-			TEST_MANAGER.getSelectedTest()->nodeArea->deleteNode(TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]);
+			TEST_MANAGER.getSelectedTest()->nodeArea->DeleteNode(TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]);
 		}
 	}
-	else if (TEST_MANAGER.getSelectedTest()->nodeArea->getSelected().size() == 1 &&
-			 TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]->getType() == "combinedActionNode")
+	else if (TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected().size() == 1 &&
+			 TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->GetType() == "combinedActionNode")
 	{
-		combinedActionNode* currentNode = reinterpret_cast<combinedActionNode*>(TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]);
-		if (currentNode->getCombinedActionType() == FETP_COMBINED_TEXT_INPUT_ACTION)
+		combinedActionNode* currentNode = reinterpret_cast<combinedActionNode*>(TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]);
+		if (currentNode->GetCombinedActionType() == FETP_COMBINED_TEXT_INPUT_ACTION)
 		{
 			if (ImGui::MenuItem(std::string("Change input text").c_str()))
 			{
-				combinedActionNode::nodeForCallback = currentNode;
-				textInputPopup::getInstance().show(combinedActionNode::changeTextCallback, currentNode->text);
+				combinedActionNode::NodeForCallback = currentNode;
+				textInputPopup::getInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
 			}
 		}
 
 		if (ImGui::MenuItem(std::string("Remove").c_str()))
 		{
-			currentNode->remove();
+			currentNode->Remove();
 		}
 
 		if (ImGui::MenuItem(std::string("Look inside").c_str()))
 		{
 			previewWindow::getInstance().show(true);
-			previewWindow::getInstance().currentNodeArea->clear();
-			ACTION_SYSTEM.placeStructuredNodes(currentNode->data, previewWindow::getInstance().currentNodeArea, true);
+			previewWindow::getInstance().currentNodeArea->Clear();
+			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::getInstance().currentNodeArea, true);
 		}
 	}
-	else if (TEST_MANAGER.getSelectedTest()->nodeArea->getSelected().size() > 1)
+	else if (TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected().size() > 1)
 	{
-		auto selectedList = TEST_MANAGER.getSelectedTest()->nodeArea->getSelected();
+		auto selectedList = TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected();
 		if (ImGui::MenuItem("Delete selected nodes"))
 		{
 			for (size_t i = 0; i < selectedList.size(); i++)
 			{
-				TEST_MANAGER.getSelectedTest()->nodeArea->deleteNode(selectedList[i]);
+				TEST_MANAGER.getSelectedTest()->nodeArea->DeleteNode(selectedList[i]);
 			}
 
-			TEST_MANAGER.getSelectedTest()->nodeArea->clearSelection();
+			TEST_MANAGER.getSelectedTest()->nodeArea->ClearSelection();
 		}
 
 		if (ImGui::MenuItem("Save selected nodes..."))
@@ -247,7 +247,7 @@ void testEditorWinow::mainContextMenu()
 			if (path != "")
 			{
 				TEST_MANAGER.getSelectedTest()->validateImagePathes(TEST_MANAGER.getSelectedTest()->nodeArea, path);
-				TEST_MANAGER.getSelectedTest()->nodeArea->saveNodesToFile(path.c_str(), selectedList);
+				TEST_MANAGER.getSelectedTest()->nodeArea->SaveNodesToFile(path.c_str(), selectedList);
 			}
 		}
 
@@ -258,7 +258,7 @@ void testEditorWinow::mainContextMenu()
 			int disBetweenOnW = 40;
 			int disBetweenOnH = 150;
 
-			auto selectedList = TEST_MANAGER.getSelectedTest()->nodeArea->getSelected();
+			auto selectedList = TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected();
 			for (size_t i = 0; i < selectedList.size(); i++)
 			{
 				int xPosition = selectedList[0]->getPosition().x;
@@ -268,7 +268,7 @@ void testEditorWinow::mainContextMenu()
 				int yPosition = i / nodesPerH;
 				yPosition *= disBetweenOnH;
 
-				selectedList[i]->setPosition(ImVec2(float(xPosition), float(yPosition)));
+				selectedList[i]->SetPosition(ImVec2(float(xPosition), float(yPosition)));
 			}
 		}*/
 	}
@@ -283,11 +283,11 @@ void testEditorWinow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT even
 		return;
 
 	// Change color of all connections to default.
-	TEST_MANAGER.getSelectedTest()->nodeArea->runOnEachNode([](FEVisualNode* node) {
-		size_t outSocketCount = node->outSocketCount();
-		for (size_t i = 0; i < outSocketCount; i++)
+	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachNode([](FEVisualNode* node) {
+		size_t OutSocketCount = node->OutSocketCount();
+		for (size_t i = 0; i < OutSocketCount; i++)
 		{
-			node->setForcedOutSocketColor(FETest::defaultConnectionColor, i);
+			node->SetForcedOutSocketColor(FETest::defaultConnectionColor, i);
 		}
 	});
 
@@ -295,12 +295,12 @@ void testEditorWinow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT even
 	if (TEST_MANAGER.getSelectedTest()->getBeginNode() == nullptr)
 		return;
 
-	TEST_MANAGER.getSelectedTest()->nodeArea->runOnEachConnectedNode(TEST_MANAGER.getSelectedTest()->getBeginNode(),
+	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachConnectedNode(TEST_MANAGER.getSelectedTest()->getBeginNode(),
 		[](FEVisualNode* node) {
-			size_t outSocketCount = node->outSocketCount();
-			for (size_t i = 0; i < outSocketCount; i++)
+			size_t OutSocketCount = node->OutSocketCount();
+			for (size_t i = 0; i < OutSocketCount; i++)
 			{
-				node->setForcedOutSocketColor(FETest::mainPathConnectionColor, i);
+				node->SetForcedOutSocketColor(FETest::mainPathConnectionColor, i);
 			}
 		}
 	);
@@ -369,7 +369,7 @@ void testEditorWinow::renderMainMenu()
 				if (path != "")
 				{
 					previewWindow::getInstance().show();
-					previewWindow::getInstance().currentNodeArea->loadFromFile(path.c_str());
+					previewWindow::getInstance().currentNodeArea->LoadFromFile(path.c_str());
 				}
 			}
 
@@ -387,10 +387,10 @@ void testEditorWinow::textInputCallback(std::string text)
 	if (text != "")
 	{
 		combinedActionNode* newNode = new combinedActionNode(std::vector<FETPAction*>(), FETP_COMBINED_TEXT_INPUT_ACTION);
-		newNode->changeText(text);
+		newNode->ChangeText(text);
 
-		newNode->setPosition(mousePositionWhenContextMenuWasOpened);
-		TEST_MANAGER.getSelectedTest()->nodeArea->addNode(newNode);
+		newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+		TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 	}
 }
 
@@ -398,10 +398,10 @@ void testEditorWinow::textInputChangeNameCallback(std::string text)
 {
 	if (text != "")
 	{
-		if (TEST_MANAGER.getSelectedTest()->nodeArea->getSelected().size() == 1 &&
-			TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]->getType() == "regionNode")
+		if (TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected().size() == 1 &&
+			TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->GetType() == "regionNode")
 		{
-			TEST_MANAGER.getSelectedTest()->nodeArea->getSelected()[0]->setName(text);
+			TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->SetName(text);
 		}
 	}
 }

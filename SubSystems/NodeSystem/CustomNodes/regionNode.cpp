@@ -1,105 +1,105 @@
 #include "regionNode.h"
 
 VISUAL_NODE_CHILD_CPP(regionNode)
-FETPImage* regionNode::regionIcon = nullptr;
+FETPImage* regionNode::RegionIcon = nullptr;
 
 regionNode::regionNode() : FEVisualNode()
 {
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
-	type = "regionNode";
-	data = NODE_SYSTEM.createNodeArea();
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	Type = "regionNode";
+	Data = NODE_SYSTEM.CreateNodeArea();
 
-	begin = new beginNode();
-	begin->setPosition(ImVec2(300.0f, 350.0f));
-	data->addNode(begin);
+	Begin = new beginNode();
+	Begin->SetPosition(ImVec2(300.0f, 350.0f));
+	Data->AddNode(Begin);
 
-	end = new endNode();
-	end->setPosition(begin->getPosition() + ImVec2(600.0f, 0.0f));
-	data->addNode(end);
+	End = new endNode();
+	End->SetPosition(Begin->GetPosition() + ImVec2(600.0f, 0.0f));
+	Data->AddNode(End);
 
-	addInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-	addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+	AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+	AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
 }
 
-regionNode::regionNode(const regionNode& src) : FEVisualNode(src)
+regionNode::regionNode(const regionNode& Src) : FEVisualNode(Src)
 {
-	data = src.data;
-	begin = reinterpret_cast<beginNode*>(data->getNodesByType("beginNode")[0]);
-	end = reinterpret_cast<endNode*>(data->getNodesByType("endNode")[0]);
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	Data = Src.Data;
+	Begin = reinterpret_cast<beginNode*>(Data->GetNodesByType("beginNode")[0]);
+	End = reinterpret_cast<endNode*>(Data->GetNodesByType("endNode")[0]);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 }
 
-void regionNode::draw()
+void regionNode::Draw()
 {	
-	FEVisualNode::draw();
+	FEVisualNode::Draw();
 
-	if (getStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f, ImGui::GetCursorScreenPos().y + NODE_TITLE_HEIGHT + 13.0f));
 		ImGui::SetNextItemWidth(140);
 
 		ImGui::Text("REGION NODE");
 	}
-	else if (getStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
 	{
-		checkIcons();
+		CheckIcons();
 
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
-		renderIcon();
+		RenderIcon();
 
-		if (parentArea->isMouseHovered() && isHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened())
-			showTooltip();
+		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened())
+			ShowTooltip();
 	}
 }
 
-void regionNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
+void regionNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-FEVisualNodeArea* regionNode::getData()
+FEVisualNodeArea* regionNode::GetData()
 {
-	return data;
+	return Data;
 }
 
-bool regionNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
+bool regionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return true;
 
 	return true;
 }
 
-FEVisualNode* regionNode::getNextNode()
+FEVisualNode* regionNode::GetNextNode()
 {
-	end->nextNode = nullptr;
-	if (output.size() > 0 && output[0]->getConnections().size() > 0)
-		end->nextNode = output[0]->getConnections()[0]->getParent();
+	End->NextNode = nullptr;
+	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
+		End->NextNode = Output[0]->GetConnections()[0]->GetParent();
 	
-	return begin;
+	return Begin;
 }
 
-FEVisualNode* regionNode::getLogicallyNextNode()
+FEVisualNode* regionNode::GetLogicallyNextNode()
 {
-	return getNextNode();
+	return GetNextNode();
 }
 
-void regionNode::checkIcons()
+void regionNode::CheckIcons()
 {
-	if (regionIcon == nullptr)
-		regionIcon = new FETPImage("Resources//regionIcon.png");
+	if (RegionIcon == nullptr)
+		RegionIcon = new FETPImage("Resources//regionIcon.png");
 }
 
-void regionNode::renderIcon()
+void regionNode::RenderIcon()
 {
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 8.0f, ImGui::GetCursorScreenPos().y + 8.0f));
-	ImGui::Image((void*)(intptr_t)regionIcon->getTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	ImGui::Image((void*)(intptr_t)RegionIcon->getTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void regionNode::showTooltip()
+void regionNode::ShowTooltip()
 {
-	std::string textToShow = "Region : " + getName();
-	textToShow += "\nNode count : " + std::to_string(data->getNodeCount());
+	std::string textToShow = "Region : " + GetName();
+	textToShow += "\nNode count : " + std::to_string(Data->GetNodeCount());
 
 	ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 	ImGui::BeginTooltip();
@@ -110,16 +110,16 @@ void regionNode::showTooltip()
 	ImGui::PopFont();
 }
 
-Json::Value regionNode::toJson()
+Json::Value regionNode::ToJson()
 {
-	Json::Value result = FEVisualNode::toJson();
-	result["nodeArea"] = data->toJson();
+	Json::Value result = FEVisualNode::ToJson();
+	result["nodeArea"] = Data->ToJson();
 
 	return result;
 }
 
-void regionNode::fromJson(Json::Value json)
+void regionNode::FromJson(Json::Value Json)
 {
-	FEVisualNode::fromJson(json);
-	data = FEVisualNodeArea::fromJson(json["nodeArea"].asCString());
+	FEVisualNode::FromJson(Json);
+	Data = FEVisualNodeArea::FromJson(Json["nodeArea"].asCString());
 }

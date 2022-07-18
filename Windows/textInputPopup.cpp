@@ -1,6 +1,6 @@
 #include "textInputPopup.h"
 
-textInputPopup* textInputPopup::_instance = nullptr;
+textInputPopup* textInputPopup::Instance = nullptr;
 
 textInputPopup::textInputPopup()
 {

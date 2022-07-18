@@ -4,64 +4,64 @@ VISUAL_NODE_CHILD_CPP(beginNode)
 
 beginNode::beginNode() : FEVisualNode()
 {
-	type = "beginNode";
-	couldBeDestroyed = false;
+	Type = "beginNode";
+	bCouldBeDestroyed = false;
 
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 
-	setSize(ImVec2(220, 78));
-	setName("beginNode");
+	SetSize(ImVec2(220, 78));
+	SetName("beginNode");
 
-	titleBackgroundColor = ImColor(31, 117, 208);
-	titleBackgroundColorHovered = ImColor(35, 145, 255);
+	TitleBackgroundColor = ImColor(31, 117, 208);
+	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 	
-	addOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "out"));
+	AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "out"));
 
-	if (icon == nullptr)
-		icon = new FETPImage("Resources//beginNodeIcon.png");
+	if (Icon == nullptr)
+		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-beginNode::beginNode(const beginNode& src) : FEVisualNode(src)
+beginNode::beginNode(const beginNode& Src) : FEVisualNode(Src)
 {
-	data = src.data;
-	couldBeDestroyed = false;
+	Data = Src.Data;
+	bCouldBeDestroyed = false;
 
-	setStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
 
-	if (icon == nullptr)
-		icon = new FETPImage("Resources//beginNodeIcon.png");
+	if (Icon == nullptr)
+		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-void beginNode::draw()
+void beginNode::Draw()
 {	
-	FEVisualNode::draw();
+	FEVisualNode::Draw();
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
-	ImGui::Image((void*)(intptr_t)icon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	ImGui::Image((void*)(intptr_t)Icon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void beginNode::socketEvent(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* connectedSocket, FE_VISUAL_NODE_SOCKET_EVENT eventType)
+void beginNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::socketEvent(ownSocket,  connectedSocket, eventType);
+	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-float beginNode::getData()
+float beginNode::GetData()
 {
-	return data;
+	return Data;
 }
 
-bool beginNode::canConnect(FEVisualNodeSocket* ownSocket, FEVisualNodeSocket* candidateSocket, char** msgToUser)
+bool beginNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::canConnect(ownSocket, candidateSocket, nullptr))
+	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return false;
 }
 
-FEVisualNode* beginNode::getNextNode()
+FEVisualNode* beginNode::GetNextNode()
 {
-	if (output.size() > 0 && output[0]->getConnections().size() > 0)
-		return output[0]->getConnections()[0]->getParent();
+	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
+		return Output[0]->GetConnections()[0]->GetParent();
 	
 	return nullptr;
 }
