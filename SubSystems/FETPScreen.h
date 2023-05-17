@@ -1,7 +1,7 @@
 #pragma once
 
-#include "FETPImage.h"
 #include "FETPAction.h"
+#include "FETPScreenCapture.h"
 
 class FETPScreen
 {
@@ -9,6 +9,7 @@ public:
 	SINGLETON_PUBLIC_PART(FETPScreen)
 
 	unsigned char* getScreenData();
+	FETPImage* GetScreenDataAsImage();
 	void getScreenRegion(unsigned char* data, int left, int top, int width, int height, bool updateScreenDataFlag = true);
 
 	size_t getScreenWidth();
@@ -19,7 +20,7 @@ public:
 
 	glm::vec2 imageSizeInRegion(size_t imageW, size_t imageH, size_t regionW, size_t regionH);
 
-void updateScreenData();
+	void updateScreenData();
 private:
 	SINGLETON_PRIVATE_PART(FETPScreen)
 

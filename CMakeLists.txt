@@ -90,6 +90,8 @@ file(GLOB SubSystems_SRC
 	"SubSystems/FETPImage.h"
 	"SubSystems/FETPInput.cpp"
 	"SubSystems/FETPInput.h"
+	"SubSystems/FETPScreenCapture.cpp"
+	"SubSystems/FETPScreenCapture.h"
 	"SubSystems/FETPScreen.cpp"
 	"SubSystems/FETPScreen.h"
 	"SubSystems/TestManager.cpp"

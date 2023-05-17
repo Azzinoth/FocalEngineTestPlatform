@@ -60,6 +60,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ACTION_SYSTEM.update();
 
 
+
+		//TIME.BeginTimeStamp("M");
+		//FETPImage* TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+		//delete TestScreenShoot;
+		//auto time = TIME.EndTimeStamp("M");
+		//TEST_PLATFORM.setWindowTitle(std::to_string(time));
+
+
+		//auto Temp = TestScreenShoot->getRawData();
+		//lodepng::encode("test.png", Temp, TestScreenShoot->getWidth(), TestScreenShoot->getHeight());
+		//delete[] Temp;
+
+		/*TIME.BeginTimeStamp("M");
+		unsigned char* TestScreenShoot = SCREEN_SYSTEM.getScreenData();
+		auto time = TIME.EndTimeStamp("M");
+		TEST_PLATFORM.setWindowTitle(std::to_string(time));*/
+		
+		
+
 		/*std::vector<unsigned char> tempScreenshoot;
 		tempScreenshoot.resize(512 * 512 * 4);
 		Sleep(500);

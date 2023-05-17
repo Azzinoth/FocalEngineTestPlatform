@@ -222,6 +222,11 @@ int FETPScreen::simpleCompare(size_t width, size_t height, unsigned char* firstD
 	return similarity;
 }
 
+FETPImage* FETPScreen::GetScreenDataAsImage()
+{
+	return FETPScreenCapture::getInstance().GetScreenImage();
+}
+
 int convertXYtoIndex(size_t width, int x, int y, int imageDepth)
 {
 	return (y * width + x) * imageDepth;
