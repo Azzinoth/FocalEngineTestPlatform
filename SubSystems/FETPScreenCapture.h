@@ -1,6 +1,6 @@
 #pragma once
 
-#include <atlbase.h>
+//#include <atlbase.h>
 #include <dxgi1_2.h>
 #include <d3d11.h>
 
@@ -19,16 +19,16 @@ private:
 
     struct OutputDuplication
     {
-        CComPtr<IDXGIOutputDuplication> outputDuplication;
+        IDXGIOutputDuplication* outputDuplication = nullptr;
         OutputDuplication(ID3D11Device* Device);
     };
 
-	CComPtr<ID3D11Device> Device;
-	CComPtr<ID3D11DeviceContext> DeviceContext;
+	ID3D11Device* Device;
+	ID3D11DeviceContext* DeviceContext;
 	D3D_FEATURE_LEVEL FeatureLevel;
 
 	void GetDesktopImage(IDXGIOutputDuplication* OutputDuplication);
-	CComPtr<ID3D11Texture2D> DesktopImageTexture;
+	ID3D11Texture2D* DesktopImageTexture;
 
-	CComPtr<ID3D11Texture2D> StagingTexture;
+	ID3D11Texture2D* StagingTexture;
 };

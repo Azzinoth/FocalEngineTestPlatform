@@ -37,11 +37,12 @@ FETPScreenCapture::FETPScreenCapture()
         if (SUCCEEDED(OperationResult))
             break;
 
-        Device.Release();
-        DeviceContext.Release();
+        Device->Release();
+        DeviceContext->Release();
     }
 
     // Create StagingTexture which represents duplication image of desktop.
+    //Duplication = new OutputDuplication(Device);
     OutputDuplication Duplication(Device);
     IDXGIOutputDuplication* outputDuplication = Duplication.outputDuplication;
     if (outputDuplication == nullptr)
@@ -54,6 +55,7 @@ FETPScreenCapture::FETPScreenCapture()
 
     DXGI_OUTDUPL_DESC DuplicationDescription;
     outputDuplication->GetDesc(&DuplicationDescription);
+    //Duplication->outputDuplication->GetDesc(&DuplicationDescription);
 
     const auto CurrentFormat = static_cast<int>(DuplicationDescription.ModeDesc.Format);
     const auto AcceptableFormat =
@@ -86,41 +88,71 @@ FETPScreenCapture::FETPScreenCapture()
     
     if (StagingTexture == nullptr)
         return;
+
+    Duplication.outputDuplication->Release();
 }
 
 FETPScreenCapture::OutputDuplication::OutputDuplication(ID3D11Device* Device)
 {
     HRESULT OperationResult;
 
-    CComPtr<IDXGIDevice> dxgiDevice;
+    IDXGIDevice* dxgiDevice;
     OperationResult = Device->QueryInterface(__uuidof(dxgiDevice), reinterpret_cast<void**>(&dxgiDevice));
-
     if (FAILED(OperationResult))
+    {
+        dxgiDevice->Release();
         return;
+    }
 
-    CComPtr<IDXGIAdapter> dxgiAdapter;
+    IDXGIAdapter* dxgiAdapter;
     OperationResult = dxgiDevice->GetParent(__uuidof(dxgiAdapter), reinterpret_cast<void**>(&dxgiAdapter));
     if (FAILED(OperationResult))
+    {
+        dxgiAdapter->Release();
+        dxgiDevice->Release();
         return;
+    }
 
-    CComPtr<IDXGIOutput> dxgiOutput;
+    IDXGIOutput* dxgiOutput;
     OperationResult = dxgiAdapter->EnumOutputs(0, &dxgiOutput);
     if (FAILED(OperationResult))
+    {
+        dxgiOutput->Release();
+        dxgiAdapter->Release();
+        dxgiDevice->Release();
         return;
+    }
 
-    CComPtr<IDXGIOutput1> dxgiOutput1;
+    IDXGIOutput1* dxgiOutput1;
     OperationResult = dxgiOutput->QueryInterface(__uuidof(IDXGIOutput1), reinterpret_cast<void**>(&dxgiOutput1));
     if (FAILED(OperationResult))
+    {
+        dxgiOutput1->Release();
+        dxgiOutput->Release();
+        dxgiAdapter->Release();
+        dxgiDevice->Release();
         return;
+    }
 
     OperationResult = dxgiOutput1->DuplicateOutput(Device, &outputDuplication);
     if (FAILED(OperationResult))
+    {
+        dxgiOutput1->Release();
+        dxgiOutput->Release();
+        dxgiAdapter->Release();
+        dxgiDevice->Release();
         return;
+    }
+
+    dxgiOutput1->Release();
+    dxgiOutput->Release();
+    dxgiAdapter->Release();
+    dxgiDevice->Release();
 }
 
 void FETPScreenCapture::GetDesktopImage(IDXGIOutputDuplication* OutputDuplication)
 {
-    CComPtr<IDXGIResource> DesktopResource;
+    IDXGIResource* DesktopResource;
     HRESULT OperationResult = E_FAIL;
     for (int i = 0; i < 10; i++)
     {
@@ -137,7 +169,7 @@ void FETPScreenCapture::GetDesktopImage(IDXGIOutputDuplication* OutputDuplicatio
             //
             // Since method is successfully completed,
             // we need to release the resource and frame explicitly.
-            DesktopResource.Release();
+            DesktopResource->Release();
             OutputDuplication->ReleaseFrame();
             Sleep(1);
             continue;
@@ -152,7 +184,7 @@ void FETPScreenCapture::GetDesktopImage(IDXGIOutputDuplication* OutputDuplicatio
         return;
     
     if (DesktopImageTexture != nullptr)
-        DesktopImageTexture.Release();
+        DesktopImageTexture->Release();
 
     OperationResult = DesktopResource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&DesktopImageTexture));
     if (FAILED(OperationResult))
@@ -175,6 +207,7 @@ FETPImage* FETPScreenCapture::GetScreenImage()
 
     DXGI_OUTDUPL_DESC DuplicationDescription;
     outputDuplication->GetDesc(&DuplicationDescription);
+    //Duplication->outputDuplication->GetDesc(&DuplicationDescription);
 
     const auto CurrentFormat = static_cast<int>(DuplicationDescription.ModeDesc.Format);
     const auto AcceptableFormat =
@@ -217,6 +250,7 @@ FETPImage* FETPScreenCapture::GetScreenImage()
 
     Result = new FETPImage(RawData, Width, Height);
     delete[] RawData;
+    Duplication.outputDuplication->Release();
 
     return Result;
 }
