@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
 
-# set default build to WIN32/X86
-set(CMAKE_VS_PLATFORM_NAME_DEFAULT Win32)
-set(CMAKE_GENERATOR_PLATFORM Win32)
-set(CMAKE_GENERATOR_TOOLSET host=x86)
-
 set(BUILD_TYPE "Debug and Release" CACHE STRING "Choose Build type")
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
