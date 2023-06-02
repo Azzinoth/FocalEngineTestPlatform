@@ -126,6 +126,10 @@ void screenshootEditor::render()
 			ImGui::SetCursorPos(ImVec2(addImageVariantButton->getPosition().x + 380.0f + 80.0f + 10.0f + 150.0f, 70.0f));
 			ImGui::InputInt("yShiftFromFound", &tempY);
 			currentAction->imagesInfo[subImageIndex]->screenSearch->setYShiftFromFound(tempY);
+
+			bool bUseGPU = currentAction->bUseGPU;
+			ImGui::Checkbox("Use GPU", &bUseGPU);
+			currentAction->bUseGPU = bUseGPU;
 		}
 	}
 

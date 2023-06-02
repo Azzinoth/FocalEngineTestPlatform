@@ -1,6 +1,7 @@
 #include "FETPScreen.h"
 
 FETPScreen* FETPScreen::Instance = nullptr;
+bool ScreenshootCompareAction::bUseGPU = true;
 
 FETPScreen::FETPScreen()
 {

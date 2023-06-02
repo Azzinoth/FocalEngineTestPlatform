@@ -85,6 +85,8 @@ file(GLOB SubSystems_SRC
 	"SubSystems/FETPImage.h"
 	"SubSystems/FETPInput.cpp"
 	"SubSystems/FETPInput.h"
+	"SubSystems/FETPComputeShaderCompare.cpp"
+	"SubSystems/FETPComputeShaderCompare.h"
 	"SubSystems/FETPScreenCapture.cpp"
 	"SubSystems/FETPScreenCapture.h"
 	"SubSystems/FETPScreen.cpp"
@@ -102,6 +104,8 @@ file(GLOB BasicApplicationSubSystem_SRC
 	"SubSystems/FEBasicApplication/FELog.h"
 	"SubSystems/FEBasicApplication/FETime.cpp"
 	"SubSystems/FEBasicApplication/FETime.h"
+	"SubSystems/FEBasicApplication/FEUniqueID.cpp"
+	"SubSystems/FEBasicApplication/FEUniqueID.h"
 )
 
 # *************** THIRD_PARTY ***************
@@ -155,7 +159,7 @@ add_executable(FETestPlatform WIN32
 							  ${lodepng_SRC}
 )
 
-target_link_libraries(FETestPlatform glew32.lib)
+target_link_libraries(FETestPlatform glew32s.lib)
 target_link_libraries(FETestPlatform glfw3.lib)
 target_link_libraries(FETestPlatform glfw3dll.lib)
 target_link_libraries(FETestPlatform opengl32.lib)

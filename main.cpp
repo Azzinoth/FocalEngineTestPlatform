@@ -1,93 +1,5 @@
 #include "Windows/testsOverviewWindow.h"
 
-// Shader related stuff
-GLuint ProgramID;
-//GLuint ComputeShaderID;
-GLint screenshotSizeLocation;
-GLint subImageSizeLocation;
-GLint toleranceLocation;
-
-GLuint MatchBuffer;
-
-FETPImage* SubImage = nullptr;
-FETPImage* CanvasImage = nullptr;
-
-const GLuint workGroupSizeX = 16;
-const GLuint workGroupSizeY = 16;
-
-struct ComparisonResult
-{
-	GLuint match_found;
-	GLuint match_position[2];
-};
-
-static const char* const ComputeShaderText = R"(
-	#version 430
-
-	uniform sampler2D u_screenshotTexture;
-	uniform sampler2D u_subImageTexture;
-	uniform ivec2 u_screenshotSize;
-	uniform ivec2 u_subImageSize;
-	uniform float u_tolerance;
-
-	layout (std430, binding = 0) buffer Result
-	{
-		uint match_found;
-		uint match_position[2];
-	};
-
-	layout (local_size_x = 16, local_size_y = 16) in;
-
-	bool compareColors(vec4 a, vec4 b, float tolerance)
-	{
-		return all(lessThanEqual(abs(a - b), vec4(tolerance)));
-	}
-
-	void main()
-	{
-		ivec2 global_id = ivec2(gl_GlobalInvocationID.xy);
-
-		/*if (gl_GlobalInvocationID.x == 0 || gl_GlobalInvocationID.y == 0)
-		{
-			atomicExchange(match_found, 0);
-			atomicExchange(match_position[0], 0);
-			atomicExchange(match_position[1], 0);
-		}*/
-
-		if (global_id.x + u_subImageSize.x <= u_screenshotSize.x &&
-			global_id.y + u_subImageSize.y <= u_screenshotSize.y)
-		{
-			if (match_found == 1)
-				return;
-
-			bool match = true;
-
-			for (int y = 0; y < u_subImageSize.y && match; y++)
-			{
-				for (int x = 0; x < u_subImageSize.x && match; x++)
-				{
-					vec4 screenshotColor = texelFetch(u_screenshotTexture, global_id + ivec2(x, y), 0);
-					vec4 subImageColor = texelFetch(u_subImageTexture, ivec2(x, y), 0);
-					if (!compareColors(screenshotColor, subImageColor, u_tolerance))
-					{
-						match = false;
-					}
-				}
-			}
-
-			if (match)
-			{
-				atomicExchange(match_found, 1);
-				atomicExchange(match_position[0], global_id.x);
-				atomicExchange(match_position[1], global_id.y);
-			}
-		}
-	}
-)";
-
-
-// Shader related stuff END
-
 void keyButtonCallback(int key, int scancode, int action, int mods)
 {
 	if (key == 84 && action == GLFW_RELEASE && TEST_MANAGER.getSelectedTest() != nullptr)
@@ -115,104 +27,6 @@ void globalMouseCallback(MouseAction mouseAction)
 	ACTION_SYSTEM.newMouseAction(mouseAction);
 }
 
-GLuint LoadShader(const char* ShaderText, const GLuint ShaderType)
-{
-	GLuint ShaderID;
-	FE_GL_ERROR(ShaderID = glCreateShader(ShaderType));
-
-	//const std::string TempString = ParseShaderForMacro(ShaderText);
-	//const char* ParsedShaderText = TempString.c_str();
-	FE_GL_ERROR(glShaderSource(ShaderID, 1, &ShaderText, nullptr));
-	FE_GL_ERROR(glCompileShader(ShaderID));
-	GLint status = 0;
-	FE_GL_ERROR(glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &status));
-
-	std::string CompilationErrors;
-	if (status == GL_FALSE) {
-		GLint LogSize = 0;
-		FE_GL_ERROR(glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogSize));
-		std::vector<GLchar> ErrorLog(LogSize);
-
-		FE_GL_ERROR(glGetShaderInfoLog(ShaderID, LogSize, &LogSize, &ErrorLog[0]));
-		for (size_t i = 0; i < ErrorLog.size(); i++)
-		{
-			CompilationErrors.push_back(ErrorLog[i]);
-		}
-		
-		assert(status);
-	}
-
-	FE_GL_ERROR(ProgramID = glCreateProgram());
-	FE_GL_ERROR(glAttachShader(ProgramID, ShaderID));
-
-	FE_GL_ERROR(glLinkProgram(ProgramID));
-	FE_GL_ERROR(glValidateProgram(ProgramID));
-
-	return ProgramID;
-}
-
-
-void TestShaderLoading()
-{
-	LoadShader(ComputeShaderText, GL_COMPUTE_SHADER);
-	FE_GL_ERROR(glUseProgram(ProgramID));
-
-	screenshotSizeLocation = glGetUniformLocation(ProgramID, "u_screenshotSize");
-	subImageSizeLocation = glGetUniformLocation(ProgramID, "u_subImageSize");
-	toleranceLocation = glGetUniformLocation(ProgramID, "u_tolerance");
-
-	FE_GL_ERROR(glUniform1i(glGetUniformLocation(ProgramID, "u_screenshotTexture"), 0));
-	FE_GL_ERROR(glUniform1i(glGetUniformLocation(ProgramID, "u_subImageTexture"), 1));
-
-	FE_GL_ERROR(glGenBuffers(1, &MatchBuffer));
-	FE_GL_ERROR(glBindBuffer(GL_SHADER_STORAGE_BUFFER, MatchBuffer));
-
-	ComparisonResult InitialData;
-	InitialData.match_found = 0;
-	InitialData.match_position[0] = -1;
-	InitialData.match_position[1] = -1;
-
-	FE_GL_ERROR(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(InitialData), &InitialData, GL_DYNAMIC_DRAW));
-	FE_GL_ERROR(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, MatchBuffer));
-
-	SubImage = new FETPImage("testSub1.png");
-	CanvasImage = new FETPImage("test1.png");
-}
-
-void RunComputeShader(FETPImage* ScreenTexture, FETPImage* ImageToFind)
-{
-	FE_GL_ERROR(glUseProgram(ProgramID));
-
-	FE_GL_ERROR(glUniform2i(screenshotSizeLocation, ScreenTexture->getWidth(), ScreenTexture->getHeight()));
-	FE_GL_ERROR(glUniform2i(subImageSizeLocation, ImageToFind->getWidth(), ImageToFind->getHeight()));
-	FE_GL_ERROR(glUniform1f(toleranceLocation, 0.0f));
-
-	FE_GL_ERROR(glActiveTexture(GL_TEXTURE0 + 0));
-	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ScreenTexture->getTextureID()));
-
-	FE_GL_ERROR(glActiveTexture(GL_TEXTURE0 + 1));
-	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ImageToFind->getTextureID()));
-
-
-	FE_GL_ERROR(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, MatchBuffer));
-	int DispatchSizeX = (ScreenTexture->getWidth() - ImageToFind->getWidth() + workGroupSizeX) / workGroupSizeX + 1;
-	int DispatchSizeY = (ScreenTexture->getHeight() - ImageToFind->getHeight() + workGroupSizeY) / workGroupSizeY + 1;
-	FE_GL_ERROR(glDispatchCompute(DispatchSizeX, DispatchSizeY, 1));
-	//FE_GL_ERROR(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
-	FE_GL_ERROR(glMemoryBarrier(GL_ALL_BARRIER_BITS));
-
-	FE_GL_ERROR(glBindBuffer(GL_SHADER_STORAGE_BUFFER, MatchBuffer));
-	void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-
-	ComparisonResult* ResultData = (ComparisonResult*)ptr;
-	ResultData->match_found = 0;
-	ResultData->match_position[0] = 0;
-	ResultData->match_position[1] = 0;
-	//memcpy(&resultData, ptr, sizeof(resultData));
-
-	FE_GL_ERROR(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	TEST_PLATFORM.createWindow();
@@ -226,14 +40,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	testEditorWinow::getInstance().show();
 	testPropertiesWindow::getInstance().show();
 
-	TestShaderLoading();
+	//TestShaderLoading();
 
-	FETPImage* ScreenImage = new FETPImage("test.png");
+	//FETPImage* ScreenImage = new FETPImage("test.png");
 
 	/*TIME.BeginTimeStamp("M");
 	RunComputeShader(ScreenImage, SubImage);
 	auto time = TIME.EndTimeStamp("M");*/
-	int FrameCount = 0;
+	//int FrameCount = 0;
 
 	while (TEST_PLATFORM.isWindowOpened())
 	{
@@ -283,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
-		FrameCount++;
+		/*FrameCount++;
 		if (FrameCount % 2 == 0)
 		{
 			delete SubImage;
@@ -299,7 +113,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Sleep(20);
 		RunComputeShader(ScreenImage, SubImage);
 		auto time = TIME.EndTimeStamp("M");
-		TEST_PLATFORM.setWindowTitle(std::to_string(time));
+		TEST_PLATFORM.setWindowTitle(std::to_string(time));*/
 
 
 

@@ -116,14 +116,25 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		std::vector<unsigned char> tempDifferenceData;
 		tempDifferenceData.resize(tempScreenshoot.size());
 
+		FETPImage* TestScreenShoot = nullptr;
+
 		if (action->imagesInfo[i]->partialImage != nullptr)
 		{
-			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+			if (!action->bUseGPU)
+			{
+				SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+			}
+			else
+			{
+				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+			}
 		}
 		else
 		{
 			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->getWidth(), image->getHeight());
 		}
+
+		
 		
 		int similarity = 0;
 		unsigned char* tempRawData = image->getRawData();
@@ -132,7 +143,20 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			size_t x = 0;
 			size_t y = 0;
 
-			bool found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+			TIME.BeginTimeStamp("M");
+			bool found = false;
+			if (!action->bUseGPU)
+			{
+				found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+			}
+			else
+			{
+				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage);
+				found = Position.x != -1 && Position.y != -1;
+				x = Position.x;
+				y = Position.y;
+			}
+			auto time = TIME.EndTimeStamp("M");
 
 			if (found)
 			{
@@ -169,7 +193,15 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					Sleep(10);
 					if (action->imagesInfo[i]->partialImage != nullptr)
 					{
-						SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+						if (!action->bUseGPU)
+						{
+							SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+						}
+						else
+						{
+							delete TestScreenShoot;
+							TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+						}
 					}
 					else
 					{
@@ -183,7 +215,19 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					{
 						size_t x = 0;
 						size_t y = 0;
-						bool found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
+
+						bool found = false;
+						if (!action->bUseGPU)
+						{
+							found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
+						}
+						else
+						{
+							glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage);
+							found = Position.x != -1 && Position.y != -1;
+							x = Position.x;
+							y = Position.y;
+						}
 
 						if (found)
 						{

@@ -1,12 +1,11 @@
 #pragma once
 
-//#include <atlbase.h>
+#include "FETPImage.h"
+
 #include <dxgi1_2.h>
 #include <d3d11.h>
 
 #pragma comment(lib, "D3D11.lib")
-
-#include "FETPImage.h"
 
 class FETPScreenCapture
 {

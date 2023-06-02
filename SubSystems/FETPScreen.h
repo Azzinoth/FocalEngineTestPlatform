@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FETPAction.h"
-#include "FETPScreenCapture.h"
+#include "FETPComputeShaderCompare.h"
 
 class FETPScreen
 {
@@ -178,6 +178,7 @@ private:
 
 public:
 	std::vector<compareImageInfo*> imagesInfo;
+	static bool bUseGPU;
 
 	ScreenshootCompareAction() : FETPAction(FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
@@ -218,48 +219,50 @@ public:
 
 	Json::Value toJson()
 	{
-		std::string directoryPath = "";
-		Json::Value result = FETPAction::toJson();
+		std::string DirectoryPath = "";
+		Json::Value Result = FETPAction::toJson();
 
-		Json::Value compareImageInfos;
+		Json::Value CompareImageInfos;
 		for (size_t i = 0; i < imagesInfo.size(); i++)
 		{
-			compareImageInfos[std::to_string(i)]["correctnessThreshold"] = imagesInfo[i]->correctnessThreshold;
-			compareImageInfos[std::to_string(i)]["maxColorShift"] = imagesInfo[i]->maxColorShift;
+			std::string Index = std::to_string(i);
 
-			std::string fileName = directoryPath + "screenshot_";
-			fileName += ID;
-			fileName += "_" + std::to_string(i) + "_";
-			fileName += ".png";
-			compareImageInfos[std::to_string(i)]["screenshot_fileName"] = fileName;
-			compareImageInfos[std::to_string(i)]["screenshot_fullPath"] = imagesInfo[i]->image->getFullPath();
+			CompareImageInfos[Index]["correctnessThreshold"] = imagesInfo[i]->correctnessThreshold;
+			CompareImageInfos[Index]["maxColorShift"] = imagesInfo[i]->maxColorShift;
 
-			compareImageInfos[std::to_string(i)]["partialImageLeft"] = imagesInfo[i]->partialImageLeft;
-			compareImageInfos[std::to_string(i)]["partialImageTop"] = imagesInfo[i]->partialImageTop;
+			std::string FileName = DirectoryPath + "screenshot_";
+			FileName += ID;
+			FileName += "_" + Index + "_";
+			FileName += ".png";
+			CompareImageInfos[Index]["screenshot_fileName"] = FileName;
+			CompareImageInfos[Index]["screenshot_fullPath"] = imagesInfo[i]->image->getFullPath();
 
-			compareImageInfos[std::to_string(i)]["severalAttempts"] = imagesInfo[i]->severalAttempts;
-			compareImageInfos[std::to_string(i)]["severalAttemptsTimeout"] = imagesInfo[i]->severalAttemptsTimeout;
+			CompareImageInfos[Index]["partialImageLeft"] = imagesInfo[i]->partialImageLeft;
+			CompareImageInfos[Index]["partialImageTop"] = imagesInfo[i]->partialImageTop;
+
+			CompareImageInfos[Index]["severalAttempts"] = imagesInfo[i]->severalAttempts;
+			CompareImageInfos[Index]["severalAttemptsTimeout"] = imagesInfo[i]->severalAttemptsTimeout;
 
 			if (imagesInfo[i]->partialImage != nullptr)
 			{
-				std::string fileName = directoryPath + "partial_";
-				fileName += ID;
-				fileName += "_" + std::to_string(i) + "_";
-				fileName += ".png";
-				compareImageInfos[std::to_string(i)]["partial_fileName"] = fileName;
-				compareImageInfos[std::to_string(i)]["partial_fullPath"] = imagesInfo[i]->partialImage->getFullPath();
+				FileName = DirectoryPath + "partial_";
+				FileName += ID;
+				FileName += "_" + Index + "_";
+				FileName += ".png";
+				CompareImageInfos[Index]["partial_fileName"] = FileName;
+				CompareImageInfos[Index]["partial_fullPath"] = imagesInfo[i]->partialImage->getFullPath();
 
-				compareImageInfos[std::to_string(i)]["screenSearch"]["isActive"] = imagesInfo[i]->screenSearch != nullptr ? true : false;
+				CompareImageInfos[Index]["screenSearch"]["isActive"] = imagesInfo[i]->screenSearch != nullptr;
 				if (imagesInfo[i]->screenSearch != nullptr)
 				{
-					compareImageInfos[std::to_string(i)]["screenSearch"]["xShiftFromFound"] = imagesInfo.back()->screenSearch->getXShiftFromFound();
-					compareImageInfos[std::to_string(i)]["screenSearch"]["yShiftFromFound"] = imagesInfo.back()->screenSearch->getYShiftFromFound();
+					CompareImageInfos[Index]["screenSearch"]["xShiftFromFound"] = imagesInfo[i]->screenSearch->getXShiftFromFound();
+					CompareImageInfos[Index]["screenSearch"]["yShiftFromFound"] = imagesInfo[i]->screenSearch->getYShiftFromFound();
 				}
 			}
 		}
-		result["compareImageInfos"] = compareImageInfos;
+		Result["compareImageInfos"] = CompareImageInfos;
 
-		return result;
+		return Result;
 	}
 
 	void fromJson(Json::Value json)
