@@ -16,7 +16,12 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF 
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_subdirectory(SubSystems/FEBasicApplication)
+#if(NOT TARGET FEBasicApplication)
+#  add_subdirectory(SubSystems/FEBasicApplication)
+#endif()
+if(NOT TARGET FEVisualNodeSystem)
+	add_subdirectory(SubSystems/NodeSystem/FEVisualNodeSystem)
+endif()
 
 # *************** EDITOR ***************
 file(GLOB FEDearImguiWrapper_SRC
@@ -45,17 +50,6 @@ file(GLOB SubWindows_SRC
 	"Windows/testStartPreparationsWindow.cpp"
 	"Windows/textInputPopup.h"
 	"Windows/textInputPopup.cpp"
-)
-
-file(GLOB FEVisualNodeSystem_SRC
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSystem.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSystem.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeArea.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeArea.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNode.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNode.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSocket.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSocket.h"
 )
 
 file(GLOB FEVisualNodeSystem_CustomNodes_SRC
@@ -118,8 +112,8 @@ file(GLOB source_SRC
 	"main.cpp"
 )
 
-link_directories("SubSystems/FEBasicApplication/ThirdParty/glew2/lib/$(PlatformTarget)")
-link_directories("SubSystems/FEBasicApplication/ThirdParty/GLFW/lib/$(PlatformTarget)")
+link_directories(${GLEW_LIB_DIR})
+link_directories(${GLFW_LIB_DIR})
 
 # add the executable
 add_executable(FETestPlatform WIN32
@@ -127,7 +121,7 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
-							  ${FEVisualNodeSystem_SRC}
+							  #${FEVisualNodeSystem_SRC}
 							  ${FEVisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
@@ -137,7 +131,7 @@ add_executable(FETestPlatform WIN32
 							  ${lodepng_SRC}
 )
 
-target_link_libraries(FETestPlatform FEBasicApplication)
+target_link_libraries(FETestPlatform FEVisualNodeSystem)
 
 target_link_libraries(FETestPlatform glew32s.lib)
 target_link_libraries(FETestPlatform glfw3.lib)
@@ -148,19 +142,20 @@ source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
-source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEVisualNodeSystem_SRC})
+#source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEVisualNodeSystem_SRC})
 source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEVisualNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
 # *************** THIRD_PARTY ***************
 source_group("Source Files/ThirdParty/jsoncpp" FILES ${jsoncpp_SRC})
 source_group("Source Files/ThirdParty/lodepng" FILES ${lodepng_SRC})
-# set FETestPlatform as the startup project
+
+# set the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT FETestPlatform)
 
 include_directories(
-	"SubSystems/FEBasicApplication/ThirdParty/glew2/include"
-	"SubSystems/FEBasicApplication/ThirdParty/"
-	"SubSystems/FEBasicApplication/"
+	${GLEW_INCLUDE_DIR}
+	${BASICAPP_THIRDPARTY_DIR}
+	${BASICAPP_DIR}
 	"ThirdParty/"
 )
