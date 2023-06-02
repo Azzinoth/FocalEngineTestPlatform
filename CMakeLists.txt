@@ -16,6 +16,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF 
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+add_subdirectory(SubSystems/FEBasicApplication)
+
 # *************** EDITOR ***************
 file(GLOB FEDearImguiWrapper_SRC
 	"SubSystems/FEDearImguiWrapper/FEDearImguiWrapper.cpp"
@@ -95,30 +97,7 @@ file(GLOB SubSystems_SRC
 	"SubSystems/TestManager.h"
 )
 
-file(GLOB BasicApplicationSubSystem_SRC
-	"SubSystems/FEBasicApplication/FEBasicApplication.cpp"
-	"SubSystems/FEBasicApplication/FEBasicApplication.h"
-	"SubSystems/FEBasicApplication/FEThreadPool.cpp"
-	"SubSystems/FEBasicApplication/FEThreadPool.h"
-	"SubSystems/FEBasicApplication/FELog.cpp"
-	"SubSystems/FEBasicApplication/FELog.h"
-	"SubSystems/FEBasicApplication/FETime.cpp"
-	"SubSystems/FEBasicApplication/FETime.h"
-	"SubSystems/FEBasicApplication/FEUniqueID.cpp"
-	"SubSystems/FEBasicApplication/FEUniqueID.h"
-)
-
 # *************** THIRD_PARTY ***************
-
-file(GLOB imgui_SRC
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_demo.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_draw.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_impl_glfw.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_impl_opengl3.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_tables.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_widgets.cpp"
-)
 
 file(GLOB jsoncpp_SRC
 	"ThirdParty/jsoncpp/json_reader.cpp"
@@ -152,12 +131,13 @@ add_executable(FETestPlatform WIN32
 							  ${FEVisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
-							  ${BasicApplicationSubSystem_SRC}
 							  # *************** THIRD_PARTY ***************
 							  ${imgui_SRC}
 							  ${jsoncpp_SRC}
 							  ${lodepng_SRC}
 )
+
+target_link_libraries(FETestPlatform FEBasicApplication)
 
 target_link_libraries(FETestPlatform glew32s.lib)
 target_link_libraries(FETestPlatform glfw3.lib)
@@ -172,9 +152,7 @@ source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEV
 source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEVisualNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
-source_group("Source Files/SubSystems/BasicApplication" FILES ${BasicApplicationSubSystem_SRC})
 # *************** THIRD_PARTY ***************
-source_group("Source Files/ThirdParty/imgui" FILES ${imgui_SRC})
 source_group("Source Files/ThirdParty/jsoncpp" FILES ${jsoncpp_SRC})
 source_group("Source Files/ThirdParty/lodepng" FILES ${lodepng_SRC})
 # set FETestPlatform as the startup project
