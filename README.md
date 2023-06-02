@@ -7,5 +7,4 @@ git fetch origin<br />
 git checkout -b dev origin/dev<br />
 git checkout -b master origin/master<br />
 git checkout dev<br />
-git submodule init<br />
-git submodule update<br />
+git submodule update --init --recursive<br />
