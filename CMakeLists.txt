@@ -16,9 +16,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF 
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#if(NOT TARGET FEBasicApplication)
-#  add_subdirectory(SubSystems/FEBasicApplication)
-#endif()
 if(NOT TARGET FEVisualNodeSystem)
 	add_subdirectory(SubSystems/NodeSystem/FEVisualNodeSystem)
 endif()
@@ -93,14 +90,6 @@ file(GLOB SubSystems_SRC
 
 # *************** THIRD_PARTY ***************
 
-file(GLOB jsoncpp_SRC
-	"ThirdParty/jsoncpp/json_reader.cpp"
-	"ThirdParty/jsoncpp/json_tool.h"
-	"ThirdParty/jsoncpp/json_value.cpp"
-	"ThirdParty/jsoncpp/json_valueiterator.inl"
-	"ThirdParty/jsoncpp/json_writer.cpp"
-)
-
 file(GLOB lodepng_SRC
 	"ThirdParty/lodepng/lodepng.cpp"
 	"ThirdParty/lodepng/lodepng.h"
@@ -121,13 +110,10 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
-							  #${FEVisualNodeSystem_SRC}
 							  ${FEVisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
 							  # *************** THIRD_PARTY ***************
-							  ${imgui_SRC}
-							  ${jsoncpp_SRC}
 							  ${lodepng_SRC}
 )
 
@@ -147,7 +133,6 @@ source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEVisualNo
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
 # *************** THIRD_PARTY ***************
-source_group("Source Files/ThirdParty/jsoncpp" FILES ${jsoncpp_SRC})
 source_group("Source Files/ThirdParty/lodepng" FILES ${lodepng_SRC})
 
 # set the startup project
@@ -157,5 +142,6 @@ include_directories(
 	${GLEW_INCLUDE_DIR}
 	${BASICAPP_THIRDPARTY_DIR}
 	${BASICAPP_DIR}
+	${VISUALNODESYSTEM_THIRDPARTY_DIR}
 	"ThirdParty/"
 )
