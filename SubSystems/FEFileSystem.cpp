@@ -239,8 +239,18 @@ std::string FEFileSystem::getApplicationPath()
 
 char* FEFileSystem::getDirectoryPath(const char* fullPath)
 {
+	char* resultDrive = new char[3];
+	char* resultDirectory = new char[1024];
+	_splitpath_s(fullPath, resultDrive, 3, resultDirectory, 1024, nullptr, 0, nullptr, 0);
+
+	// Combine drive and directory parts
 	char* result = new char[1024];
-	_splitpath_s(fullPath, nullptr, 0, result, 1024, nullptr, 0, nullptr, 0);
+	strcpy_s(result, 1024, resultDrive);
+	strcat_s(result, 1024, resultDirectory);
+
+	// Clean up temporary memory
+	delete[] resultDrive;
+	delete[] resultDirectory;
 
 	return result;
 }

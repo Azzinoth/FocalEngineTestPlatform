@@ -61,15 +61,15 @@ GLuint FETPComputeShaderCompare::LoadShader(const char* ShaderText, const GLuint
 	return ProgramID;
 }
 
-glm::vec2 FETPComputeShaderCompare::FindSubImage(FETPImage* ScreenTexture, FETPImage* ImageToFind)
+glm::vec2 FETPComputeShaderCompare::FindSubImage(FETPImage* ScreenTexture, FETPImage* ImageToFind, float correctnessThreshold, int maxColorShift)
 {
 	glm::vec2 Result = glm::vec2(-1, -1);
 	FE_GL_ERROR(glUseProgram(ProgramID));
 
 	FE_GL_ERROR(glUniform2i(ScreenshotSizeLocation, ScreenTexture->getWidth(), ScreenTexture->getHeight()));
 	FE_GL_ERROR(glUniform2i(SubImageSizeLocation, ImageToFind->getWidth(), ImageToFind->getHeight()));
-	FE_GL_ERROR(glUniform1f(MatchPercentageLocation, 0.95f));
-	FE_GL_ERROR(glUniform1f(ColorToleranceLocation, 0.01f));
+	FE_GL_ERROR(glUniform1f(MatchPercentageLocation, correctnessThreshold / 100.0f));
+	FE_GL_ERROR(glUniform1f(ColorToleranceLocation, maxColorShift / 100.0f));
 
 	FE_GL_ERROR(glActiveTexture(GL_TEXTURE0 + 0));
 	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ScreenTexture->getTextureID()));

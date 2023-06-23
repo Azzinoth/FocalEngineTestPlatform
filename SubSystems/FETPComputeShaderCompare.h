@@ -70,7 +70,7 @@ class FETPComputeShaderCompare
 public:
 	SINGLETON_PUBLIC_PART(FETPComputeShaderCompare)
 
-	glm::vec2 FindSubImage(FETPImage* ScreenTexture, FETPImage* ImageToFind);
+	glm::vec2 FindSubImage(FETPImage* ScreenTexture, FETPImage* ImageToFind, float correctnessThreshold, int maxColorShift);
 private:
 	SINGLETON_PRIVATE_PART(FETPComputeShaderCompare)
 

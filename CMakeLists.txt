@@ -117,6 +117,12 @@ add_executable(FETestPlatform WIN32
 							  ${lodepng_SRC}
 )
 
+# This will ensure the manifest is used when linking the executable.
+set_target_properties(FETestPlatform PROPERTIES
+                      LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\" 
+                      /MANIFEST:embed
+                      /MANIFESTINPUT:\"${CMAKE_SOURCE_DIR}/FETestPlatform.manifest\"")
+
 target_link_libraries(FETestPlatform FEVisualNodeSystem)
 
 target_link_libraries(FETestPlatform glew32s.lib)

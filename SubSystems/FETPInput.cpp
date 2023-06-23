@@ -19,7 +19,7 @@ void FETPInput::initialize()
 	if (counter > 1)
 		return;
 
-	/*std::thread([=]()
+	std::thread([=]()
 	{
 		keyboardHookPTR = SetWindowsHookExA(WH_KEYBOARD_LL, FETPInput::keyboardHook, GetModuleHandle(0), 0);
 		mouseHookPTR = SetWindowsHookExA(WH_MOUSE_LL, FETPInput::mouseHook, GetModuleHandle(0), 0);
@@ -30,7 +30,7 @@ void FETPInput::initialize()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-	}).detach();*/
+	}).detach();
 }
 
 void FETPInput::mouseMoveTo(int x, int y)

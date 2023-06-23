@@ -74,10 +74,9 @@ FETPImage* FEPTActionSystem::imageToUse(compareImageInfo* imageInfo)
 	if (imageInfo->image == nullptr)
 		return nullptr;
 	
-
-	if (size_t(imageInfo->image->getHeight()) != TEST_PLATFORM.getScreenHeight() ||
-		size_t(imageInfo->image->getWidth()) != TEST_PLATFORM.getScreenWidth())
-		return nullptr;
+	//if (size_t(imageInfo->image->getHeight()) != TEST_PLATFORM.getScreenHeight() ||
+	//	size_t(imageInfo->image->getWidth()) != TEST_PLATFORM.getScreenWidth())
+	//	return nullptr;
 
 	if (imageInfo->partialImage != nullptr)
 	{
@@ -151,7 +150,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			}
 			else
 			{
-				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage);
+				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
 				found = Position.x != -1 && Position.y != -1;
 				x = Position.x;
 				y = Position.y;
@@ -223,7 +222,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 						}
 						else
 						{
-							glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage);
+							glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
 							found = Position.x != -1 && Position.y != -1;
 							x = Position.x;
 							y = Position.y;
