@@ -17,8 +17,8 @@ regionNode::regionNode() : FEVisualNode()
 	End->SetPosition(Begin->GetPosition() + ImVec2(600.0f, 0.0f));
 	Data->AddNode(End);
 
-	AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-	AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+	AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", false));
+	AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", true));
 }
 
 regionNode::regionNode(const regionNode& Src) : FEVisualNode(Src)

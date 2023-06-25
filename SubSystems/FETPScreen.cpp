@@ -28,7 +28,7 @@ void FETPScreen::updateScreenData()
 	//QueryPerformanceCounter(&StartingTime);
 
 	static HDC hScreen = GetDC(GetDesktopWindow());
-	static HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, TEST_PLATFORM.getScreenWidth(), TEST_PLATFORM.getScreenHeight());
+	static HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, static_cast<int>(TEST_PLATFORM.getScreenWidth()), static_cast<int>(TEST_PLATFORM.getScreenHeight()));
 	static HDC hdcMem = CreateCompatibleDC(hScreen);
 
 	/*HDC hScreen = GetDC(GetDesktopWindow());
@@ -39,7 +39,7 @@ void FETPScreen::updateScreenData()
 	
 
 	HGDIOBJ hOld = SelectObject(hdcMem, hBitmap);
-	BitBlt(hdcMem, 0, 0, TEST_PLATFORM.getScreenWidth(), TEST_PLATFORM.getScreenWidth(), hScreen, 0, 0, SRCCOPY);
+	BitBlt(hdcMem, 0, 0, static_cast<int>(TEST_PLATFORM.getScreenWidth()), static_cast<int>(TEST_PLATFORM.getScreenWidth()), hScreen, 0, 0, SRCCOPY);
 	SelectObject(hdcMem, hOld);
 
 	

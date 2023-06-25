@@ -134,12 +134,12 @@ void globalActionNode::Initialize(FETPAction* Data)
 
 		if (Input.size() == 0 && Output.size() == 0)
 		{
-			AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
+			AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", false));
 
 			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
 			for (size_t i = 0; i < action->imagesInfo.size(); i++)
 			{
-				AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, "next_" + std::to_string(i + 1)));
+				AddSocket(new FEVisualNodeSocket(this, "FLOAT", "next_" + std::to_string(i + 1), true));
 			}
 		}
 	}
@@ -156,8 +156,8 @@ void globalActionNode::Initialize(FETPAction* Data)
 
 	if (Input.size() == 0 && Output.size() == 0)
 	{
-		AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", false));
+		AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", true));
 	}
 }
 
@@ -351,7 +351,7 @@ bool globalActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSoc
 	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
-	if (CandidateSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && OwnSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
+	if (CandidateSocket->GetType() == "FLOAT" && OwnSocket->GetType() == "FLOAT")
 		return true;
 
 	return false;

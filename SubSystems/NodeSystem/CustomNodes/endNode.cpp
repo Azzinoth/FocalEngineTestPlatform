@@ -15,7 +15,7 @@ endNode::endNode() : FEVisualNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 	
-	AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, "in"));
+	AddSocket(new FEVisualNodeSocket(this, "FLOAT", "in", false));
 
 	if (Icon == nullptr)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");

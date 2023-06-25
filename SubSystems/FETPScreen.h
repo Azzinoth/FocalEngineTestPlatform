@@ -203,8 +203,8 @@ public:
 
 		if (width == -1 || height == -1)
 		{
-			width = SCREEN_SYSTEM.getScreenWidth();
-			height = SCREEN_SYSTEM.getScreenHeight();
+			width = static_cast<int>(SCREEN_SYSTEM.getScreenWidth());
+			height = static_cast<int>(SCREEN_SYSTEM.getScreenHeight());
 		}
 
 		compareImageInfo* newImageInfo = new compareImageInfo(new FETPImage(screenshoot, width, height));

@@ -33,8 +33,8 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 
 	if (Input.size() == 0 && Output.size() == 0)
 	{
-		AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", false));
+		AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", true));
 	}
 
 	Data = Data;
@@ -283,7 +283,7 @@ bool combinedActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeS
 	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
-	if (CandidateSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && OwnSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
+	if (CandidateSocket->GetType() == "FLOAT" && OwnSocket->GetType() == "FLOAT")
 		return true;
 
 	return false;
