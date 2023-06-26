@@ -1,6 +1,3 @@
-[submodule "FEVisualNodeSystem"]
-	path = SubSystems/NodeSystem/FEVisualNodeSystem
-	url = https://github.com/Azzinoth/VisualNodeSystem
 [submodule "VisualNodeSystem"]
 	path = SubSystems/NodeSystem/VisualNodeSystem
 	url = https://github.com/Azzinoth/VisualNodeSystem
