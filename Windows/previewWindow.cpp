@@ -4,7 +4,7 @@ previewWindow* previewWindow::Instance = nullptr;
 ImVec2 previewWindow::nodeGridRelativePosition = ImVec2(0, 0);
 ImVec2 previewWindow::windowPosition = ImVec2(0, 0);
 ImVec2 previewWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
-FEVisualNodeArea* previewWindow::currentNodeArea = nullptr;
+VisualNodeArea* previewWindow::currentNodeArea = nullptr;
 ImVec2 previewWindow::neededShift = ImVec2(0, 0);
 bool previewWindow::readOnly = false;
 
@@ -291,7 +291,7 @@ void previewWindow::mainContextMenu()
 	}
 }
 
-void previewWindow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT eventWithNode)
+void previewWindow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWithNode)
 {
 
 }
@@ -303,7 +303,7 @@ void previewWindow::positionNodesInCenter()
 
 	neededShift = viewCenter - nodesAABBCenter;
 
-	currentNodeArea->RunOnEachNode([](FEVisualNode* node) {
+	currentNodeArea->RunOnEachNode([](VisualNode* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		node->SetPosition(node->GetPosition() + neededShift);
 	});
@@ -322,7 +322,7 @@ void previewWindow::positionNodesInTargetCenter()
 
 	neededShift = viewCenter - nodesAABBCenter;
 
-	currentNodeArea->RunOnEachNode([](FEVisualNode* node) {
+	currentNodeArea->RunOnEachNode([](VisualNode* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		node->SetPosition(node->GetPosition() + neededShift);
 	});

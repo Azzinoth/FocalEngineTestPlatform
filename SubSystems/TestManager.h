@@ -8,7 +8,7 @@ class TestManager
 private:
 	SINGLETON_PRIVATE_PART(TestManager)
 
-	static FEVisualNode* foundNode;
+	static VisualNode* foundNode;
 	static FETPAction* searchedAction;
 
 	bool isTestNameFree(std::string name);
@@ -25,7 +25,7 @@ public:
 	void removeTest(FETest* test);
 	void removeTest(size_t testIndex);
 
-	FEVisualNode* getNodeByAction(FETPAction* action);
+	VisualNode* getNodeByAction(FETPAction* action);
 	FETest* getTestByAction(FETPAction* action);
 
 	std::string getNewTestName();

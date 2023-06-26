@@ -16,8 +16,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF 
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if(NOT TARGET FEVisualNodeSystem)
-	add_subdirectory(SubSystems/NodeSystem/FEVisualNodeSystem)
+if(NOT TARGET VisualNodeSystem)
+	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
 endif()
 
 # *************** EDITOR ***************
@@ -49,7 +49,7 @@ file(GLOB SubWindows_SRC
 	"Windows/textInputPopup.cpp"
 )
 
-file(GLOB FEVisualNodeSystem_CustomNodes_SRC
+file(GLOB VisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/beginNode.h"
 	"SubSystems/NodeSystem/CustomNodes/beginNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.h"
@@ -110,7 +110,7 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
-							  ${FEVisualNodeSystem_CustomNodes_SRC}
+							  ${VisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
 							  # *************** THIRD_PARTY ***************
@@ -123,7 +123,7 @@ set_target_properties(FETestPlatform PROPERTIES
                       /MANIFEST:embed
                       /MANIFESTINPUT:\"${CMAKE_SOURCE_DIR}/FETestPlatform.manifest\"")
 
-target_link_libraries(FETestPlatform FEVisualNodeSystem)
+target_link_libraries(FETestPlatform VisualNodeSystem)
 
 target_link_libraries(FETestPlatform glew32s.lib)
 target_link_libraries(FETestPlatform glfw3.lib)
@@ -134,8 +134,7 @@ source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
-#source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEVisualNodeSystem_SRC})
-source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEVisualNodeSystem_CustomNodes_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${VisualNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
 # *************** THIRD_PARTY ***************

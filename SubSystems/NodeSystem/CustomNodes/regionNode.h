@@ -6,10 +6,10 @@
 #include "../Windows/actionEditPopup.h"
 
 VISUAL_NODE_CHILD_PRIVATE_PART(regionNode)
-	FEVisualNodeArea* Data;
+	VisualNodeArea* Data;
 
-	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
 
 	static FETPImage* RegionIcon;
 
@@ -24,10 +24,10 @@ public:
 	regionNode(const regionNode& Src);
 
 	void Draw();
-	FEVisualNodeArea* GetData();
+	VisualNodeArea* GetData();
 
-	FEVisualNode* GetNextNode();
-	FEVisualNode* GetLogicallyNextNode();
+	VisualNode* GetNextNode();
+	VisualNode* GetLogicallyNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);

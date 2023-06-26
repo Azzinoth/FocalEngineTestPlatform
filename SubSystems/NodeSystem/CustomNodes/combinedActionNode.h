@@ -20,8 +20,8 @@ VISUAL_NODE_CHILD_PRIVATE_PART(combinedActionNode)
 	//bool contextMenu = false;
 	//bool openContextMenu();
 
-	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
 
 	static combinedActionNode* NodeForCallback;
 	static void ChangeTextCallback(std::string NewText);
@@ -44,7 +44,7 @@ public:
 
 	void Draw();
 	std::vector<FETPAction*> GetData();
-	FEVisualNode* GetNextNode();
+	VisualNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);

@@ -20,7 +20,7 @@ class previewWindow : public ImGuiModalPopup
 	static ImVec2 nodeGridRelativePosition;
 	static ImVec2 mousePositionWhenContextMenuWasOpened;
 
-	static void nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT eventWithNode);
+	static void nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWithNode);
 	bool firstFrame = false;
 	static ImVec2 neededShift;
 	void positionNodesInCenter();
@@ -31,7 +31,7 @@ class previewWindow : public ImGuiModalPopup
 public:
 	SINGLETON_PUBLIC_PART(previewWindow)
 
-	static FEVisualNodeArea* currentNodeArea;
+	static VisualNodeArea* currentNodeArea;
 
 	void show(bool isReadOnly = false);
 	void render() override;

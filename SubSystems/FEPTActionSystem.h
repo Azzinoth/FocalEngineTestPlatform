@@ -56,8 +56,8 @@ class FEPTActionSystem
 	void findAndDeleteKeys();
 	void addAction(FETPAction* newAction);
 
-	FEVisualNode* getNextNode(FEVisualNode* currentNode);
-	std::vector<FETPAction*> getActionsFromNode(FEVisualNode* currentNode);
+	VisualNode* getNextNode(VisualNode* currentNode);
+	std::vector<FETPAction*> getActionsFromNode(VisualNode* currentNode);
 	bool execute(std::vector<FETPAction*> action);
 
 	FETPImage* imageToUse(compareImageInfo* imageInfo);
@@ -80,7 +80,7 @@ public:
 	void newMouseAction(MouseAction mouseAction);
 	void newAction(FETPAction* newAction);
 
-	void placeStructuredNodes(std::vector<FETPAction*> actions, FEVisualNodeArea* nodeArea, bool copyActions = false);
+	void placeStructuredNodes(std::vector<FETPAction*> actions, VisualNodeArea* nodeArea, bool copyActions = false);
 
 	void update();
 
@@ -94,7 +94,7 @@ public:
 	static bool keyboardTextActionFilter(FETPAction* action, int outputCount);
 	static bool keyboardPressActionFilter(FETPAction* action, int outputCount);
 
-	FEVisualNode* tryToPackActions(size_t& index);
+	VisualNode* tryToPackActions(size_t& index);
 
 	void setFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> callback);
 

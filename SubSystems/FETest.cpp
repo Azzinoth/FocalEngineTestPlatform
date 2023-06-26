@@ -129,7 +129,7 @@ beginNode* FETest::getBeginNode()
 void FETest::reColorMainTestPath()
 {
 	// Change color of all connections to default.
-	nodeArea->RunOnEachNode([](FEVisualNode* node) {
+	nodeArea->RunOnEachNode([](VisualNode* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
@@ -142,7 +142,7 @@ void FETest::reColorMainTestPath()
 		return;
 
 	nodeArea->RunOnEachConnectedNode(getBeginNode(),
-		[](FEVisualNode* node) {
+		[](VisualNode* node) {
 			size_t outSocketCount = node->OutSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
 			{
@@ -207,7 +207,7 @@ void FETest::beforeBegin()
 	}
 }
 
-void FETest::validateImagePathes(FEVisualNodeArea* nodeArea, std::string filePath)
+void FETest::validateImagePathes(VisualNodeArea* nodeArea, std::string filePath)
 {
 	if (nodeArea == nullptr)
 		nodeArea = this->nodeArea;
@@ -216,7 +216,7 @@ void FETest::validateImagePathes(FEVisualNodeArea* nodeArea, std::string filePat
 		filePath = this->filePath;
 
 	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-	std::vector<FEVisualNode*> list = nodeArea->GetNodesByType("globalActionNode");
+	std::vector<VisualNode*> list = nodeArea->GetNodesByType("globalActionNode");
 	std::unordered_map<std::string, bool> actionSeenIDs;
 	for (size_t i = 0; i < list.size(); i++)
 	{
@@ -265,14 +265,14 @@ void FETest::validateImagePathes(FEVisualNodeArea* nodeArea, std::string filePat
 	}*/
 
 	// Validate nodes IDs in node regions with IDs in main node area.
-	std::vector<FEVisualNode*> regionList = nodeArea->GetNodesByType("regionNode");
+	std::vector<VisualNode*> regionList = nodeArea->GetNodesByType("regionNode");
 	for (size_t i = 0; i < regionList.size(); i++)
 	{
 		regionNode* rNode = reinterpret_cast<regionNode*>(regionList[i]);
 
 		if (rNode->GetData() != nullptr)
 		{
-			std::vector<FEVisualNode*> list = rNode->GetData()->GetNodesByType("globalActionNode");
+			std::vector<VisualNode*> list = rNode->GetData()->GetNodesByType("globalActionNode");
 			for (size_t j = 0; j < list.size(); j++)
 			{
 				globalActionNode* node = reinterpret_cast<globalActionNode*>(list[j]);

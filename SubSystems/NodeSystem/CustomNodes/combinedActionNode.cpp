@@ -10,12 +10,12 @@ FETPImage* combinedActionNode::WheelMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::KeyCombinedIcon = nullptr;
 FETPImage* combinedActionNode::TextCombinedIcon = nullptr;
 
-combinedActionNode::combinedActionNode() : FEVisualNode()
+combinedActionNode::combinedActionNode() : VisualNode()
 {
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
 }
 
-combinedActionNode::combinedActionNode(const combinedActionNode& Src) : FEVisualNode(Src)
+combinedActionNode::combinedActionNode(const combinedActionNode& Src) : VisualNode(Src)
 {
 	Data = Src.Data;
 	ActionType = Src.ActionType;
@@ -23,18 +23,18 @@ combinedActionNode::combinedActionNode(const combinedActionNode& Src) : FEVisual
 	EndPosition = Src.EndPosition;
 	Text = Src.Text;
 
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
 }
 
 void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type)
 {
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
 	SetSize(ImVec2(330, 140));
 
 	if (Input.size() == 0 && Output.size() == 0)
 	{
-		AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", false));
-		AddSocket(new FEVisualNodeSocket(this, "FLOAT", "", true));
+		AddSocket(new NodeSocket(this, "FLOAT", "", false));
+		AddSocket(new NodeSocket(this, "FLOAT", "", true));
 	}
 
 	Data = Data;
@@ -123,16 +123,16 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 	}
 }
 
-combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : FEVisualNode()
+combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : VisualNode()
 {
 	Initialize(Data, Type);
 }
 
 void combinedActionNode::Draw()
 {	
-	FEVisualNode::Draw();
+	VisualNode::Draw();
 
-	if (GetStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == VISUAL_NODE_STYLE_DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
@@ -228,7 +228,7 @@ void combinedActionNode::Draw()
 			ImGui::Text(Text.c_str());
 		}
 	}
-	else if (GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == VISUAL_NODE_STYLE_CIRCLE)
 	{
 		CheckIcons();
 
@@ -268,9 +268,9 @@ void combinedActionNode::Draw()
 	ImGui::PopStyleVar();*/
 }
 
-void combinedActionNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
+void combinedActionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 std::vector<FETPAction*> combinedActionNode::GetData()
@@ -278,9 +278,9 @@ std::vector<FETPAction*> combinedActionNode::GetData()
 	return Data;
 }
 
-bool combinedActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
+bool combinedActionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	if (CandidateSocket->GetType() == "FLOAT" && OwnSocket->GetType() == "FLOAT")
@@ -291,7 +291,7 @@ bool combinedActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeS
 
 Json::Value combinedActionNode::ToJson()
 {
-	Json::Value result = FEVisualNode::ToJson();
+	Json::Value result = VisualNode::ToJson();
 	result["actionType"] = ActionType;
 
 	for (size_t i = 0; i < Data.size(); i++)
@@ -307,7 +307,7 @@ Json::Value combinedActionNode::ToJson()
 	return result;
 }
 
-FEVisualNode* combinedActionNode::GetNextNode()
+VisualNode* combinedActionNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
 		return Output[0]->GetConnections()[0]->GetParent();
@@ -317,7 +317,7 @@ FEVisualNode* combinedActionNode::GetNextNode()
 
 void combinedActionNode::FromJson(Json::Value Json)
 {
-	FEVisualNode::FromJson(Json);
+	VisualNode::FromJson(Json);
 
 	ActionType = FETP_COMBINED_ACTION_TYPE(Json["actionType"].asInt());
 
