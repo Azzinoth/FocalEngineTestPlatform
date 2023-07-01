@@ -50,6 +50,8 @@ file(GLOB SubWindows_SRC
 )
 
 file(GLOB VisualNodeSystem_CustomNodes_SRC
+	"SubSystems/NodeSystem/CustomNodes/basicLogicNode.h"
+	"SubSystems/NodeSystem/CustomNodes/basicLogicNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/beginNode.h"
 	"SubSystems/NodeSystem/CustomNodes/beginNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.h"

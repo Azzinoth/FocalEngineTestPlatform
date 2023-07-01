@@ -1,6 +1,5 @@
 #include "combinedActionNode.h"
 
-VISUAL_NODE_CHILD_CPP(combinedActionNode)
 combinedActionNode* combinedActionNode::NodeForCallback = nullptr;
 FETPImage* combinedActionNode::MoveMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::LeftMouseCombineIcon = nullptr;
@@ -10,12 +9,29 @@ FETPImage* combinedActionNode::WheelMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::KeyCombinedIcon = nullptr;
 FETPImage* combinedActionNode::TextCombinedIcon = nullptr;
 
-combinedActionNode::combinedActionNode() : VisualNode()
+bool combinedActionNode::isRegistered = []()
+{
+	NODE_FACTORY.RegisterNodeType("combinedActionNode",
+		[]() -> VisualNode* {
+			return new combinedActionNode();
+		},
+
+		[](const VisualNode& Node) -> VisualNode* {
+			const combinedActionNode& NodeToCopy = static_cast<const combinedActionNode&>(Node);
+			return new combinedActionNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+
+combinedActionNode::combinedActionNode() : basicLogicNode()
 {
 	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
 }
 
-combinedActionNode::combinedActionNode(const combinedActionNode& Src) : VisualNode(Src)
+combinedActionNode::combinedActionNode(const combinedActionNode& Src) : basicLogicNode(Src)
 {
 	Data = Src.Data;
 	ActionType = Src.ActionType;
@@ -123,7 +139,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 	}
 }
 
-combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : VisualNode()
+combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : basicLogicNode()
 {
 	Initialize(Data, Type);
 }
@@ -307,10 +323,10 @@ Json::Value combinedActionNode::ToJson()
 	return result;
 }
 
-VisualNode* combinedActionNode::GetNextNode()
+basicLogicNode* combinedActionNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		return Output[0]->GetConnections()[0]->GetParent();
+		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
 
 	return nullptr;
 }

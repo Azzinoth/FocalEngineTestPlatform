@@ -6,7 +6,11 @@
 #include "../Windows/textInputPopup.h"
 #include "../Windows/actionEditPopup.h"
 
-VISUAL_NODE_CHILD_PRIVATE_PART(globalActionNode)
+class globalActionNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
 	FETPAction* Data;
 	void Initialize(FETPAction* Data);
 
@@ -48,11 +52,8 @@ public:
 	void Draw();
 	FETPAction* GetData();
 
-	VisualNode* GetNextNode();
-	VisualNode* GetLogicallyNextNode();
+	basicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(globalActionNode)

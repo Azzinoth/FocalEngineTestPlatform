@@ -3,15 +3,20 @@
 #include "beginNode.h"
 
 class regionNode;
-VISUAL_NODE_CHILD_PRIVATE_PART(endNode)
-	friend regionNode;
+class endNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
+	friend class regionNode;
+
 	float Data = 0.0f;
 	
 	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
 
 	FETPImage* Icon = nullptr;
-	VisualNode* NextNode = nullptr;
+	basicLogicNode* NextNode = nullptr;
 public:
 	endNode();
 	endNode(const endNode& Src);
@@ -19,8 +24,5 @@ public:
 	void Draw();
 	float GetData();
 
-	VisualNode* GetNextNode();
-	VisualNode* GetLogicallyNextNode();
+	basicLogicNode* GetNextNode();
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(endNode)

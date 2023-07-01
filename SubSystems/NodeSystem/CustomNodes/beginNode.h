@@ -1,9 +1,13 @@
 #pragma once
 
 #include "../VisualNodeSystem/VisualNodeSystem.h"
-#include "../../FETPImage.h"
+#include "basicLogicNode.h"
 
-VISUAL_NODE_CHILD_PRIVATE_PART(beginNode)
+class beginNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
 	float Data = 0.0f;
 
 	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
@@ -17,7 +21,5 @@ public:
 	void Draw();
 	float GetData();
 
-	VisualNode* GetNextNode();
+	basicLogicNode* GetNextNode();
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(beginNode)

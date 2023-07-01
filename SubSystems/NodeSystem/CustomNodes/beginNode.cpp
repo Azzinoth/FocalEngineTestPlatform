@@ -1,8 +1,22 @@
 #include "beginNode.h"
 
-VISUAL_NODE_CHILD_CPP(beginNode)
+bool beginNode::isRegistered = []()
+{
+	NODE_FACTORY.RegisterNodeType("beginNode",
+		[]() -> VisualNode* {
+			return new beginNode();
+		},
 
-beginNode::beginNode() : VisualNode()
+		[](const VisualNode& Node) -> VisualNode* {
+			const beginNode& NodeToCopy = static_cast<const beginNode&>(Node);
+			return new beginNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+beginNode::beginNode() : basicLogicNode()
 {
 	Type = "beginNode";
 	bCouldBeDestroyed = false;
@@ -21,7 +35,7 @@ beginNode::beginNode() : VisualNode()
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-beginNode::beginNode(const beginNode& Src) : VisualNode(Src)
+beginNode::beginNode(const beginNode& Src) : basicLogicNode(Src)
 {
 	Data = Src.Data;
 	bCouldBeDestroyed = false;
@@ -58,10 +72,10 @@ bool beginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 	return false;
 }
 
-VisualNode* beginNode::GetNextNode()
+basicLogicNode* beginNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		return Output[0]->GetConnections()[0]->GetParent();
+		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
 	
 	return nullptr;
 }

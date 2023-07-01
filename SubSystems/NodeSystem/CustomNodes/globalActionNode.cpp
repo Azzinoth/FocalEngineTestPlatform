@@ -1,6 +1,5 @@
 #include "globalActionNode.h"
 
-VISUAL_NODE_CHILD_CPP(globalActionNode)
 FETPImage* globalActionNode::SleepIcon = nullptr;
 
 FETPImage* globalActionNode::KeyDownIcon = nullptr;
@@ -16,7 +15,23 @@ FETPImage* globalActionNode::ScrollMouseIcon = nullptr;
 FETPImage* globalActionNode::LunchApplicationIcon = nullptr;
 FETPImage* globalActionNode::ScreenshotIcon = nullptr;
 
-globalActionNode::globalActionNode() : VisualNode()
+bool globalActionNode::isRegistered = []()
+{
+	NODE_FACTORY.RegisterNodeType("globalActionNode",
+		[]() -> VisualNode* {
+			return new globalActionNode();
+		},
+
+		[](const VisualNode& Node) -> VisualNode* {
+			const globalActionNode& NodeToCopy = static_cast<const globalActionNode&>(Node);
+			return new globalActionNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+globalActionNode::globalActionNode() : basicLogicNode()
 {
 	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
 }
@@ -49,7 +64,7 @@ void globalActionNode::CopyData(FETPAction* Src)
 	}
 }
 
-globalActionNode::globalActionNode(const globalActionNode& Src) : VisualNode(Src)
+globalActionNode::globalActionNode(const globalActionNode& Src) : basicLogicNode(Src)
 {
 	CopyData(Src.Data);
 	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
@@ -161,7 +176,7 @@ void globalActionNode::Initialize(FETPAction* Data)
 	}
 }
 
-globalActionNode::globalActionNode(FETPAction* Data) : VisualNode()
+globalActionNode::globalActionNode(FETPAction* Data) : basicLogicNode()
 {
 	Initialize(Data);
 }
@@ -371,7 +386,7 @@ Json::Value globalActionNode::ToJson()
 	return result;
 }
 
-VisualNode* globalActionNode::GetNextNode()
+basicLogicNode* globalActionNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
 	{
@@ -381,14 +396,14 @@ VisualNode* globalActionNode::GetNextNode()
 			for (size_t i = 0; i < action->imagesInfo.size(); i++)
 			{
 				if (action->imagesInfo[i]->lastRunResult)
-					return Output[i]->GetConnections()[0]->GetParent();
+					return reinterpret_cast<basicLogicNode*>(Output[i]->GetConnections()[0]->GetParent());
 			}
 
-			return Output[0]->GetConnections()[0]->GetParent();
+			return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
 		}
 		else
 		{
-			return Output[0]->GetConnections()[0]->GetParent();
+			return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
 		}
 	}
 
@@ -425,24 +440,6 @@ void globalActionNode::FromJson(Json::Value Json)
 		Data->fromJson(Json["action"]);
 		Initialize(Data);
 	}
-}
-
-VisualNode* globalActionNode::GetLogicallyNextNode()
-{
-	if (Data->getType() != FETP_SCREENSHOOT_COMPARE_ACTION)
-		return VisualNode::GetLogicallyNextNode();
-
-	ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
-	for (size_t i = 0; i < action->imagesInfo.size(); i++)
-	{
-		if (action->imagesInfo[i]->lastRunResult)
-		{
-			if (Output[i]->GetConnections().size() > 0)
-				return Output[i]->GetConnections()[0]->GetParent();
-		}
-	}
-
-	return nullptr;
 }
 
 bool globalActionNode::OpenContextMenu()

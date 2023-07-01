@@ -1,8 +1,22 @@
 #include "endNode.h"
 
-VISUAL_NODE_CHILD_CPP(endNode)
+bool endNode::isRegistered = []()
+{
+	NODE_FACTORY.RegisterNodeType("endNode",
+		[]() -> VisualNode* {
+			return new endNode();
+		},
 
-endNode::endNode() : VisualNode()
+		[](const VisualNode& Node) -> VisualNode* {
+			const endNode& NodeToCopy = static_cast<const endNode&>(Node);
+			return new endNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+endNode::endNode() : basicLogicNode()
 {
 	Type = "endNode";
 	bCouldBeDestroyed = false;
@@ -21,7 +35,7 @@ endNode::endNode() : VisualNode()
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-endNode::endNode(const endNode& Src) : VisualNode(Src)
+endNode::endNode(const endNode& Src) : basicLogicNode(Src)
 {
 	Data = Src.Data;
 	bCouldBeDestroyed = false;
@@ -58,12 +72,7 @@ bool endNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, cha
 	return true;
 }
 
-VisualNode* endNode::GetNextNode()
-{
-	return GetLogicallyNextNode();
-}
-
-VisualNode* endNode::GetLogicallyNextNode()
+basicLogicNode* endNode::GetNextNode()
 {
 	return NextNode;
 }

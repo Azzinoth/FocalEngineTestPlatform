@@ -5,7 +5,11 @@
 #include "../Windows/textInputPopup.h"
 #include "../Windows/actionEditPopup.h"
 
-VISUAL_NODE_CHILD_PRIVATE_PART(regionNode)
+class regionNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
 	VisualNodeArea* Data;
 
 	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
@@ -26,11 +30,8 @@ public:
 	void Draw();
 	VisualNodeArea* GetData();
 
-	VisualNode* GetNextNode();
-	VisualNode* GetLogicallyNextNode();
+	basicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(regionNode)

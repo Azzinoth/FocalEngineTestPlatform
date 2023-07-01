@@ -361,7 +361,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 
 	currentlyRunning->beforeBegin();
 
-	VisualNode* currentNode = currentlyRunning->getBeginNode();
+	basicLogicNode* currentNode = currentlyRunning->getBeginNode();
 	while (currentNode != nullptr)
 	{
 		std::string originalText = "";
@@ -383,7 +383,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 			return false;
 		}
 
-		currentNode = currentNode->GetLogicallyNextNode();
+		currentNode = currentNode->GetNextNode();
 	}
 
 

@@ -1,9 +1,24 @@
 #include "regionNode.h"
 
-VISUAL_NODE_CHILD_CPP(regionNode)
 FETPImage* regionNode::RegionIcon = nullptr;
 
-regionNode::regionNode() : VisualNode()
+bool regionNode::isRegistered = []()
+{
+	NODE_FACTORY.RegisterNodeType("regionNode",
+		[]() -> VisualNode* {
+			return new regionNode();
+		},
+
+		[](const VisualNode& Node) -> VisualNode* {
+			const regionNode& NodeToCopy = static_cast<const regionNode&>(Node);
+			return new regionNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+regionNode::regionNode() : basicLogicNode()
 {
 	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
 	Type = "regionNode";
@@ -21,7 +36,7 @@ regionNode::regionNode() : VisualNode()
 	AddSocket(new NodeSocket(this, "FLOAT", "", true));
 }
 
-regionNode::regionNode(const regionNode& Src) : VisualNode(Src)
+regionNode::regionNode(const regionNode& Src) : basicLogicNode(Src)
 {
 	Data = Src.Data;
 	Begin = reinterpret_cast<beginNode*>(Data->GetNodesByType("beginNode")[0]);
@@ -70,18 +85,13 @@ bool regionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, 
 	return true;
 }
 
-VisualNode* regionNode::GetNextNode()
+basicLogicNode* regionNode::GetNextNode()
 {
 	End->NextNode = nullptr;
 	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		End->NextNode = Output[0]->GetConnections()[0]->GetParent();
+		End->NextNode = reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
 	
 	return Begin;
-}
-
-VisualNode* regionNode::GetLogicallyNextNode()
-{
-	return GetNextNode();
 }
 
 void regionNode::CheckIcons()

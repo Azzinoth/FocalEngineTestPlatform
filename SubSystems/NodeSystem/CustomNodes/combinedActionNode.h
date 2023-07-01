@@ -4,7 +4,12 @@
 
 class testEditorWinow;
 class nodeRegionWindow;
-VISUAL_NODE_CHILD_PRIVATE_PART(combinedActionNode)
+
+class combinedActionNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
 	friend testEditorWinow;
 	friend nodeRegionWindow;
 
@@ -44,7 +49,7 @@ public:
 
 	void Draw();
 	std::vector<FETPAction*> GetData();
-	VisualNode* GetNextNode();
+	basicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
@@ -53,5 +58,3 @@ public:
 	FETP_COMBINED_ACTION_TYPE GetCombinedActionType();
 	void Remove();
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(combinedActionNode)
