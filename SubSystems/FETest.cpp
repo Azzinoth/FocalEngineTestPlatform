@@ -128,12 +128,15 @@ beginNode* FETest::getBeginNode()
 
 void FETest::reColorMainTestPath()
 {
-	// Change color of all connections to default.
+	// Change style of all connections to default.
 	nodeArea->RunOnEachNode([](VisualNode* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
-			node->SetForcedOutSocketColor(FETest::defaultConnectionColor, i);
+			VisualNodeConnectionStyle TempStyle;
+			node->GetSocketStyle(true, i, TempStyle);
+			TempStyle.bMarchingAntsEffect = false;
+			node->SetSocketStyle(true, i, TempStyle);
 		}
 	});
 
@@ -146,7 +149,10 @@ void FETest::reColorMainTestPath()
 			size_t outSocketCount = node->OutSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
 			{
-				node->SetForcedOutSocketColor(FETest::mainPathConnectionColor, i);
+				VisualNodeConnectionStyle TempStyle;
+				node->GetSocketStyle(true, i, TempStyle);
+				TempStyle.bMarchingAntsEffect = true;
+				node->SetSocketStyle(true, i, TempStyle);
 			}
 		}
 	);

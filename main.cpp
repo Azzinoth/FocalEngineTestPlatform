@@ -49,6 +49,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto time = TIME.EndTimeStamp("M");*/
 	//int FrameCount = 0;
 
+	NODE_SYSTEM.AssociateSocketTypeToColor("FLOAT", ImColor(200, 0, 0));
+
 	while (TEST_PLATFORM.isWindowOpened())
 	{
 		TEST_PLATFORM.beginFrame();

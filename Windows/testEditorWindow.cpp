@@ -282,12 +282,15 @@ void testEditorWinow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWith
 	if (eventWithNode == VISUAL_NODE_BEFORE_CONNECTED || eventWithNode == VISUAL_NODE_BEFORE_DISCONNECTED)
 		return;
 
-	// Change color of all connections to default.
+	// Change style of all connections to default.
 	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachNode([](VisualNode* node) {
 		size_t OutSocketCount = node->OutSocketCount();
 		for (size_t i = 0; i < OutSocketCount; i++)
 		{
-			node->SetForcedOutSocketColor(FETest::defaultConnectionColor, i);
+			VisualNodeConnectionStyle TempStyle;
+			node->GetSocketStyle(true, i, TempStyle);
+			TempStyle.bMarchingAntsEffect = false;
+			node->SetSocketStyle(true, i, TempStyle);
 		}
 	});
 
@@ -300,7 +303,10 @@ void testEditorWinow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWith
 			size_t OutSocketCount = node->OutSocketCount();
 			for (size_t i = 0; i < OutSocketCount; i++)
 			{
-				node->SetForcedOutSocketColor(FETest::mainPathConnectionColor, i);
+				VisualNodeConnectionStyle TempStyle;
+				node->GetSocketStyle(true, i, TempStyle);
+				TempStyle.bMarchingAntsEffect = true;
+				node->SetSocketStyle(true, i, TempStyle);
 			}
 		}
 	);
