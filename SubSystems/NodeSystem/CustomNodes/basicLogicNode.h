@@ -2,6 +2,7 @@
 
 #include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "../../FETPImage.h"
+#include "../SubSystems/FETPInput.h"
 
 class basicLogicNode : public VisualNode
 {

@@ -29,7 +29,7 @@ beginNode::beginNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 	
-	AddSocket(new NodeSocket(this, "FLOAT", "out", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "out", true));
 
 	if (Icon == nullptr)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
@@ -57,6 +57,12 @@ void beginNode::Draw()
 void beginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
 {
 	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+
+	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	{
+		if (Output[0]->GetConnections().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+	}
 }
 
 float beginNode::GetData()

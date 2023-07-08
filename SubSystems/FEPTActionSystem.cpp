@@ -293,7 +293,7 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 
 			if (action->wParam == WM_MOUSEMOVE)
 			{
-				INPUT_SYSTEM.mouseMoveTo(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+				//INPUT_SYSTEM.mouseMoveTo(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 			}
 			else if (action->wParam == WM_LBUTTONUP)
 			{
@@ -334,11 +334,11 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 
 			ShellExecuteA(NULL, NULL, action->applicationPath.c_str(), NULL, FocalEngine::FILE_SYSTEM.getDirectoryPath(action->applicationPath.c_str()), SW_NORMAL);
 		}
-		else if (actions[i]->getType() == FETP_SLEEP_ACTION)
+		/*else if (actions[i]->getType() == FETP_SLEEP_ACTION)
 		{
 			SleepAction* action = reinterpret_cast<SleepAction*>(actions[i]);
 			Sleep(DWORD(action->sleepFor * currentlyRunning->getSpeedFactor()));
-		}
+		}*/
 	}
 
 	return true;
@@ -362,7 +362,9 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	currentlyRunning->beforeBegin();
 
 	basicLogicNode* currentNode = currentlyRunning->getBeginNode();
-	while (currentNode != nullptr)
+	currentlyRunning->nodeArea->TriggerOrphanSocketEvent(currentNode, VISUAL_NODE_SOCKET_EXECUTE);
+	
+	/*while (currentNode != nullptr)
 	{
 		std::string originalText = "";
 		std::vector<FETPAction*> actions = getActionsFromNode(currentNode);
@@ -384,7 +386,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 		}
 
 		currentNode = currentNode->GetNextNode();
-	}
+	}*/
 
 
 	currentTestResult->success = true;

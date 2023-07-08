@@ -218,7 +218,7 @@ void globalActionNode::Draw()
 		{
 			MouseAction* action = reinterpret_cast<MouseAction*>(Data);
 
-			if (action->wParam == WM_MOUSEMOVE)
+			/*if (action->wParam == WM_MOUSEMOVE)
 			{
 				ImGui::SetNextItemWidth(140);
 				static int position[] = { 0 };
@@ -232,7 +232,7 @@ void globalActionNode::Draw()
 
 				action->additionalInfo.pt.x = position[0];
 				action->additionalInfo.pt.y = position[1];
-			}
+			}*/
 
 			if (action->wParam == WM_MOUSEWHEEL)
 			{

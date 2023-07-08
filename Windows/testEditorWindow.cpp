@@ -56,6 +56,39 @@ void testEditorWinow::mainContextMenu()
 		{
 			globalActionNode* newNode = nullptr;
 
+			if (ImGui::MenuItem("Int"))
+			{
+				intNode* newNode = new intNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+			}
+
+			if (ImGui::BeginMenu("Flow control nodes"))
+			{
+				if (ImGui::MenuItem("Bool"))
+				{
+					boolNode* newBoolNode = new boolNode();
+					newBoolNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newBoolNode);
+				}
+
+				if (ImGui::MenuItem("Branch"))
+				{
+					branchNode* newBranchNode = new branchNode();
+					newBranchNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newBranchNode);
+				}
+
+				if (ImGui::MenuItem("ForLoop"))
+				{
+					//branchNode* newBranchNode = new branchNode();
+					//newBranchNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					//TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newBranchNode);
+				}
+
+				ImGui::EndMenu();
+			}
+
 			if (ImGui::MenuItem("Region node"))
 			{
 				regionNode* newRegionNode = new regionNode();
@@ -65,8 +98,18 @@ void testEditorWinow::mainContextMenu()
 
 			if (ImGui::MenuItem("Sleep node"))
 			{
-				SleepAction* newAction = new SleepAction(10);
-				newNode = new globalActionNode(newAction);
+				sleepNode* newNode = new sleepNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+				//SleepAction* newAction = new SleepAction(10);
+				//newNode = new globalActionNode(newAction);
+			}
+
+			if (ImGui::MenuItem("Timer node"))
+			{
+				timerNode* newNode = new timerNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
 			if (ImGui::MenuItem("Screen compare node..."))
@@ -108,8 +151,11 @@ void testEditorWinow::mainContextMenu()
 			{
 				if (ImGui::MenuItem("Move"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newNode = new globalActionNode(newAction);
+					mouseMoveNode* newNode = new mouseMoveNode();
+					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+					//MouseAction* newAction = new MouseAction();
+					//newNode = new globalActionNode(newAction);
 				}
 
 				if (ImGui::MenuItem("LeftButtonDown"))

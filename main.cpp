@@ -50,6 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//int FrameCount = 0;
 
 	NODE_SYSTEM.AssociateSocketTypeToColor("FLOAT", ImColor(200, 0, 0));
+	NODE_SYSTEM.AssociateSocketTypeToColor("BOOL", ImColor(25, 25, 255));
 
 	while (TEST_PLATFORM.isWindowOpened())
 	{
