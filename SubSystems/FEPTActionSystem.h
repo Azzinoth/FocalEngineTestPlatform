@@ -2,11 +2,6 @@
 
 #include "../SubSystems/TestManager.h"
 
-const COMDLG_FILTERSPEC pngLoadFilter[] =
-{
-	{ L"png files (*.png)", L"*.png" }
-};
-
 const COMDLG_FILTERSPEC applicationLoadFilter[] =
 {
 	{ L"exe files (*.exe)", L"*.exe" }

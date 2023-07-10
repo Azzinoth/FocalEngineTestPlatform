@@ -3,7 +3,7 @@
 #include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "basicLogicNode.h"
 
-class boolNode : public basicLogicNode
+class imageSearchNode : public basicLogicNode
 {
 	friend class NodeFactory;
 	static bool isRegistered;
@@ -11,7 +11,19 @@ class boolNode : public basicLogicNode
 	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
 
-	bool Data = false;
+	glm::vec2 FoundPosition = glm::vec2(-1.0f);
+	bool bFound = false;
+
+	class Vec2Socket : public NodeSocket
+	{
+	public:
+		Vec2Socket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
+
+		void* GetData() override
+		{
+			return reinterpret_cast<glm::vec2*>(&reinterpret_cast<imageSearchNode*>(Parent)->FoundPosition);
+		}
+	};
 
 	class BoolSocket : public NodeSocket
 	{
@@ -20,16 +32,13 @@ class boolNode : public basicLogicNode
 
 		void* GetData() override
 		{
-			return &reinterpret_cast<boolNode*>(Parent)->Data;
+			return &reinterpret_cast<imageSearchNode*>(Parent)->bFound;
 		}
 	};
 
 public:
-	boolNode();
-	boolNode(const boolNode& Src);
-
-	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	imageSearchNode();
+	imageSearchNode(const imageSearchNode& Src);
 
 	void Draw();
 

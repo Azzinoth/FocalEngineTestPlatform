@@ -63,6 +63,13 @@ void testEditorWinow::mainContextMenu()
 				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
+			if (ImGui::MenuItem("Vec2"))
+			{
+				vec2Node* newNode = new vec2Node();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+			}
+
 			if (ImGui::BeginMenu("Flow control nodes"))
 			{
 				if (ImGui::MenuItem("Bool"))
@@ -112,27 +119,41 @@ void testEditorWinow::mainContextMenu()
 				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
+			if (ImGui::MenuItem("Image node"))
+			{
+				imageNode* newNode = new imageNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+			}
+
+			if (ImGui::MenuItem("Image search node"))
+			{
+				imageSearchNode* newNode = new imageSearchNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+			}
+			
 			if (ImGui::MenuItem("Screen compare node..."))
 			{
-				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+				//std::string path;
+				//FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
 
-				if (path != "")
-				{
-					std::vector<unsigned char> rawData;
-					unsigned uWidth, uHeight;
-					int error = lodepng::decode(rawData, uWidth, uHeight, path);
+				//if (path != "")
+				//{
+				//	std::vector<unsigned char> rawData;
+				//	unsigned uWidth, uHeight;
+				//	int error = lodepng::decode(rawData, uWidth, uHeight, path);
 
-					if (error == 0)
-					{
-						unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-						memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-						ScreenshootCompareAction* newAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
-						delete[] tempData;
+				//	if (error == 0)
+				//	{
+				//		unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
+				//		memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
+				//		ScreenshootCompareAction* newAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
+				//		delete[] tempData;
 
-						newNode = new globalActionNode(newAction);
-					}
-				}
+				//		newNode = new globalActionNode(newAction);
+				//	}
+				//}
 			}
 
 			if (ImGui::MenuItem("Application lunch node..."))

@@ -28,6 +28,9 @@ public:
 	intNode();
 	intNode(const intNode& Src);
 
+	Json::Value ToJson();
+	void FromJson(Json::Value Json);
+
 	void Draw();
 
 	basicLogicNode* GetNextNode();

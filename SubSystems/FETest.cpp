@@ -260,6 +260,24 @@ void FETest::validateImagePathes(VisualNodeArea* nodeArea, std::string filePath)
 		}
 	}
 
+	list = nodeArea->GetNodesByType("imageNode");
+	actionSeenIDs.clear();
+	for (size_t i = 0; i < list.size(); i++)
+	{
+		imageNode* node = reinterpret_cast<imageNode*>(list[i]);
+
+		// Here we are using ID of node instead of ID of image because imageNode can have only one image.
+		actionSeenIDs[node->GetID()] = true;
+		if (node->Data != nullptr)
+		{
+			std::string fileName = directoryPath;
+			fileName += node->GetID();
+			fileName += ".png";
+
+			node->Data->setFullPath(fileName);
+		}
+	}
+
 	// Validate nodes in node regions.
 	/*std::vector<FEVisualNode*> regionList = nodeArea->getNodesByType("regionNode");
 	for (size_t i = 0; i < regionList.size(); i++)
@@ -364,6 +382,10 @@ Json::Value FETest::validateImagePathesInNodeArea(std::string nodeAreaText)
 		{
 			Json::StreamWriterBuilder saveBuilder;
 			root["nodes"][std::to_string(i)]["nodeArea"] = Json::writeString(saveBuilder, validateImagePathesInNodeArea(root["nodes"][std::to_string(i)]["nodeArea"].asCString()));
+		}
+		else if (nodeType == "imageNode")
+		{
+			root["nodes"][std::to_string(i)]["DirectoryPath"] = newPath;
 		}
 	}
 

@@ -4,12 +4,15 @@
 
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
 #include "NodeSystem/CustomNodes/intNode.h"
+#include "NodeSystem/CustomNodes/vec2Node.h"
 #include "NodeSystem/CustomNodes/boolNode.h"
 #include "NodeSystem/CustomNodes/branchNode.h"
 #include "NodeSystem/CustomNodes/timerNode.h"
 #include "NodeSystem/CustomNodes/sleepNode.h"
 #include "NodeSystem/CustomNodes/beginNode.h"
 #include "NodeSystem/CustomNodes/mouseMoveNode.h"
+#include "NodeSystem/CustomNodes/imageNode.h"
+#include "NodeSystem/CustomNodes/imageSearchNode.h"
 #include "NodeSystem/CustomNodes/combinedActionNode.h"
 #include "NodeSystem/CustomNodes/regionNode.h"
 

@@ -34,6 +34,24 @@ intNode::intNode() : basicLogicNode()
 intNode::intNode(const intNode& Src) : basicLogicNode(Src)
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	Data = Src.Data;
+
+	delete Output[0];
+	Output.clear();
+	AddSocket(new IntSocket(this, "INT", "Out", true));
+}
+
+Json::Value intNode::ToJson()
+{
+	Json::Value Result = VisualNode::ToJson();
+	Result["intNode_Data"] = Data;
+	return Result;
+}
+
+void intNode::FromJson(Json::Value Json)
+{
+	VisualNode::FromJson(Json);
+	Data = Json["intNode_Data"].asInt();
 }
 
 void intNode::Draw()

@@ -177,7 +177,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int begin_Position[] = { 0 };
+			static int begin_Position[] = { 0, 0 };
 			begin_Position[0] = int(BeginPosition.x);
 			begin_Position[1] = int(BeginPosition.y);
 
@@ -190,7 +190,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int end_Position[] = { 0 };
+			static int end_Position[] = { 0, 0 };
 			end_Position[0] = int(EndPosition.x);
 			end_Position[1] = int(EndPosition.y);
 
@@ -205,7 +205,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int position[] = { 0 };
+			static int position[] = { 0, 0 };
 			position[0] = int(BeginPosition.x);
 			position[1] = int(BeginPosition.y);
 
@@ -220,7 +220,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int position[] = { 0 };
+			static int position[] = { 0, 0 };
 			position[0] = int(BeginPosition.x);
 			position[1] = int(BeginPosition.y);
 

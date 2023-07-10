@@ -40,6 +40,39 @@ timerNode::timerNode() : basicLogicNode()
 timerNode::timerNode(const timerNode& Src) : basicLogicNode(Src)
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	Data = Src.Data;
+
+	for (size_t i = 0; i < Input.size(); i++)
+	{
+		delete Input[i];
+	}
+	Input.clear();
+
+	AddSocket(new TimerLeftSocket(this, "EXECUTE", "Check time", false));
+	AddSocket(new TimerLeftSocket(this, "EXECUTE", "Set time", false));
+	AddSocket(new TimerLeftSocket(this, "INT", "time input", false));
+
+	for (size_t i = 0; i < Output.size(); i++)
+	{
+		delete Output[i];
+	}
+	Output.clear();
+	AddSocket(new TimerLeftSocket(this, "INT", "Time left", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
+}
+
+Json::Value timerNode::ToJson()
+{
+	Json::Value Result = VisualNode::ToJson();
+	Result["timerNode_Data"] = Data;
+	return Result;
+}
+
+void timerNode::FromJson(Json::Value Json)
+{
+	VisualNode::FromJson(Json);
+	Data = Json["timerNode_Data"].asInt();
 }
 
 int timerNode::GetTimeLeft()

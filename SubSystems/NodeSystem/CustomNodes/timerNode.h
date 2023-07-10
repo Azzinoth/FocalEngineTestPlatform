@@ -30,6 +30,9 @@ public:
 	timerNode();
 	timerNode(const timerNode& Src);
 
+	Json::Value ToJson();
+	void FromJson(Json::Value Json);
+
 	void Draw();
 
 	int GetTimeLeft();

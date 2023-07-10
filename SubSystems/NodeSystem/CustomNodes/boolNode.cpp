@@ -34,6 +34,24 @@ boolNode::boolNode() : basicLogicNode()
 boolNode::boolNode(const boolNode& Src) : basicLogicNode(Src)
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	Data = Src.Data;
+
+	delete Output[0];
+	Output.clear();
+	AddSocket(new BoolSocket(this, "BOOL", "Out", true));
+}
+
+Json::Value boolNode::ToJson()
+{
+	Json::Value Result = VisualNode::ToJson();
+	Result["boolNode_Data"] = Data;
+	return Result;
+}
+
+void boolNode::FromJson(Json::Value Json)
+{
+	VisualNode::FromJson(Json);
+	Data = Json["boolNode_Data"].asBool();
 }
 
 void boolNode::Draw()

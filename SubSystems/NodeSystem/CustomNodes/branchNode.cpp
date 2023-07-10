@@ -28,7 +28,7 @@ branchNode::branchNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "Input", false));
+	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "BOOL", "Condition", false));
 	
 	AddSocket(new NodeSocket(this, "EXECUTE", "True", true));
@@ -43,9 +43,6 @@ branchNode::branchNode(const branchNode& Src) : basicLogicNode(Src)
 void branchNode::Draw()
 {	
 	VisualNode::Draw();
-
-	//ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
-	//ImGui::Image((void*)(intptr_t)Icon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
 void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
