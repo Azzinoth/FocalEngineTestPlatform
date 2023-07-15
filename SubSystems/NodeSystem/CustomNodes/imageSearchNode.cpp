@@ -22,7 +22,7 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 
-	SetSize(ImVec2(230, 220));
+	SetSize(ImVec2(290, 220));
 	SetName("image search node");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
@@ -30,12 +30,12 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
+	AddSocket(new NodeSocket(this, "FLOAT", "Simularity", false));
+	AddSocket(new NodeSocket(this, "INT", "Color shift", false));
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
-	//AddSocket(new BoolSocket(this, "BOOL", "Found", true));
 	AddSocket(new NodeSocket(this, "BOOL", "Found", true));
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
-	//AddSocket(new Vec2Socket(this, "VEC2", "Position", true));
 	AddSocket(new NodeSocket(this, "VEC2", "Position", true));
 	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
 }
@@ -70,76 +70,50 @@ void imageSearchNode::Draw()
 {	
 	VisualNode::Draw();
 
-	/*int xPosition = ImGui::GetCursorScreenPos().x + 75.0f;
-	int yPosition = ImGui::GetCursorScreenPos().y + 115.0f;
-	
-	if (Data == nullptr)
-	{
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-		ImGui::Text("NO IMAGE");
+	int xPosition = ImGui::GetCursorScreenPos().x + 115.0f;
+	int yPosition = ImGui::GetCursorScreenPos().y + 139.0f;
 
-		xPosition -= 8.0f;
-		yPosition += 75.0f;
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-		if (ImGui::Button("Load Image"))
-		{
-			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+	ImGui::BeginDisabled(Input[2]->GetConnections().size() != 0);
+	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetNextItemWidth(35.0f);
+	ImGui::DragFloat("##Simularity", &Simularity, 0.1f, 0.0f, 100.0f);
+	if (Simularity > 100.0f)
+		Simularity = 100.0f;
 
-			if (path != "")
-			{
-				std::vector<unsigned char> rawData;
-				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, path);
+	if (Simularity < 0.0f)
+		Simularity = 0.0f;
 
-				if (error == 0)
-				{
-					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					Data = new FETPImage(tempData, uWidth, uHeight);
-					delete[] tempData;
-				}
-			}
-		}
-	}
-	else
-	{
-		xPosition -= 25.0f;
-		yPosition -= 60.0f;
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-		ImGui::Image((void*)(intptr_t)Data->getTextureID(), ImVec2(128.0f, 128.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	ImGui::EndDisabled();
 
-		xPosition -= 20.0f;
-		yPosition += 136.0f;
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-		if (ImGui::Button("Load different image"))
-		{
-			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
-
-			if (path != "")
-			{
-				std::vector<unsigned char> rawData;
-				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, path);
-
-				if (error == 0)
-				{
-					delete Data;
-
-					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					Data = new FETPImage(tempData, uWidth, uHeight);
-					delete[] tempData;
-				}
-			}
-		}
-	}*/
+	xPosition += 7;
+	yPosition += 48;
+	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetNextItemWidth(35.0f);
+	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 0.1f, 0.0f, 100.0f);
+	if (MaxColorShift < 0)
+		MaxColorShift = 0;
 }
 
 void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
 {
 	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+
+	if (EventType == VISUAL_NODE_SOCKET_UPDATE)
+	{
+		if (Input[2]->GetConnections().size() > 0)
+		{
+			void* TempData = Input[2]->GetConnections()[0]->GetData();
+			if (TempData != nullptr)
+				Simularity = *reinterpret_cast<float*>(TempData);
+		}
+
+		if (Input[3]->GetConnections().size() > 0)
+		{
+			void* TempData = Input[3]->GetConnections()[0]->GetData();
+			if (TempData != nullptr)
+				MaxColorShift = *reinterpret_cast<int*>(TempData);
+		}
+	}
 
 	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
 	{
@@ -166,7 +140,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				size_t y = 0;
 
 				bool found = false;
-				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, 90.0f/*float(action->imagesInfo[i]->correctnessThreshold)*/, 8/*action->imagesInfo[i]->maxColorShift*/);
+				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, Simularity, MaxColorShift);
 				found = Position.x != -1 && Position.y != -1;
 				x = Position.x;
 				y = Position.y;

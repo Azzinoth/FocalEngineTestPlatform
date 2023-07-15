@@ -1,65 +1,65 @@
-#include "intNode.h"
+#include "floatNode.h"
 
-bool intNode::isRegistered = []()
+bool floatNode::isRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("intNode",
+	NODE_FACTORY.RegisterNodeType("floatNode",
 		[]() -> VisualNode* {
-			return new intNode();
+			return new floatNode();
 		},
 
 		[](const VisualNode& Node) -> VisualNode* {
-			const intNode& NodeToCopy = static_cast<const intNode&>(Node);
-			return new intNode(NodeToCopy);
+			const floatNode& NodeToCopy = static_cast<const floatNode&>(Node);
+			return new floatNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-intNode::intNode() : basicLogicNode()
+floatNode::floatNode() : basicLogicNode()
 {
-	Type = "intNode";
+	Type = "floatNode";
 
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 
 	SetSize(ImVec2(170, 78));
-	SetName("int node");
+	SetName("float node");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "INT", "Out", true));
-	Output[0]->SetFunctionToOutputData(IntDataGetter);
+	AddSocket(new NodeSocket(this, "FLOAT", "Out", true));
+	Output[0]->SetFunctionToOutputData(FloatDataGetter);
 }
 
-intNode::intNode(const intNode& Src) : basicLogicNode(Src)
+floatNode::floatNode(const floatNode& Src) : basicLogicNode(Src)
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 	Data = Src.Data;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
-	Output[0]->SetFunctionToOutputData(IntDataGetter);
+	Output[0]->SetFunctionToOutputData(FloatDataGetter);
 }
 
-Json::Value intNode::ToJson()
+Json::Value floatNode::ToJson()
 {
 	Json::Value Result = VisualNode::ToJson();
-	Result["intNode_Data"] = Data;
+	Result["floatNode_Data"] = Data;
 	return Result;
 }
 
-void intNode::FromJson(Json::Value Json)
+void floatNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
-	Data = Json["intNode_Data"].asInt();
+	Data = Json["floatNode_Data"].asInt();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
-	Output[0]->SetFunctionToOutputData(IntDataGetter);
+	Output[0]->SetFunctionToOutputData(FloatDataGetter);
 }
 
-void intNode::Draw()
+void floatNode::Draw()
 {	
 	VisualNode::Draw();
 
@@ -70,19 +70,19 @@ void intNode::Draw()
 
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 	ImGui::SetNextItemWidth(100);
-	if (ImGui::InputInt("##value", &Data))
+	if (ImGui::InputFloat("##value", &Data))
 	{
 		if (Output[0]->GetConnections().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_UPDATE);
 	}
 }
 
-void intNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void floatNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
 {
 	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-bool intNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool floatNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -90,7 +90,7 @@ bool intNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, cha
 	return true;
 }
 
-basicLogicNode* intNode::GetNextNode()
+basicLogicNode* floatNode::GetNextNode()
 {
 	return nullptr;
 }

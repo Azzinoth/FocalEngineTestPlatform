@@ -78,16 +78,14 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 {
 	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (Input[1]->GetConnections().size() > 0)
+	if (EventType == VISUAL_NODE_SOCKET_UPDATE || EventType == VISUAL_NODE_SOCKET_EXECUTE)
 	{
-		void* TempData = Input[1]->GetConnections()[0]->GetData();
-		if (TempData != nullptr)
-			Data = *reinterpret_cast<glm::vec2*>(TempData);
-	}
-
-	if (EventType == VISUAL_NODE_SOCKET_UPDATE)
-	{
-		
+		if (Input[1]->GetConnections().size() > 0)
+		{
+			void* TempData = Input[1]->GetConnections()[0]->GetData();
+			if (TempData != nullptr)
+				Data = *reinterpret_cast<glm::vec2*>(TempData);
+		}
 	}
 
 	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)

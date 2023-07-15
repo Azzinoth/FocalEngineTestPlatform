@@ -63,6 +63,13 @@ void testEditorWinow::mainContextMenu()
 				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
+			if (ImGui::MenuItem("Float"))
+			{
+				floatNode* newNode = new floatNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+			}
+
 			if (ImGui::MenuItem("Vec2"))
 			{
 				vec2Node* newNode = new vec2Node();

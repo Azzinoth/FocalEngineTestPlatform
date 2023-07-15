@@ -4,6 +4,7 @@
 
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
 #include "NodeSystem/CustomNodes/intNode.h"
+#include "NodeSystem/CustomNodes/floatNode.h"
 #include "NodeSystem/CustomNodes/vec2Node.h"
 #include "NodeSystem/CustomNodes/boolNode.h"
 #include "NodeSystem/CustomNodes/branchNode.h"

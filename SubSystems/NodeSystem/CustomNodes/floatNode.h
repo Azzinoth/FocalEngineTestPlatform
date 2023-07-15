@@ -3,7 +3,7 @@
 #include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "basicLogicNode.h"
 
-class imageSearchNode : public basicLogicNode
+class floatNode : public basicLogicNode
 {
 	friend class NodeFactory;
 	static bool isRegistered;
@@ -11,22 +11,15 @@ class imageSearchNode : public basicLogicNode
 	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
 
-	float Simularity = 95.0f;
-	int MaxColorShift = 4;
-	glm::vec2 FoundPosition = glm::vec2(-1.0f);
-	bool bFound = false;
+	float Data = 0.0f;
 
-	std::function<void* ()> Vec2DataGetter = [this]() -> void* {
-		return &FoundPosition;
-	};
-
-	std::function<void* ()> BoolDataGetter = [this]() -> void* {
-		return &bFound;
+	std::function<void* ()> FloatDataGetter = [this]() -> void* {
+		return &Data;
 	};
 
 public:
-	imageSearchNode();
-	imageSearchNode(const imageSearchNode& Src);
+	floatNode();
+	floatNode(const floatNode& Src);
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
