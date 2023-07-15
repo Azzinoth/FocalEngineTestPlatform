@@ -74,16 +74,23 @@ void testEditorWinow::mainContextMenu()
 			{
 				if (ImGui::MenuItem("Bool"))
 				{
-					boolNode* newBoolNode = new boolNode();
-					newBoolNode->SetPosition(mousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newBoolNode);
+					boolNode* newNode = new boolNode();
+					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 				}
 
 				if (ImGui::MenuItem("Branch"))
 				{
-					branchNode* newBranchNode = new branchNode();
-					newBranchNode->SetPosition(mousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newBranchNode);
+					branchNode* newNode = new branchNode();
+					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+				}
+
+				if (ImGui::MenuItem("Sequence"))
+				{
+					sequenceNode* neNode = new sequenceNode();
+					neNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(neNode);
 				}
 
 				if (ImGui::MenuItem("ForLoop"))

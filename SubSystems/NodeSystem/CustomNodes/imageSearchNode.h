@@ -14,7 +14,11 @@ class imageSearchNode : public basicLogicNode
 	glm::vec2 FoundPosition = glm::vec2(-1.0f);
 	bool bFound = false;
 
-	class Vec2Socket : public NodeSocket
+	std::function<void* ()> Vec2DataGetter = [this]() -> void* {
+		return &FoundPosition;
+	};
+
+	/*class Vec2Socket : public NodeSocket
 	{
 	public:
 		Vec2Socket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
@@ -23,9 +27,13 @@ class imageSearchNode : public basicLogicNode
 		{
 			return reinterpret_cast<glm::vec2*>(&reinterpret_cast<imageSearchNode*>(Parent)->FoundPosition);
 		}
+	};*/
+
+	std::function<void* ()> BoolDataGetter = [this]() -> void* {
+		return &bFound;
 	};
 
-	class BoolSocket : public NodeSocket
+	/*class BoolSocket : public NodeSocket
 	{
 	public:
 		BoolSocket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
@@ -34,11 +42,14 @@ class imageSearchNode : public basicLogicNode
 		{
 			return &reinterpret_cast<imageSearchNode*>(Parent)->bFound;
 		}
-	};
+	};*/
 
 public:
 	imageSearchNode();
 	imageSearchNode(const imageSearchNode& Src);
+
+	Json::Value ToJson();
+	void FromJson(Json::Value Json);
 
 	void Draw();
 

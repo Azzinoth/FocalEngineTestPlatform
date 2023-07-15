@@ -271,7 +271,7 @@ void FETest::validateImagePathes(VisualNodeArea* nodeArea, std::string filePath)
 		if (node->Data != nullptr)
 		{
 			std::string fileName = directoryPath;
-			fileName += node->GetID();
+			fileName += node->Data->getID();
 			fileName += ".png";
 
 			node->Data->setFullPath(fileName);

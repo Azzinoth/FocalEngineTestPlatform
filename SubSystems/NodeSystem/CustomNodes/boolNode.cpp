@@ -28,7 +28,8 @@ boolNode::boolNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new BoolSocket(this, "BOOL", "Out", true));
+	AddSocket(new NodeSocket(this, "BOOL", "Out", true));
+	Output[0]->SetFunctionToOutputData(BoolDataGetter);
 }
 
 boolNode::boolNode(const boolNode& Src) : basicLogicNode(Src)
@@ -36,9 +37,9 @@ boolNode::boolNode(const boolNode& Src) : basicLogicNode(Src)
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 	Data = Src.Data;
 
-	delete Output[0];
-	Output.clear();
-	AddSocket(new BoolSocket(this, "BOOL", "Out", true));
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(BoolDataGetter);
 }
 
 Json::Value boolNode::ToJson()
@@ -52,6 +53,10 @@ void boolNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
 	Data = Json["boolNode_Data"].asBool();
+
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(BoolDataGetter);
 }
 
 void boolNode::Draw()

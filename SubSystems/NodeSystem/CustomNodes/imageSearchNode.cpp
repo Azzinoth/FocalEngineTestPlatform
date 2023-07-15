@@ -32,32 +32,38 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
-	AddSocket(new BoolSocket(this, "BOOL", "Found", true));
-	AddSocket(new Vec2Socket(this, "VEC2", "Position", true));
+	//AddSocket(new BoolSocket(this, "BOOL", "Found", true));
+	AddSocket(new NodeSocket(this, "BOOL", "Found", true));
+	Output[1]->SetFunctionToOutputData(BoolDataGetter);
+	//AddSocket(new Vec2Socket(this, "VEC2", "Position", true));
+	AddSocket(new NodeSocket(this, "VEC2", "Position", true));
+	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
 imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Src)
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 
-	for (size_t i = 0; i < Input.size(); i++)
-	{
-		delete Input[i];
-	}
-	Input.clear();
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[1]->SetFunctionToOutputData(BoolDataGetter);
+	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
+}
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
-	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
+Json::Value imageSearchNode::ToJson()
+{
+	Json::Value Result = VisualNode::ToJson();
+	return Result;
+}
 
-	for (size_t i = 0; i < Output.size(); i++)
-	{
-		delete Output[i];
-	}
-	Output.clear();
+void imageSearchNode::FromJson(Json::Value Json)
+{
+	VisualNode::FromJson(Json);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
-	AddSocket(new BoolSocket(this, "BOOL", "Found", true));
-	AddSocket(new Vec2Socket(this, "VEC2", "Position", true));
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[1]->SetFunctionToOutputData(BoolDataGetter);
+	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
 void imageSearchNode::Draw()
@@ -146,14 +152,6 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			{
 				ImageToLookFor = reinterpret_cast<FETPImage*>(TempData);
 
-				//FETPImage* image = imageToUse(action->imagesInfo[i]);
-				/*if (image == nullptr)
-				{
-					currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-					currentTestResult->failedAction = action;
-					continue;
-				}*/
-
 				std::vector<unsigned char> tempScreenshoot;
 				tempScreenshoot.resize(ImageToLookFor->getWidth() * ImageToLookFor->getHeight() * 4);
 
@@ -161,164 +159,31 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				tempDifferenceData.resize(tempScreenshoot.size());
 
 				FETPImage* TestScreenShoot = nullptr;
+				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
 
-				//if (action->imagesInfo[i]->partialImage != nullptr)
-				//{
-					//if (!action->bUseGPU)
-					//{
-					//	SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
-					//}
-					//else
-					//{
-						TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
-					//}
-				/*}
-				else
+				int similarity = 0;
+				size_t x = 0;
+				size_t y = 0;
+
+				bool found = false;
+				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, 90.0f/*float(action->imagesInfo[i]->correctnessThreshold)*/, 8/*action->imagesInfo[i]->maxColorShift*/);
+				found = Position.x != -1 && Position.y != -1;
+				x = Position.x;
+				y = Position.y;
+
+				FoundPosition = Position;
+				bFound = found;
+
+				if (found)
 				{
-					SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->getWidth(), image->getHeight());
-				}*/
-						int similarity = 0;
-						/*unsigned char* tempRawData = image->getRawData();
-						if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
-						{*/
-							size_t x = 0;
-							size_t y = 0;
+					int y = 0;
+					y++;
+				}
 
-							//TIME.BeginTimeStamp("M");
-							bool found = false;
-							/*if (!action->bUseGPU)
-							{
-								found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
-							}
-							else
-							{*/
-								glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor/*action->imagesInfo[i]->partialImage*/, 90.0f/*float(action->imagesInfo[i]->correctnessThreshold)*/, 4/*action->imagesInfo[i]->maxColorShift*/);
-								found = Position.x != -1 && Position.y != -1;
-								x = Position.x;
-								y = Position.y;
+				delete TestScreenShoot;
 
-								FoundPosition = Position;
-								bFound = found;
-							//}
-							//auto time = TIME.EndTimeStamp("M");
-
-							if (found)
-							{
-								int y = 0;
-								y++;
-								/*INPUT_SYSTEM.mouseMoveTo(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound(),
-									y + action->imagesInfo[i]->screenSearch->getYShiftFromFound());
-								action->imagesInfo[i]->lastRunResult = true;
-								return true;*/
-							}
-
-							if (Output[0]->GetConnections().size() > 0)
-								ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
-						/*}
-						else
-						{
-							similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
-						}
-						delete[] tempRawData;*/
-
-						//if (similarity < action->imagesInfo[i]->correctnessThreshold)
-						//{
-						//	if (!action->imagesInfo[i]->severalAttempts)
-						//	{
-						//		currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-						//		currentTestResult->failedAction = action;
-
-						//		FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->getWidth(), image->getHeight());
-						//		FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->getWidth(), image->getHeight());
-						//		currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, similarity));
-
-						//		continue;
-						//	}
-						//	else
-						//	{
-						//		DWORD beginTime = GetTickCount();
-						//		while (similarity < action->imagesInfo[i]->correctnessThreshold)
-						//		{
-						//			Sleep(10);
-						//			if (action->imagesInfo[i]->partialImage != nullptr)
-						//			{
-						//				if (!action->bUseGPU)
-						//				{
-						//					SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
-						//				}
-						//				else
-						//				{
-						//					delete TestScreenShoot;
-						//					TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
-						//				}
-						//			}
-						//			else
-						//			{
-						//				SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->getWidth(), image->getHeight());
-						//			}
-
-						//			//int similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data());
-						//			int similarity = 0;
-						//			unsigned char* tempRawData = image->getRawData();
-						//			if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
-						//			{
-						//				size_t x = 0;
-						//				size_t y = 0;
-
-						//				bool found = false;
-						//				if (!action->bUseGPU)
-						//				{
-						//					found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
-						//				}
-						//				else
-						//				{
-						//					glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
-						//					found = Position.x != -1 && Position.y != -1;
-						//					x = Position.x;
-						//					y = Position.y;
-						//				}
-
-						//				if (found)
-						//				{
-						//					INPUT_SYSTEM.mouseMoveTo(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound(),
-						//						y + action->imagesInfo[i]->screenSearch->getYShiftFromFound());
-						//					action->imagesInfo[i]->lastRunResult = true;
-						//					return true;
-						//				}
-						//			}
-						//			else
-						//			{
-						//				similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
-						//			}
-						//			delete[] tempRawData;
-
-						//			if (similarity > action->imagesInfo[i]->correctnessThreshold)
-						//			{
-						//				action->imagesInfo[i]->lastRunResult = true;
-						//				return true;
-						//			}
-
-						//			if (GetTickCount() - beginTime > DWORD(action->imagesInfo[i]->severalAttemptsTimeout))
-						//			{
-						//				currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-						//				currentTestResult->failedAction = action;
-
-						//				FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->getWidth(), image->getHeight());
-						//				FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->getWidth(), image->getHeight());
-						//				currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, similarity));
-						//				break;
-						//			}
-						//		}
-						//	}
-						//}
-						//else
-						//{
-						//	action->imagesInfo[i]->lastRunResult = true;
-						//	return true;
-						//}
-
-
-
+				if (Output[0]->GetConnections().size() > 0)
+					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
 			}
 		}
 	}

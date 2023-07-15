@@ -28,7 +28,9 @@ vec2Node::vec2Node() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new Vec2Socket(this, "VEC2", "Out", true));
+	//AddSocket(new Vec2Socket(this, "VEC2", "Out", true));
+	AddSocket(new NodeSocket(this, "VEC2", "Out", true));
+	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
 vec2Node::vec2Node(const vec2Node& Src) : basicLogicNode(Src)
@@ -36,9 +38,9 @@ vec2Node::vec2Node(const vec2Node& Src) : basicLogicNode(Src)
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 	Data = Src.Data;
 
-	delete Output[0];
-	Output.clear();
-	AddSocket(new Vec2Socket(this, "VEC2", "Out", true));
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
 Json::Value vec2Node::ToJson()
@@ -54,6 +56,10 @@ void vec2Node::FromJson(Json::Value Json)
 	VisualNode::FromJson(Json);
 	Data.x = Json["vec2Node_Data_x"].asInt();
 	Data.y = Json["vec2Node_Data_y"].asInt();
+
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
 void vec2Node::Draw()

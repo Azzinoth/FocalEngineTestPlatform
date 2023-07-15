@@ -28,11 +28,13 @@ timerNode::timerNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new TimerLeftSocket(this, "EXECUTE", "Check time", false));
-	AddSocket(new TimerLeftSocket(this, "EXECUTE", "Set time", false));
-	AddSocket(new TimerLeftSocket(this, "INT", "time input", false));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Check time", false));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Set time", false));
+	AddSocket(new NodeSocket(this, "INT", "time input", false));
 
-	AddSocket(new TimerLeftSocket(this, "INT", "Time left", true));
+	AddSocket(new NodeSocket(this, "INT", "Time left", true));
+	Output[0]->SetFunctionToOutputData(IntDataGetter);
+	//AddSocket(new TimerLeftSocket(this, "INT", "Time left", true));
 	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", true));
 	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
 }
@@ -42,24 +44,9 @@ timerNode::timerNode(const timerNode& Src) : basicLogicNode(Src)
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 	Data = Src.Data;
 
-	for (size_t i = 0; i < Input.size(); i++)
-	{
-		delete Input[i];
-	}
-	Input.clear();
-
-	AddSocket(new TimerLeftSocket(this, "EXECUTE", "Check time", false));
-	AddSocket(new TimerLeftSocket(this, "EXECUTE", "Set time", false));
-	AddSocket(new TimerLeftSocket(this, "INT", "time input", false));
-
-	for (size_t i = 0; i < Output.size(); i++)
-	{
-		delete Output[i];
-	}
-	Output.clear();
-	AddSocket(new TimerLeftSocket(this, "INT", "Time left", true));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", true));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
 Json::Value timerNode::ToJson()
@@ -73,6 +60,10 @@ void timerNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
 	Data = Json["timerNode_Data"].asInt();
+
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
 int timerNode::GetTimeLeft()

@@ -3,7 +3,7 @@
 #include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "basicLogicNode.h"
 
-class mouseMoveNode : public basicLogicNode
+class sequenceNode : public basicLogicNode
 {
 	friend class NodeFactory;
 	static bool isRegistered;
@@ -11,10 +11,12 @@ class mouseMoveNode : public basicLogicNode
 	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
 
-	glm::vec2 Data = glm::vec2(0.0f);
+	int Data = 0;
+
+	void AddSequenceOutput();
 public:
-	mouseMoveNode();
-	mouseMoveNode(const mouseMoveNode& Src);
+	sequenceNode();
+	sequenceNode(const sequenceNode& Src);
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);

@@ -28,7 +28,9 @@ imageNode::imageNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new ImageSocket(this, "IMAGE", "Out", true));
+	//AddSocket(new ImageSocket(this, "IMAGE", "Out", true));
+	AddSocket(new NodeSocket(this, "IMAGE", "Out", true));
+	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
 imageNode::imageNode(const imageNode& Src) : basicLogicNode(Src)
@@ -36,9 +38,9 @@ imageNode::imageNode(const imageNode& Src) : basicLogicNode(Src)
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 	Data = Src.Data;
 
-	delete Output[0];
-	Output.clear();
-	AddSocket(new ImageSocket(this, "IMAGE", "Out", true));
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
 Json::Value imageNode::ToJson()
@@ -47,6 +49,8 @@ Json::Value imageNode::ToJson()
 
 	if (Data != nullptr)
 	{
+		Result["ImageID"] = Data->getID();
+
 		unsigned char* tempRawData = Data->getRawData();
 		// One possibility why it is empty is that user copy node to clipboard.
 		if (Data->getFullPath() == "")
@@ -54,12 +58,16 @@ Json::Value imageNode::ToJson()
 			// So we need to save it to temp location.
 			std::string tempDirectory = FocalEngine::FILE_SYSTEM.getDirectoryPath(FocalEngine::FILE_SYSTEM.getApplicationPath().c_str());
 			std::string fileName = tempDirectory;
-			fileName += GetID();
+			fileName += Data->getID();
 			fileName += ".png";
 			Data->setFullPath(fileName);
 		}
 		lodepng::encode(Data->getFullPath(), tempRawData, Data->getWidth(), Data->getHeight());
 		delete[] tempRawData;
+	}
+	else
+	{
+		Result["ImageID"] = "NONE";
 	}
 
 	return Result;
@@ -69,21 +77,31 @@ void imageNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
 
-	std::string fileName = Json["DirectoryPath"].asString();
-	fileName += GetID();
-	fileName += ".png";
-
-	if (FILE_SYSTEM.checkFile(fileName.c_str()))
+	std::string ID = Json["ImageID"].asString();
+	if (ID != "NONE" && ID != "")
 	{
-		std::vector<unsigned char> rawData;
-		unsigned uWidth, uHeight;
-		lodepng::decode(rawData, uWidth, uHeight, fileName);
+		std::string fileName = Json["DirectoryPath"].asString();
+		fileName += ID;
+		fileName += ".png";
 
-		unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-		memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-		Data = new FETPImage(tempData, uWidth, uHeight);
-		delete[] tempData;
+		if (FILE_SYSTEM.checkFile(fileName.c_str()))
+		{
+			std::vector<unsigned char> rawData;
+			unsigned uWidth, uHeight;
+			lodepng::decode(rawData, uWidth, uHeight, fileName);
+
+			unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
+			memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
+			Data = new FETPImage(tempData, uWidth, uHeight);
+			delete[] tempData;
+		}
+
+		Data->setID(ID);
 	}
+
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
 void imageNode::Draw()

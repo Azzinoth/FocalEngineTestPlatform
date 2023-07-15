@@ -28,8 +28,8 @@ sleepNode::sleepNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "In", false));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
+	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
 sleepNode::sleepNode(const sleepNode& Src) : basicLogicNode(Src)

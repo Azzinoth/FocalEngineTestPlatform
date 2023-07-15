@@ -13,16 +13,20 @@ class vec2Node : public basicLogicNode
 
 	glm::vec2 Data = glm::vec2(0.0f);
 
-	class Vec2Socket : public NodeSocket
-	{
-	public:
-		Vec2Socket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
-
-		void* GetData() override
-		{
-			return reinterpret_cast<glm::vec2*>(&reinterpret_cast<vec2Node*>(Parent)->Data);
-		}
+	std::function<void* ()> Vec2DataGetter = [this]() -> void* {
+		return &Data;
 	};
+
+	//class Vec2Socket : public NodeSocket
+	//{
+	//public:
+	//	Vec2Socket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
+
+	//	void* GetData() override
+	//	{
+	//		return reinterpret_cast<glm::vec2*>(&reinterpret_cast<vec2Node*>(Parent)->Data);
+	//	}
+	//};
 
 public:
 	vec2Node();

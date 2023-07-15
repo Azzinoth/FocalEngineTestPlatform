@@ -20,7 +20,11 @@ class imageNode : public basicLogicNode
 
 	FETPImage* Data = nullptr;
 
-	class ImageSocket : public NodeSocket
+	std::function<void* ()> ImageDataGetter = [this]() -> void* {
+		return Data;
+	};
+
+	/*class ImageSocket : public NodeSocket
 	{
 	public:
 		ImageSocket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
@@ -29,7 +33,7 @@ class imageNode : public basicLogicNode
 		{
 			return reinterpret_cast<imageNode*>(Parent)->Data;
 		}
-	};
+	};*/
 
 public:
 	imageNode();

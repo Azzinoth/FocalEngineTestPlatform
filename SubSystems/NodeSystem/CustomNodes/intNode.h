@@ -13,15 +13,8 @@ class intNode : public basicLogicNode
 
 	int Data = 0;
 
-	class IntSocket : public NodeSocket
-	{
-	public:
-		IntSocket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
-
-		void* GetData() override
-		{
-			return reinterpret_cast<int*>(&reinterpret_cast<intNode*>(Parent)->Data);
-		}
+	std::function<void* ()> IntDataGetter = [this]() -> void* {
+		return &Data;
 	};
 
 public:

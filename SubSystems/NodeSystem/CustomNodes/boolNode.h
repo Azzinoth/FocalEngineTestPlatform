@@ -13,15 +13,8 @@ class boolNode : public basicLogicNode
 
 	bool Data = false;
 
-	class BoolSocket : public NodeSocket
-	{
-	public:
-		BoolSocket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
-
-		void* GetData() override
-		{
-			return &reinterpret_cast<boolNode*>(Parent)->Data;
-		}
+	std::function<void* ()> BoolDataGetter = [this]() -> void* {
+		return &Data;
 	};
 
 public:

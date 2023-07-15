@@ -28,7 +28,9 @@ intNode::intNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new IntSocket(this, "INT", "Out", true));
+	//AddSocket(new IntSocket(this, "INT", "Out", true));
+	AddSocket(new NodeSocket(this, "INT", "Out", true));
+	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
 intNode::intNode(const intNode& Src) : basicLogicNode(Src)
@@ -36,9 +38,9 @@ intNode::intNode(const intNode& Src) : basicLogicNode(Src)
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 	Data = Src.Data;
 
-	delete Output[0];
-	Output.clear();
-	AddSocket(new IntSocket(this, "INT", "Out", true));
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
 Json::Value intNode::ToJson()
@@ -52,6 +54,10 @@ void intNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
 	Data = Json["intNode_Data"].asInt();
+
+	// Here I am restoring the output data function.
+	// Because the function is not serializable, I have to set it manually.
+	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
 void intNode::Draw()

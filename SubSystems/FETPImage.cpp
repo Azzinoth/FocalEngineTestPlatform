@@ -2,11 +2,13 @@
 
 FETPImage::FETPImage()
 {
+	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 }
 
 FETPImage::FETPImage(FETPImage& src)
 {
+	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 	fullPath = src.fullPath;
 	unsigned char* tempData = src.getRawData();
@@ -16,12 +18,14 @@ FETPImage::FETPImage(FETPImage& src)
 
 FETPImage::FETPImage(unsigned char* rawData, int width, int height)
 {
+	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 	initialize(rawData, width, height);
 }
 
 FETPImage::FETPImage(std::string filePath)
 {
+	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 	std::vector<unsigned char> rawData;
 	unsigned uWidth, uHeight;
@@ -127,4 +131,14 @@ std::string FETPImage::getFullPath()
 void FETPImage::setFullPath(std::string newValue)
 {
 	fullPath = newValue;
+}
+
+std::string FETPImage::getID()
+{
+	return ID;
+}
+
+void FETPImage::setID(std::string NewID)
+{
+	ID = NewID;
 }

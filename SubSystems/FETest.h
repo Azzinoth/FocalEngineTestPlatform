@@ -7,6 +7,7 @@
 #include "NodeSystem/CustomNodes/vec2Node.h"
 #include "NodeSystem/CustomNodes/boolNode.h"
 #include "NodeSystem/CustomNodes/branchNode.h"
+#include "NodeSystem/CustomNodes/sequenceNode.h"
 #include "NodeSystem/CustomNodes/timerNode.h"
 #include "NodeSystem/CustomNodes/sleepNode.h"
 #include "NodeSystem/CustomNodes/beginNode.h"
