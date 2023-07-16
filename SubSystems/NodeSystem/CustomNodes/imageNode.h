@@ -24,17 +24,6 @@ class imageNode : public basicLogicNode
 		return Data;
 	};
 
-	/*class ImageSocket : public NodeSocket
-	{
-	public:
-		ImageSocket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
-
-		void* GetData() override
-		{
-			return reinterpret_cast<imageNode*>(Parent)->Data;
-		}
-	};*/
-
 public:
 	imageNode();
 	imageNode(const imageNode& Src);

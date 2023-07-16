@@ -53,17 +53,6 @@ void sequenceNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
 	Data = Json["sequenceNode_Data"].asInt();
-
-	/*for (size_t i = 0; i < Output.size(); i++)
-	{
-		delete Output[i];
-	}
-	Output.clear();
-
-	for (size_t i = 0; i < Data; i++)
-	{
-		AddSequenceOutput();
-	}*/
 }
 
 void sequenceNode::Draw()

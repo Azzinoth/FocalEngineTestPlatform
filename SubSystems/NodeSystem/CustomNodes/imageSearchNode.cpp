@@ -44,6 +44,9 @@ imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Sr
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
 
+	Simularity = Src.Simularity;
+	MaxColorShift = Src.MaxColorShift;
+
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
@@ -53,12 +56,25 @@ imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Sr
 Json::Value imageSearchNode::ToJson()
 {
 	Json::Value Result = VisualNode::ToJson();
+
+	if (Input[2]->GetConnections().empty())
+		Result["Simularity"] = Simularity;
+	
+	if (Input[3]->GetConnections().empty())
+		Result["MaxColorShift"] = MaxColorShift;
+
 	return Result;
 }
 
 void imageSearchNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
+
+	if (Json.isMember("Simularity"))
+		Simularity = Json["Simularity"].asFloat();
+
+	if (Json.isMember("MaxColorShift"))
+		MaxColorShift = Json["MaxColorShift"].asInt();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.

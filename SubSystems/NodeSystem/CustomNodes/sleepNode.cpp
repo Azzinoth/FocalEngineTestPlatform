@@ -35,6 +35,20 @@ sleepNode::sleepNode() : basicLogicNode()
 sleepNode::sleepNode(const sleepNode& Src) : basicLogicNode(Src)
 {
 	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SleepFor = Src.SleepFor;
+}
+
+Json::Value sleepNode::ToJson()
+{
+	Json::Value Result = VisualNode::ToJson();
+	Result["sleepNode_Data"] = SleepFor;
+	return Result;
+}
+
+void sleepNode::FromJson(Json::Value Json)
+{
+	VisualNode::FromJson(Json);
+	SleepFor = Json["sleepNode_Data"].asInt();
 }
 
 void sleepNode::Draw()

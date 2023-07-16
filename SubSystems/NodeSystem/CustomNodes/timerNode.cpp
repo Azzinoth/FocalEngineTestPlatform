@@ -34,7 +34,6 @@ timerNode::timerNode() : basicLogicNode()
 
 	AddSocket(new NodeSocket(this, "INT", "Time left", true));
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
-	//AddSocket(new TimerLeftSocket(this, "INT", "Time left", true));
 	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", true));
 	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
 }
@@ -142,8 +141,5 @@ bool timerNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 
 basicLogicNode* timerNode::GetNextNode()
 {
-	//if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-	//	return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
-	
 	return nullptr;
 }

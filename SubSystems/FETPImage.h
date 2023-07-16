@@ -5,9 +5,6 @@
 class FETPImage
 {
 public:
-	std::string getID();
-	void setID(std::string NewID);
-
 	GLuint getTextureID();
 
 	FETPImage();
@@ -27,12 +24,23 @@ public:
 
 	std::string getFullPath();
 	void setFullPath(std::string newValue);
+
+	std::string EncodeRawDataToBase64();
+	void DecodeBase64ToRawData(std::string Base64String, int width, int height);
 private:
-	std::string ID;
 	GLuint textureID = -1;
 	int width = 0;
 	int height = 0;
 
 	std::string fullPath;
 	unsigned char* tempRawData = nullptr;
+
+	std::string Base64Characters =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+/";
+
+	std::string Base64Encode(unsigned char const* BytesToEncode, unsigned int Length);
+	bool IsBase64(unsigned char Character);
+	std::string Base64Decode(std::string const& EncodedString);
 };

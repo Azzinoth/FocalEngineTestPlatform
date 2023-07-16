@@ -17,19 +17,6 @@ class timerNode : public basicLogicNode
 		return &Data;
 	};
 
-	//class TimerLeftSocket : public NodeSocket
-	//{
-	//public:
-	//	TimerLeftSocket(VisualNode* Parent, std::string Type, std::string Name, bool bOutput = false) : NodeSocket(Parent, Type, Name, bOutput) {};
-
-	//	void* GetData() override
-	//	{
-	//		// To update timer.
-	//		reinterpret_cast<timerNode*>(Parent)->GetTimeLeft();
-	//		return reinterpret_cast<int*>(&reinterpret_cast<timerNode*>(Parent)->Data);
-	//	}
-	//};
-
 public:
 	timerNode();
 	timerNode(const timerNode& Src);

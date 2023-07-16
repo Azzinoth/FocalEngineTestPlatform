@@ -28,7 +28,6 @@ imageNode::imageNode() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	//AddSocket(new ImageSocket(this, "IMAGE", "Out", true));
 	AddSocket(new NodeSocket(this, "IMAGE", "Out", true));
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
@@ -49,21 +48,10 @@ Json::Value imageNode::ToJson()
 
 	if (Data != nullptr)
 	{
-		Result["ImageID"] = Data->getID();
+		Result["ImageWidth"] = Data->getWidth();
+		Result["ImageHeight"] = Data->getHeight();
+		Result["ImageData"] = Data->EncodeRawDataToBase64();
 
-		unsigned char* tempRawData = Data->getRawData();
-		// One possibility why it is empty is that user copy node to clipboard.
-		if (Data->getFullPath() == "")
-		{
-			// So we need to save it to temp location.
-			std::string tempDirectory = FocalEngine::FILE_SYSTEM.getDirectoryPath(FocalEngine::FILE_SYSTEM.getApplicationPath().c_str());
-			std::string fileName = tempDirectory;
-			fileName += Data->getID();
-			fileName += ".png";
-			Data->setFullPath(fileName);
-		}
-		lodepng::encode(Data->getFullPath(), tempRawData, Data->getWidth(), Data->getHeight());
-		delete[] tempRawData;
 	}
 	else
 	{
@@ -77,27 +65,16 @@ void imageNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
 
-	std::string ID = Json["ImageID"].asString();
-	if (ID != "NONE" && ID != "")
-	{
-		std::string fileName = Json["DirectoryPath"].asString();
-		fileName += ID;
-		fileName += ".png";
+	int ImageWidth = Json["ImageWidth"].asInt();
+	int ImageHeight = Json["ImageHeight"].asInt();
 
-		if (FILE_SYSTEM.checkFile(fileName.c_str()))
-		{
-			std::vector<unsigned char> rawData;
-			unsigned uWidth, uHeight;
-			lodepng::decode(rawData, uWidth, uHeight, fileName);
+	std::string base64String = Json["ImageData"].asString();
 
-			unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-			memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-			Data = new FETPImage(tempData, uWidth, uHeight);
-			delete[] tempData;
-		}
+	if (Data != nullptr)
+		delete Data;
 
-		Data->setID(ID);
-	}
+	Data = new FETPImage();
+	Data->DecodeBase64ToRawData(base64String, ImageWidth, ImageHeight);
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.

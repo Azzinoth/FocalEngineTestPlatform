@@ -28,7 +28,6 @@ vec2Node::vec2Node() : basicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	//AddSocket(new Vec2Socket(this, "VEC2", "Out", true));
 	AddSocket(new NodeSocket(this, "VEC2", "Out", true));
 	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
 }

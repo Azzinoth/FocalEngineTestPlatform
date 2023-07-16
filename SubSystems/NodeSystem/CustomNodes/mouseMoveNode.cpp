@@ -43,16 +43,25 @@ mouseMoveNode::mouseMoveNode(const mouseMoveNode& Src) : basicLogicNode(Src)
 Json::Value mouseMoveNode::ToJson()
 {
 	Json::Value Result = VisualNode::ToJson();
-	Result["mouseMoveNode_Data_x"] = Data.x;
-	Result["mouseMoveNode_Data_y"] = Data.y;
+
+	if (Input[1]->GetConnections().empty())
+	{
+		Result["mouseMoveNode_Data_x"] = Data.x;
+		Result["mouseMoveNode_Data_y"] = Data.y;
+	}
+	
 	return Result;
 }
 
 void mouseMoveNode::FromJson(Json::Value Json)
 {
 	VisualNode::FromJson(Json);
-	Data.x = Json["mouseMoveNode_Data_x"].asInt();
-	Data.y = Json["mouseMoveNode_Data_y"].asInt();
+
+	if (Json.isMember("mouseMoveNode_Data_x") && Json.isMember("mouseMoveNode_Data_y"))
+	{
+		Data.x = Json["mouseMoveNode_Data_x"].asInt();
+		Data.y = Json["mouseMoveNode_Data_y"].asInt();
+	}
 }
 
 void mouseMoveNode::Draw()

@@ -2,13 +2,11 @@
 
 FETPImage::FETPImage()
 {
-	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 }
 
 FETPImage::FETPImage(FETPImage& src)
 {
-	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 	fullPath = src.fullPath;
 	unsigned char* tempData = src.getRawData();
@@ -18,14 +16,12 @@ FETPImage::FETPImage(FETPImage& src)
 
 FETPImage::FETPImage(unsigned char* rawData, int width, int height)
 {
-	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 	initialize(rawData, width, height);
 }
 
 FETPImage::FETPImage(std::string filePath)
 {
-	ID = FocalEngine::APPLICATION.GetUniqueHexID();
 	tempRawData = nullptr;
 	std::vector<unsigned char> rawData;
 	unsigned uWidth, uHeight;
@@ -133,12 +129,123 @@ void FETPImage::setFullPath(std::string newValue)
 	fullPath = newValue;
 }
 
-std::string FETPImage::getID()
+std::string FETPImage::Base64Encode(unsigned char const* BytesToEncode, unsigned int Length)
 {
-	return ID;
+	int i = 0;
+	int j = 0;
+	unsigned char OriginalDataGroup[3];
+	unsigned char Base64Quartet[4];
+	std::string Result;
+
+	while (Length--)
+	{
+		OriginalDataGroup[i++] = *(BytesToEncode++);
+		if (i == 3)
+		{
+			Base64Quartet[0] = (OriginalDataGroup[0] & 0xfc) >> 2;
+			Base64Quartet[1] = ((OriginalDataGroup[0] & 0x03) << 4) + ((OriginalDataGroup[1] & 0xf0) >> 4);
+			Base64Quartet[2] = ((OriginalDataGroup[1] & 0x0f) << 2) + ((OriginalDataGroup[2] & 0xc0) >> 6);
+			Base64Quartet[3] = OriginalDataGroup[2] & 0x3f;
+
+			for (i = 0; (i < 4); i++)
+				Result += Base64Characters[Base64Quartet[i]];
+			i = 0;
+		}
+	}
+
+	if (i)
+	{
+		for (j = i; j < 3; j++)
+			OriginalDataGroup[j] = '\0';
+
+		Base64Quartet[0] = (OriginalDataGroup[0] & 0xfc) >> 2;
+		Base64Quartet[1] = ((OriginalDataGroup[0] & 0x03) << 4) + ((OriginalDataGroup[1] & 0xf0) >> 4);
+		Base64Quartet[2] = ((OriginalDataGroup[1] & 0x0f) << 2) + ((OriginalDataGroup[2] & 0xc0) >> 6);
+		Base64Quartet[3] = OriginalDataGroup[2] & 0x3f;
+
+		for (j = 0; (j < i + 1); j++)
+			Result += Base64Characters[Base64Quartet[j]];
+
+		while ((i++ < 3))
+			Result += '=';
+	}
+
+	return Result;
 }
 
-void FETPImage::setID(std::string NewID)
+bool FETPImage::IsBase64(unsigned char Character)
 {
-	ID = NewID;
+	return (isalnum(Character) || (Character == '+') || (Character == '/'));
+}
+
+std::string FETPImage::Base64Decode(std::string const& EncodedString)
+{
+	int Length = EncodedString.size();
+	int i = 0;
+	int j = 0;
+	int InputStringIndex = 0;
+	unsigned char OriginalDataGroup[3];
+	unsigned char Base64Quartet[4];
+	std::string Result;
+
+	while (Length-- && (EncodedString[InputStringIndex] != '=') && IsBase64(EncodedString[InputStringIndex]))
+	{
+		Base64Quartet[i++] = EncodedString[InputStringIndex]; InputStringIndex++;
+		if (i == 4)
+		{
+			for (i = 0; i < 4; i++)
+				Base64Quartet[i] = Base64Characters.find(Base64Quartet[i]);
+
+			OriginalDataGroup[0] = (Base64Quartet[0] << 2) + ((Base64Quartet[1] & 0x30) >> 4);
+			OriginalDataGroup[1] = ((Base64Quartet[1] & 0xf) << 4) + ((Base64Quartet[2] & 0x3c) >> 2);
+			OriginalDataGroup[2] = ((Base64Quartet[2] & 0x3) << 6) + Base64Quartet[3];
+
+			for (i = 0; (i < 3); i++)
+				Result += OriginalDataGroup[i];
+			i = 0;
+		}
+	}
+
+	if (i)
+	{
+		for (j = i; j < 4; j++)
+			Base64Quartet[j] = 0;
+
+		for (j = 0; j < 4; j++)
+			Base64Quartet[j] = Base64Characters.find(Base64Quartet[j]);
+
+		OriginalDataGroup[0] = (Base64Quartet[0] << 2) + ((Base64Quartet[1] & 0x30) >> 4);
+		OriginalDataGroup[1] = ((Base64Quartet[1] & 0xf) << 4) + ((Base64Quartet[2] & 0x3c) >> 2);
+		OriginalDataGroup[2] = ((Base64Quartet[2] & 0x3) << 6) + Base64Quartet[3];
+
+		for (j = 0; (j < i - 1); j++) Result += OriginalDataGroup[j];
+	}
+
+	return Result;
+}
+
+std::string FETPImage::EncodeRawDataToBase64()
+{
+	unsigned char* TempRawData = getRawData();
+	std::string Result = Base64Encode(tempRawData, getWidth() * getHeight() * 4);
+	delete[] TempRawData;
+
+	return Result;
+}
+
+void FETPImage::DecodeBase64ToRawData(std::string Base64String, int width, int height)
+{
+	if (width <= 0 || height <= 0)
+		return;
+
+	if (Base64String.size() == 0)
+		return;
+
+	if (Base64String.size() % 4 != 0)
+		return;
+
+	glDeleteTextures(1, &textureID);
+
+	std::string RawData = Base64Decode(Base64String);
+	initialize((unsigned char*)(RawData.c_str()), width, height);
 }
