@@ -13,6 +13,8 @@
 #include "NodeSystem/CustomNodes/sleepNode.h"
 #include "NodeSystem/CustomNodes/beginNode.h"
 #include "NodeSystem/CustomNodes/mouseMoveNode.h"
+#include "NodeSystem/CustomNodes/mouseLeftButtonDown.h"
+#include "NodeSystem/CustomNodes/mouseLeftButtonUp.h"
 #include "NodeSystem/CustomNodes/imageNode.h"
 #include "NodeSystem/CustomNodes/imageSearchNode.h"
 #include "NodeSystem/CustomNodes/combinedActionNode.h"

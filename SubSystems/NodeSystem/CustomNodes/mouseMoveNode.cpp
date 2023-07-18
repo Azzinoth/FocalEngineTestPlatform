@@ -100,6 +100,9 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
 	{
 		INPUT_SYSTEM.mouseMoveTo(Data.x, Data.y);
+
+		if (Output[0]->GetConnections().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
 	}
 }
 

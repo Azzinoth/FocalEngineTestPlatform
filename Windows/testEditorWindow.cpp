@@ -189,22 +189,26 @@ void testEditorWinow::mainContextMenu()
 					mouseMoveNode* newNode = new mouseMoveNode();
 					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
-					//MouseAction* newAction = new MouseAction();
-					//newNode = new globalActionNode(newAction);
 				}
 
 				if (ImGui::MenuItem("LeftButtonDown"))
 				{
-					MouseAction* newAction = new MouseAction();
+					mouseLeftButtonDown* newNode = new mouseLeftButtonDown();
+					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+					/*MouseAction* newAction = new MouseAction();
 					newAction->wParam = WM_LBUTTONDOWN;
-					newNode = new globalActionNode(newAction);
+					newNode = new globalActionNode(newAction);*/
 				}
 
 				if (ImGui::MenuItem("LeftButtonUp"))
 				{
-					MouseAction* newAction = new MouseAction();
+					mouseLeftButtonUp* newNode = new mouseLeftButtonUp();
+					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+					TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+					/*MouseAction* newAction = new MouseAction();
 					newAction->wParam = WM_LBUTTONUP;
-					newNode = new globalActionNode(newAction);
+					newNode = new globalActionNode(newAction);*/
 				}
 
 				if (ImGui::MenuItem("RightButtonDown"))

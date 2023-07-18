@@ -297,7 +297,7 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 			}
 			else if (action->wParam == WM_LBUTTONUP)
 			{
-				INPUT_SYSTEM.mouseUp();
+				//INPUT_SYSTEM.mouseUp();
 			}
 			else if (action->wParam == WM_RBUTTONUP)
 			{
@@ -305,7 +305,7 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 			}
 			else if (action->wParam == WM_LBUTTONDOWN)
 			{
-				INPUT_SYSTEM.mouseDown();
+				//INPUT_SYSTEM.mouseDown();
 			}
 			else if (action->wParam == WM_RBUTTONDOWN)
 			{
