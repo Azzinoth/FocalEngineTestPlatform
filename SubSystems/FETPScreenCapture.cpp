@@ -222,7 +222,7 @@ FETPImage* FETPScreenCapture::GetScreenImage()
         return Result;
 
     DeviceContext->CopyResource(StagingTexture, AcquiredDesktopImage);
-
+    AcquiredDesktopImage->Release();
 
     D3D11_TEXTURE2D_DESC TextureDescription;
     StagingTexture->GetDesc(&TextureDescription);

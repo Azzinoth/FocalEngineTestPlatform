@@ -156,7 +156,9 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				size_t y = 0;
 
 				bool found = false;
-				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, Simularity, MaxColorShift);
+				glm::vec2 Position = glm::vec2(-1.0f);
+				if (TestScreenShoot != nullptr)
+					Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, Simularity, MaxColorShift);
 				found = Position.x != -1 && Position.y != -1;
 				x = Position.x;
 				y = Position.y;
