@@ -77,6 +77,13 @@ void testEditorWinow::mainContextMenu()
 				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
+			if (ImGui::MenuItem("Vec2 add"))
+			{
+				vec2AddNode* newNode = new vec2AddNode();
+				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+			}
+
 			if (ImGui::BeginMenu("Flow control nodes"))
 			{
 				if (ImGui::MenuItem("Bool"))

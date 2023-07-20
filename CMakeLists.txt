@@ -60,6 +60,8 @@ file(GLOB VisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/floatNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/vec2Node.h"
 	"SubSystems/NodeSystem/CustomNodes/vec2Node.cpp"
+	"SubSystems/NodeSystem/CustomNodes/vec2AddNode.h"
+	"SubSystems/NodeSystem/CustomNodes/vec2AddNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/branchNode.h"
 	"SubSystems/NodeSystem/CustomNodes/branchNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/sequenceNode.h"

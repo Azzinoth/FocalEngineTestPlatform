@@ -29,7 +29,7 @@ mouseMoveNode::mouseMoveNode() : basicLogicNode()
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
-	AddSocket(new NodeSocket(this, "VEC2", "Set position", false));
+	AddSocket(new NodeSocket(this, "VEC2", "Position", false));
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
 }

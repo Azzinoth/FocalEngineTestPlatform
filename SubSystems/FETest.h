@@ -6,6 +6,7 @@
 #include "NodeSystem/CustomNodes/intNode.h"
 #include "NodeSystem/CustomNodes/floatNode.h"
 #include "NodeSystem/CustomNodes/vec2Node.h"
+#include "NodeSystem/CustomNodes/vec2AddNode.h"
 #include "NodeSystem/CustomNodes/boolNode.h"
 #include "NodeSystem/CustomNodes/branchNode.h"
 #include "NodeSystem/CustomNodes/sequenceNode.h"
