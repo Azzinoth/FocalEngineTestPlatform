@@ -59,7 +59,9 @@ void sequenceNode::Draw()
 {	
 	VisualNode::Draw();
 
-	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f, ImGui::GetCursorScreenPos().y + Size.y - 25.0f));
+	float Zoom = ParentArea->GetZoomFactor();
+
+	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + (Size.y - 25.0f) * Zoom));
 	if (ImGui::Button("Add"))
 	{
 		Data++;

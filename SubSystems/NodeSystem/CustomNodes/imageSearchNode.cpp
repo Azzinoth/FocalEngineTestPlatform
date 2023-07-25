@@ -86,12 +86,14 @@ void imageSearchNode::Draw()
 {	
 	VisualNode::Draw();
 
-	int xPosition = ImGui::GetCursorScreenPos().x + 115.0f;
-	int yPosition = ImGui::GetCursorScreenPos().y + 139.0f;
+	float Zoom = ParentArea->GetZoomFactor();
+
+	int xPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
+	int yPosition = ImGui::GetCursorScreenPos().y + 139.0f * Zoom;
 
 	ImGui::BeginDisabled(Input[2]->GetConnections().size() != 0);
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-	ImGui::SetNextItemWidth(35.0f);
+	ImGui::SetNextItemWidth(35.0f * Zoom);
 	ImGui::DragFloat("##Simularity", &Simularity, 0.1f, 0.0f, 100.0f);
 	if (Simularity > 100.0f)
 		Simularity = 100.0f;
@@ -101,10 +103,10 @@ void imageSearchNode::Draw()
 
 	ImGui::EndDisabled();
 
-	xPosition += 7;
-	yPosition += 48;
+	xPosition += 7 * Zoom;
+	yPosition += 48 * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-	ImGui::SetNextItemWidth(35.0f);
+	ImGui::SetNextItemWidth(35.0f * Zoom);
 	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 0.1f, 0.0f, 100.0f);
 	if (MaxColorShift < 0)
 		MaxColorShift = 0;

@@ -85,16 +85,18 @@ void imageNode::Draw()
 {	
 	VisualNode::Draw();
 
-	int xPosition = ImGui::GetCursorScreenPos().x + 75.0f;
-	int yPosition = ImGui::GetCursorScreenPos().y + 115.0f;
+	float Zoom = ParentArea->GetZoomFactor();
+
+	int xPosition = ImGui::GetCursorScreenPos().x + 75.0f * Zoom;
+	int yPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
 	
 	if (Data == nullptr)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 		ImGui::Text("NO IMAGE");
 
-		xPosition -= 8.0f;
-		yPosition += 75.0f;
+		xPosition -= 8.0f * Zoom;
+		yPosition += 75.0f * Zoom;
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 		if (ImGui::Button("Load Image"))
 		{
@@ -119,13 +121,13 @@ void imageNode::Draw()
 	}
 	else
 	{
-		xPosition -= 25.0f;
-		yPosition -= 60.0f;
+		xPosition -= 25.0f * Zoom;
+		yPosition -= 60.0f * Zoom;
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-		ImGui::Image((void*)(intptr_t)Data->getTextureID(), ImVec2(128.0f, 128.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)Data->getTextureID(), ImVec2(128.0f, 128.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
-		xPosition -= 20.0f;
-		yPosition += 136.0f;
+		xPosition -= 20.0f * Zoom;
+		yPosition += 136.0f * Zoom;
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 		if (ImGui::Button("Load different image"))
 		{

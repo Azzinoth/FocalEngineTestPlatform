@@ -55,13 +55,15 @@ void sleepNode::Draw()
 {	
 	VisualNode::Draw();
 
-	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f, ImGui::GetCursorScreenPos().y + 45.0f));
+	float Zoom = ParentArea->GetZoomFactor();
 
-	int xPosition = ImGui::GetCursorScreenPos().x + 20.0f;
-	int yPosition = ImGui::GetCursorScreenPos().y + 0.0f;
+	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
+
+	int xPosition = ImGui::GetCursorScreenPos().x + 20.0f * Zoom;
+	int yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
 
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-	ImGui::SetNextItemWidth(100);
+	ImGui::SetNextItemWidth(100 * Zoom);
 	ImGui::InputInt("##value", &SleepFor);
 }
 

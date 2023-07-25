@@ -65,9 +65,11 @@ void vec2Node::Draw()
 {	
 	VisualNode::Draw();
 
-	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f, ImGui::GetCursorScreenPos().y + 45.0f));
+	float Zoom = ParentArea->GetZoomFactor();
 
-	ImGui::SetNextItemWidth(140);
+	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
+
+	ImGui::SetNextItemWidth(140 * Zoom);
 	static int position[] = { 0, 0 };
 	position[0] = Data.x;
 	position[1] = Data.y;
