@@ -53,22 +53,22 @@ void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket,
 	{
 		bool Condition = false;
 
-		if (Input[1]->GetConnections().size() > 0)
+		if (Input[1]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[1]->GetConnections()[0]->GetData();
+			void* TempData = Input[1]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
 				Condition = *reinterpret_cast<bool*>(TempData);
 		}
 
 		if (Condition)
 		{
-			if (Output[0]->GetConnections().size() > 0)
-				ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			if (Output[0]->GetConnectedSockets().size() > 0)
+				ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 		}
 		else
 		{
-			if (Output[1]->GetConnections().size() > 0)
-				ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			if (Output[1]->GetConnectedSockets().size() > 0)
+				ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 		}
 	}
 }
@@ -83,8 +83,8 @@ bool branchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, 
 
 basicLogicNode* branchNode::GetNextNode()
 {
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
+		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return nullptr;
 }

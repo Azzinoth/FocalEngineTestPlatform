@@ -44,7 +44,7 @@ Json::Value mouseMoveNode::ToJson()
 {
 	Json::Value Result = VisualNode::ToJson();
 
-	if (Input[1]->GetConnections().empty())
+	if (Input[1]->GetConnectedSockets().empty())
 	{
 		Result["mouseMoveNode_Data_x"] = Data.x;
 		Result["mouseMoveNode_Data_y"] = Data.y;
@@ -77,7 +77,7 @@ void mouseMoveNode::Draw()
 	position[0] = Data.x;
 	position[1] = Data.y;
 
-	ImGui::BeginDisabled(Input[1]->GetConnections().size() != 0);
+	ImGui::BeginDisabled(Input[1]->GetConnectedSockets().size() != 0);
 	if (ImGui::InputInt2("##Position", position))
 	{
 		Data = glm::vec2(position[0], position[1]);
@@ -91,9 +91,9 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 
 	if (EventType == VISUAL_NODE_SOCKET_UPDATE || EventType == VISUAL_NODE_SOCKET_EXECUTE)
 	{
-		if (Input[1]->GetConnections().size() > 0)
+		if (Input[1]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[1]->GetConnections()[0]->GetData();
+			void* TempData = Input[1]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
 				Data = *reinterpret_cast<glm::vec2*>(TempData);
 		}
@@ -103,8 +103,8 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 	{
 		INPUT_SYSTEM.mouseMoveTo(Data.x, Data.y);
 
-		if (Output[0]->GetConnections().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+		if (Output[0]->GetConnectedSockets().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 	}
 }
 

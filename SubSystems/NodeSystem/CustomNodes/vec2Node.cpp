@@ -78,8 +78,8 @@ void vec2Node::Draw()
 	{
 		Data = glm::vec2(position[0], position[1]);
 
-		if (Output[0]->GetConnections().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_UPDATE);
+		if (Output[0]->GetConnectedSockets().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_UPDATE);
 	}
 }
 

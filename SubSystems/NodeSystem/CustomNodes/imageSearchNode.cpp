@@ -57,10 +57,10 @@ Json::Value imageSearchNode::ToJson()
 {
 	Json::Value Result = VisualNode::ToJson();
 
-	if (Input[2]->GetConnections().empty())
+	if (Input[2]->GetConnectedSockets().empty())
 		Result["Simularity"] = Simularity;
 	
-	if (Input[3]->GetConnections().empty())
+	if (Input[3]->GetConnectedSockets().empty())
 		Result["MaxColorShift"] = MaxColorShift;
 
 	return Result;
@@ -91,7 +91,7 @@ void imageSearchNode::Draw()
 	int xPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
 	int yPosition = ImGui::GetCursorScreenPos().y + 139.0f * Zoom;
 
-	ImGui::BeginDisabled(Input[2]->GetConnections().size() != 0);
+	ImGui::BeginDisabled(Input[2]->GetConnectedSockets().size() != 0);
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
 	ImGui::DragFloat("##Simularity", &Simularity, 0.1f, 0.0f, 100.0f);
@@ -118,16 +118,16 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 	if (EventType == VISUAL_NODE_SOCKET_UPDATE)
 	{
-		if (Input[2]->GetConnections().size() > 0)
+		if (Input[2]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[2]->GetConnections()[0]->GetData();
+			void* TempData = Input[2]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
 				Simularity = *reinterpret_cast<float*>(TempData);
 		}
 
-		if (Input[3]->GetConnections().size() > 0)
+		if (Input[3]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[3]->GetConnections()[0]->GetData();
+			void* TempData = Input[3]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
 				MaxColorShift = *reinterpret_cast<int*>(TempData);
 		}
@@ -137,9 +137,9 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 	{
 		FETPImage* ImageToLookFor = nullptr;
 
-		if (Input[1]->GetConnections().size() > 0)
+		if (Input[1]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[1]->GetConnections()[0]->GetData();
+			void* TempData = Input[1]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
 			{
 				ImageToLookFor = reinterpret_cast<FETPImage*>(TempData);
@@ -176,8 +176,8 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 				delete TestScreenShoot;
 
-				if (Output[0]->GetConnections().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+				if (Output[0]->GetConnectedSockets().size() > 0)
+					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 			}
 		}
 	}

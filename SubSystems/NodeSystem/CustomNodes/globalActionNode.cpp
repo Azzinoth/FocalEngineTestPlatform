@@ -388,7 +388,7 @@ Json::Value globalActionNode::ToJson()
 
 basicLogicNode* globalActionNode::GetNextNode()
 {
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
 	{
 		if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
@@ -396,14 +396,14 @@ basicLogicNode* globalActionNode::GetNextNode()
 			for (size_t i = 0; i < action->imagesInfo.size(); i++)
 			{
 				if (action->imagesInfo[i]->lastRunResult)
-					return reinterpret_cast<basicLogicNode*>(Output[i]->GetConnections()[0]->GetParent());
+					return reinterpret_cast<basicLogicNode*>(Output[i]->GetConnectedSockets()[0]->GetParent());
 			}
 
-			return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
+			return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 		}
 		else
 		{
-			return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
+			return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 		}
 	}
 

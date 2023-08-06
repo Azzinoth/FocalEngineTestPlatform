@@ -62,8 +62,8 @@ void beginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 
 	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
 	{
-		if (Output[0]->GetConnections().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+		if (Output[0]->GetConnectedSockets().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 	}
 }
 
@@ -82,8 +82,8 @@ bool beginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 
 basicLogicNode* beginNode::GetNextNode()
 {
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
+		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return nullptr;
 }

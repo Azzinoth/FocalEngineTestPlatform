@@ -107,20 +107,20 @@ void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 
 			if (TimeLeft == 0)
 			{
-				if (Output[1]->GetConnections().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+				if (Output[1]->GetConnectedSockets().size() > 0)
+					ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 			}
 			else
 			{
-				if (Output[2]->GetConnections().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[2], Output[2]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+				if (Output[2]->GetConnectedSockets().size() > 0)
+					ParentArea->TriggerSocketEvent(Output[2], Output[2]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 			}
 		}
 		else if (OwnSocket == Input[1])
 		{
-			if (Input[2]->GetConnections().size() > 0)
+			if (Input[2]->GetConnectedSockets().size() > 0)
 			{
-				void* TempData = Input[2]->GetConnections()[0]->GetData();
+				void* TempData = Input[2]->GetConnectedSockets()[0]->GetData();
 				if (TempData != nullptr)
 				{
 					int Time = reinterpret_cast<int*>(TempData)[0];

@@ -88,8 +88,8 @@ bool regionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, 
 basicLogicNode* regionNode::GetNextNode()
 {
 	End->NextNode = nullptr;
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		End->NextNode = reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
+		End->NextNode = reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return Begin;
 }

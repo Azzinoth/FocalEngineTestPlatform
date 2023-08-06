@@ -23,8 +23,8 @@ basicLogicNode::basicLogicNode() : VisualNode()
 
 basicLogicNode* basicLogicNode::GetNextNode()
 {
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnections()[0]->GetParent());
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
+		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 
 	return nullptr;
 }

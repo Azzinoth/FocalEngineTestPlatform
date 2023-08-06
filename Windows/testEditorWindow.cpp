@@ -383,9 +383,9 @@ void testEditorWinow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWith
 		for (size_t i = 0; i < OutSocketCount; i++)
 		{
 			VisualNodeConnectionStyle TempStyle;
-			node->GetSocketStyle(true, i, TempStyle);
+			node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 			TempStyle.bMarchingAntsEffect = false;
-			node->SetSocketStyle(true, i, TempStyle);
+			node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
 		}
 	});
 
@@ -399,9 +399,9 @@ void testEditorWinow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWith
 			for (size_t i = 0; i < OutSocketCount; i++)
 			{
 				VisualNodeConnectionStyle TempStyle;
-				node->GetSocketStyle(true, i, TempStyle);
+				node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 				TempStyle.bMarchingAntsEffect = true;
-				node->SetSocketStyle(true, i, TempStyle);
+				node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
 			}
 		}
 	);

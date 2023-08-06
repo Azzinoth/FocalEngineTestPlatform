@@ -134,9 +134,9 @@ void FETest::reColorMainTestPath()
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
 			VisualNodeConnectionStyle TempStyle;
-			node->GetSocketStyle(true, i, TempStyle);
+			node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 			TempStyle.bMarchingAntsEffect = false;
-			node->SetSocketStyle(true, i, TempStyle);
+			node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
 		}
 	});
 
@@ -150,9 +150,9 @@ void FETest::reColorMainTestPath()
 			for (size_t i = 0; i < outSocketCount; i++)
 			{
 				VisualNodeConnectionStyle TempStyle;
-				node->GetSocketStyle(true, i, TempStyle);
+				node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 				TempStyle.bMarchingAntsEffect = true;
-				node->SetSocketStyle(true, i, TempStyle);
+				node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
 			}
 		}
 	);

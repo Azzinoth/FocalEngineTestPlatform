@@ -16,15 +16,15 @@ class vec2AddNode : public basicLogicNode
 	std::function<void* ()> Vec2AddDataGetter = [this]() -> void* {
 		
 		LocalData = glm::vec2(0.0f);
-		if (!Input[0]->GetConnections().empty())
+		if (!Input[0]->GetConnectedSockets().empty())
 		{
-			void* TempData = Input[0]->GetConnections()[0]->GetData();
+			void* TempData = Input[0]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
 				LocalData = *reinterpret_cast<glm::vec2*>(TempData);
 
-			if (!Input[1]->GetConnections().empty())
+			if (!Input[1]->GetConnectedSockets().empty())
 			{
-				void* TempData = Input[1]->GetConnections()[0]->GetData();
+				void* TempData = Input[1]->GetConnectedSockets()[0]->GetData();
 				if (TempData != nullptr)
 					LocalData += *reinterpret_cast<glm::vec2*>(TempData);
 			}

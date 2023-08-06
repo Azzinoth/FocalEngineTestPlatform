@@ -79,8 +79,8 @@ void sequenceNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocke
 	{
 		for (size_t i = 0; i < Data; i++)
 		{
-			if (Output[i]->GetConnections().size() > 0)
-				ParentArea->TriggerSocketEvent(Output[i], Output[i]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			if (Output[i]->GetConnectedSockets().size() > 0)
+				ParentArea->TriggerSocketEvent(Output[i], Output[i]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 		}
 	}
 }

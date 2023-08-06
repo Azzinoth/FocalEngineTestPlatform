@@ -50,8 +50,8 @@ void mouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connected
 	{
 		INPUT_SYSTEM.mouseUp();
 
-		if (Output[0]->GetConnections().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_EXECUTE);
+		if (Output[0]->GetConnectedSockets().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
 	}
 }
 

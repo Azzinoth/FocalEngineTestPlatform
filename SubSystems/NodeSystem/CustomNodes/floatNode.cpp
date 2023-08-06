@@ -74,8 +74,8 @@ void floatNode::Draw()
 	ImGui::SetNextItemWidth(100 * Zoom);
 	if (ImGui::InputFloat("##value", &Data))
 	{
-		if (Output[0]->GetConnections().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnections()[0], VISUAL_NODE_SOCKET_UPDATE);
+		if (Output[0]->GetConnectedSockets().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_UPDATE);
 	}
 }
 
