@@ -1,14 +1,15 @@
 #include "boolNode.h"
+using namespace VisNodeSys;
 
 bool boolNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("boolNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new boolNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const boolNode& NodeToCopy = static_cast<const boolNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const boolNode& NodeToCopy = static_cast<const boolNode&>(CurrentNode);
 			return new boolNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ boolNode::boolNode() : basicLogicNode()
 {
 	Type = "boolNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(150, 78));
 	SetName("bool node");
@@ -34,7 +35,7 @@ boolNode::boolNode() : basicLogicNode()
 
 boolNode::boolNode(const boolNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 
 	// Here I am restoring the output data function.
@@ -44,14 +45,14 @@ boolNode::boolNode(const boolNode& Src) : basicLogicNode(Src)
 
 Json::Value boolNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 	Result["boolNode_Data"] = Data;
 	return Result;
 }
 
 void boolNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 	Data = Json["boolNode_Data"].asBool();
 
 	// Here I am restoring the output data function.
@@ -61,7 +62,7 @@ void boolNode::FromJson(Json::Value Json)
 
 void boolNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -69,14 +70,14 @@ void boolNode::Draw()
 	ImGui::Checkbox("True", &Data);
 }
 
-void boolNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void boolNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 bool boolNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

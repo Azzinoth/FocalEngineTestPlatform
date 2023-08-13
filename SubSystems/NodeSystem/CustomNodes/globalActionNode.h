@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "../SubSystems/FETPInput.h"
 #include "../Windows/screenshootEditor.h"
 #include "../Windows/textInputPopup.h"
@@ -17,8 +16,8 @@ class globalActionNode : public basicLogicNode
 	bool ContextMenu = false;
 	bool OpenContextMenu();
 
-	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	void MouseClick(int MouseButton);
 

@@ -22,11 +22,8 @@ class combinedActionNode : public basicLogicNode
 
 	std::string Text;
 
-	//bool contextMenu = false;
-	//bool openContextMenu();
-
-	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	static combinedActionNode* NodeForCallback;
 	static void ChangeTextCallback(std::string NewText);

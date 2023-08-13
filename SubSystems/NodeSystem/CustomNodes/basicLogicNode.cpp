@@ -1,14 +1,15 @@
 #include "basicLogicNode.h"
+using namespace VisNodeSys;
 
 bool basicLogicNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("basicLogicNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new basicLogicNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const basicLogicNode& NodeToCopy = static_cast<const basicLogicNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const basicLogicNode& NodeToCopy = static_cast<const basicLogicNode&>(CurrentNode);
 			return new basicLogicNode(NodeToCopy);
 		}
 	);
@@ -16,7 +17,7 @@ bool basicLogicNode::isRegistered = []()
 	return true;
 }();
 
-basicLogicNode::basicLogicNode() : VisualNode()
+basicLogicNode::basicLogicNode() : Node()
 {
 	Type = "basicLogicNode";
 }

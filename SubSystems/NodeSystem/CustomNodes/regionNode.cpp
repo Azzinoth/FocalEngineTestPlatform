@@ -1,16 +1,17 @@
 #include "regionNode.h"
+using namespace VisNodeSys;
 
 FETPImage* regionNode::RegionIcon = nullptr;
 
 bool regionNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("regionNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new regionNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const regionNode& NodeToCopy = static_cast<const regionNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const regionNode& NodeToCopy = static_cast<const regionNode&>(CurrentNode);
 			return new regionNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ bool regionNode::isRegistered = []()
 
 regionNode::regionNode() : basicLogicNode()
 {
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 	Type = "regionNode";
 	Data = NODE_SYSTEM.CreateNodeArea();
 
@@ -41,21 +42,21 @@ regionNode::regionNode(const regionNode& Src) : basicLogicNode(Src)
 	Data = Src.Data;
 	Begin = reinterpret_cast<beginNode*>(Data->GetNodesByType("beginNode")[0]);
 	End = reinterpret_cast<endNode*>(Data->GetNodesByType("endNode")[0]);
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 void regionNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
-	if (GetStyle() == VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == DEFAULT)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f, ImGui::GetCursorScreenPos().y + NODE_TITLE_HEIGHT + 13.0f));
 		ImGui::SetNextItemWidth(140);
 
 		ImGui::Text("REGION NODE");
 	}
-	else if (GetStyle() == VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == CIRCLE)
 	{
 		CheckIcons();
 
@@ -67,19 +68,19 @@ void regionNode::Draw()
 	}
 }
 
-void regionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void regionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-VisualNodeArea* regionNode::GetData()
+NodeArea* regionNode::GetData()
 {
 	return Data;
 }
 
 bool regionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return true;
 
 	return true;
@@ -122,7 +123,7 @@ void regionNode::ShowTooltip()
 
 Json::Value regionNode::ToJson()
 {
-	Json::Value result = VisualNode::ToJson();
+	Json::Value result = Node::ToJson();
 	result["nodeArea"] = Data->ToJson();
 
 	return result;
@@ -130,6 +131,6 @@ Json::Value regionNode::ToJson()
 
 void regionNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
-	Data = VisualNodeArea::FromJson(Json["nodeArea"].asCString());
+	Node::FromJson(Json);
+	Data = NodeArea::FromJson(Json["nodeArea"].asCString());
 }

@@ -22,15 +22,13 @@ const COMDLG_FILTERSPEC FETestsFileFilter[] =
 	{ L"FETest set files (*.fetests)", L"*.fetests" }
 };
 
-class FETest;
-class testEditorWinow;
 struct FETestResult;
 class FEPTActionSystem
 {
 	SINGLETON_PRIVATE_PART(FEPTActionSystem)
 
-	friend testEditorWinow;
-	friend FETest;
+	friend class testEditorWinow;
+	friend class FETest;
 
 	bool recording = false;
 
@@ -51,8 +49,8 @@ class FEPTActionSystem
 	void findAndDeleteKeys();
 	void addAction(FETPAction* newAction);
 
-	VisualNode* getNextNode(VisualNode* currentNode);
-	std::vector<FETPAction*> getActionsFromNode(VisualNode* currentNode);
+	VisNodeSys::Node* getNextNode(VisNodeSys::Node* currentNode);
+	std::vector<FETPAction*> getActionsFromNode(VisNodeSys::Node* currentNode);
 	bool execute(std::vector<FETPAction*> action);
 
 	FETPImage* imageToUse(compareImageInfo* imageInfo);
@@ -75,7 +73,7 @@ public:
 	void newMouseAction(MouseAction mouseAction);
 	void newAction(FETPAction* newAction);
 
-	void placeStructuredNodes(std::vector<FETPAction*> actions, VisualNodeArea* nodeArea, bool copyActions = false);
+	void placeStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* nodeArea, bool copyActions = false);
 
 	void update();
 
@@ -89,7 +87,7 @@ public:
 	static bool keyboardTextActionFilter(FETPAction* action, int outputCount);
 	static bool keyboardPressActionFilter(FETPAction* action, int outputCount);
 
-	VisualNode* tryToPackActions(size_t& index);
+	VisNodeSys::Node* tryToPackActions(size_t& index);
 
 	void setFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> callback);
 

@@ -4,7 +4,7 @@
 #include "../../FETPImage.h"
 #include "../SubSystems/FETPInput.h"
 
-class basicLogicNode : public VisualNode
+class basicLogicNode : public VisNodeSys::Node
 {
 	friend class NodeFactory;
 	static bool isRegistered;

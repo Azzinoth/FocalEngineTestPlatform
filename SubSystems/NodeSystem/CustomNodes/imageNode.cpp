@@ -1,14 +1,15 @@
 #include "imageNode.h"
+using namespace VisNodeSys;
 
 bool imageNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("imageNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new imageNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const imageNode& NodeToCopy = static_cast<const imageNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const imageNode& NodeToCopy = static_cast<const imageNode&>(CurrentNode);
 			return new imageNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ imageNode::imageNode() : basicLogicNode()
 {
 	Type = "imageNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(220, 220));
 	SetName("image node");
@@ -34,7 +35,7 @@ imageNode::imageNode() : basicLogicNode()
 
 imageNode::imageNode(const imageNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 
 	// Here I am restoring the output data function.
@@ -44,7 +45,7 @@ imageNode::imageNode(const imageNode& Src) : basicLogicNode(Src)
 
 Json::Value imageNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 
 	if (Data != nullptr)
 	{
@@ -63,7 +64,7 @@ Json::Value imageNode::ToJson()
 
 void imageNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 
 	int ImageWidth = Json["ImageWidth"].asInt();
 	int ImageHeight = Json["ImageHeight"].asInt();
@@ -83,7 +84,7 @@ void imageNode::FromJson(Json::Value Json)
 
 void imageNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -154,14 +155,14 @@ void imageNode::Draw()
 	}
 }
 
-void imageNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void imageNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 bool imageNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

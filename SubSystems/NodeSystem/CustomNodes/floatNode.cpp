@@ -1,14 +1,15 @@
 #include "floatNode.h"
+using namespace VisNodeSys;
 
 bool floatNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("floatNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new floatNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const floatNode& NodeToCopy = static_cast<const floatNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const floatNode& NodeToCopy = static_cast<const floatNode&>(CurrentNode);
 			return new floatNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ floatNode::floatNode() : basicLogicNode()
 {
 	Type = "floatNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(170, 78));
 	SetName("float node");
@@ -34,7 +35,7 @@ floatNode::floatNode() : basicLogicNode()
 
 floatNode::floatNode(const floatNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 
 	// Here I am restoring the output data function.
@@ -44,15 +45,15 @@ floatNode::floatNode(const floatNode& Src) : basicLogicNode(Src)
 
 Json::Value floatNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 	Result["floatNode_Data"] = Data;
 	return Result;
 }
 
 void floatNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
-	Data = Json["floatNode_Data"].asInt();
+	Node::FromJson(Json);
+	Data = Json["floatNode_Data"].asFloat();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
@@ -61,32 +62,32 @@ void floatNode::FromJson(Json::Value Json)
 
 void floatNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
 
-	int xPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
-	int yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
+	float xPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
+	float yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
 
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-	ImGui::SetNextItemWidth(100 * Zoom);
+	ImGui::SetNextItemWidth(100.0f * Zoom);
 	if (ImGui::InputFloat("##value", &Data))
 	{
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_UPDATE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], UPDATE);
 	}
 }
 
-void floatNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void floatNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 bool floatNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

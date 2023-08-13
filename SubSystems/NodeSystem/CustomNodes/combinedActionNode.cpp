@@ -1,4 +1,5 @@
 #include "combinedActionNode.h"
+using namespace VisNodeSys;
 
 combinedActionNode* combinedActionNode::NodeForCallback = nullptr;
 FETPImage* combinedActionNode::MoveMouseCombineIcon = nullptr;
@@ -12,12 +13,12 @@ FETPImage* combinedActionNode::TextCombinedIcon = nullptr;
 bool combinedActionNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("combinedActionNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new combinedActionNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const combinedActionNode& NodeToCopy = static_cast<const combinedActionNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const combinedActionNode& NodeToCopy = static_cast<const combinedActionNode&>(CurrentNode);
 			return new combinedActionNode(NodeToCopy);
 		}
 	);
@@ -28,7 +29,7 @@ bool combinedActionNode::isRegistered = []()
 
 combinedActionNode::combinedActionNode() : basicLogicNode()
 {
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 combinedActionNode::combinedActionNode(const combinedActionNode& Src) : basicLogicNode(Src)
@@ -39,12 +40,12 @@ combinedActionNode::combinedActionNode(const combinedActionNode& Src) : basicLog
 	EndPosition = Src.EndPosition;
 	Text = Src.Text;
 
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type)
 {
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 	SetSize(ImVec2(330, 140));
 
 	if (Input.size() == 0 && Output.size() == 0)
@@ -146,9 +147,9 @@ combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBI
 
 void combinedActionNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
-	if (GetStyle() == VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
@@ -244,7 +245,7 @@ void combinedActionNode::Draw()
 			ImGui::Text(Text.c_str());
 		}
 	}
-	else if (GetStyle() == VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == CIRCLE)
 	{
 		CheckIcons();
 
@@ -284,9 +285,9 @@ void combinedActionNode::Draw()
 	ImGui::PopStyleVar();*/
 }
 
-void combinedActionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void combinedActionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 std::vector<FETPAction*> combinedActionNode::GetData()
@@ -296,7 +297,7 @@ std::vector<FETPAction*> combinedActionNode::GetData()
 
 bool combinedActionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	if (CandidateSocket->GetType() == "FLOAT" && OwnSocket->GetType() == "FLOAT")
@@ -307,7 +308,7 @@ bool combinedActionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* Candidate
 
 Json::Value combinedActionNode::ToJson()
 {
-	Json::Value result = VisualNode::ToJson();
+	Json::Value result = Node::ToJson();
 	result["actionType"] = ActionType;
 
 	for (size_t i = 0; i < Data.size(); i++)
@@ -333,7 +334,7 @@ basicLogicNode* combinedActionNode::GetNextNode()
 
 void combinedActionNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 
 	ActionType = FETP_COMBINED_ACTION_TYPE(Json["actionType"].asInt());
 

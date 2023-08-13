@@ -1,4 +1,5 @@
 #include "FETest.h"
+using namespace VisNodeSys;
 
 ImColor* FETest::defaultConnectionColor = new ImColor(200, 200, 200);
 ImColor* FETest::mainPathConnectionColor = new ImColor(150, 255, 150);
@@ -129,11 +130,11 @@ beginNode* FETest::getBeginNode()
 void FETest::reColorMainTestPath()
 {
 	// Change style of all connections to default.
-	nodeArea->RunOnEachNode([](VisualNode* node) {
+	nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
-			VisualNodeConnectionStyle TempStyle;
+			ConnectionStyle TempStyle;
 			node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 			TempStyle.bMarchingAntsEffect = false;
 			node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
@@ -145,11 +146,11 @@ void FETest::reColorMainTestPath()
 		return;
 
 	nodeArea->RunOnEachConnectedNode(getBeginNode(),
-		[](VisualNode* node) {
+		[](VisNodeSys::Node* node) {
 			size_t outSocketCount = node->OutSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
 			{
-				VisualNodeConnectionStyle TempStyle;
+				ConnectionStyle TempStyle;
 				node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 				TempStyle.bMarchingAntsEffect = true;
 				node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
@@ -213,7 +214,7 @@ void FETest::beforeBegin()
 	}
 }
 
-void FETest::validateImagePathes(VisualNodeArea* nodeArea, std::string filePath)
+void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
 {
 	if (nodeArea == nullptr)
 		nodeArea = this->nodeArea;
@@ -222,14 +223,14 @@ void FETest::validateImagePathes(VisualNodeArea* nodeArea, std::string filePath)
 		filePath = this->filePath;
 
 	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-	std::vector<VisualNode*> list = nodeArea->GetNodesByType("globalActionNode");
+	std::vector<VisNodeSys::Node*> list = nodeArea->GetNodesByType("globalActionNode");
 	std::unordered_map<std::string, bool> actionSeenIDs;
 	for (size_t i = 0; i < list.size(); i++)
 	{
 		globalActionNode* node = reinterpret_cast<globalActionNode*>(list[i]);
 
 		if (actionSeenIDs.find(node->GetData()->getID()) != actionSeenIDs.end())
-			node->GetData()->setID(APPLICATION.GetUniqueHexID());
+			node->GetData()->setID(FocalEngine::APPLICATION.GetUniqueHexID());
 		actionSeenIDs[node->GetData()->getID()] = true;
 
 		if (node->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
@@ -271,20 +272,20 @@ void FETest::validateImagePathes(VisualNodeArea* nodeArea, std::string filePath)
 	}*/
 
 	// Validate nodes IDs in node regions with IDs in main node area.
-	std::vector<VisualNode*> regionList = nodeArea->GetNodesByType("regionNode");
+	std::vector<VisNodeSys::Node*> regionList = nodeArea->GetNodesByType("regionNode");
 	for (size_t i = 0; i < regionList.size(); i++)
 	{
 		regionNode* rNode = reinterpret_cast<regionNode*>(regionList[i]);
 
 		if (rNode->GetData() != nullptr)
 		{
-			std::vector<VisualNode*> list = rNode->GetData()->GetNodesByType("globalActionNode");
+			std::vector<VisNodeSys::Node*> list = rNode->GetData()->GetNodesByType("globalActionNode");
 			for (size_t j = 0; j < list.size(); j++)
 			{
 				globalActionNode* node = reinterpret_cast<globalActionNode*>(list[j]);
 
 				if (actionSeenIDs.find(node->GetData()->getID()) != actionSeenIDs.end())
-					node->GetData()->setID(APPLICATION.GetUniqueHexID());
+					node->GetData()->setID(FocalEngine::APPLICATION.GetUniqueHexID());
 				actionSeenIDs[node->GetData()->getID()] = true;
 
 				if (node->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "basicLogicNode.h"
 
 class beginNode : public basicLogicNode
@@ -10,8 +9,8 @@ class beginNode : public basicLogicNode
 
 	float Data = 0.0f;
 
-	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	FETPImage* Icon = nullptr;
 public:

@@ -22,13 +22,12 @@ enum FETP_COMBINED_ACTION_TYPE
 	FETP_COMBINED_TEXT_INPUT_ACTION = 5
 };
 
-class VisualNode;
 class globalActionNode;
 class FETest;
 
 class FETPAction
 {
-	friend VisualNode;
+	friend class Node;
 	friend globalActionNode;
 	friend FETest;
 

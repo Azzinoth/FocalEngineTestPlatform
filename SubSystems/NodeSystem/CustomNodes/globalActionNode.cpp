@@ -1,4 +1,5 @@
 #include "globalActionNode.h"
+using namespace VisNodeSys;
 
 FETPImage* globalActionNode::SleepIcon = nullptr;
 
@@ -18,12 +19,12 @@ FETPImage* globalActionNode::ScreenshotIcon = nullptr;
 bool globalActionNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("globalActionNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new globalActionNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const globalActionNode& NodeToCopy = static_cast<const globalActionNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const globalActionNode& NodeToCopy = static_cast<const globalActionNode&>(CurrentNode);
 			return new globalActionNode(NodeToCopy);
 		}
 	);
@@ -33,7 +34,7 @@ bool globalActionNode::isRegistered = []()
 
 globalActionNode::globalActionNode() : basicLogicNode()
 {
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 void globalActionNode::CopyData(FETPAction* Src)
@@ -67,7 +68,7 @@ void globalActionNode::CopyData(FETPAction* Src)
 globalActionNode::globalActionNode(const globalActionNode& Src) : basicLogicNode(Src)
 {
 	CopyData(Src.Data);
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 globalActionNode::~globalActionNode()
@@ -78,7 +79,7 @@ globalActionNode::~globalActionNode()
 
 void globalActionNode::Initialize(FETPAction* Data)
 {
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 	Type = "globalActionNode";
 	this->Data = Data;
 
@@ -183,9 +184,9 @@ globalActionNode::globalActionNode(FETPAction* Data) : basicLogicNode()
 
 void globalActionNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
-	if (GetStyle() == VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
@@ -296,7 +297,7 @@ void globalActionNode::Draw()
 			ImGui::Text(action->applicationPath.c_str());
 		}
 	}
-	else if (GetStyle() == VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == CIRCLE)
 	{
 		CheckIcons();
 
@@ -351,9 +352,9 @@ void globalActionNode::Draw()
 	ImGui::PopStyleVar();
 }
 
-void globalActionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void globalActionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 FETPAction* globalActionNode::GetData()
@@ -363,7 +364,7 @@ FETPAction* globalActionNode::GetData()
 
 bool globalActionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	if (CandidateSocket->GetType() == "FLOAT" && OwnSocket->GetType() == "FLOAT")
@@ -374,7 +375,7 @@ bool globalActionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSo
 
 Json::Value globalActionNode::ToJson()
 {
-	Json::Value result = VisualNode::ToJson();
+	Json::Value result = Node::ToJson();
 
 	if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
@@ -412,7 +413,7 @@ basicLogicNode* globalActionNode::GetNextNode()
 
 void globalActionNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 
 	if (FETP_ACTION_TYPE(Json["action"]["internalType"].asInt()) == FETP_KEYBOARD_ACTION)
 	{

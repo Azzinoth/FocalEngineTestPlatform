@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "basicLogicNode.h"
 
 const COMDLG_FILTERSPEC pngLoadFilter[] =
@@ -15,8 +14,8 @@ class imageNode : public basicLogicNode
 
 	friend class FETest;
 
-	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	FETPImage* Data = nullptr;
 

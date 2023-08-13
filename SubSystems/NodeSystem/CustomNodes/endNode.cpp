@@ -1,14 +1,15 @@
 #include "endNode.h"
+using namespace VisNodeSys;
 
 bool endNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("endNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new endNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const endNode& NodeToCopy = static_cast<const endNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const endNode& NodeToCopy = static_cast<const endNode&>(CurrentNode);
 			return new endNode(NodeToCopy);
 		}
 	);
@@ -21,7 +22,7 @@ endNode::endNode() : basicLogicNode()
 	Type = "endNode";
 	bCouldBeDestroyed = false;
 
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 
 	SetSize(ImVec2(220, 78));
 	SetName("endNode");
@@ -40,7 +41,7 @@ endNode::endNode(const endNode& Src) : basicLogicNode(Src)
 	Data = Src.Data;
 	bCouldBeDestroyed = false;
 
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 
 	if (Icon == nullptr)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
@@ -48,15 +49,15 @@ endNode::endNode(const endNode& Src) : basicLogicNode(Src)
 
 void endNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
 	ImGui::Image((void*)(intptr_t)Icon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void endNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void endNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 float endNode::GetData()
@@ -66,7 +67,7 @@ float endNode::GetData()
 
 bool endNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

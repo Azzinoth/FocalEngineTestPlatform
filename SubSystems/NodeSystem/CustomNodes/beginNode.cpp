@@ -1,14 +1,15 @@
 #include "beginNode.h"
+using namespace VisNodeSys;
 
 bool beginNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("beginNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new beginNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const beginNode& NodeToCopy = static_cast<const beginNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const beginNode& NodeToCopy = static_cast<const beginNode&>(CurrentNode);
 			return new beginNode(NodeToCopy);
 		}
 	);
@@ -21,7 +22,7 @@ beginNode::beginNode() : basicLogicNode()
 	Type = "beginNode";
 	bCouldBeDestroyed = false;
 
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 
 	SetSize(ImVec2(220, 78));
 	SetName("beginNode");
@@ -40,7 +41,7 @@ beginNode::beginNode(const beginNode& Src) : basicLogicNode(Src)
 	Data = Src.Data;
 	bCouldBeDestroyed = false;
 
-	SetStyle(VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 
 	if (Icon == nullptr)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
@@ -48,7 +49,7 @@ beginNode::beginNode(const beginNode& Src) : basicLogicNode(Src)
 
 void beginNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -56,14 +57,14 @@ void beginNode::Draw()
 	ImGui::Image((void*)(intptr_t)Icon->getTextureID(), ImVec2(116.0f, 116.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void beginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void beginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 	}
 }
 
@@ -74,7 +75,7 @@ float beginNode::GetData()
 
 bool beginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return false;

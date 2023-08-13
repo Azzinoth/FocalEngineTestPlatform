@@ -1,14 +1,15 @@
 #include "vec2Node.h"
+using namespace VisNodeSys;
 
 bool vec2Node::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("vec2Node",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new vec2Node();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const vec2Node& NodeToCopy = static_cast<const vec2Node&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const vec2Node& NodeToCopy = static_cast<const vec2Node&>(CurrentNode);
 			return new vec2Node(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ vec2Node::vec2Node() : basicLogicNode()
 {
 	Type = "vec2Node";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(210, 78));
 	SetName("vec2 node");
@@ -34,7 +35,7 @@ vec2Node::vec2Node() : basicLogicNode()
 
 vec2Node::vec2Node(const vec2Node& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 
 	// Here I am restoring the output data function.
@@ -44,7 +45,7 @@ vec2Node::vec2Node(const vec2Node& Src) : basicLogicNode(Src)
 
 Json::Value vec2Node::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 	Result["vec2Node_Data_x"] = Data.x;
 	Result["vec2Node_Data_y"] = Data.y;
 	return Result;
@@ -52,7 +53,7 @@ Json::Value vec2Node::ToJson()
 
 void vec2Node::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 	Data.x = Json["vec2Node_Data_x"].asInt();
 	Data.y = Json["vec2Node_Data_y"].asInt();
 
@@ -63,7 +64,7 @@ void vec2Node::FromJson(Json::Value Json)
 
 void vec2Node::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -79,18 +80,18 @@ void vec2Node::Draw()
 		Data = glm::vec2(position[0], position[1]);
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_UPDATE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], UPDATE);
 	}
 }
 
-void vec2Node::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void vec2Node::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 bool vec2Node::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

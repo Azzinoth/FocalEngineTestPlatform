@@ -1,14 +1,15 @@
 #include "sleepNode.h"
+using namespace VisNodeSys;
 
 bool sleepNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("sleepNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new sleepNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const sleepNode& NodeToCopy = static_cast<const sleepNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const sleepNode& NodeToCopy = static_cast<const sleepNode&>(CurrentNode);
 			return new sleepNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ sleepNode::sleepNode() : basicLogicNode()
 {
 	Type = "sleepNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(220, 78));
 	SetName("sleep node");
@@ -34,26 +35,26 @@ sleepNode::sleepNode() : basicLogicNode()
 
 sleepNode::sleepNode(const sleepNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	SleepFor = Src.SleepFor;
 }
 
 Json::Value sleepNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 	Result["sleepNode_Data"] = SleepFor;
 	return Result;
 }
 
 void sleepNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 	SleepFor = Json["sleepNode_Data"].asInt();
 }
 
 void sleepNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -67,22 +68,22 @@ void sleepNode::Draw()
 	ImGui::InputInt("##value", &SleepFor);
 }
 
-void sleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void sleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		Sleep(DWORD(SleepFor /** currentlyRunning->getSpeedFactor()*/));
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 	}
 }
 
 bool sleepNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

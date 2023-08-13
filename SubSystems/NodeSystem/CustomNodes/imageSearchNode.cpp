@@ -1,14 +1,15 @@
 #include "imageSearchNode.h"
+using namespace VisNodeSys;
 
 bool imageSearchNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("imageSearchNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new imageSearchNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const imageSearchNode& NodeToCopy = static_cast<const imageSearchNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const imageSearchNode& NodeToCopy = static_cast<const imageSearchNode&>(CurrentNode);
 			return new imageSearchNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 {
 	Type = "imageSearchNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(290, 220));
 	SetName("image search node");
@@ -42,7 +43,7 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 
 imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	Simularity = Src.Simularity;
 	MaxColorShift = Src.MaxColorShift;
@@ -55,7 +56,7 @@ imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Sr
 
 Json::Value imageSearchNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 
 	if (Input[2]->GetConnectedSockets().empty())
 		Result["Simularity"] = Simularity;
@@ -68,7 +69,7 @@ Json::Value imageSearchNode::ToJson()
 
 void imageSearchNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 
 	if (Json.isMember("Simularity"))
 		Simularity = Json["Simularity"].asFloat();
@@ -84,7 +85,7 @@ void imageSearchNode::FromJson(Json::Value Json)
 
 void imageSearchNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -112,11 +113,11 @@ void imageSearchNode::Draw()
 		MaxColorShift = 0;
 }
 
-void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_UPDATE)
+	if (EventType == UPDATE)
 	{
 		if (Input[2]->GetConnectedSockets().size() > 0)
 		{
@@ -133,7 +134,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 		}
 	}
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		FETPImage* ImageToLookFor = nullptr;
 
@@ -177,7 +178,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				delete TestScreenShoot;
 
 				if (Output[0]->GetConnectedSockets().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 			}
 		}
 	}
@@ -185,7 +186,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 bool imageSearchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

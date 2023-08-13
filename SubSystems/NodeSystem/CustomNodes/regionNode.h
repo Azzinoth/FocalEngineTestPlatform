@@ -10,10 +10,10 @@ class regionNode : public basicLogicNode
 	friend class NodeFactory;
 	static bool isRegistered;
 
-	VisualNodeArea* Data;
+	VisNodeSys::NodeArea* Data;
 
-	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	static FETPImage* RegionIcon;
 
@@ -28,7 +28,7 @@ public:
 	regionNode(const regionNode& Src);
 
 	void Draw();
-	VisualNodeArea* GetData();
+	VisNodeSys::NodeArea* GetData();
 
 	basicLogicNode* GetNextNode();
 

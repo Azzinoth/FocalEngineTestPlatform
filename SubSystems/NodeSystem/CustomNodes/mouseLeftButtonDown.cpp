@@ -1,14 +1,15 @@
 #include "mouseLeftButtonDown.h"
+using namespace VisNodeSys;
 
 bool mouseLeftButtonDown::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("mouseLeftButtonDown",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new mouseLeftButtonDown();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const mouseLeftButtonDown& NodeToCopy = static_cast<const mouseLeftButtonDown&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const mouseLeftButtonDown& NodeToCopy = static_cast<const mouseLeftButtonDown&>(CurrentNode);
 			return new mouseLeftButtonDown(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ mouseLeftButtonDown::mouseLeftButtonDown() : basicLogicNode()
 {
 	Type = "mouseLeftButtonDown";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(250, 90));
 	SetName("Mouse left button down");
@@ -34,30 +35,30 @@ mouseLeftButtonDown::mouseLeftButtonDown() : basicLogicNode()
 
 mouseLeftButtonDown::mouseLeftButtonDown(const mouseLeftButtonDown& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 }
 
 void mouseLeftButtonDown::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 }
 
-void mouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void mouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		INPUT_SYSTEM.mouseDown();
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 	}
 }
 
 bool mouseLeftButtonDown::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

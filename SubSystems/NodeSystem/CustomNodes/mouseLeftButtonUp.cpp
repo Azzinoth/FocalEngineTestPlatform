@@ -1,14 +1,15 @@
 #include "mouseLeftButtonUp.h"
+using namespace VisNodeSys;
 
 bool mouseLeftButtonUp::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("mouseLeftButtonUp",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new mouseLeftButtonUp();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const mouseLeftButtonUp& NodeToCopy = static_cast<const mouseLeftButtonUp&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const mouseLeftButtonUp& NodeToCopy = static_cast<const mouseLeftButtonUp&>(CurrentNode);
 			return new mouseLeftButtonUp(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ mouseLeftButtonUp::mouseLeftButtonUp() : basicLogicNode()
 {
 	Type = "mouseLeftButtonUp";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(250, 90));
 	SetName("Mouse left button up");
@@ -34,30 +35,30 @@ mouseLeftButtonUp::mouseLeftButtonUp() : basicLogicNode()
 
 mouseLeftButtonUp::mouseLeftButtonUp(const mouseLeftButtonUp& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 }
 
 void mouseLeftButtonUp::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 }
 
-void mouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void mouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		INPUT_SYSTEM.mouseUp();
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 	}
 }
 
 bool mouseLeftButtonUp::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

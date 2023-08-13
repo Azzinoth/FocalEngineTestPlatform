@@ -1,14 +1,15 @@
 #include "branchNode.h"
+using namespace VisNodeSys;
 
 bool branchNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("branchNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new branchNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const branchNode& NodeToCopy = static_cast<const branchNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const branchNode& NodeToCopy = static_cast<const branchNode&>(CurrentNode);
 			return new branchNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ branchNode::branchNode() : basicLogicNode()
 {
 	Type = "branchNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(220, 78));
 	SetName("branch node");
@@ -37,19 +38,19 @@ branchNode::branchNode() : basicLogicNode()
 
 branchNode::branchNode(const branchNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 }
 
 void branchNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 }
 
-void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		bool Condition = false;
 
@@ -63,19 +64,19 @@ void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket,
 		if (Condition)
 		{
 			if (Output[0]->GetConnectedSockets().size() > 0)
-				ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+				ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 		}
 		else
 		{
 			if (Output[1]->GetConnectedSockets().size() > 0)
-				ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+				ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnectedSockets()[0], EXECUTE);
 		}
 	}
 }
 
 bool branchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

@@ -93,8 +93,8 @@ struct MouseAction : public FETPAction
 	int nCode;
 	WPARAM wParam;
 	MSLLHOOKSTRUCT additionalInfo;
-	int screenWidth;
-	int screenHeight;
+	size_t screenWidth;
+	size_t screenHeight;
 
 	MouseAction() : FETPAction(FETP_MOUSE_ACTION)
 	{

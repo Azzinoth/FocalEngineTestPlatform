@@ -1,14 +1,15 @@
 #include "mouseMoveNode.h"
+using namespace VisNodeSys;
 
 bool mouseMoveNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("mouseMoveNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new mouseMoveNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const mouseMoveNode& NodeToCopy = static_cast<const mouseMoveNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const mouseMoveNode& NodeToCopy = static_cast<const mouseMoveNode&>(CurrentNode);
 			return new mouseMoveNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ mouseMoveNode::mouseMoveNode() : basicLogicNode()
 {
 	Type = "mouseMoveNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(250, 90));
 	SetName("Mouse move node");
@@ -36,13 +37,13 @@ mouseMoveNode::mouseMoveNode() : basicLogicNode()
 
 mouseMoveNode::mouseMoveNode(const mouseMoveNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 }
 
 Json::Value mouseMoveNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 
 	if (Input[1]->GetConnectedSockets().empty())
 	{
@@ -55,7 +56,7 @@ Json::Value mouseMoveNode::ToJson()
 
 void mouseMoveNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 
 	if (Json.isMember("mouseMoveNode_Data_x") && Json.isMember("mouseMoveNode_Data_y"))
 	{
@@ -66,7 +67,7 @@ void mouseMoveNode::FromJson(Json::Value Json)
 
 void mouseMoveNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -85,11 +86,11 @@ void mouseMoveNode::Draw()
 	ImGui::EndDisabled();
 }
 
-void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_UPDATE || EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == UPDATE || EventType == EXECUTE)
 	{
 		if (Input[1]->GetConnectedSockets().size() > 0)
 		{
@@ -99,18 +100,18 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 		}
 	}
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		INPUT_SYSTEM.mouseMoveTo(Data.x, Data.y);
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
-			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 	}
 }
 
 bool mouseMoveNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

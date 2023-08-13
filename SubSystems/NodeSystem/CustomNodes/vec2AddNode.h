@@ -1,15 +1,14 @@
 #pragma once
 
-#include "../VisualNodeSystem/VisualNodeSystem.h"
 #include "basicLogicNode.h"
 
 class vec2AddNode : public basicLogicNode
 {
-	friend class NodeFactory;
+	friend class VisNodeSys::NodeFactory;
 	static bool isRegistered;
 
-	bool CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	glm::vec2 LocalData = glm::vec2(0.0f);
 

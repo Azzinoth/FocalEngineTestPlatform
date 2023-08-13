@@ -1,4 +1,5 @@
 #include "screenshootEditor.h"
+using namespace VisNodeSys;
 
 screenshootEditor* screenshootEditor::Instance = nullptr;
 
@@ -365,7 +366,7 @@ void screenshootEditor::useCompleteImage()
 void screenshootEditor::replaceCurrentNode()
 {
 	FETest* currentTest = TEST_MANAGER.getTestByAction(currentAction);
-	VisualNode* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
+	VisNodeSys::Node* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
 
 	globalActionNode* newNode = new globalActionNode(currentAction);
 	newNode->SetPosition(currentNode->GetPosition());

@@ -154,7 +154,7 @@ class FETest
 
 	void validateImagePathesInFile(std::string filePath);
 	Json::Value validateImagePathesInNodeArea(std::string nodeAreaText);
-	void validateImagePathes(VisualNodeArea* nodeArea = nullptr, std::string filePath = "");
+	void validateImagePathes(VisNodeSys::NodeArea* nodeArea = nullptr, std::string filePath = "");
 
 	std::unordered_map<std::string, std::string> macrosToReplace;
 public:
@@ -167,7 +167,7 @@ public:
 	std::vector<FETestBeforeAction*> beforeStart;
 	
 	std::string filePath;
-	VisualNodeArea* nodeArea;
+	VisNodeSys::NodeArea* nodeArea;
 
 	beginNode* getBeginNode();
 	void reColorMainTestPath();

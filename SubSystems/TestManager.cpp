@@ -1,7 +1,8 @@
 #include "TestManager.h"
+using namespace VisNodeSys;
 
 TestManager* TestManager::Instance = nullptr;
-VisualNode* TestManager::foundNode = nullptr;
+VisNodeSys::Node* TestManager::foundNode = nullptr;
 FETPAction* TestManager::searchedAction = nullptr;
 
 TestManager::TestManager()
@@ -35,7 +36,7 @@ void TestManager::addTest(std::string filePath)
 	}
 }
 
-VisualNode* TestManager::getNodeByAction(FETPAction* action)
+VisNodeSys::Node* TestManager::getNodeByAction(FETPAction* action)
 {
 	if (action == nullptr)
 		return nullptr;
@@ -48,7 +49,7 @@ VisualNode* TestManager::getNodeByAction(FETPAction* action)
 		if (list[i]->nodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->RunOnEachNode([](VisualNode* node) {
+		list[i]->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
@@ -97,7 +98,7 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 		if (list[i]->nodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->RunOnEachNode([](VisualNode* node) {
+		list[i]->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);

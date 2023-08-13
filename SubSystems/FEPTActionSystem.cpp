@@ -1,4 +1,5 @@
 #include "FEPTActionSystem.h"
+using namespace VisNodeSys;
 
 FEPTActionSystem* FEPTActionSystem::Instance = nullptr;
 
@@ -26,7 +27,7 @@ void FEPTActionSystem::takeScreenshoot()
 	}
 }
 
-VisualNode* FEPTActionSystem::getNextNode(VisualNode* currentNode)
+VisNodeSys::Node* FEPTActionSystem::getNextNode(VisNodeSys::Node* currentNode)
 {
 	if (currentNode->GetType() == "beginNode")
 	{
@@ -47,7 +48,7 @@ VisualNode* FEPTActionSystem::getNextNode(VisualNode* currentNode)
 	return nullptr;
 }
 
-std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(VisualNode* currentNode)
+std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(VisNodeSys::Node* currentNode)
 {
 	std::vector<FETPAction*> result;
 
@@ -142,7 +143,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			size_t x = 0;
 			size_t y = 0;
 
-			TIME.BeginTimeStamp("M");
+			FocalEngine::TIME.BeginTimeStamp("M");
 			bool found = false;
 			if (!action->bUseGPU)
 			{
@@ -155,7 +156,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 				x = Position.x;
 				y = Position.y;
 			}
-			auto time = TIME.EndTimeStamp("M");
+			auto time = FocalEngine::TIME.EndTimeStamp("M");
 
 			if (found)
 			{
@@ -362,7 +363,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	currentlyRunning->beforeBegin();
 
 	basicLogicNode* currentNode = currentlyRunning->getBeginNode();
-	currentlyRunning->nodeArea->TriggerOrphanSocketEvent(currentNode, VISUAL_NODE_SOCKET_EXECUTE);
+	currentlyRunning->nodeArea->TriggerOrphanSocketEvent(currentNode, EXECUTE);
 	
 	/*while (currentNode != nullptr)
 	{
@@ -402,7 +403,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	return true;
 }
 
-void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, VisualNodeArea* nodeArea, bool copyActions)
+void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, NodeArea* nodeArea, bool copyActions)
 {
 	static int leftPadding = 15;
 	static int nodesPerW = 4;
@@ -413,7 +414,7 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, Vi
 	FETPAction* testAction = new FETPAction();
 	globalActionNode* testNode = new globalActionNode(testAction);
 
-	if (testNode->GetStyle() == VISUAL_NODE_STYLE_CIRCLE)
+	if (testNode->GetStyle() == CIRCLE)
 	{
 		nodesPerW = 6;
 		nodesPerH = 6;
@@ -430,10 +431,10 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, Vi
 	delete testNode;
 
 	int showedIndex = 0;
-	VisualNode* prevNode = nullptr;
+	VisNodeSys::Node* prevNode = nullptr;
 	for (size_t i = 0; i < actions.size(); i++)
 	{
-		VisualNode* newNode = nullptr;
+		VisNodeSys::Node* newNode = nullptr;
 
 		if (!copyActions)
 		{
@@ -807,7 +808,7 @@ bool FEPTActionSystem::keyboardPressActionFilter(FETPAction* action, int outputC
 	return false;
 }
 
-VisualNode* FEPTActionSystem::tryToPackActions(size_t& index)
+VisNodeSys::Node* FEPTActionSystem::tryToPackActions(size_t& index)
 {
 	std::vector<FETPAction*> actionsToCombine;
 

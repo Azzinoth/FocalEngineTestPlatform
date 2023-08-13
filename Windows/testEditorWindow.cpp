@@ -1,4 +1,5 @@
 #include "testEditorWindow.h"
+using namespace VisNodeSys;
 
 testEditorWinow* testEditorWinow::Instance = nullptr;
 ImVec2 testEditorWinow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
@@ -28,19 +29,19 @@ void testEditorWinow::render()
 
 	if (TEST_MANAGER.getSelectedTest() != nullptr)
 	{
-		VisualNodeArea* currentNodeArea = TEST_MANAGER.getSelectedTest()->nodeArea;
+		NodeArea* currentNodeArea = TEST_MANAGER.getSelectedTest()->nodeArea;
 
 		currentNodeArea->SetMainContextMenuFunc(mainContextMenu);
 		currentNodeArea->SetNodeEventCallback(nodeCallback);
 
-		currentNodeArea->SetAreaPosition(ImVec2(0.0f, 0.0f));
+		currentNodeArea->SetPosition(ImVec2(0.0f, 0.0f));
 		currentNodeArea->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
 		currentNodeArea->Update();
 	}
 
 	if (ImGui::GetIO().MouseReleased[1] && TEST_MANAGER.getSelectedTest() != nullptr)
 	{
-		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - TEST_MANAGER.getSelectedTest()->nodeArea->GetAreaRenderOffset();
+		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - TEST_MANAGER.getSelectedTest()->nodeArea->GetRenderOffset();
 		mousePositionWhenContextMenuWasOpened /= TEST_MANAGER.getSelectedTest()->nodeArea->GetZoomFactor();
 	}	
 
@@ -369,20 +370,20 @@ void testEditorWinow::mainContextMenu()
 	}
 }
 
-void testEditorWinow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWithNode)
+void testEditorWinow::nodeCallback(VisNodeSys::Node* node, NODE_EVENT eventWithNode)
 {
 	if (node == nullptr)
 		return;
 
-	if (eventWithNode == VISUAL_NODE_BEFORE_CONNECTED || eventWithNode == VISUAL_NODE_BEFORE_DISCONNECTED)
+	if (eventWithNode == BEFORE_CONNECTED || eventWithNode == BEFORE_DISCONNECTED)
 		return;
 
 	// Change style of all connections to default.
-	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachNode([](VisualNode* node) {
+	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 		size_t OutSocketCount = node->OutSocketCount();
 		for (size_t i = 0; i < OutSocketCount; i++)
 		{
-			VisualNodeConnectionStyle TempStyle;
+			ConnectionStyle TempStyle;
 			node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 			TempStyle.bMarchingAntsEffect = false;
 			node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
@@ -394,11 +395,11 @@ void testEditorWinow::nodeCallback(VisualNode* node, VISUAL_NODE_EVENT eventWith
 		return;
 
 	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachConnectedNode(TEST_MANAGER.getSelectedTest()->getBeginNode(),
-		[](VisualNode* node) {
+		[](VisNodeSys::Node* node) {
 			size_t OutSocketCount = node->OutSocketCount();
 			for (size_t i = 0; i < OutSocketCount; i++)
 			{
-				VisualNodeConnectionStyle TempStyle;
+				ConnectionStyle TempStyle;
 				node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
 				TempStyle.bMarchingAntsEffect = true;
 				node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);

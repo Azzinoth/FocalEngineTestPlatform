@@ -1,14 +1,15 @@
 #include "sequenceNode.h"
+using namespace VisNodeSys;
 
 bool sequenceNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("sequenceNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new sequenceNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const sequenceNode& NodeToCopy = static_cast<const sequenceNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const sequenceNode& NodeToCopy = static_cast<const sequenceNode&>(CurrentNode);
 			return new sequenceNode(NodeToCopy);
 		}
 	);
@@ -20,7 +21,7 @@ sequenceNode::sequenceNode() : basicLogicNode()
 {
 	Type = "sequenceNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(150, 78));
 	SetName("sequence node");
@@ -33,7 +34,7 @@ sequenceNode::sequenceNode() : basicLogicNode()
 
 sequenceNode::sequenceNode(const sequenceNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 }
 
@@ -44,20 +45,20 @@ void sequenceNode::AddSequenceOutput()
 
 Json::Value sequenceNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 	Result["sequenceNode_Data"] = Data;
 	return Result;
 }
 
 void sequenceNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 	Data = Json["sequenceNode_Data"].asInt();
 }
 
 void sequenceNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
@@ -71,23 +72,23 @@ void sequenceNode::Draw()
 	SetSize(ImVec2(Size.x, 100 + Output.size() * 30.0f));
 }
 
-void sequenceNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void sequenceNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		for (size_t i = 0; i < Data; i++)
 		{
 			if (Output[i]->GetConnectedSockets().size() > 0)
-				ParentArea->TriggerSocketEvent(Output[i], Output[i]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+				ParentArea->TriggerSocketEvent(Output[i], Output[i]->GetConnectedSockets()[0], EXECUTE);
 		}
 	}
 }
 
 bool sequenceNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;

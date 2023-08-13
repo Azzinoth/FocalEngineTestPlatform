@@ -1,14 +1,16 @@
 #include "timerNode.h"
+using namespace VisNodeSys;
+using namespace FocalEngine;
 
 bool timerNode::isRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("timerNode",
-		[]() -> VisualNode* {
+		[]() -> Node* {
 			return new timerNode();
 		},
 
-		[](const VisualNode& Node) -> VisualNode* {
-			const timerNode& NodeToCopy = static_cast<const timerNode&>(Node);
+		[](const Node& CurrentNode) -> Node* {
+			const timerNode& NodeToCopy = static_cast<const timerNode&>(CurrentNode);
 			return new timerNode(NodeToCopy);
 		}
 	);
@@ -20,7 +22,7 @@ timerNode::timerNode() : basicLogicNode()
 {
 	Type = "timerNode";
 
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(300, 120));
 	SetName("Timer node");
@@ -40,7 +42,7 @@ timerNode::timerNode() : basicLogicNode()
 
 timerNode::timerNode(const timerNode& Src) : basicLogicNode(Src)
 {
-	SetStyle(VISUAL_NODE_STYLE_DEFAULT);
+	SetStyle(DEFAULT);
 	Data = Src.Data;
 
 	// Here I am restoring the output data function.
@@ -50,14 +52,14 @@ timerNode::timerNode(const timerNode& Src) : basicLogicNode(Src)
 
 Json::Value timerNode::ToJson()
 {
-	Json::Value Result = VisualNode::ToJson();
+	Json::Value Result = Node::ToJson();
 	Result["timerNode_Data"] = Data;
 	return Result;
 }
 
 void timerNode::FromJson(Json::Value Json)
 {
-	VisualNode::FromJson(Json);
+	Node::FromJson(Json);
 	Data = Json["timerNode_Data"].asInt();
 
 	// Here I am restoring the output data function.
@@ -92,14 +94,14 @@ void timerNode::SetTimeLeft(int TimeInMS)
 
 void timerNode::Draw()
 {	
-	VisualNode::Draw();
+	Node::Draw();
 }
 
-void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, VISUAL_NODE_SOCKET_EVENT EventType)
+void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	VisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
-	if (EventType == VISUAL_NODE_SOCKET_EXECUTE)
+	if (EventType == EXECUTE)
 	{
 		if (OwnSocket == Input[0])
 		{
@@ -108,12 +110,12 @@ void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 			if (TimeLeft == 0)
 			{
 				if (Output[1]->GetConnectedSockets().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+					ParentArea->TriggerSocketEvent(Output[1], Output[1]->GetConnectedSockets()[0], EXECUTE);
 			}
 			else
 			{
 				if (Output[2]->GetConnectedSockets().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[2], Output[2]->GetConnectedSockets()[0], VISUAL_NODE_SOCKET_EXECUTE);
+					ParentArea->TriggerSocketEvent(Output[2], Output[2]->GetConnectedSockets()[0], EXECUTE);
 			}
 		}
 		else if (OwnSocket == Input[1])
@@ -133,7 +135,7 @@ void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 
 bool timerNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!VisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return true;
