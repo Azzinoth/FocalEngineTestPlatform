@@ -35,7 +35,7 @@ void testEditorWinow::render()
 		currentNodeArea->SetNodeEventCallback(nodeCallback);
 
 		currentNodeArea->SetPosition(ImVec2(0.0f, 0.0f));
-		currentNodeArea->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
+		currentNodeArea->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
 		currentNodeArea->Update();
 	}
 

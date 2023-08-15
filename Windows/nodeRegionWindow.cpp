@@ -49,9 +49,7 @@ void nodeRegionWindow::render()
 	if (currentRegion->GetData() != nullptr)
 	{
 		currentRegion->GetData()->SetMainContextMenuFunc(mainContextMenu);
-		//currentRegion->getData()->SetNodeEventCallback(nodeCallback);
-		//currentNodeArea->SetAreaPosition(ImVec2(0.0f, 0.0f));
-		currentRegion->GetData()->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
+		currentRegion->GetData()->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
 		currentRegion->GetData()->Update();
 	}
 
