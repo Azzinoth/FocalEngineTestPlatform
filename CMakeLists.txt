@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 
 set(BUILD_TYPE "Debug and Release" CACHE STRING "Choose Build type")
 set(CMAKE_BUILD_TYPE Debug)
@@ -15,6 +15,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF 
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+if(NOT TARGET FEBasicApplication)
+  add_subdirectory(SubSystems/FEBasicApplication)
+endif()
+
+# Force your path to Dear ImGui
+set(DEAR_IMGUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui CACHE PATH "Path to Dear ImGui directory." FORCE)
 
 if(NOT TARGET VisualNodeSystem)
 	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
@@ -153,6 +160,7 @@ set_target_properties(FETestPlatform PROPERTIES
                       /MANIFEST:embed
                       /MANIFESTINPUT:\"${CMAKE_SOURCE_DIR}/FETestPlatform.manifest\"")
 
+target_link_libraries(FETestPlatform FEBasicApplication)
 target_link_libraries(FETestPlatform VisualNodeSystem)
 
 target_link_libraries(FETestPlatform glew32s.lib)
@@ -178,5 +186,6 @@ include_directories(
 	${BASICAPP_THIRDPARTY_DIR}
 	${BASICAPP_DIR}
 	${VISUAL_NODE_SYSTEM_THIRDPARTY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui
 	"ThirdParty/"
 )
