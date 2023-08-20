@@ -40,15 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	testEditorWinow::getInstance().show();
 	testPropertiesWindow::getInstance().show();
 
-	//TestShaderLoading();
-
-	//FETPImage* ScreenImage = new FETPImage("test.png");
-
-	/*TIME.BeginTimeStamp("M");
-	RunComputeShader(ScreenImage, SubImage);
-	auto time = TIME.EndTimeStamp("M");*/
-	//int FrameCount = 0;
-
+	NODE_SYSTEM.Initialize();
 	NODE_SYSTEM.AssociateSocketTypeToColor("BOOL", ImColor(25, 25, 255));
 
 	while (TEST_PLATFORM.isWindowOpened())
@@ -70,99 +62,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		actionEditPopup::getInstance().render();
 		ACTION_SYSTEM.update();
 
-
-
-		/*TIME.BeginTimeStamp("M");
-		FETPImage* TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
-		delete TestScreenShoot;
-		auto time = TIME.EndTimeStamp("M");
-		TEST_PLATFORM.setWindowTitle(std::to_string(time));*/
-
-		//RunComputeShader(TestScreenShoot, SubImage);
-
-
-		/*auto Temp = TestScreenShoot->getRawData();
-		lodepng::encode("test.png", Temp, TestScreenShoot->getWidth(), TestScreenShoot->getHeight());
-		delete TestScreenShoot;
-		delete[] Temp;*/
-
-
-
-
-
-
-
-		/*TIME.BeginTimeStamp("M");
-		unsigned char* TestScreenShoot = SCREEN_SYSTEM.getScreenData();
-		auto time = TIME.EndTimeStamp("M");
-		TEST_PLATFORM.setWindowTitle(std::to_string(time));*/
-
-
-
-		/*FrameCount++;
-		if (FrameCount % 2 == 0)
-		{
-			delete SubImage;
-			SubImage = new FETPImage("testSub2.png");
-		}
-		else
-		{
-			delete SubImage;
-			SubImage = new FETPImage("testSub1.png");
-		}
-
-		TIME.BeginTimeStamp("M");
-		Sleep(20);
-		RunComputeShader(ScreenImage, SubImage);
-		auto time = TIME.EndTimeStamp("M");
-		TEST_PLATFORM.setWindowTitle(std::to_string(time));*/
-
-
-
-
-
-		
-		
-
-		/*std::vector<unsigned char> tempScreenshoot;
-		tempScreenshoot.resize(512 * 512 * 4);
-		Sleep(500);
-		SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, 512, 512);
-
-		int similarity = SCREEN_SYSTEM.compare(512, 512, tempScreenshoot.data(), image->getRawData(), tempDifferenceData.data());*/
-		//SCREEN_SYSTEM.updateScreenData();
-
-		//textLOG.clear();
-		//for (size_t i = 0; i < recordedActions.size(); i++)
-		//{
-		//	if (recordedActions[i].getActionType() != 0)
-		//		continue;
-
-		//	if (recordedActions[i].keyboard.wParam == WM_KEYDOWN || recordedActions[i].keyboard.wParam == WM_SYSKEYDOWN)
-		//	{
-		//		textLOG += "key down:" + std::to_string(recordedActions[i].keyboard.additionalInfo.vkCode) + "\n";
-		//	}
-		//	else
-		//	{
-		//		textLOG += "key up:" + std::to_string(recordedActions[i].keyboard.additionalInfo.vkCode) + "\n";
-		//	}
-		//}
-
-		//
-		//strcpy_s(tempText, textLOG.size() + 1, textLOG.c_str());
-		//ImGui::InputTextMultiline("LOG", tempText, strlen(tempText));
-
-		//ImGui::ShowDemoWindow();
-
-		//bool shiftPressed = HIWORD(GetKeyState(VK_SHIFT)) || HIWORD(GetKeyState(VK_LSHIFT)) || HIWORD(GetKeyState(VK_RSHIFT));
-		//bool capsLockActivated = LOWORD(GetKeyState(VK_CAPITAL));
-
-		//if (shiftPressed || capsLockActivated)
-		//{
-		//	int y = 0;
-		//	y++;
-		//}
-
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 		if (ImGui::BeginMainMenuBar())
 		{
@@ -180,8 +79,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		ImGui::PopStyleVar();
-
-		//TEST_PLATFORM.setWindowTitle();
 		TEST_PLATFORM.endFrame();
 	}
 
