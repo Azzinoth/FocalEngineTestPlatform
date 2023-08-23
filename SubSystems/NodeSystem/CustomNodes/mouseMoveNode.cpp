@@ -60,8 +60,8 @@ void mouseMoveNode::FromJson(Json::Value Json)
 
 	if (Json.isMember("mouseMoveNode_Data_x") && Json.isMember("mouseMoveNode_Data_y"))
 	{
-		Data.x = Json["mouseMoveNode_Data_x"].asInt();
-		Data.y = Json["mouseMoveNode_Data_y"].asInt();
+		Data.x = Json["mouseMoveNode_Data_x"].asFloat();
+		Data.y = Json["mouseMoveNode_Data_y"].asFloat();
 	}
 }
 
@@ -75,8 +75,8 @@ void mouseMoveNode::Draw()
 
 	ImGui::SetNextItemWidth(140 * Zoom);
 	static int position[] = { 0, 0 };
-	position[0] = Data.x;
-	position[1] = Data.y;
+	position[0] = static_cast<int>(Data.x);
+	position[1] = static_cast<int>(Data.y);
 
 	ImGui::BeginDisabled(Input[1]->GetConnectedSockets().size() != 0);
 	if (ImGui::InputInt2("##Position", position))
@@ -102,7 +102,7 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 
 	if (EventType == EXECUTE)
 	{
-		INPUT_SYSTEM.mouseMoveTo(Data.x, Data.y);
+		INPUT_SYSTEM.mouseMoveTo(static_cast<int>(Data.x), static_cast<int>(Data.y));
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

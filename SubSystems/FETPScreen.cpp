@@ -52,12 +52,12 @@ void FETPScreen::updateScreenData()
 	bmi.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.biPlanes = 1;
 	bmi.biBitCount = 32;
-	bmi.biWidth = TEST_PLATFORM.getScreenWidth();
+	bmi.biWidth = static_cast<LONG>(TEST_PLATFORM.getScreenWidth());
 	bmi.biHeight = -int(TEST_PLATFORM.getScreenHeight());
 	bmi.biCompression = BI_RGB;
 	bmi.biSizeImage = 0;
 
-	GetDIBits(hdcMem, hBitmap, 0, TEST_PLATFORM.getScreenHeight(), screenData, (BITMAPINFO*)&bmi, DIB_RGB_COLORS);
+	GetDIBits(hdcMem, hBitmap, 0, static_cast<UINT>(TEST_PLATFORM.getScreenHeight()), screenData, (BITMAPINFO*)&bmi, DIB_RGB_COLORS);
 	for (size_t i = 0; i < 4 * TEST_PLATFORM.getScreenWidth() * TEST_PLATFORM.getScreenHeight(); i += 4)
 	{
 		std::swap(screenData[i], screenData[i + 2]);
@@ -128,7 +128,7 @@ int FETPScreen::compare(size_t width, size_t height, unsigned char* firstData, u
 	if (firstData == nullptr || secondData == nullptr)
 		return 0;
 
-	int dataLength = width * height * 4;
+	int dataLength = static_cast<int>(width * height * 4);
 	int count = 0;
 	for (int i = 0; i < dataLength; i+=4)
 	{
@@ -198,7 +198,7 @@ int FETPScreen::simpleCompare(size_t width, size_t height, unsigned char* firstD
 	if (firstData == nullptr || secondData == nullptr)
 		return 0;
 
-	int dataLength = width * height * 4;
+	int dataLength = static_cast<int>(width * height * 4);
 	int count = 0;
 	for (int i = 0; i < dataLength; i += 4)
 	{
@@ -230,7 +230,7 @@ FETPImage* FETPScreen::GetScreenDataAsImage()
 
 int convertXYtoIndex(size_t width, int x, int y, int imageDepth)
 {
-	return (y * width + x) * imageDepth;
+	return static_cast<int>((y * width + x) * imageDepth);
 }
 
 std::vector<long long> convertToIntegralImage(size_t width, size_t height, unsigned char* data, int colorDepth)
@@ -480,7 +480,7 @@ bool FETPScreen::searchOnScreen(size_t width, size_t height, unsigned char* data
 
 
 	// We compare only rgb.
-	int dataLenght = width * height * 3;
+	int dataLenght = static_cast<int>(width * height * 3);
 
 	float maxDifference = 1.0f - (correctnessThreshold / 100.0f);
 	int persentInPixels = int(dataLenght * maxDifference);
@@ -540,8 +540,8 @@ bool FETPScreen::searchOnScreen(size_t width, size_t height, unsigned char* data
 			if (localMaxSimilarity < similarity)
 			{
 				localMaxSimilarity = similarity;
-				maxSimilarityX = i;
-				maxSimilarityY = j;
+				maxSimilarityX = static_cast<int>(i);
+				maxSimilarityY = static_cast<int>(j);
 			}
 			
 			if (similarity >= correctnessThreshold)

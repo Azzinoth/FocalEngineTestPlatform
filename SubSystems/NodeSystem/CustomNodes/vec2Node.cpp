@@ -54,8 +54,8 @@ Json::Value vec2Node::ToJson()
 void vec2Node::FromJson(Json::Value Json)
 {
 	Node::FromJson(Json);
-	Data.x = Json["vec2Node_Data_x"].asInt();
-	Data.y = Json["vec2Node_Data_y"].asInt();
+	Data.x = Json["vec2Node_Data_x"].asFloat();
+	Data.y = Json["vec2Node_Data_y"].asFloat();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
@@ -72,8 +72,8 @@ void vec2Node::Draw()
 
 	ImGui::SetNextItemWidth(140 * Zoom);
 	static int position[] = { 0, 0 };
-	position[0] = Data.x;
-	position[1] = Data.y;
+	position[0] = static_cast<int>(Data.x);
+	position[1] = static_cast<int>(Data.y);
 
 	if (ImGui::InputInt2("##Position", position))
 	{

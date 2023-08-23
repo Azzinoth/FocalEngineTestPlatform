@@ -70,7 +70,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 
 		EndPosition = glm::vec2(0);
-		for (int i = Data.size() - 1; i >= 0; i--)
+		for (int i = static_cast<int>(Data.size() - 1); i >= 0; i--)
 		{
 			if (Data[i]->getType() == FETP_MOUSE_ACTION)
 			{
@@ -167,7 +167,7 @@ void combinedActionNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 		ImGui::SetNextItemWidth(80);
-		int count = Data.size();
+		int count = static_cast<int>(Data.size());
 		ImGui::BeginDisabled();
 		ImGui::InputInt("actions count", &count);
 		ImGui::EndDisabled();

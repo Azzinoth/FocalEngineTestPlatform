@@ -180,7 +180,7 @@ bool FETPImage::IsBase64(unsigned char Character)
 
 std::string FETPImage::Base64Decode(std::string const& EncodedString)
 {
-	int Length = EncodedString.size();
+	int Length = static_cast<int>(EncodedString.size());
 	int i = 0;
 	int j = 0;
 	int InputStringIndex = 0;
@@ -194,7 +194,7 @@ std::string FETPImage::Base64Decode(std::string const& EncodedString)
 		if (i == 4)
 		{
 			for (i = 0; i < 4; i++)
-				Base64Quartet[i] = Base64Characters.find(Base64Quartet[i]);
+				Base64Quartet[i] = static_cast<unsigned char>(Base64Characters.find(Base64Quartet[i]));
 
 			OriginalDataGroup[0] = (Base64Quartet[0] << 2) + ((Base64Quartet[1] & 0x30) >> 4);
 			OriginalDataGroup[1] = ((Base64Quartet[1] & 0xf) << 4) + ((Base64Quartet[2] & 0x3c) >> 2);
@@ -212,7 +212,7 @@ std::string FETPImage::Base64Decode(std::string const& EncodedString)
 			Base64Quartet[j] = 0;
 
 		for (j = 0; j < 4; j++)
-			Base64Quartet[j] = Base64Characters.find(Base64Quartet[j]);
+			Base64Quartet[j] = static_cast<unsigned char>(Base64Characters.find(Base64Quartet[j]));
 
 		OriginalDataGroup[0] = (Base64Quartet[0] << 2) + ((Base64Quartet[1] & 0x30) >> 4);
 		OriginalDataGroup[1] = ((Base64Quartet[1] & 0xf) << 4) + ((Base64Quartet[2] & 0x3c) >> 2);

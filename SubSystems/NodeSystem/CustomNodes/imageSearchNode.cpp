@@ -89,8 +89,8 @@ void imageSearchNode::Draw()
 
 	float Zoom = ParentArea->GetZoomFactor();
 
-	int xPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
-	int yPosition = ImGui::GetCursorScreenPos().y + 139.0f * Zoom;
+	float xPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
+	float yPosition = ImGui::GetCursorScreenPos().y + 139.0f * Zoom;
 
 	ImGui::BeginDisabled(Input[2]->GetConnectedSockets().size() != 0);
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
@@ -108,7 +108,7 @@ void imageSearchNode::Draw()
 	yPosition += 48 * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
-	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 0.1f, 0.0f, 100.0f);
+	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 1, 0, 100);
 	if (MaxColorShift < 0)
 		MaxColorShift = 0;
 }
@@ -163,8 +163,8 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				if (TestScreenShoot != nullptr)
 					Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, Simularity, MaxColorShift);
 				found = Position.x != -1 && Position.y != -1;
-				x = Position.x;
-				y = Position.y;
+				x = static_cast<size_t>(Position.x);
+				y = static_cast<size_t>(Position.y);
 
 				FoundPosition = Position;
 				bFound = found;

@@ -153,15 +153,15 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			{
 				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
 				found = Position.x != -1 && Position.y != -1;
-				x = Position.x;
-				y = Position.y;
+				x = static_cast<size_t>(Position.x);
+				y = static_cast<size_t>(Position.y);
 			}
 			auto time = FocalEngine::TIME.EndTimeStamp("M");
 
 			if (found)
 			{
-				INPUT_SYSTEM.mouseMoveTo(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound(),
-										 y + action->imagesInfo[i]->screenSearch->getYShiftFromFound());
+				INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound()),
+										 static_cast<int>(y + action->imagesInfo[i]->screenSearch->getYShiftFromFound()));
 				action->imagesInfo[i]->lastRunResult = true;
 				return true;
 			}
@@ -225,14 +225,14 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 						{
 							glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
 							found = Position.x != -1 && Position.y != -1;
-							x = Position.x;
-							y = Position.y;
+							x = static_cast<size_t>(Position.x);
+							y = static_cast<size_t>(Position.y);
 						}
 
 						if (found)
 						{
-							INPUT_SYSTEM.mouseMoveTo(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound(),
-													 y + action->imagesInfo[i]->screenSearch->getYShiftFromFound());
+							INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound()),
+													 static_cast<int>(y + action->imagesInfo[i]->screenSearch->getYShiftFromFound()));
 							action->imagesInfo[i]->lastRunResult = true;
 							return true;
 						}
@@ -603,7 +603,7 @@ void FEPTActionSystem::findAndDeleteKeys()
 {
 	if (keysToDelete.size() != 0)
 	{
-		for (int i = recordedActions.size() - 1; i >= 0; i--)
+		for (int i = static_cast<int>(recordedActions.size() - 1); i >= 0; i--)
 		{
 			if (recordedActions[i]->getType() != FETP_KEYBOARD_ACTION)
 				continue;
@@ -674,7 +674,7 @@ void FEPTActionSystem::filterActions(size_t startIndex, std::function<bool(FETPA
 		if (startIndex >= recordedActions.size())
 			break;
 
-		if (filerFunction(recordedActions[startIndex], output.size()))
+		if (filerFunction(recordedActions[startIndex], static_cast<int>(output.size())))
 		{
 			output.push_back(recordedActions[startIndex]);
 		}

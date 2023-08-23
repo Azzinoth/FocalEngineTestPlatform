@@ -51,17 +51,17 @@ void testStartPreparationsWindow::render()
 			ImGui::Text(FETest::FEBeforeTestActionTypeToString(TEST_MANAGER.getSelectedTest()->beforeStart[i]->type).c_str());
 
 			ImGui::SetCursorPos(postionBeforeDraw);
-			ImGui::PushID(i);
+			ImGui::PushID(static_cast<int>(i));
 			if (ImGui::Selectable("##item", selectedAction == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetWindowContentRegionWidth(), 32.0f)))
 			{
-				selectedAction = i;
+				selectedAction = static_cast<int>(i);
 				strcpy_s(pathInput, TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path.size() + 1, TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path.c_str());
 				TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path = pathInput;
 			}
 			ImGui::PopID();
 
 			if (ImGui::IsItemHovered())
-				hoveredAction = i;
+				hoveredAction = static_cast<int>(i);
 
 			postionBeforeDraw.y += 34.0f;
 		}

@@ -88,8 +88,8 @@ void imageNode::Draw()
 
 	float Zoom = ParentArea->GetZoomFactor();
 
-	int xPosition = ImGui::GetCursorScreenPos().x + 75.0f * Zoom;
-	int yPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
+	float xPosition = ImGui::GetCursorScreenPos().x + 75.0f * Zoom;
+	float yPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
 	
 	if (Data == nullptr)
 	{

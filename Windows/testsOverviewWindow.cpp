@@ -54,7 +54,7 @@ void testsOverviewWindow::render()
 			ImGui::Text(TEST_MANAGER.list[i]->getName().c_str());
 
 			ImGui::SetCursorPos(postionBeforeDraw);
-			ImGui::PushID(i);
+			ImGui::PushID(static_cast<int>(i));
 			if (ImGui::Selectable("##item", selectedTest == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetWindowContentRegionWidth(), 32.0f)))
 			{
 				selectedTest = i;
@@ -63,7 +63,7 @@ void testsOverviewWindow::render()
 			ImGui::PopID();
 
 			if (ImGui::IsItemHovered())
-				hoveredTestIndex = i;
+				hoveredTestIndex = static_cast<int>(i);
 
 			postionBeforeDraw.y += 34.0f;
 		}

@@ -68,8 +68,8 @@ void intNode::Draw()
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
 
-	int xPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
-	int yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
+	float xPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
+	float yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
 
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 	ImGui::SetNextItemWidth(100 * Zoom);

@@ -69,7 +69,7 @@ void timerNode::FromJson(Json::Value Json)
 
 int timerNode::GetTimeLeft()
 {
-	Data -= TIME.EndTimeStamp(GetID());
+	Data -= static_cast<int>(TIME.EndTimeStamp(GetID()));
 	if (Data < 0)
 	{
 		Data = 0;
