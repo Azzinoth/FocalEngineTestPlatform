@@ -43,7 +43,7 @@ void testEditorWinow::render()
 	{
 		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - TEST_MANAGER.getSelectedTest()->nodeArea->GetRenderOffset();
 		mousePositionWhenContextMenuWasOpened /= TEST_MANAGER.getSelectedTest()->nodeArea->GetZoomFactor();
-	}	
+	}
 
 	ImGui::PopStyleVar();
 	ImGui::End();
@@ -332,7 +332,7 @@ void testEditorWinow::mainContextMenu()
 				TEST_MANAGER.getSelectedTest()->nodeArea->DeleteNode(selectedList[i]);
 			}
 
-			TEST_MANAGER.getSelectedTest()->nodeArea->ClearSelection();
+			TEST_MANAGER.getSelectedTest()->nodeArea->UnSelectAll();
 		}
 
 		if (ImGui::MenuItem("Save selected nodes..."))

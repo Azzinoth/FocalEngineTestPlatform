@@ -300,7 +300,7 @@ void previewWindow::nodeCallback(VisNodeSys::Node* node, VisNodeSys::NODE_EVENT 
 void previewWindow::positionNodesInCenter()
 {
 	ImVec2 viewCenter = currentNodeArea->GetRenderedViewCenter();
-	ImVec2 nodesAABBCenter = currentNodeArea->GetAllNodesAABBCenter();
+	ImVec2 nodesAABBCenter = currentNodeArea->GetAllElementsAABBCenter();
 
 	neededShift = viewCenter - nodesAABBCenter;
 
@@ -318,7 +318,7 @@ void previewWindow::positionNodesInTargetCenter()
 		return;
 
 	ImVec2 viewCenter = TEST_MANAGER.getSelectedTest()->nodeArea->GetRenderedViewCenter();
-	ImVec2 nodesAABBCenter = currentNodeArea->GetAllNodesAABBCenter();
+	ImVec2 nodesAABBCenter = currentNodeArea->GetAllElementsAABBCenter();
 	nodesAABBCenter -= currentNodeArea->GetRenderOffset();
 
 	neededShift = viewCenter - nodesAABBCenter;
