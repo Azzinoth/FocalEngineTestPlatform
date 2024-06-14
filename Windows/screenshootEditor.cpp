@@ -1,4 +1,5 @@
 #include "screenshootEditor.h"
+using namespace VisNodeSys;
 
 screenshootEditor* screenshootEditor::Instance = nullptr;
 
@@ -126,6 +127,10 @@ void screenshootEditor::render()
 			ImGui::SetCursorPos(ImVec2(addImageVariantButton->getPosition().x + 380.0f + 80.0f + 10.0f + 150.0f, 70.0f));
 			ImGui::InputInt("yShiftFromFound", &tempY);
 			currentAction->imagesInfo[subImageIndex]->screenSearch->setYShiftFromFound(tempY);
+
+			bool bUseGPU = currentAction->bUseGPU;
+			ImGui::Checkbox("Use GPU", &bUseGPU);
+			currentAction->bUseGPU = bUseGPU;
 		}
 	}
 
@@ -361,7 +366,7 @@ void screenshootEditor::useCompleteImage()
 void screenshootEditor::replaceCurrentNode()
 {
 	FETest* currentTest = TEST_MANAGER.getTestByAction(currentAction);
-	FEVisualNode* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
+	VisNodeSys::Node* currentNode = TEST_MANAGER.getNodeByAction(currentAction);
 
 	globalActionNode* newNode = new globalActionNode(currentAction);
 	newNode->SetPosition(currentNode->GetPosition());

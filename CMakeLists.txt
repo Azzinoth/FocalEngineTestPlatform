@@ -1,9 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
-
-# set default build to WIN32/X86
-set(CMAKE_VS_PLATFORM_NAME_DEFAULT Win32)
-set(CMAKE_GENERATOR_PLATFORM Win32)
-set(CMAKE_GENERATOR_TOOLSET host=x86)
+cmake_minimum_required(VERSION 3.10)
 
 set(BUILD_TYPE "Debug and Release" CACHE STRING "Choose Build type")
 set(CMAKE_BUILD_TYPE Debug)
@@ -20,6 +15,17 @@ set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF 
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+if(NOT TARGET FEBasicApplication)
+  add_subdirectory(SubSystems/FEBasicApplication)
+endif()
+
+# Force your path to Dear ImGui
+set(DEAR_IMGUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui CACHE PATH "Path to Dear ImGui directory." FORCE)
+
+if(NOT TARGET VisualNodeSystem)
+	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
+endif()
 
 # *************** EDITOR ***************
 file(GLOB FEDearImguiWrapper_SRC
@@ -50,20 +56,39 @@ file(GLOB SubWindows_SRC
 	"Windows/textInputPopup.cpp"
 )
 
-file(GLOB FEVisualNodeSystem_SRC
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSystem.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSystem.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeArea.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeArea.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNode.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNode.h"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSocket.cpp"
-	"SubSystems/NodeSystem/FEVisualNodeSystem/FEVisualNodeSocket.h"
-)
-
-file(GLOB FEVisualNodeSystem_CustomNodes_SRC
+file(GLOB VisualNodeSystem_CustomNodes_SRC
+	"SubSystems/NodeSystem/CustomNodes/basicLogicNode.h"
+	"SubSystems/NodeSystem/CustomNodes/basicLogicNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/boolNode.h"
+	"SubSystems/NodeSystem/CustomNodes/boolNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/intNode.h"
+	"SubSystems/NodeSystem/CustomNodes/intNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/floatNode.h"
+	"SubSystems/NodeSystem/CustomNodes/floatNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/vec2Node.h"
+	"SubSystems/NodeSystem/CustomNodes/vec2Node.cpp"
+	"SubSystems/NodeSystem/CustomNodes/vec2AddNode.h"
+	"SubSystems/NodeSystem/CustomNodes/vec2AddNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/branchNode.h"
+	"SubSystems/NodeSystem/CustomNodes/branchNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/sequenceNode.h"
+	"SubSystems/NodeSystem/CustomNodes/sequenceNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/timerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/timerNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/sleepNode.h"
+	"SubSystems/NodeSystem/CustomNodes/sleepNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/beginNode.h"
 	"SubSystems/NodeSystem/CustomNodes/beginNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/mouseMoveNode.h"
+	"SubSystems/NodeSystem/CustomNodes/mouseMoveNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonDown.h"
+	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonDown.cpp"
+	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonUp.h"
+	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonUp.cpp"
+	"SubSystems/NodeSystem/CustomNodes/imageNode.h"
+	"SubSystems/NodeSystem/CustomNodes/imageNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/imageSearchNode.h"
+	"SubSystems/NodeSystem/CustomNodes/imageSearchNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.h"
 	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/endNode.h"
@@ -90,42 +115,17 @@ file(GLOB SubSystems_SRC
 	"SubSystems/FETPImage.h"
 	"SubSystems/FETPInput.cpp"
 	"SubSystems/FETPInput.h"
+	"SubSystems/FETPComputeShaderCompare.cpp"
+	"SubSystems/FETPComputeShaderCompare.h"
+	"SubSystems/FETPScreenCapture.cpp"
+	"SubSystems/FETPScreenCapture.h"
 	"SubSystems/FETPScreen.cpp"
 	"SubSystems/FETPScreen.h"
 	"SubSystems/TestManager.cpp"
 	"SubSystems/TestManager.h"
 )
 
-file(GLOB BasicApplicationSubSystem_SRC
-	"SubSystems/FEBasicApplication/FEBasicApplication.cpp"
-	"SubSystems/FEBasicApplication/FEBasicApplication.h"
-	"SubSystems/FEBasicApplication/FEThreadPool.cpp"
-	"SubSystems/FEBasicApplication/FEThreadPool.h"
-	"SubSystems/FEBasicApplication/FELog.cpp"
-	"SubSystems/FEBasicApplication/FELog.h"
-	"SubSystems/FEBasicApplication/FETime.cpp"
-	"SubSystems/FEBasicApplication/FETime.h"
-)
-
 # *************** THIRD_PARTY ***************
-
-file(GLOB imgui_SRC
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_demo.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_draw.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_impl_glfw.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_impl_opengl3.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_tables.cpp"
-	"SubSystems/FEBasicApplication/ThirdParty/imgui/imgui_widgets.cpp"
-)
-
-file(GLOB jsoncpp_SRC
-	"ThirdParty/jsoncpp/json_reader.cpp"
-	"ThirdParty/jsoncpp/json_tool.h"
-	"ThirdParty/jsoncpp/json_value.cpp"
-	"ThirdParty/jsoncpp/json_valueiterator.inl"
-	"ThirdParty/jsoncpp/json_writer.cpp"
-)
 
 file(GLOB lodepng_SRC
 	"ThirdParty/lodepng/lodepng.cpp"
@@ -138,8 +138,8 @@ file(GLOB source_SRC
 	"main.cpp"
 )
 
-link_directories("SubSystems/FEBasicApplication/ThirdParty/glew2/lib/$(PlatformTarget)")
-link_directories("SubSystems/FEBasicApplication/ThirdParty/GLFW/lib/$(PlatformTarget)")
+link_directories(${GLEW_LIB_DIR})
+link_directories(${GLFW_LIB_DIR})
 
 # add the executable
 add_executable(FETestPlatform WIN32
@@ -147,18 +147,23 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
-							  ${FEVisualNodeSystem_SRC}
-							  ${FEVisualNodeSystem_CustomNodes_SRC}
+							  ${VisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
-							  ${BasicApplicationSubSystem_SRC}
 							  # *************** THIRD_PARTY ***************
-							  ${imgui_SRC}
-							  ${jsoncpp_SRC}
 							  ${lodepng_SRC}
 )
 
-target_link_libraries(FETestPlatform glew32.lib)
+# This will ensure the manifest is used when linking the executable.
+set_target_properties(FETestPlatform PROPERTIES
+                      LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\" 
+                      /MANIFEST:embed
+                      /MANIFESTINPUT:\"${CMAKE_SOURCE_DIR}/FETestPlatform.manifest\"")
+
+target_link_libraries(FETestPlatform FEBasicApplication)
+target_link_libraries(FETestPlatform VisualNodeSystem)
+
+target_link_libraries(FETestPlatform glew32s.lib)
 target_link_libraries(FETestPlatform glfw3.lib)
 target_link_libraries(FETestPlatform glfw3dll.lib)
 target_link_libraries(FETestPlatform opengl32.lib)
@@ -167,21 +172,20 @@ source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
-source_group("Source Files/SubSystems/NodeSystem/FEVisualNodeSystem" FILES ${FEVisualNodeSystem_SRC})
-source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${FEVisualNodeSystem_CustomNodes_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${VisualNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
-source_group("Source Files/SubSystems/BasicApplication" FILES ${BasicApplicationSubSystem_SRC})
 # *************** THIRD_PARTY ***************
-source_group("Source Files/ThirdParty/imgui" FILES ${imgui_SRC})
-source_group("Source Files/ThirdParty/jsoncpp" FILES ${jsoncpp_SRC})
 source_group("Source Files/ThirdParty/lodepng" FILES ${lodepng_SRC})
-# set FETestPlatform as the startup project
+
+# set the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT FETestPlatform)
 
 include_directories(
-	"SubSystems/FEBasicApplication/ThirdParty/glew2/include"
-	"SubSystems/FEBasicApplication/ThirdParty/"
-	"SubSystems/FEBasicApplication/"
+	${GLEW_INCLUDE_DIR}
+	${BASICAPP_THIRDPARTY_DIR}
+	${BASICAPP_DIR}
+	${VISUAL_NODE_SYSTEM_THIRDPARTY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui
 	"ThirdParty/"
 )

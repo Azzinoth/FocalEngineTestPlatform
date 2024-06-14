@@ -1,9 +1,23 @@
 #pragma once
 
 #include "FEFileSystem.h"
-#include "FETPInput.h"
+
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
+#include "NodeSystem/CustomNodes/intNode.h"
+#include "NodeSystem/CustomNodes/floatNode.h"
+#include "NodeSystem/CustomNodes/vec2Node.h"
+#include "NodeSystem/CustomNodes/vec2AddNode.h"
+#include "NodeSystem/CustomNodes/boolNode.h"
+#include "NodeSystem/CustomNodes/branchNode.h"
+#include "NodeSystem/CustomNodes/sequenceNode.h"
+#include "NodeSystem/CustomNodes/timerNode.h"
+#include "NodeSystem/CustomNodes/sleepNode.h"
 #include "NodeSystem/CustomNodes/beginNode.h"
+#include "NodeSystem/CustomNodes/mouseMoveNode.h"
+#include "NodeSystem/CustomNodes/mouseLeftButtonDown.h"
+#include "NodeSystem/CustomNodes/mouseLeftButtonUp.h"
+#include "NodeSystem/CustomNodes/imageNode.h"
+#include "NodeSystem/CustomNodes/imageSearchNode.h"
 #include "NodeSystem/CustomNodes/combinedActionNode.h"
 #include "NodeSystem/CustomNodes/regionNode.h"
 
@@ -140,7 +154,7 @@ class FETest
 
 	void validateImagePathesInFile(std::string filePath);
 	Json::Value validateImagePathesInNodeArea(std::string nodeAreaText);
-	void validateImagePathes(FEVisualNodeArea* nodeArea = nullptr, std::string filePath = "");
+	void validateImagePathes(VisNodeSys::NodeArea* nodeArea = nullptr, std::string filePath = "");
 
 	std::unordered_map<std::string, std::string> macrosToReplace;
 public:
@@ -153,7 +167,7 @@ public:
 	std::vector<FETestBeforeAction*> beforeStart;
 	
 	std::string filePath;
-	FEVisualNodeArea* nodeArea;
+	VisNodeSys::NodeArea* nodeArea;
 
 	beginNode* getBeginNode();
 	void reColorMainTestPath();

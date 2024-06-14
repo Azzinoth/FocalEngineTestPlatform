@@ -5,11 +5,15 @@
 #include "../Windows/textInputPopup.h"
 #include "../Windows/actionEditPopup.h"
 
-VISUAL_NODE_CHILD_PRIVATE_PART(regionNode)
-	FEVisualNodeArea* Data;
+class regionNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
 
-	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
+	VisNodeSys::NodeArea* Data;
+
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	static FETPImage* RegionIcon;
 
@@ -24,13 +28,10 @@ public:
 	regionNode(const regionNode& Src);
 
 	void Draw();
-	FEVisualNodeArea* GetData();
+	VisNodeSys::NodeArea* GetData();
 
-	FEVisualNode* GetNextNode();
-	FEVisualNode* GetLogicallyNextNode();
+	basicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(regionNode)

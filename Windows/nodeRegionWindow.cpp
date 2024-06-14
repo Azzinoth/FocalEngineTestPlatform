@@ -49,9 +49,7 @@ void nodeRegionWindow::render()
 	if (currentRegion->GetData() != nullptr)
 	{
 		currentRegion->GetData()->SetMainContextMenuFunc(mainContextMenu);
-		//currentRegion->getData()->SetNodeEventCallback(nodeCallback);
-		//currentNodeArea->SetAreaPosition(ImVec2(0.0f, 0.0f));
-		currentRegion->GetData()->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
+		currentRegion->GetData()->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
 		currentRegion->GetData()->Update();
 	}
 
@@ -62,7 +60,7 @@ void nodeRegionWindow::render()
 		FEImGuiWindow::close();
 
 	if (ImGui::GetIO().MouseReleased[1])
-		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - currentRegion->GetData()->GetAreaRenderOffset();
+		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - currentRegion->GetData()->GetRenderOffset();
 
 	FEImGuiWindow::onRenderEnd();
 }

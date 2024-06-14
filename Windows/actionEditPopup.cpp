@@ -54,7 +54,7 @@ void actionEditPopup::render()
 			if (action->wParam == WM_MOUSEMOVE)
 			{
 				ImGui::SetNextItemWidth(140);
-				static int position[] = { 0 };
+				static int position[] = { 0, 0 };
 				position[0] = action->additionalInfo.pt.x;
 				position[1] = action->additionalInfo.pt.y;
 

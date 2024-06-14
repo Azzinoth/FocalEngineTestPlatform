@@ -29,3 +29,20 @@
 #include "../ThirdParty/lodepng/lodepng.h"
 
 #define FE_WIN_32
+
+#ifdef FE_DEBUG_ENABLED
+#define FE_GL_ERROR(glCall)                \
+	{                                      \
+		glCall;                            \
+		GLenum error = glGetError();	   \
+		if (error != 0)                    \
+		{								   \
+			assert("FE_GL_ERROR" && 0);	   \
+		}                                  \
+	}
+#else
+#define FE_GL_ERROR(glCall)                \
+	{                                      \
+		glCall;                            \
+	}
+#endif // FE_GL_ERROR

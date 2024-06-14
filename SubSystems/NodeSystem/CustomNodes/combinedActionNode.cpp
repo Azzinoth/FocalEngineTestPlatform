@@ -1,6 +1,6 @@
 #include "combinedActionNode.h"
+using namespace VisNodeSys;
 
-VISUAL_NODE_CHILD_CPP(combinedActionNode)
 combinedActionNode* combinedActionNode::NodeForCallback = nullptr;
 FETPImage* combinedActionNode::MoveMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::LeftMouseCombineIcon = nullptr;
@@ -10,12 +10,29 @@ FETPImage* combinedActionNode::WheelMouseCombineIcon = nullptr;
 FETPImage* combinedActionNode::KeyCombinedIcon = nullptr;
 FETPImage* combinedActionNode::TextCombinedIcon = nullptr;
 
-combinedActionNode::combinedActionNode() : FEVisualNode()
+bool combinedActionNode::isRegistered = []()
 {
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	NODE_FACTORY.RegisterNodeType("combinedActionNode",
+		[]() -> Node* {
+			return new combinedActionNode();
+		},
+
+		[](const Node& CurrentNode) -> Node* {
+			const combinedActionNode& NodeToCopy = static_cast<const combinedActionNode&>(CurrentNode);
+			return new combinedActionNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+
+combinedActionNode::combinedActionNode() : basicLogicNode()
+{
+	SetStyle(CIRCLE);
 }
 
-combinedActionNode::combinedActionNode(const combinedActionNode& Src) : FEVisualNode(Src)
+combinedActionNode::combinedActionNode(const combinedActionNode& Src) : basicLogicNode(Src)
 {
 	Data = Src.Data;
 	ActionType = Src.ActionType;
@@ -23,18 +40,18 @@ combinedActionNode::combinedActionNode(const combinedActionNode& Src) : FEVisual
 	EndPosition = Src.EndPosition;
 	Text = Src.Text;
 
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type)
 {
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 	SetSize(ImVec2(330, 140));
 
 	if (Input.size() == 0 && Output.size() == 0)
 	{
-		AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-		AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+		AddSocket(new NodeSocket(this, "FLOAT", "", false));
+		AddSocket(new NodeSocket(this, "FLOAT", "", true));
 	}
 
 	Data = Data;
@@ -53,7 +70,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 
 		EndPosition = glm::vec2(0);
-		for (int i = Data.size() - 1; i >= 0; i--)
+		for (int i = static_cast<int>(Data.size() - 1); i >= 0; i--)
 		{
 			if (Data[i]->getType() == FETP_MOUSE_ACTION)
 			{
@@ -123,16 +140,16 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 	}
 }
 
-combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : FEVisualNode()
+combinedActionNode::combinedActionNode(std::vector<FETPAction*> Data, FETP_COMBINED_ACTION_TYPE Type) : basicLogicNode()
 {
 	Initialize(Data, Type);
 }
 
 void combinedActionNode::Draw()
 {	
-	FEVisualNode::Draw();
+	Node::Draw();
 
-	if (GetStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == DEFAULT)
 	{
 		// Show client rect.
 		/*ImVec2 regionMin = ImVec2(ImGui::GetCursorScreenPos().x + this->getClientRegionPosition().x,
@@ -150,7 +167,7 @@ void combinedActionNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 		ImGui::SetNextItemWidth(80);
-		int count = Data.size();
+		int count = static_cast<int>(Data.size());
 		ImGui::BeginDisabled();
 		ImGui::InputInt("actions count", &count);
 		ImGui::EndDisabled();
@@ -161,7 +178,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int begin_Position[] = { 0 };
+			static int begin_Position[] = { 0, 0 };
 			begin_Position[0] = int(BeginPosition.x);
 			begin_Position[1] = int(BeginPosition.y);
 
@@ -174,7 +191,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int end_Position[] = { 0 };
+			static int end_Position[] = { 0, 0 };
 			end_Position[0] = int(EndPosition.x);
 			end_Position[1] = int(EndPosition.y);
 
@@ -189,7 +206,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int position[] = { 0 };
+			static int position[] = { 0, 0 };
 			position[0] = int(BeginPosition.x);
 			position[1] = int(BeginPosition.y);
 
@@ -204,7 +221,7 @@ void combinedActionNode::Draw()
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 			ImGui::SetNextItemWidth(140);
-			static int position[] = { 0 };
+			static int position[] = { 0, 0 };
 			position[0] = int(BeginPosition.x);
 			position[1] = int(BeginPosition.y);
 
@@ -228,7 +245,7 @@ void combinedActionNode::Draw()
 			ImGui::Text(Text.c_str());
 		}
 	}
-	else if (GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == CIRCLE)
 	{
 		CheckIcons();
 
@@ -268,9 +285,9 @@ void combinedActionNode::Draw()
 	ImGui::PopStyleVar();*/
 }
 
-void combinedActionNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
+void combinedActionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
 std::vector<FETPAction*> combinedActionNode::GetData()
@@ -278,12 +295,12 @@ std::vector<FETPAction*> combinedActionNode::GetData()
 	return Data;
 }
 
-bool combinedActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
+bool combinedActionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
-	if (CandidateSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_OUT && OwnSocket->GetType() == FE_NODE_SOCKET_FLOAT_CHANNEL_IN)
+	if (CandidateSocket->GetType() == "FLOAT" && OwnSocket->GetType() == "FLOAT")
 		return true;
 
 	return false;
@@ -291,7 +308,7 @@ bool combinedActionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeS
 
 Json::Value combinedActionNode::ToJson()
 {
-	Json::Value result = FEVisualNode::ToJson();
+	Json::Value result = Node::ToJson();
 	result["actionType"] = ActionType;
 
 	for (size_t i = 0; i < Data.size(); i++)
@@ -307,17 +324,17 @@ Json::Value combinedActionNode::ToJson()
 	return result;
 }
 
-FEVisualNode* combinedActionNode::GetNextNode()
+basicLogicNode* combinedActionNode::GetNextNode()
 {
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		return Output[0]->GetConnections()[0]->GetParent();
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
+		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 
 	return nullptr;
 }
 
 void combinedActionNode::FromJson(Json::Value Json)
 {
-	FEVisualNode::FromJson(Json);
+	Node::FromJson(Json);
 
 	ActionType = FETP_COMBINED_ACTION_TYPE(Json["actionType"].asInt());
 

@@ -1,20 +1,23 @@
 #pragma once
 
-#include "../FEVisualNodeSystem/FEVisualNodeSystem.h"
 #include "../SubSystems/FETPInput.h"
 #include "../Windows/screenshootEditor.h"
 #include "../Windows/textInputPopup.h"
 #include "../Windows/actionEditPopup.h"
 
-VISUAL_NODE_CHILD_PRIVATE_PART(globalActionNode)
+class globalActionNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
 	FETPAction* Data;
 	void Initialize(FETPAction* Data);
 
 	bool ContextMenu = false;
 	bool OpenContextMenu();
 
-	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	void MouseClick(int MouseButton);
 
@@ -48,11 +51,8 @@ public:
 	void Draw();
 	FETPAction* GetData();
 
-	FEVisualNode* GetNextNode();
-	FEVisualNode* GetLogicallyNextNode();
+	basicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(globalActionNode)

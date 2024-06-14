@@ -1,4 +1,5 @@
 #include "FEPTActionSystem.h"
+using namespace VisNodeSys;
 
 FEPTActionSystem* FEPTActionSystem::Instance = nullptr;
 
@@ -26,7 +27,7 @@ void FEPTActionSystem::takeScreenshoot()
 	}
 }
 
-FEVisualNode* FEPTActionSystem::getNextNode(FEVisualNode* currentNode)
+VisNodeSys::Node* FEPTActionSystem::getNextNode(VisNodeSys::Node* currentNode)
 {
 	if (currentNode->GetType() == "beginNode")
 	{
@@ -47,7 +48,7 @@ FEVisualNode* FEPTActionSystem::getNextNode(FEVisualNode* currentNode)
 	return nullptr;
 }
 
-std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(FEVisualNode* currentNode)
+std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(VisNodeSys::Node* currentNode)
 {
 	std::vector<FETPAction*> result;
 
@@ -74,10 +75,9 @@ FETPImage* FEPTActionSystem::imageToUse(compareImageInfo* imageInfo)
 	if (imageInfo->image == nullptr)
 		return nullptr;
 	
-
-	if (size_t(imageInfo->image->getHeight()) != TEST_PLATFORM.getScreenHeight() ||
-		size_t(imageInfo->image->getWidth()) != TEST_PLATFORM.getScreenWidth())
-		return nullptr;
+	//if (size_t(imageInfo->image->getHeight()) != TEST_PLATFORM.getScreenHeight() ||
+	//	size_t(imageInfo->image->getWidth()) != TEST_PLATFORM.getScreenWidth())
+	//	return nullptr;
 
 	if (imageInfo->partialImage != nullptr)
 	{
@@ -116,14 +116,25 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		std::vector<unsigned char> tempDifferenceData;
 		tempDifferenceData.resize(tempScreenshoot.size());
 
+		FETPImage* TestScreenShoot = nullptr;
+
 		if (action->imagesInfo[i]->partialImage != nullptr)
 		{
-			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+			if (!action->bUseGPU)
+			{
+				SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+			}
+			else
+			{
+				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+			}
 		}
 		else
 		{
 			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->getWidth(), image->getHeight());
 		}
+
+		
 		
 		int similarity = 0;
 		unsigned char* tempRawData = image->getRawData();
@@ -132,12 +143,25 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			size_t x = 0;
 			size_t y = 0;
 
-			bool found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+			FocalEngine::TIME.BeginTimeStamp("M");
+			bool found = false;
+			if (!action->bUseGPU)
+			{
+				found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+			}
+			else
+			{
+				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+				found = Position.x != -1 && Position.y != -1;
+				x = static_cast<size_t>(Position.x);
+				y = static_cast<size_t>(Position.y);
+			}
+			auto time = FocalEngine::TIME.EndTimeStamp("M");
 
 			if (found)
 			{
-				INPUT_SYSTEM.mouseMoveTo(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound(),
-										 y + action->imagesInfo[i]->screenSearch->getYShiftFromFound());
+				INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound()),
+										 static_cast<int>(y + action->imagesInfo[i]->screenSearch->getYShiftFromFound()));
 				action->imagesInfo[i]->lastRunResult = true;
 				return true;
 			}
@@ -169,7 +193,15 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					Sleep(10);
 					if (action->imagesInfo[i]->partialImage != nullptr)
 					{
-						SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+						if (!action->bUseGPU)
+						{
+							SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+						}
+						else
+						{
+							delete TestScreenShoot;
+							TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+						}
 					}
 					else
 					{
@@ -183,12 +215,24 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					{
 						size_t x = 0;
 						size_t y = 0;
-						bool found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
+
+						bool found = false;
+						if (!action->bUseGPU)
+						{
+							found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
+						}
+						else
+						{
+							glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+							found = Position.x != -1 && Position.y != -1;
+							x = static_cast<size_t>(Position.x);
+							y = static_cast<size_t>(Position.y);
+						}
 
 						if (found)
 						{
-							INPUT_SYSTEM.mouseMoveTo(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound(),
-													 y + action->imagesInfo[i]->screenSearch->getYShiftFromFound());
+							INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound()),
+													 static_cast<int>(y + action->imagesInfo[i]->screenSearch->getYShiftFromFound()));
 							action->imagesInfo[i]->lastRunResult = true;
 							return true;
 						}
@@ -250,11 +294,11 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 
 			if (action->wParam == WM_MOUSEMOVE)
 			{
-				INPUT_SYSTEM.mouseMoveTo(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+				//INPUT_SYSTEM.mouseMoveTo(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
 			}
 			else if (action->wParam == WM_LBUTTONUP)
 			{
-				INPUT_SYSTEM.mouseUp();
+				//INPUT_SYSTEM.mouseUp();
 			}
 			else if (action->wParam == WM_RBUTTONUP)
 			{
@@ -262,7 +306,7 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 			}
 			else if (action->wParam == WM_LBUTTONDOWN)
 			{
-				INPUT_SYSTEM.mouseDown();
+				//INPUT_SYSTEM.mouseDown();
 			}
 			else if (action->wParam == WM_RBUTTONDOWN)
 			{
@@ -291,11 +335,11 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 
 			ShellExecuteA(NULL, NULL, action->applicationPath.c_str(), NULL, FocalEngine::FILE_SYSTEM.getDirectoryPath(action->applicationPath.c_str()), SW_NORMAL);
 		}
-		else if (actions[i]->getType() == FETP_SLEEP_ACTION)
+		/*else if (actions[i]->getType() == FETP_SLEEP_ACTION)
 		{
 			SleepAction* action = reinterpret_cast<SleepAction*>(actions[i]);
 			Sleep(DWORD(action->sleepFor * currentlyRunning->getSpeedFactor()));
-		}
+		}*/
 	}
 
 	return true;
@@ -318,8 +362,10 @@ bool FEPTActionSystem::run(FETest* testToRun)
 
 	currentlyRunning->beforeBegin();
 
-	FEVisualNode* currentNode = currentlyRunning->getBeginNode();
-	while (currentNode != nullptr)
+	basicLogicNode* currentNode = currentlyRunning->getBeginNode();
+	currentlyRunning->nodeArea->TriggerOrphanSocketEvent(currentNode, EXECUTE);
+	
+	/*while (currentNode != nullptr)
 	{
 		std::string originalText = "";
 		std::vector<FETPAction*> actions = getActionsFromNode(currentNode);
@@ -340,8 +386,8 @@ bool FEPTActionSystem::run(FETest* testToRun)
 			return false;
 		}
 
-		currentNode = currentNode->GetLogicallyNextNode();
-	}
+		currentNode = currentNode->GetNextNode();
+	}*/
 
 
 	currentTestResult->success = true;
@@ -357,7 +403,7 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	return true;
 }
 
-void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FEVisualNodeArea* nodeArea, bool copyActions)
+void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, NodeArea* nodeArea, bool copyActions)
 {
 	static int leftPadding = 15;
 	static int nodesPerW = 4;
@@ -368,7 +414,7 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FE
 	FETPAction* testAction = new FETPAction();
 	globalActionNode* testNode = new globalActionNode(testAction);
 
-	if (testNode->GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	if (testNode->GetStyle() == CIRCLE)
 	{
 		nodesPerW = 6;
 		nodesPerH = 6;
@@ -385,10 +431,10 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, FE
 	delete testNode;
 
 	int showedIndex = 0;
-	FEVisualNode* prevNode = nullptr;
+	VisNodeSys::Node* prevNode = nullptr;
 	for (size_t i = 0; i < actions.size(); i++)
 	{
-		FEVisualNode* newNode = nullptr;
+		VisNodeSys::Node* newNode = nullptr;
 
 		if (!copyActions)
 		{
@@ -557,7 +603,7 @@ void FEPTActionSystem::findAndDeleteKeys()
 {
 	if (keysToDelete.size() != 0)
 	{
-		for (int i = recordedActions.size() - 1; i >= 0; i--)
+		for (int i = static_cast<int>(recordedActions.size() - 1); i >= 0; i--)
 		{
 			if (recordedActions[i]->getType() != FETP_KEYBOARD_ACTION)
 				continue;
@@ -628,7 +674,7 @@ void FEPTActionSystem::filterActions(size_t startIndex, std::function<bool(FETPA
 		if (startIndex >= recordedActions.size())
 			break;
 
-		if (filerFunction(recordedActions[startIndex], output.size()))
+		if (filerFunction(recordedActions[startIndex], static_cast<int>(output.size())))
 		{
 			output.push_back(recordedActions[startIndex]);
 		}
@@ -762,7 +808,7 @@ bool FEPTActionSystem::keyboardPressActionFilter(FETPAction* action, int outputC
 	return false;
 }
 
-FEVisualNode* FEPTActionSystem::tryToPackActions(size_t& index)
+VisNodeSys::Node* FEPTActionSystem::tryToPackActions(size_t& index)
 {
 	std::vector<FETPAction*> actionsToCombine;
 

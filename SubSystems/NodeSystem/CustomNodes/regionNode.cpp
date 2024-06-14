@@ -1,11 +1,27 @@
 #include "regionNode.h"
+using namespace VisNodeSys;
 
-VISUAL_NODE_CHILD_CPP(regionNode)
 FETPImage* regionNode::RegionIcon = nullptr;
 
-regionNode::regionNode() : FEVisualNode()
+bool regionNode::isRegistered = []()
 {
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	NODE_FACTORY.RegisterNodeType("regionNode",
+		[]() -> Node* {
+			return new regionNode();
+		},
+
+		[](const Node& CurrentNode) -> Node* {
+			const regionNode& NodeToCopy = static_cast<const regionNode&>(CurrentNode);
+			return new regionNode(NodeToCopy);
+		}
+	);
+
+	return true;
+}();
+
+regionNode::regionNode() : basicLogicNode()
+{
+	SetStyle(CIRCLE);
 	Type = "regionNode";
 	Data = NODE_SYSTEM.CreateNodeArea();
 
@@ -17,30 +33,30 @@ regionNode::regionNode() : FEVisualNode()
 	End->SetPosition(Begin->GetPosition() + ImVec2(600.0f, 0.0f));
 	Data->AddNode(End);
 
-	AddInputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_IN, ""));
-	AddOutputSocket(new FEVisualNodeSocket(this, FE_NODE_SOCKET_FLOAT_CHANNEL_OUT, ""));
+	AddSocket(new NodeSocket(this, "FLOAT", "", false));
+	AddSocket(new NodeSocket(this, "FLOAT", "", true));
 }
 
-regionNode::regionNode(const regionNode& Src) : FEVisualNode(Src)
+regionNode::regionNode(const regionNode& Src) : basicLogicNode(Src)
 {
 	Data = Src.Data;
 	Begin = reinterpret_cast<beginNode*>(Data->GetNodesByType("beginNode")[0]);
 	End = reinterpret_cast<endNode*>(Data->GetNodesByType("endNode")[0]);
-	SetStyle(FE_VISUAL_NODE_STYLE_CIRCLE);
+	SetStyle(CIRCLE);
 }
 
 void regionNode::Draw()
 {	
-	FEVisualNode::Draw();
+	Node::Draw();
 
-	if (GetStyle() == FE_VISUAL_NODE_STYLE_DEFAULT)
+	if (GetStyle() == DEFAULT)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f, ImGui::GetCursorScreenPos().y + NODE_TITLE_HEIGHT + 13.0f));
 		ImGui::SetNextItemWidth(140);
 
 		ImGui::Text("REGION NODE");
 	}
-	else if (GetStyle() == FE_VISUAL_NODE_STYLE_CIRCLE)
+	else if (GetStyle() == CIRCLE)
 	{
 		CheckIcons();
 
@@ -52,36 +68,31 @@ void regionNode::Draw()
 	}
 }
 
-void regionNode::SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType)
+void regionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
-	FEVisualNode::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
+	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-FEVisualNodeArea* regionNode::GetData()
+NodeArea* regionNode::GetData()
 {
 	return Data;
 }
 
-bool regionNode::CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser)
+bool regionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
-	if (!FEVisualNode::CanConnect(OwnSocket, CandidateSocket, nullptr))
+	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return true;
 
 	return true;
 }
 
-FEVisualNode* regionNode::GetNextNode()
+basicLogicNode* regionNode::GetNextNode()
 {
 	End->NextNode = nullptr;
-	if (Output.size() > 0 && Output[0]->GetConnections().size() > 0)
-		End->NextNode = Output[0]->GetConnections()[0]->GetParent();
+	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
+		End->NextNode = reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return Begin;
-}
-
-FEVisualNode* regionNode::GetLogicallyNextNode()
-{
-	return GetNextNode();
 }
 
 void regionNode::CheckIcons()
@@ -112,7 +123,7 @@ void regionNode::ShowTooltip()
 
 Json::Value regionNode::ToJson()
 {
-	Json::Value result = FEVisualNode::ToJson();
+	Json::Value result = Node::ToJson();
 	result["nodeArea"] = Data->ToJson();
 
 	return result;
@@ -120,6 +131,6 @@ Json::Value regionNode::ToJson()
 
 void regionNode::FromJson(Json::Value Json)
 {
-	FEVisualNode::FromJson(Json);
-	Data = FEVisualNodeArea::FromJson(Json["nodeArea"].asCString());
+	Node::FromJson(Json);
+	Data = NodeArea::FromJson(Json["nodeArea"].asCString());
 }

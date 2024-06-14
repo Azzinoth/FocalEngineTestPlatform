@@ -106,10 +106,6 @@ void FETestPlatform::createWindow()
 	io.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 32);
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	unsigned char* tex_pixels = NULL;
-	int tex_w, tex_h;
-	io.Fonts->GetTexDataAsRGBA32(&tex_pixels, &tex_w, &tex_h);
-
 	io.DisplaySize = ImVec2(float(screenW), float(screenH));
 	ImGui::StyleColorsDark();
 

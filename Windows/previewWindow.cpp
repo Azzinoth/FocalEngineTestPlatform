@@ -1,10 +1,11 @@
 #include "previewWindow.h"
+using namespace VisNodeSys;
 
 previewWindow* previewWindow::Instance = nullptr;
 ImVec2 previewWindow::nodeGridRelativePosition = ImVec2(0, 0);
 ImVec2 previewWindow::windowPosition = ImVec2(0, 0);
 ImVec2 previewWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
-FEVisualNodeArea* previewWindow::currentNodeArea = nullptr;
+NodeArea* previewWindow::currentNodeArea = nullptr;
 ImVec2 previewWindow::neededShift = ImVec2(0, 0);
 bool previewWindow::readOnly = false;
 
@@ -77,8 +78,8 @@ void previewWindow::render()
 	{
 		ImGui::SetWindowPos(ImVec2(TEST_PLATFORM.getWindowWidth() / 2 - popupSize.x / 2.0f, TEST_PLATFORM.getWindowHeight() / 2 - popupSize.y / 2.0f));
 
-		currentNodeArea->SetAreaPosition(nodeGridRelativePosition);
-		currentNodeArea->SetAreaSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
+		currentNodeArea->SetPosition(nodeGridRelativePosition);
+		currentNodeArea->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
 
 		if (firstFrame)
 		{
@@ -89,7 +90,7 @@ void previewWindow::render()
 		currentNodeArea->Update();
 
 		if (ImGui::GetIO().MouseReleased[1])
-			mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y) - currentNodeArea->GetAreaRenderOffset();
+			mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y) - currentNodeArea->GetRenderOffset();
 
 		if (!readOnly)
 		{
@@ -291,7 +292,7 @@ void previewWindow::mainContextMenu()
 	}
 }
 
-void previewWindow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT eventWithNode)
+void previewWindow::nodeCallback(VisNodeSys::Node* node, VisNodeSys::NODE_EVENT eventWithNode)
 {
 
 }
@@ -299,11 +300,11 @@ void previewWindow::nodeCallback(FEVisualNode* node, FE_VISUAL_NODE_EVENT eventW
 void previewWindow::positionNodesInCenter()
 {
 	ImVec2 viewCenter = currentNodeArea->GetRenderedViewCenter();
-	ImVec2 nodesAABBCenter = currentNodeArea->GetAllNodesAABBCenter();
+	ImVec2 nodesAABBCenter = currentNodeArea->GetAllElementsAABBCenter();
 
 	neededShift = viewCenter - nodesAABBCenter;
 
-	currentNodeArea->RunOnEachNode([](FEVisualNode* node) {
+	currentNodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		node->SetPosition(node->GetPosition() + neededShift);
 	});
@@ -317,12 +318,12 @@ void previewWindow::positionNodesInTargetCenter()
 		return;
 
 	ImVec2 viewCenter = TEST_MANAGER.getSelectedTest()->nodeArea->GetRenderedViewCenter();
-	ImVec2 nodesAABBCenter = currentNodeArea->GetAllNodesAABBCenter();
-	nodesAABBCenter -= currentNodeArea->GetAreaRenderOffset();
+	ImVec2 nodesAABBCenter = currentNodeArea->GetAllElementsAABBCenter();
+	nodesAABBCenter -= currentNodeArea->GetRenderOffset();
 
 	neededShift = viewCenter - nodesAABBCenter;
 
-	currentNodeArea->RunOnEachNode([](FEVisualNode* node) {
+	currentNodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 		size_t outSocketCount = node->OutSocketCount();
 		node->SetPosition(node->GetPosition() + neededShift);
 	});

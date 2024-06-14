@@ -4,7 +4,12 @@
 
 class testEditorWinow;
 class nodeRegionWindow;
-VISUAL_NODE_CHILD_PRIVATE_PART(combinedActionNode)
+
+class combinedActionNode : public basicLogicNode
+{
+	friend class NodeFactory;
+	static bool isRegistered;
+
 	friend testEditorWinow;
 	friend nodeRegionWindow;
 
@@ -17,11 +22,8 @@ VISUAL_NODE_CHILD_PRIVATE_PART(combinedActionNode)
 
 	std::string Text;
 
-	//bool contextMenu = false;
-	//bool openContextMenu();
-
-	bool CanConnect(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* CandidateSocket, char** MsgToUser);
-	void SocketEvent(FEVisualNodeSocket* OwnSocket, FEVisualNodeSocket* ConnectedSocket, FE_VISUAL_NODE_SOCKET_EVENT EventType);
+	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
+	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	static combinedActionNode* NodeForCallback;
 	static void ChangeTextCallback(std::string NewText);
@@ -44,7 +46,7 @@ public:
 
 	void Draw();
 	std::vector<FETPAction*> GetData();
-	FEVisualNode* GetNextNode();
+	basicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
 	void FromJson(Json::Value Json);
@@ -53,5 +55,3 @@ public:
 	FETP_COMBINED_ACTION_TYPE GetCombinedActionType();
 	void Remove();
 };
-
-VISUAL_NODE_CHILD_AFTER_CLASS(combinedActionNode)
