@@ -143,16 +143,16 @@ void screenshootEditor::render()
 	}
 
 	if (subImageIndex < currentAction->imagesInfo.size() &&
-		currentAction->imagesInfo[subImageIndex]->image->getWidth() != 0 &&
-		currentAction->imagesInfo[subImageIndex]->image->getHeight() != 0)
+		currentAction->imagesInfo[subImageIndex]->image->GetWidth() != 0 &&
+		currentAction->imagesInfo[subImageIndex]->image->GetHeight() != 0)
 	{
 		compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 		ImGui::SetCursorPos(imagePosition);
-		ImGui::Image((void*)(intptr_t)currentImageInfo->image->getTextureID(),
+		ImGui::Image((void*)(intptr_t)currentImageInfo->image->GetTextureID(),
 					 ImVec2(imageSize.x, imageSize.y),
 					 ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 
-		float resizeRatio = imageSize.x / currentImageInfo->image->getWidth();
+		float resizeRatio = imageSize.x / currentImageInfo->image->GetWidth();
 		float twoPixelsResized = 2.0f * resizeRatio;
 		// Left scroller.
 		left.setPosition(ImVec2(left.getPosition().x, imagePosition.y));
@@ -248,8 +248,8 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 
 	compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
-	imageSize = SCREEN_SYSTEM.imageSizeInRegion(currentImageInfo->image->getWidth(),
-												currentImageInfo->image->getHeight(),
+	imageSize = SCREEN_SYSTEM.imageSizeInRegion(currentImageInfo->image->GetWidth(),
+												currentImageInfo->image->GetHeight(),
 												size_t((windowContentRegionMax.x - windowContentRegionMin.x) * 0.925f),
 												size_t((windowContentRegionMax.y - windowContentRegionMin.y) - 80.0f));
 
@@ -266,11 +266,11 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 
 	if (currentImageInfo->partialImage != nullptr)
 	{
-		leftInPercent = float(currentImageInfo->partialImageLeft) / float(currentImageInfo->image->getWidth());
-		rigthInPercent = leftInPercent + float(currentImageInfo->partialImage->getWidth()) / float(currentImageInfo->image->getWidth());
+		leftInPercent = float(currentImageInfo->partialImageLeft) / float(currentImageInfo->image->GetWidth());
+		rigthInPercent = leftInPercent + float(currentImageInfo->partialImage->GetWidth()) / float(currentImageInfo->image->GetWidth());
 
-		topInPercent = float(currentImageInfo->partialImageTop) / float(currentImageInfo->image->getHeight());
-		bottomInPercent = topInPercent + float(currentImageInfo->partialImage->getHeight()) / float(currentImageInfo->image->getHeight());
+		topInPercent = float(currentImageInfo->partialImageTop) / float(currentImageInfo->image->GetHeight());
+		bottomInPercent = topInPercent + float(currentImageInfo->partialImage->GetHeight()) / float(currentImageInfo->image->GetHeight());
 	}
 
 	left.setPosition(ImVec2(imagePosition.x + imageSize.x * leftInPercent, imagePosition.y));
@@ -321,20 +321,20 @@ void screenshootEditor::cutOutPartialImage()
 	compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
 	float percentage = (left.getPosition().x - imagePosition.x) / imageSize.x;
-	int minX = int(floor(currentImageInfo->image->getWidth() * percentage));
+	int minX = int(floor(currentImageInfo->image->GetWidth() * percentage));
 
 	percentage = (top.getPosition().y - imagePosition.y) / imageSize.y;
-	int minY = int(floor(currentImageInfo->image->getHeight() * percentage));
+	int minY = int(floor(currentImageInfo->image->GetHeight() * percentage));
 
 	percentage = (right.getPosition().x - imagePosition.x) / imageSize.x;
-	int maxX = int(floor(currentImageInfo->image->getWidth() * percentage));
+	int maxX = int(floor(currentImageInfo->image->GetWidth() * percentage));
 
 	percentage = (bottom.getPosition().y - imagePosition.y) / imageSize.y;
-	int maxY = int(floor(currentImageInfo->image->getHeight() * percentage));
+	int maxY = int(floor(currentImageInfo->image->GetHeight() * percentage));
 
 	int newImageW = maxX - minX;
 
-	FETPImage* newImage = currentImageInfo->image->getRegion(minX,
+	FETPImage* newImage = currentImageInfo->image->GetRegion(minX,
 															 minY,
 															 maxX - minX,
 															 maxY - minY);

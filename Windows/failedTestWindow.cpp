@@ -55,7 +55,7 @@ void failedTestWindow::render()
 		else
 		{
 			ImGui::Text(("simularity: " + std::to_string(result->getScreenshootCompareResult()->similarity)).c_str());
-			glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(result->getScreenshootCompareResult()->difference->getWidth(), result->getScreenshootCompareResult()->difference->getHeight(),
+			glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(result->getScreenshootCompareResult()->difference->GetWidth(), result->getScreenshootCompareResult()->difference->GetHeight(),
 				size_t((ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x) * 0.925f),
 				size_t((ImGui::GetWindowContentRegionMax().y - ImGui::GetWindowContentRegionMin().y) - 90.0f));
 
@@ -65,7 +65,7 @@ void failedTestWindow::render()
 			ImVec2 imagePosition = ImVec2(ImGui::GetWindowContentRegionMin().x + 20, ImGui::GetWindowContentRegionMin().y + 60);
 
 			ImGui::SetCursorPos(imagePosition);
-			ImGui::Image((void*)(intptr_t)result->getScreenshootCompareResult()->difference->getTextureID(),
+			ImGui::Image((void*)(intptr_t)result->getScreenshootCompareResult()->difference->GetTextureID(),
 				ImVec2(imageSize.x, imageSize.y),
 				ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 		}

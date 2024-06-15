@@ -5,35 +5,37 @@
 class FETPImage
 {
 public:
-	GLuint getTextureID();
-
 	FETPImage();
-	FETPImage(FETPImage& src);
-	FETPImage(unsigned char* rawData, int width, int height);
-	FETPImage(std::string filePath);
+	FETPImage(FETPImage& Other);
+	FETPImage(unsigned char* RawData, int Width, int Height);
+	FETPImage(std::string FilePath);
 	~FETPImage();
 
-	void initialize(unsigned char* rawData, int width, int height);
+	void Initialize(unsigned char* RawData, int Width, int Height);
 
-	int getWidth();
-	int getHeight();
+	GLuint GetTextureID();
 
-	unsigned char* getRawData();
+	int GetWidth();
+	int GetHeight();
 
-	FETPImage* getRegion(int left, int top, int width, int height);
+	unsigned char* GetRawData();
 
-	std::string getFullPath();
-	void setFullPath(std::string newValue);
+	FETPImage* GetRegion(int Left, int Top, int Width, int Height);
+
+	std::string GetFullPath();
+	void SetFullPath(std::string NewValue);
 
 	std::string EncodeRawDataToBase64();
-	void DecodeBase64ToRawData(std::string Base64String, int width, int height);
-private:
-	GLuint textureID = -1;
-	int width = 0;
-	int height = 0;
+	void DecodeBase64ToRawData(std::string Base64String, int Width, int Height);
 
-	std::string fullPath;
-	unsigned char* tempRawData = nullptr;
+	void ModifyPixels(std::function<void(unsigned char& R, unsigned char& G, unsigned char& B)> ModificationRule);
+private:
+	GLuint TextureID = -1;
+	int Width = 0;
+	int Height = 0;
+
+	std::string FullPath;
+	unsigned char* TempRawData = nullptr;
 
 	std::string Base64Characters =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"

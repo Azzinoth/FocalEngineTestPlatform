@@ -92,32 +92,27 @@ FETPScreenCapture::FETPScreenCapture()
     Duplication.outputDuplication->Release();
 }
 
-FETPScreenCapture::OutputDuplication::OutputDuplication(ID3D11Device* Device)
+FETPScreenCapture::OutputDuplication::OutputDuplication(ID3D11Device* Device, UINT MonitorIndex)
 {
     HRESULT OperationResult;
 
-    IDXGIDevice* dxgiDevice;
-    OperationResult = Device->QueryInterface(__uuidof(dxgiDevice), reinterpret_cast<void**>(&dxgiDevice));
+    IDXGIDevice* dxgiDevice = nullptr;
+    OperationResult = Device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice));
     if (FAILED(OperationResult))
-    {
-        dxgiDevice->Release();
         return;
-    }
 
     IDXGIAdapter* dxgiAdapter;
     OperationResult = dxgiDevice->GetParent(__uuidof(dxgiAdapter), reinterpret_cast<void**>(&dxgiAdapter));
     if (FAILED(OperationResult))
     {
-        dxgiAdapter->Release();
         dxgiDevice->Release();
         return;
     }
 
     IDXGIOutput* dxgiOutput;
-    OperationResult = dxgiAdapter->EnumOutputs(0, &dxgiOutput);
+    OperationResult = dxgiAdapter->EnumOutputs(MonitorIndex, &dxgiOutput);
     if (FAILED(OperationResult))
     {
-        dxgiOutput->Release();
         dxgiAdapter->Release();
         dxgiDevice->Release();
         return;
@@ -127,7 +122,6 @@ FETPScreenCapture::OutputDuplication::OutputDuplication(ID3D11Device* Device)
     OperationResult = dxgiOutput->QueryInterface(__uuidof(IDXGIOutput1), reinterpret_cast<void**>(&dxgiOutput1));
     if (FAILED(OperationResult))
     {
-        dxgiOutput1->Release();
         dxgiOutput->Release();
         dxgiAdapter->Release();
         dxgiDevice->Release();
@@ -191,11 +185,11 @@ void FETPScreenCapture::GetDesktopImage(IDXGIOutputDuplication* OutputDuplicatio
         return;
 }
 
-FETPImage* FETPScreenCapture::GetScreenImage()
+FETPImage* FETPScreenCapture::GetScreenImage(UINT MonitorIndex)
 {
     FETPImage* Result = nullptr;
 
-    OutputDuplication Duplication(Device);
+    OutputDuplication Duplication(Device, MonitorIndex);
     IDXGIOutputDuplication* outputDuplication = Duplication.outputDuplication;
     if (outputDuplication == nullptr)
         return Result;

@@ -255,12 +255,12 @@ void globalActionNode::Draw()
 			if (action->imagesInfo.size() > 0 && action->imagesInfo[0] != nullptr)
 			{
 				ImGui::SetCursorScreenPos(ImVec2(xPosition - 10.0f, yPosition - 10.0f));
-				glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(action->imagesInfo[0]->image->getWidth(),
-					action->imagesInfo[0]->image->getHeight(),
+				glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(action->imagesInfo[0]->image->GetWidth(),
+					action->imagesInfo[0]->image->GetHeight(),
 					size_t(this->GetClientRegionSize().x * 0.95f),
 					size_t(this->GetClientRegionSize().y * 0.55f));
 
-				ImGui::Image((void*)(intptr_t)action->imagesInfo[0]->image->getTextureID(),
+				ImGui::Image((void*)(intptr_t)action->imagesInfo[0]->image->GetTextureID(),
 					ImVec2(imageSize.x, imageSize.y),
 					ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 
@@ -562,55 +562,55 @@ void globalActionNode::RenderIcon()
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 7.0f, ImGui::GetCursorScreenPos().y + 7.0f));
 		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
 		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
-			ImGui::Image((void*)(intptr_t)KeyDownIcon->getTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)KeyDownIcon->GetTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
-			ImGui::Image((void*)(intptr_t)KeyUpIcon->getTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)KeyUpIcon->GetTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (Data->getType() == FETP_MOUSE_ACTION)
 	{
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
 		if (action->wParam == WM_MOUSEMOVE)
 		{
-			ImGui::Image((void*)(intptr_t)MoveMouseIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)MoveMouseIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_LBUTTONDOWN)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)LeftMouseDownIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)LeftMouseDownIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_LBUTTONUP)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)LeftMouseUpIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)LeftMouseUpIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_RBUTTONDOWN)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)RightMouseDownIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)RightMouseDownIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_RBUTTONUP)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
-			ImGui::Image((void*)(intptr_t)RightMouseUpIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)RightMouseUpIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		else if (action->wParam == WM_MOUSEWHEEL)
 		{
-			ImGui::Image((void*)(intptr_t)ScrollMouseIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)ScrollMouseIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 	}
 	else if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 14.0f, ImGui::GetCursorScreenPos().y + 14.0f));
-		ImGui::Image((void*)(intptr_t)ScreenshotIcon->getTextureID(), ImVec2(86.0f, 86.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)ScreenshotIcon->GetTextureID(), ImVec2(86.0f, 86.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 10.0f, ImGui::GetCursorScreenPos().y + 10.0f));
-		ImGui::Image((void*)(intptr_t)LunchApplicationIcon->getTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)LunchApplicationIcon->GetTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (Data->getType() == FETP_SLEEP_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 4.0f, ImGui::GetCursorScreenPos().y + 4.0f));
-		ImGui::Image((void*)(intptr_t)SleepIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)SleepIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 }

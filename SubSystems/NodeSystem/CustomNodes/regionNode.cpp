@@ -104,7 +104,7 @@ void regionNode::CheckIcons()
 void regionNode::RenderIcon()
 {
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 8.0f, ImGui::GetCursorScreenPos().y + 8.0f));
-	ImGui::Image((void*)(intptr_t)RegionIcon->getTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	ImGui::Image((void*)(intptr_t)RegionIcon->GetTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
 void regionNode::ShowTooltip()

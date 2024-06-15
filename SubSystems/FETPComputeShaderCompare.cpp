@@ -66,21 +66,21 @@ glm::vec2 FETPComputeShaderCompare::FindSubImage(FETPImage* ScreenTexture, FETPI
 	glm::vec2 Result = glm::vec2(-1, -1);
 	FE_GL_ERROR(glUseProgram(ProgramID));
 
-	FE_GL_ERROR(glUniform2i(ScreenshotSizeLocation, ScreenTexture->getWidth(), ScreenTexture->getHeight()));
-	FE_GL_ERROR(glUniform2i(SubImageSizeLocation, ImageToFind->getWidth(), ImageToFind->getHeight()));
+	FE_GL_ERROR(glUniform2i(ScreenshotSizeLocation, ScreenTexture->GetWidth(), ScreenTexture->GetHeight()));
+	FE_GL_ERROR(glUniform2i(SubImageSizeLocation, ImageToFind->GetWidth(), ImageToFind->GetHeight()));
 	FE_GL_ERROR(glUniform1f(MatchPercentageLocation, correctnessThreshold / 100.0f));
 	FE_GL_ERROR(glUniform1f(ColorToleranceLocation, maxColorShift / 100.0f));
 
 	FE_GL_ERROR(glActiveTexture(GL_TEXTURE0 + 0));
-	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ScreenTexture->getTextureID()));
+	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ScreenTexture->GetTextureID()));
 
 	FE_GL_ERROR(glActiveTexture(GL_TEXTURE0 + 1));
-	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ImageToFind->getTextureID()));
+	FE_GL_ERROR(glBindTexture(GL_TEXTURE_2D, ImageToFind->GetTextureID()));
 
 
 	FE_GL_ERROR(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, MatchBuffer));
-	int DispatchSizeX = (ScreenTexture->getWidth() - ImageToFind->getWidth() + WorkGroupSizeX) / WorkGroupSizeX + 1;
-	int DispatchSizeY = (ScreenTexture->getHeight() - ImageToFind->getHeight() + WorkGroupSizeY) / WorkGroupSizeY + 1;
+	int DispatchSizeX = (ScreenTexture->GetWidth() - ImageToFind->GetWidth() + WorkGroupSizeX) / WorkGroupSizeX + 1;
+	int DispatchSizeY = (ScreenTexture->GetHeight() - ImageToFind->GetHeight() + WorkGroupSizeY) / WorkGroupSizeY + 1;
 	FE_GL_ERROR(glDispatchCompute(DispatchSizeX, DispatchSizeY, 1));
 	//FE_GL_ERROR(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
 	FE_GL_ERROR(glMemoryBarrier(GL_ALL_BARRIER_BITS));

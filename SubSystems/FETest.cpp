@@ -245,7 +245,7 @@ void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
 					fileName += "_" + std::to_string(j) + "_";
 					fileName += ".png";
 
-					action->imagesInfo[j]->image->setFullPath(fileName);
+					action->imagesInfo[j]->image->SetFullPath(fileName);
 				}
 
 				if (action->imagesInfo[j]->partialImage != nullptr)
@@ -255,7 +255,7 @@ void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
 					fileName += "_" + std::to_string(j) + "_";
 					fileName += ".png";
 
-					action->imagesInfo[j]->partialImage->setFullPath(fileName);
+					action->imagesInfo[j]->partialImage->SetFullPath(fileName);
 				}
 			}
 		}
@@ -300,7 +300,7 @@ void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
 							fileName += "_" + std::to_string(k) + "_";
 							fileName += ".png";
 
-							action->imagesInfo[k]->image->setFullPath(fileName);
+							action->imagesInfo[k]->image->SetFullPath(fileName);
 						}
 
 						if (action->imagesInfo[k]->partialImage != nullptr)
@@ -310,7 +310,7 @@ void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
 							fileName += "_" + std::to_string(k) + "_";
 							fileName += ".png";
 
-							action->imagesInfo[k]->partialImage->setFullPath(fileName);
+							action->imagesInfo[k]->partialImage->SetFullPath(fileName);
 						}
 					}
 				}

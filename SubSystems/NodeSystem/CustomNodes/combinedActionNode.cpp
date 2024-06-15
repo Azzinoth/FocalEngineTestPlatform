@@ -484,31 +484,31 @@ void combinedActionNode::RenderIcon()
 {
 	if (ActionType == FETP_COMBINED_MOUSE_MOVE_ACTION)
 	{
-		ImGui::Image((void*)(intptr_t)MoveMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)MoveMouseCombineIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (ActionType == FETP_COMBINED_LEFT_MOUSE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
-		ImGui::Image((void*)(intptr_t)LeftMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)LeftMouseCombineIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (ActionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
-		ImGui::Image((void*)(intptr_t)RightMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)RightMouseCombineIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (ActionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 6.0f));
-		ImGui::Image((void*)(intptr_t)WheelMouseCombineIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)WheelMouseCombineIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
 	{
-		ImGui::Image((void*)(intptr_t)KeyCombinedIcon->getTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)KeyCombinedIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 14.0f, ImGui::GetCursorScreenPos().y + 14.0f));
-		ImGui::Image((void*)(intptr_t)TextCombinedIcon->getTextureID(), ImVec2(88.0f, 88.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)TextCombinedIcon->GetTextureID(), ImVec2(88.0f, 88.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 }
 

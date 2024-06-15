@@ -235,7 +235,7 @@ public:
 			FileName += "_" + Index + "_";
 			FileName += ".png";
 			CompareImageInfos[Index]["screenshot_fileName"] = FileName;
-			CompareImageInfos[Index]["screenshot_fullPath"] = imagesInfo[i]->image->getFullPath();
+			CompareImageInfos[Index]["screenshot_fullPath"] = imagesInfo[i]->image->GetFullPath();
 
 			CompareImageInfos[Index]["partialImageLeft"] = imagesInfo[i]->partialImageLeft;
 			CompareImageInfos[Index]["partialImageTop"] = imagesInfo[i]->partialImageTop;
@@ -250,7 +250,7 @@ public:
 				FileName += "_" + Index + "_";
 				FileName += ".png";
 				CompareImageInfos[Index]["partial_fileName"] = FileName;
-				CompareImageInfos[Index]["partial_fullPath"] = imagesInfo[i]->partialImage->getFullPath();
+				CompareImageInfos[Index]["partial_fullPath"] = imagesInfo[i]->partialImage->GetFullPath();
 
 				CompareImageInfos[Index]["screenSearch"]["isActive"] = imagesInfo[i]->screenSearch != nullptr;
 				if (imagesInfo[i]->screenSearch != nullptr)
@@ -323,9 +323,9 @@ public:
 		{
 			if (imagesInfo[i]->image != nullptr)
 			{
-				unsigned char* tempRawData = imagesInfo[i]->image->getRawData();
+				unsigned char* tempRawData = imagesInfo[i]->image->GetRawData();
 				// One possibility why it is empty is that user copy node to clipboard.
-				if (imagesInfo[i]->image->getFullPath() == "")
+				if (imagesInfo[i]->image->GetFullPath() == "")
 				{
 					// So we need to save it to temp location.
 					std::string tempDirectory = FocalEngine::FILE_SYSTEM.getDirectoryPath(FocalEngine::FILE_SYSTEM.getApplicationPath().c_str());
@@ -333,17 +333,17 @@ public:
 					fileName += getID();
 					fileName += "_" + std::to_string(i) + "_";
 					fileName += ".png";
-					imagesInfo[i]->image->setFullPath(fileName);
+					imagesInfo[i]->image->SetFullPath(fileName);
 				}
-				lodepng::encode(imagesInfo[i]->image->getFullPath(), tempRawData, imagesInfo[i]->image->getWidth(), imagesInfo[i]->image->getHeight());
+				lodepng::encode(imagesInfo[i]->image->GetFullPath(), tempRawData, imagesInfo[i]->image->GetWidth(), imagesInfo[i]->image->GetHeight());
 				delete[] tempRawData;
 			}
 
 			if (imagesInfo[i]->partialImage != nullptr)
 			{
-				unsigned char* tempRawData = imagesInfo[i]->partialImage->getRawData();
+				unsigned char* tempRawData = imagesInfo[i]->partialImage->GetRawData();
 				// One possibility why it is empty is that user copy node to clipboard.
-				if (imagesInfo[i]->partialImage->getFullPath() == "")
+				if (imagesInfo[i]->partialImage->GetFullPath() == "")
 				{
 					// So we need to save it to temp location.
 					std::string tempDirectory = FocalEngine::FILE_SYSTEM.getDirectoryPath(FocalEngine::FILE_SYSTEM.getApplicationPath().c_str());
@@ -351,9 +351,9 @@ public:
 					fileName += getID();
 					fileName += "_" + std::to_string(i) + "_";
 					fileName += ".png";
-					imagesInfo[i]->partialImage->setFullPath(fileName);
+					imagesInfo[i]->partialImage->SetFullPath(fileName);
 				}
-				lodepng::encode(imagesInfo[i]->partialImage->getFullPath(), tempRawData, imagesInfo[i]->partialImage->getWidth(), imagesInfo[i]->partialImage->getHeight());
+				lodepng::encode(imagesInfo[i]->partialImage->GetFullPath(), tempRawData, imagesInfo[i]->partialImage->GetWidth(), imagesInfo[i]->partialImage->GetHeight());
 				delete[] tempRawData;
 			}
 		}

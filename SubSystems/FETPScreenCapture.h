@@ -12,14 +12,14 @@ class FETPScreenCapture
 public:
 	SINGLETON_PUBLIC_PART(FETPScreenCapture)
 
-	FETPImage* GetScreenImage();
+	FETPImage* GetScreenImage(UINT MonitorIndex = 0);
 private:
 	SINGLETON_PRIVATE_PART(FETPScreenCapture)
 
     struct OutputDuplication
     {
         IDXGIOutputDuplication* outputDuplication = nullptr;
-        OutputDuplication(ID3D11Device* Device);
+        OutputDuplication(ID3D11Device* Device, UINT MonitorIndex = 0);
     };
 
 	ID3D11Device* Device;

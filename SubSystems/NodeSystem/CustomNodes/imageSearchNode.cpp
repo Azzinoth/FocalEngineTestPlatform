@@ -146,7 +146,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				ImageToLookFor = reinterpret_cast<FETPImage*>(TempData);
 
 				std::vector<unsigned char> tempScreenshoot;
-				tempScreenshoot.resize(ImageToLookFor->getWidth() * ImageToLookFor->getHeight() * 4);
+				tempScreenshoot.resize(ImageToLookFor->GetWidth() * ImageToLookFor->GetHeight() * 4);
 
 				std::vector<unsigned char> tempDifferenceData;
 				tempDifferenceData.resize(tempScreenshoot.size());

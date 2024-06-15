@@ -81,8 +81,8 @@ FETPImage* FEPTActionSystem::imageToUse(compareImageInfo* imageInfo)
 
 	if (imageInfo->partialImage != nullptr)
 	{
-		if (size_t(imageInfo->partialImageTop + imageInfo->partialImage->getHeight()) > TEST_PLATFORM.getScreenHeight() ||
-			size_t(imageInfo->partialImageLeft + imageInfo->partialImage->getWidth()) > TEST_PLATFORM.getScreenWidth())
+		if (size_t(imageInfo->partialImageTop + imageInfo->partialImage->GetHeight()) > TEST_PLATFORM.getScreenHeight() ||
+			size_t(imageInfo->partialImageLeft + imageInfo->partialImage->GetWidth()) > TEST_PLATFORM.getScreenWidth())
 			return nullptr;
 
 		return imageInfo->partialImage;
@@ -111,7 +111,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		}
 
 		std::vector<unsigned char> tempScreenshoot;
-		tempScreenshoot.resize(image->getWidth() * image->getHeight() * 4);
+		tempScreenshoot.resize(image->GetWidth() * image->GetHeight() * 4);
 
 		std::vector<unsigned char> tempDifferenceData;
 		tempDifferenceData.resize(tempScreenshoot.size());
@@ -122,7 +122,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		{
 			if (!action->bUseGPU)
 			{
-				SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+				SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
 			}
 			else
 			{
@@ -131,13 +131,13 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		}
 		else
 		{
-			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->getWidth(), image->getHeight());
+			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
 		}
 
 		
 		
 		int similarity = 0;
-		unsigned char* tempRawData = image->getRawData();
+		unsigned char* tempRawData = image->GetRawData();
 		if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
 		{
 			size_t x = 0;
@@ -147,7 +147,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			bool found = false;
 			if (!action->bUseGPU)
 			{
-				found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+				found = SCREEN_SYSTEM.searchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
 			}
 			else
 			{
@@ -168,7 +168,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		}
 		else
 		{
-			similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
+			similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
 		}
 		delete[] tempRawData;
 
@@ -179,8 +179,8 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 				currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
 				currentTestResult->failedAction = action;
 
-				FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->getWidth(), image->getHeight());
-				FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->getWidth(), image->getHeight());
+				FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->GetWidth(), image->GetHeight());
+				FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->GetWidth(), image->GetHeight());
 				currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, similarity));
 
 				continue;
@@ -195,7 +195,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					{
 						if (!action->bUseGPU)
 						{
-							SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->getWidth(), image->getHeight());
+							SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
 						}
 						else
 						{
@@ -205,12 +205,12 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					}
 					else
 					{
-						SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->getWidth(), image->getHeight());
+						SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
 					}
 
 					//int similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data());
 					int similarity = 0;
-					unsigned char* tempRawData = image->getRawData();
+					unsigned char* tempRawData = image->GetRawData();
 					if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
 					{
 						size_t x = 0;
@@ -219,7 +219,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 						bool found = false;
 						if (!action->bUseGPU)
 						{
-							found = SCREEN_SYSTEM.searchOnScreen(image->getWidth(), image->getHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
+							found = SCREEN_SYSTEM.searchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
 						}
 						else
 						{
@@ -239,7 +239,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					}
 					else
 					{
-						similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
+						similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
 					}
 					delete[] tempRawData;
 
@@ -254,8 +254,8 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 						currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
 						currentTestResult->failedAction = action;
 
-						FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->getWidth(), image->getHeight());
-						FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->getWidth(), image->getHeight());
+						FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->GetWidth(), image->GetHeight());
+						FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->GetWidth(), image->GetHeight());
 						currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, similarity));
 						break;
 					}

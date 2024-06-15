@@ -49,8 +49,8 @@ Json::Value imageNode::ToJson()
 
 	if (Data != nullptr)
 	{
-		Result["ImageWidth"] = Data->getWidth();
-		Result["ImageHeight"] = Data->getHeight();
+		Result["ImageWidth"] = Data->GetWidth();
+		Result["ImageHeight"] = Data->GetHeight();
 		Result["ImageData"] = Data->EncodeRawDataToBase64();
 
 	}
@@ -125,7 +125,7 @@ void imageNode::Draw()
 		xPosition -= 25.0f * Zoom;
 		yPosition -= 60.0f * Zoom;
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
-		ImGui::Image((void*)(intptr_t)Data->getTextureID(), ImVec2(128.0f, 128.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image((void*)(intptr_t)Data->GetTextureID(), ImVec2(128.0f, 128.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
 		xPosition -= 20.0f * Zoom;
 		yPosition += 136.0f * Zoom;

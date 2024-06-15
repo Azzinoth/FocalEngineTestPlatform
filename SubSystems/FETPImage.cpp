@@ -2,54 +2,54 @@
 
 FETPImage::FETPImage()
 {
-	tempRawData = nullptr;
+	TempRawData = nullptr;
 }
 
-FETPImage::FETPImage(FETPImage& src)
+FETPImage::FETPImage(FETPImage& Other)
 {
-	tempRawData = nullptr;
-	fullPath = src.fullPath;
-	unsigned char* tempData = src.getRawData();
-	initialize(tempData, src.getWidth(), src.getHeight());
-	delete[] tempData;
+	TempRawData = nullptr;
+	FullPath = Other.FullPath;
+	unsigned char* TempData = Other.GetRawData();
+	Initialize(TempData, Other.GetWidth(), Other.GetHeight());
+	delete[] TempData;
 }
 
-FETPImage::FETPImage(unsigned char* rawData, int width, int height)
+FETPImage::FETPImage(unsigned char* RawData, int Width, int Height)
 {
-	tempRawData = nullptr;
-	initialize(rawData, width, height);
+	TempRawData = nullptr;
+	Initialize(RawData, Width, Height);
 }
 
-FETPImage::FETPImage(std::string filePath)
+FETPImage::FETPImage(std::string FilePath)
 {
-	tempRawData = nullptr;
-	std::vector<unsigned char> rawData;
-	unsigned uWidth, uHeight;
-	lodepng::decode(rawData, uWidth, uHeight, filePath);
+	TempRawData = nullptr;
+	std::vector<unsigned char> RawData;
+	unsigned ImageWidth, ImageHeight;
+	lodepng::decode(RawData, ImageWidth, ImageHeight, FilePath);
 
-	unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-	memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-	setFullPath(filePath);
-	initialize(tempData, uWidth, uHeight);
-	delete[] tempData;
+	unsigned char* TempData = new unsigned char[ImageWidth * ImageHeight * 4];
+	memcpy_s(TempData, ImageWidth * ImageHeight * 4, RawData.data(), ImageWidth * ImageHeight * 4);
+	SetFullPath(FilePath);
+	Initialize(TempData, ImageWidth, ImageHeight);
+	delete[] TempData;
 }
 
 FETPImage::~FETPImage()
 {
-	glDeleteTextures(1, &textureID);
+	glDeleteTextures(1, &TextureID);
 }
 
-void FETPImage::initialize(unsigned char* rawData, int width, int height)
+void FETPImage::Initialize(unsigned char* RawData, int Width, int Height)
 {
-	if (rawData == nullptr || width < 1 || width > 8196 || height < 1 || height > 8196)
+	if (RawData == nullptr || Width < 1 || Width > 8196 || Height < 1 || Height > 8196)
 		return;
 
-	glGenTextures(1, &textureID);
-	this->width = width;
-	this->height = height;
+	glGenTextures(1, &TextureID);
+	this->Width = Width;
+	this->Height = Height;
 
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rawData);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, RawData);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
@@ -58,75 +58,75 @@ void FETPImage::initialize(unsigned char* rawData, int width, int height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-GLuint FETPImage::getTextureID()
+GLuint FETPImage::GetTextureID()
 {
-	return textureID;
+	return TextureID;
 }
 
-unsigned char* FETPImage::getRawData()
+unsigned char* FETPImage::GetRawData()
 {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
 
-	tempRawData = new unsigned char[width * height * 4];
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, tempRawData);
+	TempRawData = new unsigned char[Width * Height * 4];
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, TempRawData);
 
-	return tempRawData;
+	return TempRawData;
 }
 
-int FETPImage::getWidth()
+int FETPImage::GetWidth()
 {
-	return width;
+	return Width;
 }
 
-int FETPImage::getHeight()
+int FETPImage::GetHeight()
 {
-	return height;
+	return Height;
 }
 
-FETPImage* FETPImage::getRegion(int left, int top, int width, int height)
+FETPImage* FETPImage::GetRegion(int Left, int Top, int Width, int Height)
 {
-	if (width <= 0 || height <= 0 || top < 0 || left < 0)
+	if (Width <= 0 || Height <= 0 || Top < 0 || Left < 0)
 		return nullptr;
 
-	if (top + height > this->height)
+	if (Top + Height > this->Height)
 		return nullptr;
 
-	if (left + width > this->width)
+	if (Left + Width > this->Width)
 		return nullptr;
 
-	unsigned char* rawData = getRawData();
-	unsigned char* newRawData = new unsigned char[width * height * 4];
+	unsigned char* RawData = GetRawData();
+	unsigned char* NewRawData = new unsigned char[Width * Height * 4];
 
-	size_t destenationIndex = 0;
-	for (size_t i = top; i < size_t(top + height); i++)
+	size_t DestinationIndex = 0;
+	for (size_t i = Top; i < size_t(Top + Height); i++)
 	{
-		for (size_t j = left; j < size_t(left + width); j++)
+		for (size_t j = Left; j < size_t(Left + Width); j++)
 		{
-			size_t sourceIndex = (i * this->width + j) * 4;
-			newRawData[destenationIndex++] = rawData[sourceIndex];
-			newRawData[destenationIndex++] = rawData[sourceIndex + 1];
-			newRawData[destenationIndex++] = rawData[sourceIndex + 2];
-			newRawData[destenationIndex++] = rawData[sourceIndex + 3];
+			size_t SourceIndex = (i * this->Width + j) * 4;
+			NewRawData[DestinationIndex++] = RawData[SourceIndex];
+			NewRawData[DestinationIndex++] = RawData[SourceIndex + 1];
+			NewRawData[DestinationIndex++] = RawData[SourceIndex + 2];
+			NewRawData[DestinationIndex++] = RawData[SourceIndex + 3];
 		}
 	}
 
-	FETPImage* result = new FETPImage(newRawData, width, height);
+	FETPImage* Result = new FETPImage(NewRawData, Width, Height);
 
-	delete[] rawData;
-	delete[] newRawData;
+	delete[] RawData;
+	delete[] NewRawData;
 
-	return result;
+	return Result;
 }
 
-std::string FETPImage::getFullPath()
+std::string FETPImage::GetFullPath()
 {
-	return fullPath;
+	return FullPath;
 }
 
-void FETPImage::setFullPath(std::string newValue)
+void FETPImage::SetFullPath(std::string NewValue)
 {
-	fullPath = newValue;
+	FullPath = NewValue;
 }
 
 std::string FETPImage::Base64Encode(unsigned char const* BytesToEncode, unsigned int Length)
@@ -226,16 +226,16 @@ std::string FETPImage::Base64Decode(std::string const& EncodedString)
 
 std::string FETPImage::EncodeRawDataToBase64()
 {
-	unsigned char* TempRawData = getRawData();
-	std::string Result = Base64Encode(tempRawData, getWidth() * getHeight() * 4);
+	unsigned char* TempRawData = GetRawData();
+	std::string Result = Base64Encode(TempRawData, GetWidth() * GetHeight() * 4);
 	delete[] TempRawData;
 
 	return Result;
 }
 
-void FETPImage::DecodeBase64ToRawData(std::string Base64String, int width, int height)
+void FETPImage::DecodeBase64ToRawData(std::string Base64String, int Width, int Height)
 {
-	if (width <= 0 || height <= 0)
+	if (Width <= 0 || Height <= 0)
 		return;
 
 	if (Base64String.size() == 0)
@@ -244,8 +244,38 @@ void FETPImage::DecodeBase64ToRawData(std::string Base64String, int width, int h
 	if (Base64String.size() % 4 != 0)
 		return;
 
-	glDeleteTextures(1, &textureID);
+	glDeleteTextures(1, &TextureID);
 
 	std::string RawData = Base64Decode(Base64String);
-	initialize((unsigned char*)(RawData.c_str()), width, height);
+	Initialize((unsigned char*)(RawData.c_str()), Width, Height);
+}
+
+void FETPImage::ModifyPixels(std::function<void(unsigned char& R, unsigned char& G, unsigned char& B)> ModificationRule)
+{
+	unsigned char* data = GetRawData();
+
+	if (data == nullptr) return;
+
+	for (int i = 0; i < Width * Height * 4; i += 4)
+	{
+		// Extract the RGB values of the current pixel
+		unsigned char r = data[i];
+		unsigned char g = data[i + 1];
+		unsigned char b = data[i + 2];
+
+		// Apply the modification rule
+		ModificationRule(r, g, b);
+
+		// Update the pixel data
+		data[i] = r;
+		data[i + 1] = g;
+		data[i + 2] = b;
+	}
+
+	// Update the texture with the modified data
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	// Clean up
+	delete[] data;
 }
