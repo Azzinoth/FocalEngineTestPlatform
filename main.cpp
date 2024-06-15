@@ -1,4 +1,44 @@
 #include "Windows/testsOverviewWindow.h"
+using namespace FocalEngine;
+
+void MainWindowRender()
+ {
+	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	
+	INPUT_SYSTEM.update();
+	
+	testsOverviewWindow::getInstance().render();
+	testEditorWinow::getInstance().render();
+	testPropertiesWindow::getInstance().render();
+	testStartPreparationsWindow::getInstance().render();
+	nodeRegionWindow::getInstance().render();
+	
+	previewWindow::getInstance().render();
+	failedTestWindow::getInstance().render();
+	screenshootEditor::getInstance().render();
+	
+	textInputPopup::getInstance().render();
+	actionEditPopup::getInstance().render();
+	ACTION_SYSTEM.update();
+	
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit"))
+			{
+				//return 0;
+			}
+			
+			ImGui::EndMenu();
+		}
+		
+		ImGui::EndMainMenuBar();
+	}
+	
+	ImGui::PopStyleVar();
+}
 
 void keyButtonCallback(int key, int scancode, int action, int mods)
 {
@@ -32,6 +72,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	TEST_PLATFORM.createWindow();
 	TEST_PLATFORM.setKeyboardCallback(keyButtonCallback);
 
+	APPLICATION.GetMainWindow()->SetRenderFunction(MainWindowRender);
+
 	INPUT_SYSTEM.initialize();
 	INPUT_SYSTEM.setGlobalKeyboardCallback(globalKeyButtonsCallback);
 	INPUT_SYSTEM.setGlobalMouseCallback(globalMouseCallback);
@@ -43,42 +85,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	NODE_SYSTEM.Initialize();
 	NODE_SYSTEM.AssociateSocketTypeToColor("BOOL", ImColor(25, 25, 255));
 
-	while (TEST_PLATFORM.isWindowOpened())
+	while (TEST_PLATFORM.IsNotTerminated())
 	{
 		TEST_PLATFORM.beginFrame();
-		INPUT_SYSTEM.update();
-		
-		testsOverviewWindow::getInstance().render();
-		testEditorWinow::getInstance().render();
-		testPropertiesWindow::getInstance().render();
-		testStartPreparationsWindow::getInstance().render();
-		nodeRegionWindow::getInstance().render();
 
-		previewWindow::getInstance().render();
-		failedTestWindow::getInstance().render();
-		screenshootEditor::getInstance().render();
+		APPLICATION.RenderWindows();
 
-		textInputPopup::getInstance().render();
-		actionEditPopup::getInstance().render();
-		ACTION_SYSTEM.update();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-		if (ImGui::BeginMainMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Exit"))
-				{
-					return 0;
-				}
-
-				ImGui::EndMenu();
-			}
-
-			ImGui::EndMainMenuBar();
-		}
-
-		ImGui::PopStyleVar();
 		TEST_PLATFORM.endFrame();
 	}
 

@@ -40,7 +40,7 @@ void testStartPreparationsWindow::render()
 		TEST_MANAGER.getSelectedTest()->addBeforeStartAction(newAction);
 	}
 
-	if (ImGui::BeginListBox("##Actions ListBox", ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionMax().y - 250.0f)))
+	if (ImGui::BeginListBox("##Actions ListBox", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowContentRegionMax().y - 250.0f)))
 	{
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 
@@ -52,7 +52,7 @@ void testStartPreparationsWindow::render()
 
 			ImGui::SetCursorPos(postionBeforeDraw);
 			ImGui::PushID(static_cast<int>(i));
-			if (ImGui::Selectable("##item", selectedAction == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetWindowContentRegionWidth(), 32.0f)))
+			if (ImGui::Selectable("##item", selectedAction == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
 			{
 				selectedAction = static_cast<int>(i);
 				strcpy_s(pathInput, TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path.size() + 1, TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path.c_str());

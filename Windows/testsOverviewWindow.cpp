@@ -28,7 +28,7 @@ void testsOverviewWindow::render()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
 	FETPImage* testResultIndicator = testUnKnown;
-	if (ImGui::BeginListBox("##Tests ListBox", ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionMax().y - 30.0f)))
+	if (ImGui::BeginListBox("##Tests ListBox", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowContentRegionMax().y - 30.0f)))
 	{
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 
@@ -55,7 +55,7 @@ void testsOverviewWindow::render()
 
 			ImGui::SetCursorPos(postionBeforeDraw);
 			ImGui::PushID(static_cast<int>(i));
-			if (ImGui::Selectable("##item", selectedTest == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetWindowContentRegionWidth(), 32.0f)))
+			if (ImGui::Selectable("##item", selectedTest == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
 			{
 				selectedTest = i;
 				TEST_MANAGER.setSelelectedTestIndex(selectedTest);

@@ -11,7 +11,7 @@ public:
 	SINGLETON_PUBLIC_PART(FETestPlatform)
 
 	void createWindow();
-	bool isWindowOpened();
+	bool IsNotTerminated();
 
 	void beginFrame();
 	void endFrame();

@@ -91,8 +91,8 @@ void FETestPlatform::setImguiStyle()
 
 void FETestPlatform::createWindow()
 {
-	APPLICATION.InitWindow(1500, 1000, "FETestPlatform");
-	APPLICATION.SetKeyCallback(keyboardCallback);
+	APPLICATION.AddWindow(1500, 1000, "FETestPlatform");
+	APPLICATION.GetMainWindow()->AddOnKeyCallback(keyboardCallback);
 
 	screenDataInitialization();
 
@@ -112,9 +112,9 @@ void FETestPlatform::createWindow()
 	setImguiStyle();
 }
 
-bool FETestPlatform::isWindowOpened()
+bool FETestPlatform::IsNotTerminated()
 {
-	return APPLICATION.IsWindowOpened();
+	return APPLICATION.IsNotTerminated();
 }
 
 void FETestPlatform::beginFrame()
@@ -122,8 +122,6 @@ void FETestPlatform::beginFrame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	APPLICATION.BeginFrame();
-
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 }
 
 void FETestPlatform::endFrame()
@@ -143,17 +141,17 @@ size_t FETestPlatform::getScreenHeight()
 
 void FETestPlatform::setWindowTitle(std::string newTitle)
 {
-	APPLICATION.SetWindowCaption(newTitle);
+	APPLICATION.GetMainWindow()->SetTitle(newTitle);
 }
 
 void FETestPlatform::minimizeWindow()
 {
-	APPLICATION.MinimizeWindow();
+	APPLICATION.GetMainWindow()->Minimize();
 }
 
 void FETestPlatform::restoreWindow()
 {
-	APPLICATION.RestoreWindow();
+	APPLICATION.GetMainWindow()->Restore();
 }
 
 void FETestPlatform::setKeyboardCallback(std::function<void(int key, int scancode, int action, int mods)> func)
@@ -170,13 +168,13 @@ void FETestPlatform::keyboardCallback(int key, int scancode, int action, int mod
 size_t FETestPlatform::getWindowWidth()
 {
 	int width, height;
-	APPLICATION.GetWindowSize(&width, &height);
+	APPLICATION.GetMainWindow()->GetSize(&width, &height);
 	return width;
 }
 
 size_t FETestPlatform::getWindowHeight()
 {
 	int width, height;
-	APPLICATION.GetWindowSize(&width, &height);
+	APPLICATION.GetMainWindow()->GetSize(&width, &height);
 	return height;
 }
