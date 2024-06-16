@@ -36,7 +36,7 @@ void previewWindow::show(bool isReadOnly)
 	{
 		currentNodeArea = NODE_SYSTEM.CreateNodeArea();
 		currentNodeArea->SetMainContextMenuFunc(mainContextMenu);
-		currentNodeArea->SetNodeEventCallback(nodeCallback);
+		currentNodeArea->AddNodeEventCallback(nodeCallback);
 
 		cancelButton = new ImGuiButton("Cancel");
 		cancelButton->setPosition(ImVec2(popupSize.x - popupSize.x / 6.0f - cancelButton->getSize().x / 2.0f, popupSize.y - 30.0f));
@@ -305,7 +305,7 @@ void previewWindow::positionNodesInCenter()
 	neededShift = viewCenter - nodesAABBCenter;
 
 	currentNodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-		size_t outSocketCount = node->OutSocketCount();
+		size_t outSocketCount = node->GetOutputSocketCount();
 		node->SetPosition(node->GetPosition() + neededShift);
 	});
 
@@ -324,7 +324,7 @@ void previewWindow::positionNodesInTargetCenter()
 	neededShift = viewCenter - nodesAABBCenter;
 
 	currentNodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-		size_t outSocketCount = node->OutSocketCount();
+		size_t outSocketCount = node->GetOutputSocketCount();
 		node->SetPosition(node->GetPosition() + neededShift);
 	});
 

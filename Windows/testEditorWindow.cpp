@@ -32,7 +32,7 @@ void testEditorWinow::render()
 		NodeArea* currentNodeArea = TEST_MANAGER.getSelectedTest()->nodeArea;
 
 		currentNodeArea->SetMainContextMenuFunc(mainContextMenu);
-		currentNodeArea->SetNodeEventCallback(nodeCallback);
+		currentNodeArea->AddNodeEventCallback(nodeCallback);
 
 		currentNodeArea->SetPosition(ImVec2(0.0f, 0.0f));
 		currentNodeArea->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
@@ -380,7 +380,7 @@ void testEditorWinow::nodeCallback(VisNodeSys::Node* node, NODE_EVENT eventWithN
 
 	// Change style of all connections to default.
 	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-		size_t OutSocketCount = node->OutSocketCount();
+		size_t OutSocketCount = node->GetOutputSocketCount();
 		for (size_t i = 0; i < OutSocketCount; i++)
 		{
 			ConnectionStyle TempStyle;
@@ -396,7 +396,7 @@ void testEditorWinow::nodeCallback(VisNodeSys::Node* node, NODE_EVENT eventWithN
 
 	TEST_MANAGER.getSelectedTest()->nodeArea->RunOnEachConnectedNode(TEST_MANAGER.getSelectedTest()->getBeginNode(),
 		[](VisNodeSys::Node* node) {
-			size_t OutSocketCount = node->OutSocketCount();
+			size_t OutSocketCount = node->GetOutputSocketCount();
 			for (size_t i = 0; i < OutSocketCount; i++)
 			{
 				ConnectionStyle TempStyle;

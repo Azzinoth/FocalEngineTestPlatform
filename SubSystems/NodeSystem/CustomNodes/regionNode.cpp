@@ -132,5 +132,7 @@ Json::Value regionNode::ToJson()
 void regionNode::FromJson(Json::Value Json)
 {
 	Node::FromJson(Json);
-	Data = NodeArea::FromJson(Json["nodeArea"].asCString());
+	NODE_SYSTEM.DeleteNodeArea(Data);
+	Data = new NodeArea();
+	Data->LoadFromJson(Json["nodeArea"].asCString());
 }

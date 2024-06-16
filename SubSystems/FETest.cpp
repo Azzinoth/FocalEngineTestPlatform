@@ -131,7 +131,7 @@ void FETest::reColorMainTestPath()
 {
 	// Change style of all connections to default.
 	nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-		size_t outSocketCount = node->OutSocketCount();
+		size_t outSocketCount = node->GetOutputSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
 			ConnectionStyle TempStyle;
@@ -147,7 +147,7 @@ void FETest::reColorMainTestPath()
 
 	nodeArea->RunOnEachConnectedNode(getBeginNode(),
 		[](VisNodeSys::Node* node) {
-			size_t outSocketCount = node->OutSocketCount();
+			size_t outSocketCount = node->GetOutputSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
 			{
 				ConnectionStyle TempStyle;
