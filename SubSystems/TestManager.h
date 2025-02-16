@@ -38,4 +38,4 @@ public:
 	void openTestSet(std::string filePath);
 };
 
-#define TEST_MANAGER TestManager::getInstance()
+#define TEST_MANAGER TestManager::GetInstance()

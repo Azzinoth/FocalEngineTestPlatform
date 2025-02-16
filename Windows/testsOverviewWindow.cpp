@@ -1,6 +1,5 @@
 #include "testsOverviewWindow.h"
 
-testsOverviewWindow* testsOverviewWindow::Instance = nullptr;
 int testsOverviewWindow::hoveredTestIndex = -1;
 
 testsOverviewWindow::testsOverviewWindow()
@@ -74,8 +73,8 @@ void testsOverviewWindow::render()
 			//ACTION_SYSTEM.setNodeAreaToUse(TEST_MANAGER.testList[selectedTest].nodeArea);
 			//ACTION_SYSTEM.load(TEST_MANAGER.testList[selectedTest].filePath.c_str());
 
-			/*testEditorWinow::getInstance().show();
-			ACTION_SYSTEM.setNodeAreaToUse(testEditorWinow::getInstance().currentNodeArea);
+			/*testEditorWinow::GetInstance().show();
+			ACTION_SYSTEM.setNodeAreaToUse(testEditorWinow::GetInstance().currentNodeArea);
 			ACTION_SYSTEM.load(testList[selectedTest].filePath.c_str());*/
 		}
 
@@ -118,7 +117,7 @@ void testsOverviewWindow::renderContextMenu()
 		{
 			if (ImGui::MenuItem("Rename"))
 			{
-				textInputPopup::getInstance().show(textInputCallback, TEST_MANAGER.getSelectedTest()->getName());
+				textInputPopup::GetInstance().show(textInputCallback, TEST_MANAGER.getSelectedTest()->getName());
 			}
 
 			if (ImGui::MenuItem("Remove"))
@@ -164,7 +163,7 @@ void testsOverviewWindow::renderContextMenu()
 		ImGui::EndPopup();
 	}
 
-	if (!contextMenuOpened && !textInputPopup::getInstance().isOpened())
+	if (!contextMenuOpened && !textInputPopup::GetInstance().isOpened())
 		hoveredTestIndex = -1;
 
 	contextMenuOpened = false;

@@ -1,7 +1,6 @@
 #include "FETestPlatform.h"
 using namespace FocalEngine;
 
-FETestPlatform* FETestPlatform::Instance = nullptr;
 std::function<void(int key, int scancode, int action, int mods)> FETestPlatform::clientKeyboardCallback = nullptr;
 
 FETestPlatform::FETestPlatform() {};

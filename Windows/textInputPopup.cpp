@@ -1,7 +1,5 @@
 #include "textInputPopup.h"
 
-textInputPopup* textInputPopup::Instance = nullptr;
-
 textInputPopup::textInputPopup()
 {
 	popupCaption = "Input text";

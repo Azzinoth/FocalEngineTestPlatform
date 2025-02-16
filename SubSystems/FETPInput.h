@@ -275,4 +275,4 @@ private:
 	std::function<void(MouseAction keyAction)> clientGlobalMouseCallback = nullptr;
 };
 
-#define INPUT_SYSTEM FETPInput::getInstance()
+#define INPUT_SYSTEM FETPInput::GetInstance()

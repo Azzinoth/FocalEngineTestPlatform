@@ -1,8 +1,6 @@
 #include "FEPTActionSystem.h"
 using namespace VisNodeSys;
 
-FEPTActionSystem* FEPTActionSystem::Instance = nullptr;
-
 FEPTActionSystem::FEPTActionSystem()
 {
 }

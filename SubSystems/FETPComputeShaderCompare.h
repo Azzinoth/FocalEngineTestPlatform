@@ -97,4 +97,4 @@ private:
 	GLuint LoadShader(const char* ShaderText, const GLuint ShaderType);
 };
 
-#define COMPUTE_SHADER_COMPARE FETPComputeShaderCompare::getInstance()
+#define COMPUTE_SHADER_COMPARE FETPComputeShaderCompare::GetInstance()

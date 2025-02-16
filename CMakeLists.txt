@@ -6,6 +6,8 @@ set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 # set the project name
 project(FETestPlatform LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set different compiler flags depending on build type
 set(CMAKE_CXX_FLAGS_DEBUG "/MP /ZI /W3 /Od /MDd /JMC /sdl /FC /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D _WINDOWS /D _DEBUG")

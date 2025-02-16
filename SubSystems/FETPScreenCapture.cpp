@@ -1,7 +1,5 @@
 #include "FETPScreenCapture.h"
 
-FETPScreenCapture* FETPScreenCapture::Instance = nullptr;
-
 FETPScreenCapture::FETPScreenCapture()
 {
     static const D3D_DRIVER_TYPE DriverTypes[] =

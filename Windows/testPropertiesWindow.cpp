@@ -1,7 +1,5 @@
 #include "testPropertiesWindow.h"
 
-testPropertiesWindow* testPropertiesWindow::Instance = nullptr;
-
 testPropertiesWindow::testPropertiesWindow()
 {
 	std::string tempCaption = "Test properties";
@@ -86,7 +84,7 @@ void testPropertiesWindow::render()
 				ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y - 4.0f));
 				if (ImGui::Button("...", ImVec2(35.0f, 20.0f)))
 				{
-					failedTestWindow::getInstance().show(lastTestResult);
+					failedTestWindow::GetInstance().show(lastTestResult);
 				}
 			}
 
@@ -101,7 +99,7 @@ void testPropertiesWindow::render()
 			ImGui::PushID("secondButton");
 			if (ImGui::Button("...", ImVec2(35.0f, 20.0f)))
 			{
-				testStartPreparationsWindow::getInstance().show();
+				testStartPreparationsWindow::GetInstance().show();
 			}
 			ImGui::PopID();
 

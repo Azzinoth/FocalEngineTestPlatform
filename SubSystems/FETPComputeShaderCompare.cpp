@@ -1,7 +1,5 @@
 #include "FETPComputeShaderCompare.h"
 
-FETPComputeShaderCompare* FETPComputeShaderCompare::Instance = nullptr;
-
 FETPComputeShaderCompare::FETPComputeShaderCompare()
 {
     LoadShader(ComputeShaderText, GL_COMPUTE_SHADER);

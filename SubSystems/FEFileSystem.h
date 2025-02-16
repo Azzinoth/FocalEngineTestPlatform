@@ -44,5 +44,5 @@ namespace FocalEngine
 #endif
 	};
 
-	#define FILE_SYSTEM FEFileSystem::getInstance()
+	#define FILE_SYSTEM FEFileSystem::GetInstance()
 }

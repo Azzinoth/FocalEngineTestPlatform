@@ -1,8 +1,6 @@
 #include "screenshootEditor.h"
 using namespace VisNodeSys;
 
-screenshootEditor* screenshootEditor::Instance = nullptr;
-
 screenshootEditor::screenshootEditor()
 {
 	std::string tempCaption = "Screenshoot Editor";

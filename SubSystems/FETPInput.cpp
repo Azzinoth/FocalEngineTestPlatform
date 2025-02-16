@@ -1,7 +1,5 @@
 #include "FETPInput.h"
 
-FETPInput* FETPInput::Instance = nullptr;
-
 HHOOK FETPInput::keyboardHookPTR = nullptr;
 std::vector<KeyboardAction> FETPInput::tempKeyboarActions;
 std::mutex FETPInput::keyboarActionsMutex;

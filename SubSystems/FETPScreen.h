@@ -28,7 +28,7 @@ private:
 	int simpleCompare(size_t width, size_t height, unsigned char* firstData, unsigned char* secondData, int maxColorShift);
 };
 
-#define SCREEN_SYSTEM FETPScreen::getInstance()
+#define SCREEN_SYSTEM FETPScreen::GetInstance()
  
 struct screenSearchInfo
 {

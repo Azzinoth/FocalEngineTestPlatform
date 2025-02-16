@@ -95,4 +95,4 @@ public:
 	std::vector<FETPAction*> generateInputTextActions(std::string text, int avarageDelay);
 };
 
-#define ACTION_SYSTEM FEPTActionSystem::getInstance()
+#define ACTION_SYSTEM FEPTActionSystem::GetInstance()

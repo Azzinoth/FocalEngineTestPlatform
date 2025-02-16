@@ -1,7 +1,6 @@
 #include "testEditorWindow.h"
 using namespace VisNodeSys;
 
-testEditorWinow* testEditorWinow::Instance = nullptr;
 ImVec2 testEditorWinow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
 
 testEditorWinow::testEditorWinow()
@@ -264,7 +263,7 @@ void testEditorWinow::mainContextMenu()
 
 				if (ImGui::MenuItem("Combined text input..."))
 				{
-					textInputPopup::getInstance().show(textInputCallback);
+					textInputPopup::GetInstance().show(textInputCallback);
 				}
 
 				ImGui::EndMenu();
@@ -284,12 +283,12 @@ void testEditorWinow::mainContextMenu()
 	{
 		if (ImGui::MenuItem("Open region"))
 		{
-			nodeRegionWindow::getInstance().show(reinterpret_cast<regionNode*>(TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]));
+			nodeRegionWindow::GetInstance().show(reinterpret_cast<regionNode*>(TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]));
 		}
 
 		if (ImGui::MenuItem("Rename"))
 		{
-			textInputPopup::getInstance().show(textInputChangeNameCallback, TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->GetName());
+			textInputPopup::GetInstance().show(textInputChangeNameCallback, TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected()[0]->GetName());
 		}
 
 		if (ImGui::MenuItem("Remove"))
@@ -306,7 +305,7 @@ void testEditorWinow::mainContextMenu()
 			if (ImGui::MenuItem(std::string("Change input text").c_str()))
 			{
 				combinedActionNode::NodeForCallback = currentNode;
-				textInputPopup::getInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
+				textInputPopup::GetInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
 			}
 		}
 
@@ -317,9 +316,9 @@ void testEditorWinow::mainContextMenu()
 
 		if (ImGui::MenuItem(std::string("Look inside").c_str()))
 		{
-			previewWindow::getInstance().show(true);
-			previewWindow::getInstance().currentNodeArea->Clear();
-			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::getInstance().currentNodeArea, true);
+			previewWindow::GetInstance().show(true);
+			previewWindow::GetInstance().currentNodeArea->Clear();
+			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
 		}
 	}
 	else if (TEST_MANAGER.getSelectedTest()->nodeArea->GetSelected().size() > 1)
@@ -412,8 +411,8 @@ void testEditorWinow::finishRecordingCallback(std::vector<FETPAction*>& recorded
 {
 	if (recordedActions.size() != 0)
 	{
-		previewWindow::getInstance().show();
-		ACTION_SYSTEM.placeStructuredNodes(recordedActions, previewWindow::getInstance().currentNodeArea);
+		previewWindow::GetInstance().show();
+		ACTION_SYSTEM.placeStructuredNodes(recordedActions, previewWindow::GetInstance().currentNodeArea);
 		recordedActions.clear();
 	}
 }
@@ -470,8 +469,8 @@ void testEditorWinow::renderMainMenu()
 
 				if (path != "")
 				{
-					previewWindow::getInstance().show();
-					previewWindow::getInstance().currentNodeArea->LoadFromFile(path.c_str());
+					previewWindow::GetInstance().show();
+					previewWindow::GetInstance().currentNodeArea->LoadFromFile(path.c_str());
 				}
 			}
 

@@ -252,7 +252,7 @@ void combinedActionNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
 		RenderIcon();
 
-		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened())
+		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::GetInstance().isOpened() && !textInputPopup::GetInstance().isOpened())
 			ShowTooltip();
 	}
 
@@ -270,7 +270,7 @@ void combinedActionNode::Draw()
 			if (ImGui::MenuItem(std::string("Change input text").c_str()))
 			{
 				combinedActionNode::nodeForCallback = this;
-				textInputPopup::getInstance().show(changeTextCallback, text);
+				textInputPopup::GetInstance().show(changeTextCallback, text);
 			}
 		}
 

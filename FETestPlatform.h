@@ -39,4 +39,4 @@ private:
 	static std::function<void(int key, int scancode, int action, int mods)> clientKeyboardCallback;
 };
 
-#define TEST_PLATFORM FETestPlatform::getInstance()
+#define TEST_PLATFORM FETestPlatform::GetInstance()

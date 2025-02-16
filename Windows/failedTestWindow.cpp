@@ -1,7 +1,5 @@
 #include "failedTestWindow.h"
 
-failedTestWindow* failedTestWindow::Instance = nullptr;
-
 failedTestWindow::failedTestWindow()
 {
 	std::string tempCaption = "Test failed!";

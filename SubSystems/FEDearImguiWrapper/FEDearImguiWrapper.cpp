@@ -1,13 +1,11 @@
 #include "FEDearImguiWrapper.h"
 
-WindowsManager* WindowsManager::Instance = nullptr;
-
 ImGuiModalPopup::ImGuiModalPopup()
 {
 	popupCaption = "";
 	shouldOpen = false;
 	opened = false;
-	WindowsManager::getInstance().registerPopup(this);
+	WindowsManager::GetInstance().registerPopup(this);
 }
 
 void ImGuiModalPopup::show()
@@ -317,7 +315,7 @@ FEImGuiWindow::FEImGuiWindow()
 	position = ImVec2(0.0f, 0.0f);
 	size = ImVec2(100.0f, 100.0f);
 	visible = false;
-	WindowsManager::getInstance().registerWindow(this);
+	WindowsManager::GetInstance().registerWindow(this);
 }
 
 FEImGuiWindow::~FEImGuiWindow()
@@ -703,8 +701,6 @@ void FERangeConfigurator::clear()
 {
 	ranges.clear();
 }
-
-messagePopUp* messagePopUp::Instance = nullptr;
 
 messagePopUp::messagePopUp() {};
 

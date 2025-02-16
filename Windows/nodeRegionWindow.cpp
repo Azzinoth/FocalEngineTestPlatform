@@ -1,6 +1,5 @@
 #include "nodeRegionWindow.h"
 
-nodeRegionWindow* nodeRegionWindow::Instance = nullptr;
 ImVec2 nodeRegionWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
 regionNode* nodeRegionWindow::currentRegion = nullptr;
 
@@ -181,7 +180,7 @@ void nodeRegionWindow::mainContextMenu()
 
 				if (ImGui::MenuItem("Combined text input..."))
 				{
-					textInputPopup::getInstance().show(textInputCallback);
+					textInputPopup::GetInstance().show(textInputCallback);
 				}
 
 				ImGui::EndMenu();
@@ -205,7 +204,7 @@ void nodeRegionWindow::mainContextMenu()
 			if (ImGui::MenuItem(std::string("Change input text").c_str()))
 			{
 				combinedActionNode::NodeForCallback = currentNode;
-				textInputPopup::getInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
+				textInputPopup::GetInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
 			}
 		}
 
@@ -216,9 +215,9 @@ void nodeRegionWindow::mainContextMenu()
 
 		if (ImGui::MenuItem(std::string("Look inside").c_str()))
 		{
-			previewWindow::getInstance().show(true);
-			previewWindow::getInstance().currentNodeArea->Clear();
-			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::getInstance().currentNodeArea, true);
+			previewWindow::GetInstance().show(true);
+			previewWindow::GetInstance().currentNodeArea->Clear();
+			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
 		}
 	}
 }

@@ -1,7 +1,5 @@
 #include "actionEditPopup.h"
 
-actionEditPopup* actionEditPopup::Instance = nullptr;
-
 actionEditPopup::actionEditPopup()
 {
 	popupCaption = "Edit action";

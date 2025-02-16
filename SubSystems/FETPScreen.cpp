@@ -1,6 +1,5 @@
 #include "FETPScreen.h"
 
-FETPScreen* FETPScreen::Instance = nullptr;
 bool ScreenshootCompareAction::bUseGPU = true;
 
 FETPScreen::FETPScreen()
@@ -225,7 +224,7 @@ int FETPScreen::simpleCompare(size_t width, size_t height, unsigned char* firstD
 
 FETPImage* FETPScreen::GetScreenDataAsImage()
 {
-	return FETPScreenCapture::getInstance().GetScreenImage();
+	return FETPScreenCapture::GetInstance().GetScreenImage();
 }
 
 int convertXYtoIndex(size_t width, int x, int y, int imageDepth)

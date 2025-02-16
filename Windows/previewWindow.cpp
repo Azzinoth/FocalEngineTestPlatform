@@ -1,7 +1,6 @@
 #include "previewWindow.h"
 using namespace VisNodeSys;
 
-previewWindow* previewWindow::Instance = nullptr;
 ImVec2 previewWindow::nodeGridRelativePosition = ImVec2(0, 0);
 ImVec2 previewWindow::windowPosition = ImVec2(0, 0);
 ImVec2 previewWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
@@ -282,7 +281,7 @@ void previewWindow::mainContextMenu()
 
 			/*if (ImGui::MenuItem("Combined text input..."))
 			{
-				textInputPopup::getInstance().show(textInputCallback);
+				textInputPopup::GetInstance().show(textInputCallback);
 			}*/
 
 			ImGui::EndMenu();

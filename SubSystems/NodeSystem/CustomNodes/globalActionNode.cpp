@@ -304,7 +304,7 @@ void globalActionNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
 		RenderIcon();
 
-		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened() /*&& !screenshootEditor::getInstance().isVisible()*/)
+		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::GetInstance().isOpened() && !textInputPopup::GetInstance().isOpened() /*&& !screenshootEditor::GetInstance().isVisible()*/)
 			ShowTooltip();
 	}
 
@@ -322,7 +322,7 @@ void globalActionNode::Draw()
 			if (Data->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 			{
 				ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data);
-				screenshootEditor::getInstance().show(action);
+				screenshootEditor::GetInstance().show(action);
 			}
 			else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 			{
@@ -337,7 +337,7 @@ void globalActionNode::Draw()
 			}
 			else
 			{
-				actionEditPopup::getInstance().show(Data);
+				actionEditPopup::GetInstance().show(Data);
 			}
 		}
 

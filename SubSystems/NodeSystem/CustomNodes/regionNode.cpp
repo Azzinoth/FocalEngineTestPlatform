@@ -63,7 +63,7 @@ void regionNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
 		RenderIcon();
 
-		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::getInstance().isOpened() && !textInputPopup::getInstance().isOpened())
+		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::GetInstance().isOpened() && !textInputPopup::GetInstance().isOpened())
 			ShowTooltip();
 	}
 }

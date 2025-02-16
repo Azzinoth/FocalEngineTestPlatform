@@ -1,7 +1,6 @@
 #include "TestManager.h"
 using namespace VisNodeSys;
 
-TestManager* TestManager::Instance = nullptr;
 VisNodeSys::Node* TestManager::foundNode = nullptr;
 FETPAction* TestManager::searchedAction = nullptr;
 
