@@ -160,7 +160,7 @@ void testEditorWinow::mainContextMenu()
 			if (ImGui::MenuItem("Screen compare node..."))
 			{
 				//std::string path;
-				//FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+				//FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
 
 				//if (path != "")
 				//{
@@ -183,7 +183,7 @@ void testEditorWinow::mainContextMenu()
 			if (ImGui::MenuItem("Application lunch node..."))
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, applicationLoadFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, applicationLoadFilter, 1);
 
 				if (path != "")
 				{
@@ -337,7 +337,7 @@ void testEditorWinow::mainContextMenu()
 		if (ImGui::MenuItem("Save selected nodes..."))
 		{
 			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileSaveDialog(path, NULL/*saveSnippetFileFilter*/, 0/*1*/);
+			FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(path, NULL/*saveSnippetFileFilter*/, 0/*1*/);
 
 			if (path != "")
 			{
@@ -436,7 +436,7 @@ void testEditorWinow::renderMainMenu()
 			if (ImGui::MenuItem("Save test...") && TEST_MANAGER.getSelectedTest() != nullptr)
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileSaveDialog(path, saveFileFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(path, saveFileFilter, 1);
 
 				if (path != "")
 				{
@@ -453,7 +453,7 @@ void testEditorWinow::renderMainMenu()
 			if (ImGui::MenuItem("Load test..."))
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, openFETPFileFilter, 2);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, openFETPFileFilter, 1);
 
 				if (path != "")
 				{
@@ -465,7 +465,7 @@ void testEditorWinow::renderMainMenu()
 			if (ImGui::MenuItem("Load nodes..."))
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, NULL, 0);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, NULL, 0);
 
 				if (path != "")
 				{

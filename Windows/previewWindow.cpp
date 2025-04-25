@@ -155,7 +155,7 @@ void previewWindow::mainContextMenu()
 		if (ImGui::MenuItem("Screen compare node..."))
 		{
 			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
 
 			if (path != "")
 			{
@@ -181,7 +181,7 @@ void previewWindow::mainContextMenu()
 		if (ImGui::MenuItem("Application lunch node..."))
 		{
 			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, applicationLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, applicationLoadFilter, 1);
 
 			if (path != "")
 			{

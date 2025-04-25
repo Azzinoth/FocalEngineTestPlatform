@@ -114,7 +114,7 @@ void imageNode::Draw()
 		if (ImGui::Button("Load Image"))
 		{
 			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
 
 			if (path != "")
 			{
@@ -145,7 +145,7 @@ void imageNode::Draw()
 		if (ImGui::Button("Load different image"))
 		{
 			std::string path;
-			FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
 
 			if (path != "")
 			{

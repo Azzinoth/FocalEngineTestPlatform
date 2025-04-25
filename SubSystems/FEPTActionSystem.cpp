@@ -324,14 +324,14 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 		else if (actions[i]->getType() == FETP_LUNCH_APPLICATION_ACTION)
 		{
 			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(actions[i]);
-			if (!FocalEngine::FILE_SYSTEM.checkFile(action->applicationPath.c_str()))
+			if (!FocalEngine::FILE_SYSTEM.DoesFileExist(action->applicationPath.c_str()))
 			{
 				currentTestResult->failReason = FE_TEST_FAIL_CANT_FIND_FILE;
 				currentTestResult->failedAction = action;
 				return false;
 			}
 
-			ShellExecuteA(NULL, NULL, action->applicationPath.c_str(), NULL, FocalEngine::FILE_SYSTEM.getDirectoryPath(action->applicationPath.c_str()), SW_NORMAL);
+			ShellExecuteA(NULL, NULL, action->applicationPath.c_str(), NULL, FocalEngine::FILE_SYSTEM.GetDirectoryPath(action->applicationPath).c_str(), SW_NORMAL);
 		}
 		/*else if (actions[i]->getType() == FETP_SLEEP_ACTION)
 		{

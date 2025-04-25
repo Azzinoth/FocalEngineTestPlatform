@@ -19,7 +19,7 @@ void TestManager::addTest(std::string filePath)
 	if (filePath != "")
 	{
 		FETest* newTest = new FETest();
-		newTest->setName(FocalEngine::FILE_SYSTEM.getFileName(filePath.c_str()));
+		newTest->setName(FocalEngine::FILE_SYSTEM.GetFileName(filePath.c_str()));
 		newTest->filePath = filePath;
 
 		newTest->load();
@@ -227,8 +227,8 @@ void TestManager::saveAsTestSet(std::string filePath)
 	Json::Value root;
 	std::ofstream saveFile;
 
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.getFileName(filePath.c_str());
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
+	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(filePath.c_str());
+	std::string directoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(filePath.c_str());
 	saveFile.open(directoryPath + fileNameWithoutExtension + ".fetests");
 
 	root["name"] = "noName";
@@ -270,7 +270,7 @@ void TestManager::openTestSet(std::string filePath)
 	std::vector<Json::String> testList = root["tests"].getMemberNames();
 	for (size_t i = 0; i < testList.size(); i++)
 	{
-		std::string originalPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(root["tests"][testList[i].c_str()]["path"].asCString());
+		std::string originalPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(root["tests"][testList[i].c_str()]["path"].asCString());
 
 		std::string originalDirectory = "";
 		int seenDelimiterCount = 0;
@@ -290,10 +290,10 @@ void TestManager::openTestSet(std::string filePath)
 			}
 		}
 
-		std::string localPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
+		std::string localPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(filePath.c_str());
 		localPath += originalDirectory;
 		localPath += "\\";
-		localPath += FocalEngine::FILE_SYSTEM.getFileName(root["tests"][testList[i].c_str()]["path"].asCString());
+		localPath += FocalEngine::FILE_SYSTEM.GetFileName(root["tests"][testList[i].c_str()]["path"].asCString());
 		localPath += ".fetp";
 
 		TEST_MANAGER.addTest(localPath);

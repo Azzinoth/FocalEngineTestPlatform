@@ -328,7 +328,7 @@ public:
 				if (imagesInfo[i]->image->GetFullPath() == "")
 				{
 					// So we need to save it to temp location.
-					std::string tempDirectory = FocalEngine::FILE_SYSTEM.getDirectoryPath(FocalEngine::FILE_SYSTEM.getApplicationPath().c_str());
+					std::string tempDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FocalEngine::FILE_SYSTEM.GetCurrentWorkingPath().c_str());
 					std::string fileName = tempDirectory + "screenshot_";
 					fileName += getID();
 					fileName += "_" + std::to_string(i) + "_";
@@ -346,7 +346,7 @@ public:
 				if (imagesInfo[i]->partialImage->GetFullPath() == "")
 				{
 					// So we need to save it to temp location.
-					std::string tempDirectory = FocalEngine::FILE_SYSTEM.getDirectoryPath(FocalEngine::FILE_SYSTEM.getApplicationPath().c_str());
+					std::string tempDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FocalEngine::FILE_SYSTEM.GetCurrentWorkingPath().c_str());
 					std::string fileName = tempDirectory + "partial_";
 					fileName += getID();
 					fileName += "_" + std::to_string(i) + "_";

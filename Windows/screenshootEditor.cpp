@@ -207,7 +207,7 @@ void screenshootEditor::render()
 void screenshootEditor::addNewImageVariant()
 {
 	std::string path;
-	FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+	FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
 
 	if (path != "")
 	{
@@ -284,7 +284,7 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 void screenshootEditor::loadPNGToCurrent()
 {
 	std::string path;
-	FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, pngLoadFilter, 1);
+	FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
 
 	if (path != "")
 	{

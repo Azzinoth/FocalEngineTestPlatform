@@ -34,8 +34,8 @@ void FETest::save(const char* fileName)
 	Json::Value root;
 	std::ofstream saveFile;
 
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.getFileName(fileName);
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(fileName);
+	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(fileName);
+	std::string directoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(fileName);
 	saveFile.open(directoryPath + fileNameWithoutExtension + ".fetpTestInfo");
 
 	root["name"] = name;
@@ -85,8 +85,8 @@ void FETest::load()
 
 	// Load additional test data.
 	std::ifstream dataFile;
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.getFileName(filePath.c_str());
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
+	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(filePath.c_str());
+	std::string directoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(filePath.c_str());
 	dataFile.open(directoryPath + fileNameWithoutExtension + ".fetpTestInfo");
 
 	std::string additionalFileData((std::istreambuf_iterator<char>(dataFile)), std::istreambuf_iterator<char>());
@@ -209,7 +209,7 @@ void FETest::beforeBegin()
 	{
 		if (beforeStart[i]->type == FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY)
 		{
-			FocalEngine::FILE_SYSTEM.deleteFolder(beforeStart[i]->path.c_str());
+			FocalEngine::FILE_SYSTEM.DeleteDirectory(beforeStart[i]->path.c_str());
 		}
 	}
 }
@@ -222,7 +222,7 @@ void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
 	if (filePath == "")
 		filePath = this->filePath;
 
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
+	std::string directoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(filePath.c_str());
 	std::vector<VisNodeSys::Node*> list = nodeArea->GetNodesByType("globalActionNode");
 	std::unordered_map<std::string, bool> actionSeenIDs;
 	for (size_t i = 0; i < list.size(); i++)
@@ -329,7 +329,7 @@ Json::Value FETest::validateImagePathesInNodeArea(std::string nodeAreaText)
 	if (!reader->parse(nodeAreaText.c_str(), nodeAreaText.c_str() + nodeAreaText.size(), &root, &err))
 		return root;
 
-	std::string newPath = std::string(FocalEngine::FILE_SYSTEM.getDirectoryPath(this->filePath.c_str()));
+	std::string newPath = std::string(FocalEngine::FILE_SYSTEM.GetDirectoryPath(this->filePath.c_str()));
 
 	std::vector<Json::String> nodesList = root["nodes"].getMemberNames();
 	for (size_t i = 0; i < nodesList.size(); i++)

@@ -1,264 +1,614 @@
 #include "FEFileSystem.h"
 using namespace FocalEngine;
 
+#ifdef FOCAL_ENGINE_SHARED
+extern "C" __declspec(dllexport) void* GetFileSystem()
+{
+	return FEFileSystem::GetInstancePointer();
+}
+#endif
+
 FEFileSystem::FEFileSystem() {}
 FEFileSystem::~FEFileSystem() {}
 
-bool FEFileSystem::checkFile(const char* path)
+bool FEFileSystem::DoesFileExist(const std::string& Path)
 {
-	DWORD dwAttrib = GetFileAttributesA(path);
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+	std::filesystem::path FilePath(Path);
+	return std::filesystem::exists(FilePath) && std::filesystem::is_regular_file(FilePath);
 }
 
-bool FEFileSystem::isFolder(const char* path)
+bool FEFileSystem::RenameFile(const std::string& Path, const std::string& NewPath)
 {
-	DWORD dwAttrib = GetFileAttributesA(path);
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-}
-
-bool FEFileSystem::createFolder(const char* path)
-{
-	return (_mkdir(path) != 0);
-}
-
-bool FEFileSystem::deleteFolder(const char* path)
-{
-	return (_rmdir(path) == 0);
-}
-
-bool FEFileSystem::changeFileName(const char* path, const char* newPath)
-{
-	int result = rename(path, newPath);
-	return result == 0 ? true : false;
-}
-
-bool FEFileSystem::deleteFile(const char* path)
-{
-	int result = remove(path);
-	return result == 0 ? true : false;
-}
-
-std::vector<std::string> FEFileSystem::getFolderList(const char* path)
-{
-	std::vector<std::string> result;
-	std::string pattern(path);
-	pattern.append("\\*");
-	WIN32_FIND_DATAA data;
-	HANDLE hFind;
-	if ((hFind = FindFirstFileA(pattern.c_str(), &data)) != INVALID_HANDLE_VALUE)
+	try
 	{
-		do
-		{
-			if (isFolder((path + std::string("/") + std::string(data.cFileName)).c_str()) && std::string(data.cFileName) != std::string(".") && std::string(data.cFileName) != std::string(".."))
-				result.push_back(data.cFileName);
-		} while (FindNextFileA(hFind, &data) != 0);
-		FindClose(hFind);
+		std::filesystem::rename(Path, NewPath);
+		return true;
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::ChangeFileName: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+}
+
+bool FEFileSystem::CopyFile(const std::string& Path, const std::string& NewPath)
+{
+	try
+	{
+		std::filesystem::copy(Path, NewPath);
+		return true;
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::CopyFile: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+}
+
+bool FEFileSystem::DeleteFile(const std::string& Path)
+{
+	try
+	{
+		return std::filesystem::remove(Path);
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::DeleteFile: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+}
+
+size_t FEFileSystem::GetFileSize(const std::string& Path)
+{
+	std::filesystem::path FilePath(Path);
+	if (std::filesystem::exists(FilePath) && std::filesystem::is_regular_file(FilePath))
+	{
+		return std::filesystem::file_size(FilePath);
 	}
 
-	return result;
+	return 0;
 }
 
-std::vector<std::string> FEFileSystem::getFileList(const char* path)
+uint64_t FEFileSystem::GetFileLastWriteTime(const std::string& Path)
 {
-	std::vector<std::string> result;
-	std::string pattern(path);
-	pattern.append("\\*");
-	WIN32_FIND_DATAA data;
-	HANDLE hFind;
-	if ((hFind = FindFirstFileA(pattern.c_str(), &data)) != INVALID_HANDLE_VALUE)
+	std::filesystem::path FilePath(Path);
+	if (std::filesystem::exists(FilePath) && std::filesystem::is_regular_file(FilePath))
 	{
-		do
-		{
-			if (!isFolder((path + std::string("/") + std::string(data.cFileName)).c_str()) && std::string(data.cFileName) != std::string(".") && std::string(data.cFileName) != std::string(".."))
-				result.push_back(data.cFileName);
-		} while (FindNextFileA(hFind, &data) != 0);
-		FindClose(hFind);
+		auto FileTime = std::filesystem::last_write_time(FilePath);
+		auto TimePoint = std::chrono::time_point_cast<std::chrono::system_clock::duration>(FileTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
+		auto Duration = TimePoint.time_since_epoch();
+		auto NanosecondsCount = std::chrono::duration_cast<std::chrono::nanoseconds>(Duration);
+		return NanosecondsCount.count();
 	}
 
-	return result;
+	return 0;
+}
+
+//void FEFileSystem::WaitForFileAccess(std::string FilePath, int TimeoutInMS)
+//{
+//	std::filesystem::path Path(FilePath);
+//	std::chrono::milliseconds Timeout(TimeoutInMS);
+//	std::chrono::time_point<std::chrono::system_clock> StartTime = std::chrono::system_clock::now();
+//	std::filesystem::file_status Status = std::filesystem::status(Path);
+//	while (std::filesystem::exists(Path) && std::filesystem::is_regular_file(Path))
+//	{
+//		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - StartTime) > Timeout)
+//			break;
+//	}
+//}
+
+bool FEFileSystem::WaitForFileAccess(const std::string& FilePath, int TimeoutInMS)
+{
+	const auto start = std::chrono::steady_clock::now();
+	const auto end = start + std::chrono::milliseconds(TimeoutInMS);
+
+	while (std::chrono::steady_clock::now() < end)
+	{
+		try
+		{
+			// Check if file exists
+			if (!std::filesystem::exists(FilePath))
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				continue;
+			}
+
+			// Try to open the file
+			std::ifstream file(FilePath);
+			if (file.is_open())
+			{
+				// File is accessible, close it and return
+				file.close();
+				return true;
+			}
+		}
+		catch (const std::filesystem::filesystem_error&)
+		{
+			// Ignore filesystem errors and continue trying
+		}
+		catch (const std::ios_base::failure&)
+		{
+			// Ignore file open errors and continue trying
+		}
+
+		// Wait for 10ms before next attempt
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
+	// If we've reached here, we've timed out
+	return false;
+}
+
+bool FEFileSystem::DoesDirectoryExist(const std::string& Path)
+{
+	std::filesystem::path FolderPath(Path);
+	return std::filesystem::exists(FolderPath) && std::filesystem::is_directory(FolderPath);
+}
+
+bool FEFileSystem::RenameDirectory(const std::string& Path, const std::string& NewPath)
+{
+	try
+	{
+		if (std::filesystem::exists(Path) && std::filesystem::is_directory(Path))
+		{
+			std::filesystem::rename(Path, NewPath);
+			return true;
+		}
+		else
+		{
+			// Directory doesn't exist or is not a directory
+			return false;
+		}
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::RenameDirectory: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+}
+
+bool FEFileSystem::CreateDirectory(const std::string& Path)
+{
+	try
+	{
+		return std::filesystem::create_directory(Path);
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::CreateDirectory: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+}
+
+bool FEFileSystem::CopyDirectory(const std::string& Path, const std::string& NewPath)
+{
+	try
+	{
+		std::filesystem::copy(Path, NewPath, std::filesystem::copy_options::recursive);
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::CopyDirectory: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+
+	return true;
+}
+
+bool FEFileSystem::DeleteDirectory(const std::string& Path)
+{
+	try
+	{
+		return std::filesystem::remove_all(Path) > 0;
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::DeleteDirectory: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+}
+
+std::vector<std::string> FEFileSystem::GetFileNamesInDirectory(const std::string& Path, bool bRecursive)
+{
+	std::vector<std::string> Result;
+
+	try
+	{
+		std::filesystem::path Directory(Path);
+		if (std::filesystem::exists(Directory) && std::filesystem::is_directory(Directory))
+		{
+			for (const auto& Entry : std::filesystem::directory_iterator(Directory))
+			{
+				const auto& Path = Entry.path();
+				if (std::filesystem::is_regular_file(Path))
+				{
+					Result.push_back(Path.filename().string());
+				}
+				else if (bRecursive && std::filesystem::is_directory(Path))
+				{
+					std::vector<std::string> SubDirectoryFiles = GetFileNamesInDirectory(Path.string(), bRecursive);
+					Result.insert(Result.end(), SubDirectoryFiles.begin(), SubDirectoryFiles.end());
+				}
+			}
+		}
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::GetFileNamesInDirectory: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+	}
+
+	return Result;
+}
+
+std::vector<std::string> FEFileSystem::GetFilesInDirectory(const std::string& Path, bool bRecursive)
+{
+	std::vector<std::string> Result;
+
+	try
+	{
+		std::filesystem::path Directory(Path);
+		if (std::filesystem::exists(Directory) && std::filesystem::is_directory(Directory))
+		{
+			for (const auto& Entry : std::filesystem::directory_iterator(Directory))
+			{
+				const auto& Path = Entry.path();
+				if (std::filesystem::is_regular_file(Path))
+				{
+					Result.push_back(Path.string());
+				}
+				else if (bRecursive && std::filesystem::is_directory(Path))
+				{
+					std::vector<std::string> SubDirectoryFiles = GetFilesInDirectory(Path.string(), bRecursive);
+					Result.insert(Result.end(), SubDirectoryFiles.begin(), SubDirectoryFiles.end());
+				}
+			}
+		}
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::GetFilesInDirectory: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+	}
+
+	return Result;
+}
+
+std::vector<std::string> FEFileSystem::GetFolderChain(const std::string& Path)
+{
+	std::vector<std::string> Result;
+
+	try
+	{
+		std::filesystem::path Directory(Path);
+		while (!Directory.string().empty())
+		{
+			//Directory.
+			//std::filesystem::path test = std::filesystem::canonical(Directory.string() + "/");
+			//if (std::filesystem::is_directory(Directory.string() + "/"))
+
+			if (!Result.empty())
+			{
+				if (Result.back() == Directory.string())
+					break;
+			}
+			Result.push_back(Directory.string());
+			Directory = Directory.parent_path();
+		}
+
+		std::reverse(Result.begin(), Result.end());
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::GetFolderChain: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+	}
+
+	return Result;
+}
+
+std::vector<std::string> FEFileSystem::GetDirectoryList(const std::string& Path)
+{
+	std::vector<std::string> Result;
+
+	try
+	{
+		std::filesystem::path Directory(Path);
+		if (std::filesystem::exists(Directory) && std::filesystem::is_directory(Directory))
+		{
+			for (const auto& Entry : std::filesystem::directory_iterator(Directory))
+			{
+				const auto& Path = Entry.path();
+				if (std::filesystem::is_directory(Path))
+				{
+					std::string DirectoryName = Path.filename().string();
+					if (DirectoryName != "." && DirectoryName != "..")
+					{
+						Result.push_back(DirectoryName);
+					}
+				}
+			}
+		}
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::GetFolderList: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+	}
+
+	return Result;
+}
+
+std::vector<std::string> FEFileSystem::GetFileList(const std::string& Path)
+{
+	std::vector<std::string> Result;
+
+	try
+	{
+		std::filesystem::path Directory(Path);
+		if (std::filesystem::exists(Directory) && std::filesystem::is_directory(Directory))
+		{
+			for (const auto& Entry : std::filesystem::directory_iterator(Directory))
+			{
+				const auto& Path = Entry.path();
+				if (std::filesystem::is_regular_file(Path))
+				{
+					Result.push_back(Path.filename().string());
+				}
+			}
+		}
+	}
+	catch (const std::exception& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::GetFileList: " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+	}
+
+	return Result;
 }
 
 #ifdef FE_WIN_32
 // open dialog staff
-std::string FEFileSystem::PWSTRtoString(PWSTR wString)
+std::string FEFileSystem::PWSTRtoString(const PWSTR WString)
 {
-	std::wstring wFileName = wString;
-	char* szTo = new char[wFileName.length() + 1];
-	szTo[wFileName.size()] = '\0';
-	WideCharToMultiByte(CP_ACP, 0, wFileName.c_str(), -1, szTo, (int)wFileName.length(), NULL, NULL);
-	std::string result = szTo;
-	delete[] szTo;
+	const std::wstring WFileName = WString;
+	char* SzTo = new char[WFileName.length() + 1];
+	SzTo[WFileName.size()] = '\0';
+	WideCharToMultiByte(CP_ACP, 0, WFileName.c_str(), -1, SzTo, static_cast<int>(WFileName.length()), nullptr, nullptr);
+	std::string Result = SzTo;
+	delete[] SzTo;
 
-	return result;
+	return Result;
 }
 
-void FEFileSystem::showFileOpenDialog(std::string& path, const COMDLG_FILTERSPEC* filter, int filterCount)
+void FEFileSystem::ShowFileOpenDialog(std::string& Path, const COMDLG_FILTERSPEC* Filter, const int FilterCount)
 {
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	if (SUCCEEDED(hr))
 	{
-		IFileOpenDialog* pFileOpen;
+		IFileOpenDialog* PFileOpen;
 		// Create the FileOpenDialog object.
-		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+		hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&PFileOpen));
 
 		if (SUCCEEDED(hr))
 		{
-			hr = pFileOpen->SetFileTypes(filterCount, filter);
+			hr = PFileOpen->SetFileTypes(FilterCount, Filter);
 			// Show the Open dialog box.
-			hr = pFileOpen->Show(NULL);
+			hr = PFileOpen->Show(nullptr);
 
 			// Get the file name from the dialog box.
 			if (SUCCEEDED(hr))
 			{
-				IShellItem* pItem;
-				hr = pFileOpen->GetResult(&pItem);
+				IShellItem* PItem;
+				hr = PFileOpen->GetResult(&PItem);
 				if (SUCCEEDED(hr))
 				{
-					PWSTR pszFilePath;
-					hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+					PWSTR PszFilePath;
+					hr = PItem->GetDisplayName(SIGDN_FILESYSPATH, &PszFilePath);
 
 					// Display the file name to the user.
 					if (SUCCEEDED(hr))
 					{
-						path = PWSTRtoString(pszFilePath);
-						CoTaskMemFree(pszFilePath);
+						Path = PWSTRtoString(PszFilePath);
+						CoTaskMemFree(PszFilePath);
 					}
-					pItem->Release();
+					PItem->Release();
 				}
 			}
-			pFileOpen->Release();
+			PFileOpen->Release();
 		}
 		CoUninitialize();
 	}
 }
 
-void FEFileSystem::showFileSaveDialog(std::string& path, const COMDLG_FILTERSPEC* filter, int filterCount)
+void FEFileSystem::ShowFileSaveDialog(std::string& Path, const COMDLG_FILTERSPEC* Filter, const int FilterCount, int* ChosenFilterIndex)
 {
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	if (SUCCEEDED(hr))
 	{
-		IFileSaveDialog* pFileSave;
+		IFileSaveDialog* PFileSave;
 		// Create the FileSaveDialog object.
-		hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave));
+		hr = CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&PFileSave));
 
 		if (SUCCEEDED(hr))
 		{
-			hr = pFileSave->SetFileTypes(filterCount, filter);
+			hr = PFileSave->SetFileTypes(FilterCount, Filter);
 			// Show the Save dialog box.
-			hr = pFileSave->Show(NULL);
+			hr = PFileSave->Show(nullptr);
 
 			// Get the file name from the dialog box.
 			if (SUCCEEDED(hr))
 			{
-				IShellItem* pItem;
-				hr = pFileSave->GetResult(&pItem);
+				IShellItem* PItem;
+				hr = PFileSave->GetResult(&PItem);
 				if (SUCCEEDED(hr))
 				{
-					PWSTR pszFilePath;
-					hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+					PWSTR PszFilePath;
+					hr = PItem->GetDisplayName(SIGDN_FILESYSPATH, &PszFilePath);
 
 					// Display the file name to the user.
 					if (SUCCEEDED(hr))
 					{
-						path = PWSTRtoString(pszFilePath);
-						CoTaskMemFree(pszFilePath);
+						Path = PWSTRtoString(PszFilePath);
+						CoTaskMemFree(PszFilePath);
 					}
-					pItem->Release();
+					PItem->Release();
+				}
+
+				// Retrieve the index of the selected filter
+				if (ChosenFilterIndex != nullptr)
+				{
+					unsigned int TempChosenFilterIndex;
+					hr = PFileSave->GetFileTypeIndex(&TempChosenFilterIndex);
+					*ChosenFilterIndex = TempChosenFilterIndex - 1;
+
+					if (FAILED(hr))
+						*ChosenFilterIndex = -1;
 				}
 			}
-			pFileSave->Release();
+			PFileSave->Release();
 		}
 		CoUninitialize();
 	}
 }
 
-void FEFileSystem::showFolderOpenDialog(std::string& path)
+void FEFileSystem::ShowFolderOpenDialog(std::string& Path)
 {
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	if (SUCCEEDED(hr))
 	{
-		IFileDialog* pFolderOpen;
+		IFileDialog* PFolderOpen;
 		// Create the FileOpenDialog object.
-		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFolderOpen));
+		hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&PFolderOpen));
 
 		if (SUCCEEDED(hr))
 		{
-			DWORD dwOptions;
-			if (SUCCEEDED(pFolderOpen->GetOptions(&dwOptions)))
-				pFolderOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
+			DWORD DwOptions;
+			if (SUCCEEDED(PFolderOpen->GetOptions(&DwOptions)))
+				PFolderOpen->SetOptions(DwOptions | FOS_PICKFOLDERS);
 
-			hr = pFolderOpen->SetFileTypes(0, nullptr);
+			hr = PFolderOpen->SetFileTypes(0, nullptr);
 			// Show the Open dialog box.
-			hr = pFolderOpen->Show(NULL);
+			hr = PFolderOpen->Show(nullptr);
 
 			// Get the file name from the dialog box.
 			if (SUCCEEDED(hr))
 			{
-				IShellItem* pItem;
-				hr = pFolderOpen->GetResult(&pItem);
+				IShellItem* PItem;
+				hr = PFolderOpen->GetResult(&PItem);
 				if (SUCCEEDED(hr))
 				{
-					PWSTR pszFolderPath;
-					hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFolderPath);
+					PWSTR PszFolderPath;
+					hr = PItem->GetDisplayName(SIGDN_FILESYSPATH, &PszFolderPath);
 
 					// Display the file name to the user.
 					if (SUCCEEDED(hr))
 					{
-						path = PWSTRtoString(pszFolderPath);
-						CoTaskMemFree(pszFolderPath);
+						Path = PWSTRtoString(PszFolderPath);
+						CoTaskMemFree(PszFolderPath);
 					}
-					pItem->Release();
+					PItem->Release();
 				}
 			}
-			pFolderOpen->Release();
+			PFolderOpen->Release();
 		}
 		CoUninitialize();
 	}
 }
 
-std::string FEFileSystem::getFileExtension(const char* path)
-{
-	// Should I use _splitpath_s ?
-	if (!checkFile(path))
-		return "";
-
-	LPSTR extension = PathFindExtensionA(path);
-	return std::string(extension);
-}
-
-std::string FEFileSystem::getApplicationPath()
+std::string FEFileSystem::GetExecutablePath()
 {
 	char buffer[MAX_PATH] = { 0 };
-	GetModuleFileNameA(NULL, buffer, MAX_PATH);
+	GetModuleFileNameA(nullptr, buffer, MAX_PATH);
 	return buffer;
 }
 
 #endif
 
-char* FEFileSystem::getDirectoryPath(const char* fullPath)
+std::string FEFileSystem::GetCurrentWorkingPath()
 {
-	char* resultDrive = new char[3];
-	char* resultDirectory = new char[1024];
-	_splitpath_s(fullPath, resultDrive, 3, resultDirectory, 1024, nullptr, 0, nullptr, 0);
-
-	// Combine drive and directory parts
-	char* result = new char[1024];
-	strcpy_s(result, 1024, resultDrive);
-	strcat_s(result, 1024, resultDirectory);
-
-	// Clean up temporary memory
-	delete[] resultDrive;
-	delete[] resultDirectory;
-
-	return result;
+	std::filesystem::path ApplicationPath = std::filesystem::current_path();
+	return ApplicationPath.string();
 }
 
-char* FEFileSystem::getFileName(const char* fullPath)
+std::string FEFileSystem::GetFileExtension(const std::string& Path)
 {
-	char* result = new char[1024];
-	_splitpath_s(fullPath, nullptr, 0, nullptr, 0, result, 1024, nullptr, 0);
+	std::filesystem::path filePath(Path);
+	return filePath.extension().string();
+}
 
-	return result;
+std::string FEFileSystem::GetDirectoryPath(const std::string& FullPath)
+{
+	std::filesystem::path Path(FullPath);
+	return Path.parent_path().string();
+}
+
+std::string FEFileSystem::GetFileName(const std::string& FullPath)
+{
+	std::filesystem::path Path(FullPath);
+	return Path.filename().string();
+}
+
+std::string FEFileSystem::ReadFEString(std::fstream& File)
+{
+	char* Buffer = new char[4];
+
+	File.read(Buffer, 4);
+	const int TempCharSize = *(int*)Buffer;
+	char* TempChar = new char[TempCharSize + 1];
+	File.read(TempChar, TempCharSize);
+	TempChar[TempCharSize] = '\0';
+
+	std::string Result = TempChar;
+	delete[] TempChar;
+	delete[] Buffer;
+
+	return Result;
+}
+
+bool FEFileSystem::PerformTextReplacements(const std::string& FilePath, const std::vector<TextReplacementRule>& Rules)
+{
+	if (FilePath.empty())
+	{
+		LOG.Add("FEFileSystem::ReplaceInFile: File path is empty", "FE_FILE_SYSTEM", FE_LOG_WARNING);
+		return false;
+	}
+
+	std::fstream File(FilePath, std::ios::in);
+	if (!File.is_open())
+	{
+		LOG.Add("FEFileSystem::ReplaceInFile: Error opening file " + FilePath, "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+
+	std::vector<std::string> FileContent;
+	std::string Line;
+	while (std::getline(File, Line))
+		FileContent.push_back(Line);
+
+	File.close();
+
+	// Apply replacements
+	for (size_t i = 0; i < FileContent.size(); i++)
+	{
+		for (size_t j = 0; j < Rules.size(); j++)
+		{
+			if (FileContent[i].find(Rules[j].ContextPattern) != std::string::npos)
+			{
+				size_t Position = FileContent[i].find(Rules[j].TargetText);
+				if (Position != std::string::npos)
+					FileContent[i].replace(Position, Rules[j].TargetText.length(), Rules[j].ReplacementText);
+			}
+		}
+	}
+
+	File.open(FilePath, std::ios::out | std::ios::trunc);
+	if (!File.is_open())
+	{
+		LOG.Add("FEFileSystem::ReplaceInFile: Error opening file " + FilePath, "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return false;
+	}
+
+	// Write the modified content back to the file
+	for (size_t i = 0; i < FileContent.size(); i++)
+		File << FileContent[i] + "\n";
+
+	File.close();
+	return true;
 }

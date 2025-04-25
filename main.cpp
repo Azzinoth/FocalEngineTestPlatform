@@ -30,7 +30,7 @@ void MainWindowRender()
 
 	if (TEST_MANAGER.getSelectedTest() != nullptr)
 	{
-		if (FILE_SYSTEM.checkFile("Temporary.png"))
+		if (FILE_SYSTEM.DoesFileExist("Temporary.png"))
 		{
 			std::vector<unsigned char> rawData;
 			unsigned uWidth, uHeight;
@@ -49,7 +49,7 @@ void MainWindowRender()
 				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
 			}
 
-			FILE_SYSTEM.deleteFile("Temporary.png");
+			FILE_SYSTEM.DeleteFile("Temporary.png");
 		}
 	}
 	

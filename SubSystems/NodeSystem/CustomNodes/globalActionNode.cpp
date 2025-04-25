@@ -327,7 +327,7 @@ void globalActionNode::Draw()
 			else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, applicationLoadFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, applicationLoadFilter, 1);
 
 				if (path != "")
 				{

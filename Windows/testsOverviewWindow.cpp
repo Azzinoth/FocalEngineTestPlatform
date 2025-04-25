@@ -181,7 +181,7 @@ void testsOverviewWindow::renderMainMenu()
 			if (ImGui::MenuItem("Load test set..."))
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileOpenDialog(path, FETestsFileFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, FETestsFileFilter, 1);
 
 				if (path != "")
 				{
@@ -195,7 +195,7 @@ void testsOverviewWindow::renderMainMenu()
 			if (ImGui::MenuItem("Save test set...") && TEST_MANAGER.list.size() > 0)
 			{
 				std::string path;
-				FocalEngine::FILE_SYSTEM.showFileSaveDialog(path, FETestsFileFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(path, FETestsFileFilter, 1);
 
 				if (path != "")
 				{
