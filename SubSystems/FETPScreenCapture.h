@@ -22,12 +22,12 @@ private:
         OutputDuplication(ID3D11Device* Device, UINT MonitorIndex = 0);
     };
 
-	ID3D11Device* Device;
-	ID3D11DeviceContext* DeviceContext;
+	ID3D11Device* Device = nullptr;
+	ID3D11DeviceContext* DeviceContext = nullptr;
 	D3D_FEATURE_LEVEL FeatureLevel;
 
 	void GetDesktopImage(IDXGIOutputDuplication* OutputDuplication);
-	ID3D11Texture2D* DesktopImageTexture;
+	ID3D11Texture2D* DesktopImageTexture = nullptr;
 
-	ID3D11Texture2D* StagingTexture;
+	ID3D11Texture2D* StagingTexture = nullptr;
 };

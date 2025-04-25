@@ -10,8 +10,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set different compiler flags depending on build type
-set(CMAKE_CXX_FLAGS_DEBUG "/MP /ZI /W3 /Od /MDd /JMC /sdl /FC /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D _WINDOWS /D _DEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D NDEBUG /D _WINDOWS")
+#set(CMAKE_CXX_FLAGS_DEBUG "/MP /ZI /W3 /Od /MDd /JMC /sdl /FC /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D _WINDOWS /D _DEBUG")
+#set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D NDEBUG /D _WINDOWS")
+set(CMAKE_CXX_FLAGS_DEBUG "/MP /Zi /MTd /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF /Od")
+set(CMAKE_CXX_FLAGS_RELEASE "/MP /MT")
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
@@ -165,10 +167,9 @@ set_target_properties(FETestPlatform PROPERTIES
 target_link_libraries(FETestPlatform FEBasicApplication)
 target_link_libraries(FETestPlatform VisualNodeSystem)
 
-target_link_libraries(FETestPlatform glew32s.lib)
-target_link_libraries(FETestPlatform glfw3.lib)
-target_link_libraries(FETestPlatform glfw3dll.lib)
-target_link_libraries(FETestPlatform opengl32.lib)
+if(USE_STATIC_RUNTIME)
+    add_definitions(-DGLEW_STATIC)
+endif()
 
 source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************

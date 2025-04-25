@@ -82,6 +82,18 @@ void imageNode::FromJson(Json::Value Json)
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
+bool imageNode::SetImage(FETPImage* Image)
+{
+	if (Image == nullptr)
+		return false;
+
+	if (Data != nullptr)
+		delete Data;
+
+	Data = Image;
+	return true;
+}
+
 void imageNode::Draw()
 {	
 	Node::Draw();
@@ -114,7 +126,7 @@ void imageNode::Draw()
 				{
 					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
 					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					Data = new FETPImage(tempData, uWidth, uHeight);
+					SetImage(new FETPImage(tempData, uWidth, uHeight));
 					delete[] tempData;
 				}
 			}
@@ -147,7 +159,7 @@ void imageNode::Draw()
 
 					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
 					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					Data = new FETPImage(tempData, uWidth, uHeight);
+					SetImage(new FETPImage(tempData, uWidth, uHeight));
 					delete[] tempData;
 				}
 			}

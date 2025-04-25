@@ -32,5 +32,7 @@ public:
 
 	void Draw();
 
+	bool SetImage(FETPImage* Image);
+
 	basicLogicNode* GetNextNode();
 };
