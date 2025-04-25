@@ -14,22 +14,22 @@ TestManager::~TestManager()
 
 }
 
-void TestManager::addTest(std::string filePath)
+void TestManager::addTest(std::string FilePath)
 {
-	if (filePath != "")
+	if (FilePath != "")
 	{
 		FETest* newTest = new FETest();
-		newTest->setName(FocalEngine::FILE_SYSTEM.GetFileName(filePath.c_str()));
-		newTest->filePath = filePath;
+		newTest->SetName(FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str()));
+		newTest->FilePath = FilePath;
 
-		newTest->load();
+		newTest->Load();
 
 		list.push_back(newTest);
 	}
 	else
 	{
 		FETest* newTest = new FETest();
-		newTest->setName(getNewTestName());
+		newTest->SetName(getNewTestName());
 
 		list.push_back(newTest);
 	}
@@ -45,10 +45,10 @@ VisNodeSys::Node* TestManager::getNodeByAction(FETPAction* action)
 
 	for (size_t i = 0; i < list.size(); i++)
 	{
-		if (list[i]->nodeArea == nullptr)
+		if (list[i]->NodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
+		list[i]->NodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
@@ -94,10 +94,10 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 
 	for (size_t i = 0; i < list.size(); i++)
 	{
-		if (list[i]->nodeArea == nullptr)
+		if (list[i]->NodeArea == nullptr)
 			continue;
 
-		list[i]->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
+		list[i]->NodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
 			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
@@ -146,11 +146,11 @@ std::string TestManager::getNewTestName()
 	return newName + std::to_string(index);
 }
 
-bool TestManager::isTestNameFree(std::string name)
+bool TestManager::isTestNameFree(std::string Name)
 {
 	for (size_t i = 0; i < list.size(); i++)
 	{
-		if (list[i]->getName() == name)
+		if (list[i]->GetName() == Name)
 			return false;
 	}
 
@@ -203,7 +203,7 @@ void TestManager::renameTest(FETest* test, std::string newName)
 		if (list[i] == test)
 		{
 			if (isTestNameFree(newName))
-				list[i]->setName(newName);
+				list[i]->SetName(newName);
 
 			return;
 		}
@@ -216,10 +216,10 @@ void TestManager::renameTest(size_t testIndex, std::string newName)
 		return;
 
 	if (isTestNameFree(newName))
-		list[testIndex]->setName(newName);
+		list[testIndex]->SetName(newName);
 }
 
-void TestManager::saveAsTestSet(std::string filePath)
+void TestManager::saveAsTestSet(std::string FilePath)
 {
 	if (list.size() == 0)
 		return;
@@ -227,8 +227,8 @@ void TestManager::saveAsTestSet(std::string filePath)
 	Json::Value root;
 	std::ofstream saveFile;
 
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(filePath.c_str());
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(filePath.c_str());
+	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str());
+	std::string directoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
 	saveFile.open(directoryPath + fileNameWithoutExtension + ".fetests");
 
 	root["name"] = "noName";
@@ -236,8 +236,8 @@ void TestManager::saveAsTestSet(std::string filePath)
 	Json::Value Tests;
 	for (size_t i = 0; i < list.size(); i++)
 	{
-		Tests[std::to_string(i)]["path"] = list[i]->filePath;
-		Tests[std::to_string(i)]["name"] = list[i]->getName();
+		Tests[std::to_string(i)]["path"] = list[i]->FilePath;
+		Tests[std::to_string(i)]["name"] = list[i]->GetName();
 	}
 	root["tests"] = Tests;
 
@@ -248,13 +248,13 @@ void TestManager::saveAsTestSet(std::string filePath)
 	saveFile.close();
 }
 
-void TestManager::openTestSet(std::string filePath)
+void TestManager::openTestSet(std::string FilePath)
 {
-	if (filePath == "")
+	if (FilePath == "")
 		return;
 
 	std::ifstream testSetFile;
-	testSetFile.open(filePath);
+	testSetFile.open(FilePath);
 
 	std::string fileData((std::istreambuf_iterator<char>(testSetFile)), std::istreambuf_iterator<char>());
 	testSetFile.close();
@@ -290,7 +290,7 @@ void TestManager::openTestSet(std::string filePath)
 			}
 		}
 
-		std::string localPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(filePath.c_str());
+		std::string localPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
 		localPath += originalDirectory;
 		localPath += "\\";
 		localPath += FocalEngine::FILE_SYSTEM.GetFileName(root["tests"][testList[i].c_str()]["path"].asCString());

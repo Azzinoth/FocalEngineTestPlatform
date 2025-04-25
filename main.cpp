@@ -46,7 +46,7 @@ void MainWindowRender()
 				delete[] tempData;
 
 				newNode->SetPosition(ImVec2(200, 200));
-				TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newNode);
+				TEST_MANAGER.getSelectedTest()->NodeArea->AddNode(newNode);
 			}
 
 			FILE_SYSTEM.DeleteFile("Temporary.png");
@@ -73,7 +73,7 @@ void MainWindowRender()
 }
 
 bool NeedToCreateWindow = false;
-void keyButtonCallback(int key, int scancode, int action, int mods)
+void KeyButtonCallback(int key, int scancode, int action, int mods)
 {
 	if (key == 84 && action == GLFW_RELEASE && TEST_MANAGER.getSelectedTest() != nullptr)
 	{
@@ -82,9 +82,9 @@ void keyButtonCallback(int key, int scancode, int action, int mods)
 
 		ACTION_SYSTEM.run(TEST_MANAGER.getSelectedTest());
 
-		while (TEST_MANAGER.getSelectedTest()->getLoopCount() > 1)
+		while (TEST_MANAGER.getSelectedTest()->GetLoopCount() > 1)
 		{
-			TEST_MANAGER.getSelectedTest()->setLoopCount(TEST_MANAGER.getSelectedTest()->getLoopCount() - 1);
+			TEST_MANAGER.getSelectedTest()->SetLoopCount(TEST_MANAGER.getSelectedTest()->GetLoopCount() - 1);
 			ACTION_SYSTEM.run(TEST_MANAGER.getSelectedTest());
 		}
 	}
@@ -208,8 +208,9 @@ void SpecialWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	TEST_PLATFORM.createWindow();
-	TEST_PLATFORM.setKeyboardCallback(keyButtonCallback);
+	TEST_PLATFORM.CreateMainWindow();
+	//TEST_PLATFORM.SetKeyboardCallback(KeyButtonCallback);
+	APPLICATION.GetMainWindow()->AddOnKeyCallback(KeyButtonCallback);
 
 	APPLICATION.GetMainWindow()->SetRenderFunction(MainWindowRender);
 
@@ -227,7 +228,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto SecondW = APPLICATION.AddWindow(800, 600, "Test Window");
 	SecondW->AddOnKeyCallback(SpecialWindowKeyCallback);
 
-	while (TEST_PLATFORM.IsNotTerminated())
+	while (APPLICATION.IsNotTerminated())
 	{
 		if (NeedToCreateWindow)
 		{
@@ -276,11 +277,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			});
 		}
 
-		TEST_PLATFORM.beginFrame();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		APPLICATION.BeginFrame();
 
 		APPLICATION.RenderWindows();
 
-		TEST_PLATFORM.endFrame();
+		APPLICATION.EndFrame();
 	}
 
 	return 0;

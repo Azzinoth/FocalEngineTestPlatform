@@ -73,7 +73,7 @@ public:
 	void newMouseAction(MouseAction mouseAction);
 	void newAction(FETPAction* newAction);
 
-	void placeStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* nodeArea, bool copyActions = false);
+	void placeStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* NodeArea, bool copyActions = false);
 
 	void update();
 

@@ -206,14 +206,14 @@ void screenshootEditor::render()
 
 void screenshootEditor::addNewImageVariant()
 {
-	std::string path;
-	FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
+	std::string Path;
+	FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
 
-	if (path != "")
+	if (Path != "")
 	{
 		std::vector<unsigned char> rawData;
 		unsigned uWidth, uHeight;
-		int error = lodepng::decode(rawData, uWidth, uHeight, path);
+		int error = lodepng::decode(rawData, uWidth, uHeight, Path);
 
 		if (error == 0)
 		{
@@ -283,14 +283,14 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 
 void screenshootEditor::loadPNGToCurrent()
 {
-	std::string path;
-	FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
+	std::string Path;
+	FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
 
-	if (path != "")
+	if (Path != "")
 	{
 		std::vector<unsigned char> rawData;
 		unsigned uWidth, uHeight;
-		int error = lodepng::decode(rawData, uWidth, uHeight, path);
+		int error = lodepng::decode(rawData, uWidth, uHeight, Path);
 
 		if (error == 0)
 		{
@@ -369,8 +369,8 @@ void screenshootEditor::replaceCurrentNode()
 	globalActionNode* newNode = new globalActionNode(currentAction);
 	newNode->SetPosition(currentNode->GetPosition());
 
-	currentTest->nodeArea->DeleteNode(currentNode);
-	currentTest->nodeArea->AddNode(newNode);
+	currentTest->NodeArea->DeleteNode(currentNode);
+	currentTest->NodeArea->AddNode(newNode);
 }
 
 void screenshootEditor::GUIComboboxImageVariant()

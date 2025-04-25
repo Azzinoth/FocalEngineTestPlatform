@@ -106,8 +106,8 @@ struct MouseAction : public FETPAction
 		ZeroMemory(&temp, sizeof(MSLLHOOKSTRUCT));
 		this->additionalInfo = temp;
 
-		screenWidth = SCREEN_SYSTEM.getScreenWidth();
-		screenHeight = SCREEN_SYSTEM.getScreenHeight();
+		screenWidth = SCREEN_SYSTEM.GetScreenWidth();
+		screenHeight = SCREEN_SYSTEM.GetScreenHeight();
 	}
 
 	MouseAction(int nCode, WPARAM wParam, LPARAM lParam) : FETPAction(FETP_MOUSE_ACTION)
@@ -121,8 +121,8 @@ struct MouseAction : public FETPAction
 			time = this->additionalInfo.time;
 		}
 
-		screenWidth = SCREEN_SYSTEM.getScreenWidth();
-		screenHeight = SCREEN_SYSTEM.getScreenHeight();
+		screenWidth = SCREEN_SYSTEM.GetScreenWidth();
+		screenHeight = SCREEN_SYSTEM.GetScreenHeight();
 	}
 
 	MouseAction(const MouseAction& ref) : FETPAction(FETP_MOUSE_ACTION)
@@ -247,7 +247,7 @@ public:
 
 	void mouseWheel(short wheelRotation);
 
-	void keyEvent(WPARAM type, DWORD vkCode);
+	void keyEvent(WPARAM Type, DWORD vkCode);
 
 	void setGlobalKeyboardCallback(std::function<void(KeyboardAction keyAction)> func);
 	void setGlobalMouseCallback(std::function<void(MouseAction mouseAction)> func);

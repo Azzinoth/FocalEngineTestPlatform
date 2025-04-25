@@ -10,33 +10,19 @@ class FETestPlatform
 public:
 	SINGLETON_PUBLIC_PART(FETestPlatform)
 
-	void createWindow();
-	bool IsNotTerminated();
+	void CreateMainWindow();
 
-	void beginFrame();
-	void endFrame();
+	size_t GetScreenWidth();
+	size_t GetScreenHeight();
 
-	size_t getScreenWidth();
-	size_t getScreenHeight();
-
-	size_t getWindowWidth();
-	size_t getWindowHeight();
-
-	void setWindowTitle(std::string newTitle);
-	void minimizeWindow();
-	void restoreWindow();
-
-	void setKeyboardCallback(std::function<void(int key, int scancode, int action, int mods)> func);
+	void SetWindowTitle(std::string newTitle);
 private:
 	SINGLETON_PRIVATE_PART(FETestPlatform)
 
-	size_t screenW = 0;
-	size_t screenH = 0;
-	void setImguiStyle();
-	void screenDataInitialization();
-
-	static void keyboardCallback(int key, int scancode, int action, int mods);
-	static std::function<void(int key, int scancode, int action, int mods)> clientKeyboardCallback;
+	size_t ScreenWidth = 0;
+	size_t ScreenHeight = 0;
+	void SetImguiStyle();
+	void ScreenDataInitialization();
 };
 
 #define TEST_PLATFORM FETestPlatform::GetInstance()

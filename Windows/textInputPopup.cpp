@@ -28,7 +28,9 @@ void textInputPopup::render()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 15));
 	ImGui::SetNextWindowSize(popupSize);
-	ImGui::SetNextWindowPos(ImVec2(TEST_PLATFORM.getWindowWidth() / 2 - popupSize.x / 2.0f, TEST_PLATFORM.getWindowHeight() / 2 - popupSize.y / 2.0f));
+	int Width, Height;
+	FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
+	ImGui::SetNextWindowPos(ImVec2(Width / 2 - popupSize.x / 2.0f, Height / 2 - popupSize.y / 2.0f));
 	if (ImGui::BeginPopupModal(popupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
 	{
 		if (callback == nullptr)

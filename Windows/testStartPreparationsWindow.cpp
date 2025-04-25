@@ -27,15 +27,15 @@ void testStartPreparationsWindow::render()
 	if (ImGui::Button("Add delete file action"))
 	{
 		FETestBeforeAction* newAction = new FETestBeforeAction();
-		newAction->type = FE_BEFORE_TEST_ACTION_DELETE_FILE;
-		TEST_MANAGER.getSelectedTest()->addBeforeStartAction(newAction);
+		newAction->Type = FE_BEFORE_TEST_ACTION_DELETE_FILE;
+		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(newAction);
 	}
 
 	if (ImGui::Button("Add delete folder action"))
 	{
 		FETestBeforeAction* newAction = new FETestBeforeAction();
-		newAction->type = FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
-		TEST_MANAGER.getSelectedTest()->addBeforeStartAction(newAction);
+		newAction->Type = FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
+		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(newAction);
 	}
 
 	if (ImGui::BeginListBox("##Actions ListBox", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowContentRegionMax().y - 250.0f)))
@@ -43,18 +43,18 @@ void testStartPreparationsWindow::render()
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 
 		ImVec2 postionBeforeDraw = ImGui::GetCursorPos();
-		for (size_t i = 0; i < TEST_MANAGER.getSelectedTest()->beforeStart.size(); i++)
+		for (size_t i = 0; i < TEST_MANAGER.getSelectedTest()->BeforeStart.size(); i++)
 		{
 			ImGui::SetCursorPos(postionBeforeDraw);
-			ImGui::Text(FETest::FEBeforeTestActionTypeToString(TEST_MANAGER.getSelectedTest()->beforeStart[i]->type).c_str());
+			ImGui::Text(FETest::FEBeforeTestActionTypeToString(TEST_MANAGER.getSelectedTest()->BeforeStart[i]->Type).c_str());
 
 			ImGui::SetCursorPos(postionBeforeDraw);
 			ImGui::PushID(static_cast<int>(i));
 			if (ImGui::Selectable("##item", selectedAction == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
 			{
 				selectedAction = static_cast<int>(i);
-				strcpy_s(pathInput, TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path.size() + 1, TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path.c_str());
-				TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path = pathInput;
+				strcpy_s(pathInput, TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path.size() + 1, TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path.c_str());
+				TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path = pathInput;
 			}
 			ImGui::PopID();
 
@@ -82,9 +82,9 @@ void testStartPreparationsWindow::render()
 	ImGui::SetCursorPos(postionBeforeDraw);
 	if (ImGui::Button("Update"))
 	{
-		if (selectedAction >= 0 && selectedAction < int(TEST_MANAGER.getSelectedTest()->beforeStart.size()))
+		if (selectedAction >= 0 && selectedAction < int(TEST_MANAGER.getSelectedTest()->BeforeStart.size()))
 		{
-			TEST_MANAGER.getSelectedTest()->beforeStart[selectedAction]->path = pathInput;
+			TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path = pathInput;
 		}
 	}
 

@@ -12,8 +12,8 @@ public:
 	FETPImage* GetScreenDataAsImage();
 	void getScreenRegion(unsigned char* data, int left, int top, int width, int height, bool updateScreenDataFlag = true);
 
-	size_t getScreenWidth();
-	size_t getScreenHeight();
+	size_t GetScreenWidth();
+	size_t GetScreenHeight();
 
 	int compare(size_t width, size_t height, unsigned char* firstData, unsigned char* secondData, unsigned char* diffData, int maxColorShift);
 	bool searchOnScreen(size_t width, size_t height, unsigned char* data, size_t& x, size_t& y, float correctnessThreshold, int maxColorShift, int* maxSimilarity = nullptr);
@@ -197,17 +197,17 @@ public:
 		}
 	}
 
-	ScreenshootCompareAction(unsigned char* screenshoot, DWORD actionTime, int width = -1, int height = -1) : FETPAction(FETP_SCREENSHOOT_COMPARE_ACTION)
+	ScreenshootCompareAction(unsigned char* Screenshoot, DWORD actionTime, int width = -1, int height = -1) : FETPAction(FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
 		time = actionTime;
 
 		if (width == -1 || height == -1)
 		{
-			width = static_cast<int>(SCREEN_SYSTEM.getScreenWidth());
-			height = static_cast<int>(SCREEN_SYSTEM.getScreenHeight());
+			width = static_cast<int>(SCREEN_SYSTEM.GetScreenWidth());
+			height = static_cast<int>(SCREEN_SYSTEM.GetScreenHeight());
 		}
 
-		compareImageInfo* newImageInfo = new compareImageInfo(new FETPImage(screenshoot, width, height));
+		compareImageInfo* newImageInfo = new compareImageInfo(new FETPImage(Screenshoot, width, height));
 		imagesInfo.push_back(newImageInfo);
 	}
 

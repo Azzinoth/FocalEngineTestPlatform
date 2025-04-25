@@ -718,7 +718,10 @@ void messagePopUp::render()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 15));
 	if (ImGui::BeginPopupModal(popupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::SetWindowPos(ImVec2(TEST_PLATFORM.getWindowWidth() / 2.0f - ImGui::GetWindowWidth() / 2.0f, TEST_PLATFORM.getWindowHeight() / 2.0f - ImGui::GetWindowHeight() / 2.0f));
+		int Width, Height;
+		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
+
+		ImGui::SetWindowPos(ImVec2(Width / 2.0f - ImGui::GetWindowWidth() / 2.0f, Height / 2.0f - ImGui::GetWindowHeight() / 2.0f));
 		ImGui::Text(message.c_str());
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 120.0f / 2.0f);
 		if (ImGui::Button("Ok", ImVec2(120, 0)))

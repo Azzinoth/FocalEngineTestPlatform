@@ -31,23 +31,23 @@ enum FE_TEST_FAIL_REASON
 
 struct FETestScreenshootCompareResult
 {
-	FETPImage* expected = nullptr;
-	FETPImage* screenshoot = nullptr;
-	FETPImage* difference = nullptr;
-	int similarity = 0;
+	FETPImage* Expected = nullptr;
+	FETPImage* Screenshoot = nullptr;
+	FETPImage* Difference = nullptr;
+	int Similarity = 0;
 
 	FETestScreenshootCompareResult(FETPImage* Expected, FETPImage* Screenshoot, FETPImage* Difference, int Similarity)
 	{
-		expected = Expected;
-		screenshoot = Screenshoot;
-		difference = Difference;
-		similarity = Similarity;
+		this->Expected = Expected;
+		this->Screenshoot = Screenshoot;
+		this->Difference = Difference;
+		this->Similarity = Similarity;
 	}
 
 	~FETestScreenshootCompareResult()
 	{
-		delete screenshoot;
-		delete difference;
+		delete Screenshoot;
+		delete Difference;
 	}
 };
 
@@ -64,45 +64,45 @@ enum FE_BEFORE_TEST_ACTION_TYPE
 
 struct FETestBeforeAction
 {
-	FE_BEFORE_TEST_ACTION_TYPE type;
+	FE_BEFORE_TEST_ACTION_TYPE Type;
 
-	std::string path;
-	std::string newObjectName;
+	std::string Path;
+	std::string NewObjectName;
 };
 
 class FETest;
 struct FETestResult
 {
 private:
-	FETestScreenshootCompareResult* screenshootCompare = nullptr;
+	FETestScreenshootCompareResult* ScreenshootCompare = nullptr;
 public:
 	~FETestResult()
 	{
-		delete screenshootCompare;
+		delete ScreenshootCompare;
 	}
 
-	FETest* parent = nullptr;
-	DWORD startTime = 0;
-	DWORD endTime = 0;
+	FETest* Parent = nullptr;
+	DWORD StartTime = 0;
+	DWORD EndTime = 0;
 
-	bool success = true;
-	FETPAction* failedAction = nullptr;
-	FE_TEST_FAIL_REASON failReason = FE_TEST_NO_FAIL;
+	bool bIsSuccessful = true;
+	FETPAction* FailedAction = nullptr;
+	FE_TEST_FAIL_REASON FailReason = FE_TEST_NO_FAIL;
 
 	FETestScreenshootCompareResult* getScreenshootCompareResult()
 	{
-		return screenshootCompare;
+		return ScreenshootCompare;
 	}
 
-	void setScreenshootCompareResult(FETestScreenshootCompareResult* newValue)
+	void setScreenshootCompareResult(FETestScreenshootCompareResult* NewValue)
 	{
-		delete screenshootCompare;
-		screenshootCompare = newValue;
+		delete ScreenshootCompare;
+		ScreenshootCompare = NewValue;
 	}
 
-	static std::string FETestFailReasonToString(FE_TEST_FAIL_REASON reasonType)
+	static std::string FETestFailReasonToString(FE_TEST_FAIL_REASON ReasonType)
 	{
-		switch (reasonType)
+		switch (ReasonType)
 		{
 			case FE_TEST_NO_FAIL:
 			{
@@ -145,58 +145,58 @@ class FETest
 	friend testsOverviewWindow;
 	friend testPropertiesWindow;
 
-	std::string name;
-	int loopCount = 1;
-	float speedFactor = 1.0f;
+	std::string Name;
+	int LoopCount = 1;
+	float SpeedFactor = 1.0f;
 
-	beginNode* begin = nullptr;
-	std::vector<FETestResult*> results;
+	beginNode* Begin = nullptr;
+	std::vector<FETestResult*> Results;
 
-	void validateImagePathesInFile(std::string filePath);
-	Json::Value validateImagePathesInNodeArea(std::string nodeAreaText);
-	void validateImagePathes(VisNodeSys::NodeArea* nodeArea = nullptr, std::string filePath = "");
+	void ValidateImagePathesInFile(std::string FilePath);
+	Json::Value ValidateImagePathesInNodeArea(std::string nodeAreaText);
+	void ValidateImagePathes(VisNodeSys::NodeArea* NodeArea = nullptr, std::string FilePath = "");
 
-	std::unordered_map<std::string, std::string> macrosToReplace;
+	std::unordered_map<std::string, std::string> MacrosToReplace;
 public:
 	FETest();
 	~FETest();
 
-	static ImColor* defaultConnectionColor;
-	static ImColor* mainPathConnectionColor;
+	static ImColor* DefaultConnectionColor;
+	static ImColor* MainPathConnectionColor;
 
-	std::vector<FETestBeforeAction*> beforeStart;
+	std::vector<FETestBeforeAction*> BeforeStart;
 	
-	std::string filePath;
-	VisNodeSys::NodeArea* nodeArea;
+	std::string FilePath;
+	VisNodeSys::NodeArea* NodeArea;
 
-	beginNode* getBeginNode();
-	void reColorMainTestPath();
+	beginNode* GetBeginNode();
+	void ReColorMainTestPath();
 
-	void save(const char* fileName);
-	void load();
+	void Save(const char* FilePath);
+	void Load();
 
-	void addResult(FETestResult* newResult);
-	FETestResult* getLastTestResult();
+	void AddResult(FETestResult* NewResult);
+	FETestResult* GetLastTestResult();
 
-	std::string getName();
-	void setName(std::string newValue);
+	std::string GetName();
+	void SetName(std::string NewValue);
 
-	float getSpeedFactor();
-	void setSpeedFactor(float newValue);
+	float GetSpeedFactor();
+	void SetSpeedFactor(float NewValue);
 
-	int getLoopCount();
-	void setLoopCount(int newValue);
+	int GetLoopCount();
+	void SetLoopCount(int NewValue);
 
-	void addBeforeStartAction(FETestBeforeAction* action);
-	void beforeBegin();
+	void AddBeforeStartAction(FETestBeforeAction* Action);
+	void BeforeBegin();
 
-	void addMacro(std::string macro, std::string replaceWith);
-	bool replaceMacro(std::string& text);
+	void AddMacro(std::string Macro, std::string ReplaceWith);
+	bool ReplaceMacro(std::string& Text);
 	//void getReplaceWith(std::string macro);
 
-	static std::string FEBeforeTestActionTypeToString(FE_BEFORE_TEST_ACTION_TYPE action)
+	static std::string FEBeforeTestActionTypeToString(FE_BEFORE_TEST_ACTION_TYPE Action)
 	{
-		switch (action)
+		switch (Action)
 		{
 			case FE_BEFORE_TEST_ACTION_NONE:
 			{
@@ -247,29 +247,29 @@ public:
 		return "FE_NULL";
 	}
 
-	static FE_BEFORE_TEST_ACTION_TYPE stringToFEBeforeTestActionType(std::string text)
+	static FE_BEFORE_TEST_ACTION_TYPE stringToFEBeforeTestActionType(std::string Text)
 	{
-		if (text == "CREATE_FILE")
+		if (Text == "CREATE_FILE")
 		{
 			return FE_BEFORE_TEST_ACTION_CREATE_FILE;
 		}
-		else if (text == "CREATE_DIRECTORY")
+		else if (Text == "CREATE_DIRECTORY")
 		{
 			return FE_BEFORE_TEST_ACTION_CREATE_DIRECTORY;
 		}
-		else if (text == "COPY_FILE")
+		else if (Text == "COPY_FILE")
 		{
 			return FE_BEFORE_TEST_ACTION_COPY_FILE;
 		}
-		else if (text == "COPY_DIRECTORY")
+		else if (Text == "COPY_DIRECTORY")
 		{
 			return FE_BEFORE_TEST_ACTION_COPY_DIRECTORY;
 		}
-		else if (text == "DELETE_FILE")
+		else if (Text == "DELETE_FILE")
 		{
 			return FE_BEFORE_TEST_ACTION_DELETE_FILE;
 		}
-		else if (text == "DELETE_DIRECTORY")
+		else if (Text == "DELETE_DIRECTORY")
 		{
 			return FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
 		}

@@ -38,10 +38,10 @@ void testsOverviewWindow::render()
 			ImGui::SetCursorPos(postionBeforeDraw);
 
 			FETestResult* lastTestResult = nullptr;
-			lastTestResult = TEST_MANAGER.list[i]->getLastTestResult();
+			lastTestResult = TEST_MANAGER.list[i]->GetLastTestResult();
 			if (lastTestResult != nullptr)
 			{
-				testResultIndicator = lastTestResult->success ? testSuccess : testFailed;
+				testResultIndicator = lastTestResult->bIsSuccessful ? testSuccess : testFailed;
 			}
 			else
 			{
@@ -50,7 +50,7 @@ void testsOverviewWindow::render()
 
 			ImGui::Image((void*)(intptr_t)testResultIndicator->GetTextureID(), ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 			ImGui::SameLine();
-			ImGui::Text(TEST_MANAGER.list[i]->getName().c_str());
+			ImGui::Text(TEST_MANAGER.list[i]->GetName().c_str());
 
 			ImGui::SetCursorPos(postionBeforeDraw);
 			ImGui::PushID(static_cast<int>(i));
@@ -117,7 +117,7 @@ void testsOverviewWindow::renderContextMenu()
 		{
 			if (ImGui::MenuItem("Rename"))
 			{
-				textInputPopup::GetInstance().show(textInputCallback, TEST_MANAGER.getSelectedTest()->getName());
+				textInputPopup::GetInstance().show(textInputCallback, TEST_MANAGER.getSelectedTest()->GetName());
 			}
 
 			if (ImGui::MenuItem("Remove"))
@@ -144,11 +144,11 @@ void testsOverviewWindow::renderContextMenu()
 				{
 					for (size_t i = 0; i < TEST_MANAGER.list.size(); i++)
 					{
-						for (size_t j = 0; j < TEST_MANAGER.list[i]->results.size(); j++)
+						for (size_t j = 0; j < TEST_MANAGER.list[i]->Results.size(); j++)
 						{
-							delete TEST_MANAGER.list[i]->results[j];
+							delete TEST_MANAGER.list[i]->Results[j];
 						}
-						TEST_MANAGER.list[i]->results.clear();
+						TEST_MANAGER.list[i]->Results.clear();
 					}
 
 					for (size_t i = 0; i < TEST_MANAGER.list.size(); i++)
@@ -180,12 +180,12 @@ void testsOverviewWindow::renderMainMenu()
 		{
 			if (ImGui::MenuItem("Load test set..."))
 			{
-				std::string path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, FETestsFileFilter, 1);
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, FETestsFileFilter, 1);
 
-				if (path != "")
+				if (Path != "")
 				{
-					TEST_MANAGER.openTestSet(path);
+					TEST_MANAGER.openTestSet(Path);
 				}
 			}
 
@@ -194,12 +194,12 @@ void testsOverviewWindow::renderMainMenu()
 
 			if (ImGui::MenuItem("Save test set...") && TEST_MANAGER.list.size() > 0)
 			{
-				std::string path;
-				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(path, FETestsFileFilter, 1);
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, FETestsFileFilter, 1);
 
-				if (path != "")
+				if (Path != "")
 				{
-					TEST_MANAGER.saveAsTestSet(path);
+					TEST_MANAGER.saveAsTestSet(Path);
 				}
 			}
 

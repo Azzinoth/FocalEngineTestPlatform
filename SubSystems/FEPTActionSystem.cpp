@@ -16,7 +16,7 @@ void FEPTActionSystem::takeScreenshoot()
 			lastTimeScreenshootWasTaken = GetTickCount();
 			unsigned char* tempScreenshoot = SCREEN_SYSTEM.getScreenData();
 
-			size_t screenshootSize = SCREEN_SYSTEM.getScreenWidth() * SCREEN_SYSTEM.getScreenHeight() * 4;
+			size_t screenshootSize = SCREEN_SYSTEM.GetScreenWidth() * SCREEN_SYSTEM.GetScreenHeight() * 4;
 			unsigned char* newScreenshoot = new unsigned char[screenshootSize];
 			memcpy_s(newScreenshoot, screenshootSize, tempScreenshoot, screenshootSize);
 
@@ -79,8 +79,8 @@ FETPImage* FEPTActionSystem::imageToUse(compareImageInfo* imageInfo)
 
 	if (imageInfo->partialImage != nullptr)
 	{
-		if (size_t(imageInfo->partialImageTop + imageInfo->partialImage->GetHeight()) > TEST_PLATFORM.getScreenHeight() ||
-			size_t(imageInfo->partialImageLeft + imageInfo->partialImage->GetWidth()) > TEST_PLATFORM.getScreenWidth())
+		if (size_t(imageInfo->partialImageTop + imageInfo->partialImage->GetHeight()) > TEST_PLATFORM.GetScreenHeight() ||
+			size_t(imageInfo->partialImageLeft + imageInfo->partialImage->GetWidth()) > TEST_PLATFORM.GetScreenWidth())
 			return nullptr;
 
 		return imageInfo->partialImage;
@@ -103,8 +103,8 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		FETPImage* image = imageToUse(action->imagesInfo[i]);
 		if (image == nullptr)
 		{
-			currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-			currentTestResult->failedAction = action;
+			currentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
+			currentTestResult->FailedAction = action;
 			continue;
 		}
 
@@ -134,7 +134,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 
 		
 		
-		int similarity = 0;
+		int Similarity = 0;
 		unsigned char* tempRawData = image->GetRawData();
 		if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
 		{
@@ -166,27 +166,27 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		}
 		else
 		{
-			similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
+			Similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
 		}
 		delete[] tempRawData;
 
-		if (similarity < action->imagesInfo[i]->correctnessThreshold)
+		if (Similarity < action->imagesInfo[i]->correctnessThreshold)
 		{
 			if (!action->imagesInfo[i]->severalAttempts)
 			{
-				currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-				currentTestResult->failedAction = action;
+				currentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
+				currentTestResult->FailedAction = action;
 
 				FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->GetWidth(), image->GetHeight());
 				FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->GetWidth(), image->GetHeight());
-				currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, similarity));
+				currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, Similarity));
 
 				continue;
 			}
 			else
 			{
 				DWORD beginTime = GetTickCount();
-				while (similarity < action->imagesInfo[i]->correctnessThreshold)
+				while (Similarity < action->imagesInfo[i]->correctnessThreshold)
 				{
 					Sleep(10);
 					if (action->imagesInfo[i]->partialImage != nullptr)
@@ -207,7 +207,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					}
 
 					//int similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data());
-					int similarity = 0;
+					int Similarity = 0;
 					unsigned char* tempRawData = image->GetRawData();
 					if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
 					{
@@ -217,7 +217,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 						bool found = false;
 						if (!action->bUseGPU)
 						{
-							found = SCREEN_SYSTEM.searchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &similarity);
+							found = SCREEN_SYSTEM.searchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &Similarity);
 						}
 						else
 						{
@@ -237,11 +237,11 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					}
 					else
 					{
-						similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
+						Similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
 					}
 					delete[] tempRawData;
 
-					if (similarity > action->imagesInfo[i]->correctnessThreshold)
+					if (Similarity > action->imagesInfo[i]->correctnessThreshold)
 					{
 						action->imagesInfo[i]->lastRunResult = true;
 						return true;
@@ -249,12 +249,12 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 
 					if (GetTickCount() - beginTime > DWORD(action->imagesInfo[i]->severalAttemptsTimeout))
 					{
-						currentTestResult->failReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-						currentTestResult->failedAction = action;
+						currentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
+						currentTestResult->FailedAction = action;
 
 						FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->GetWidth(), image->GetHeight());
 						FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->GetWidth(), image->GetHeight());
-						currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, similarity));
+						currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, Similarity));
 						break;
 					}
 				}
@@ -326,8 +326,8 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(actions[i]);
 			if (!FocalEngine::FILE_SYSTEM.DoesFileExist(action->applicationPath.c_str()))
 			{
-				currentTestResult->failReason = FE_TEST_FAIL_CANT_FIND_FILE;
-				currentTestResult->failedAction = action;
+				currentTestResult->FailReason = FE_TEST_FAIL_CANT_FIND_FILE;
+				currentTestResult->FailedAction = action;
 				return false;
 			}
 
@@ -345,23 +345,23 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 
 bool FEPTActionSystem::run(FETest* testToRun)
 {
-	if (testToRun == nullptr || testToRun->getBeginNode() == nullptr)
+	if (testToRun == nullptr || testToRun->GetBeginNode() == nullptr)
 	{
 		currentlyRunning = nullptr;
 		return false;
 	}
 
-	TEST_PLATFORM.minimizeWindow();
+	FocalEngine::APPLICATION.GetMainWindow()->Minimize();
 	Sleep(10);
 	currentlyRunning = testToRun;
 	currentTestResult = new FETestResult();
-	currentTestResult->parent = currentlyRunning;
-	currentTestResult->startTime = GetTickCount();
+	currentTestResult->Parent = currentlyRunning;
+	currentTestResult->StartTime = GetTickCount();
 
-	currentlyRunning->beforeBegin();
+	currentlyRunning->BeforeBegin();
 
-	basicLogicNode* currentNode = currentlyRunning->getBeginNode();
-	currentlyRunning->nodeArea->TriggerOrphanSocketEvent(currentNode, EXECUTE);
+	basicLogicNode* currentNode = currentlyRunning->GetBeginNode();
+	currentlyRunning->NodeArea->TriggerOrphanSocketEvent(currentNode, EXECUTE);
 	
 	/*while (currentNode != nullptr)
 	{
@@ -388,20 +388,20 @@ bool FEPTActionSystem::run(FETest* testToRun)
 	}*/
 
 
-	currentTestResult->success = true;
-	currentTestResult->endTime = GetTickCount();
-	currentlyRunning->addResult(currentTestResult);
+	currentTestResult->bIsSuccessful = true;
+	currentTestResult->EndTime = GetTickCount();
+	currentlyRunning->AddResult(currentTestResult);
 
-	if (currentlyRunning->getLoopCount() <= 1)
+	if (currentlyRunning->GetLoopCount() <= 1)
 	{
 		currentlyRunning = nullptr;
-		TEST_PLATFORM.restoreWindow();
+		FocalEngine::APPLICATION.GetMainWindow()->Restore();
 	}
 	
 	return true;
 }
 
-void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, NodeArea* nodeArea, bool copyActions)
+void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, NodeArea* NodeArea, bool copyActions)
 {
 	static int leftPadding = 15;
 	static int nodesPerW = 4;
@@ -447,18 +447,21 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, No
 			newNode = new globalActionNode(copyAction(actions[i]));
 		}
 
+		int Width, Height;
+		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
+
 		int xPosition = leftPadding;
 		xPosition += (showedIndex % nodesPerW * int(newNode->GetSize().x + disBetweenOnW));
-		xPosition %= TEST_PLATFORM.getWindowWidth();
+		xPosition %= Width;
 
 		int yPosition = showedIndex / nodesPerH;
 		yPosition *= disBetweenOnH;
 
 		newNode->SetPosition(ImVec2(float(xPosition), float(yPosition)));
-		nodeArea->AddNode(newNode);
+		NodeArea->AddNode(newNode);
 
 		if (prevNode != nullptr)
-			nodeArea->TryToConnect(prevNode, 0, newNode, 0);
+			NodeArea->TryToConnect(prevNode, 0, newNode, 0);
 		prevNode = newNode;
 		showedIndex++;
 	}
@@ -470,7 +473,7 @@ void FEPTActionSystem::recordModeSwitch()
 	{
 		lastTimeRecordModeWasChanged = GetTickCount();
 
-		recording ? TEST_PLATFORM.restoreWindow() : TEST_PLATFORM.minimizeWindow();
+		recording ? FocalEngine::APPLICATION.GetMainWindow()->Restore() : FocalEngine::APPLICATION.GetMainWindow()->Minimize();
 		recording = !recording;
 
 		if (recording)

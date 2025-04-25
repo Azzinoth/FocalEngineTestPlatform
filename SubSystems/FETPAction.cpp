@@ -1,9 +1,9 @@
 #include "FETPAction.h"
 using namespace FocalEngine;
 
-FETPAction::FETPAction(FETP_ACTION_TYPE type)
+FETPAction::FETPAction(FETP_ACTION_TYPE Type)
 {
-	internalType = type;
+	internalType = Type;
 	time = 0;
 	ID = APPLICATION.GetUniqueHexID();
 }

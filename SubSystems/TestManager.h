@@ -11,12 +11,12 @@ private:
 	static VisNodeSys::Node* foundNode;
 	static FETPAction* searchedAction;
 
-	bool isTestNameFree(std::string name);
+	bool isTestNameFree(std::string Name);
 	size_t selelectedTestIndex = 0;
 public:
 	SINGLETON_PUBLIC_PART(TestManager)
 
-	void addTest(std::string filePath = "");
+	void addTest(std::string FilePath = "");
 	std::vector<FETest*> list;
 
 	void renameTest(FETest* test, std::string newName);
@@ -34,8 +34,8 @@ public:
 
 	FETest* getSelectedTest();
 
-	void saveAsTestSet(std::string filePath);
-	void openTestSet(std::string filePath);
+	void saveAsTestSet(std::string FilePath);
+	void openTestSet(std::string FilePath);
 };
 
 #define TEST_MANAGER TestManager::GetInstance()

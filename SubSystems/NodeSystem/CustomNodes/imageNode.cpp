@@ -113,14 +113,14 @@ void imageNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 		if (ImGui::Button("Load Image"))
 		{
-			std::string path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
+			std::string Path;
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
 
-			if (path != "")
+			if (Path != "")
 			{
 				std::vector<unsigned char> rawData;
 				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, path);
+				int error = lodepng::decode(rawData, uWidth, uHeight, Path);
 
 				if (error == 0)
 				{
@@ -144,14 +144,14 @@ void imageNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 		if (ImGui::Button("Load different image"))
 		{
-			std::string path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
+			std::string Path;
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
 
-			if (path != "")
+			if (Path != "")
 			{
 				std::vector<unsigned char> rawData;
 				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, path);
+				int error = lodepng::decode(rawData, uWidth, uHeight, Path);
 
 				if (error == 0)
 				{

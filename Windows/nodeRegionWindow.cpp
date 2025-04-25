@@ -83,14 +83,14 @@ void nodeRegionWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("Screen compare node..."))
 			{
-				std::string path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
 
-				if (path != "")
+				if (Path != "")
 				{
 					std::vector<unsigned char> rawData;
 					unsigned uWidth, uHeight;
-					int error = lodepng::decode(rawData, uWidth, uHeight, path);
+					int error = lodepng::decode(rawData, uWidth, uHeight, Path);
 
 					if (error == 0)
 					{
@@ -106,12 +106,12 @@ void nodeRegionWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("Application lunch node..."))
 			{
-				std::string path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, applicationLoadFilter, 1);
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
 
-				if (path != "")
+				if (Path != "")
 				{
-					LunchApplicationAction* newAction = new LunchApplicationAction(path);
+					LunchApplicationAction* newAction = new LunchApplicationAction(Path);
 					newNode = new globalActionNode(newAction);
 				}
 			}

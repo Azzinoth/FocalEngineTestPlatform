@@ -75,7 +75,10 @@ void previewWindow::render()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	if (ImGui::BeginPopupModal(popupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 	{
-		ImGui::SetWindowPos(ImVec2(TEST_PLATFORM.getWindowWidth() / 2 - popupSize.x / 2.0f, TEST_PLATFORM.getWindowHeight() / 2 - popupSize.y / 2.0f));
+		int Width, Height;
+		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
+
+		ImGui::SetWindowPos(ImVec2(Width / 2 - popupSize.x / 2.0f, Height / 2 - popupSize.y / 2.0f));
 
 		currentNodeArea->SetPosition(nodeGridRelativePosition);
 		currentNodeArea->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
@@ -102,7 +105,7 @@ void previewWindow::render()
 				// Shift all nodes in order to place them in view center of selected test node area.
 				positionNodesInTargetCenter();
 
-				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.getSelectedTest()->nodeArea, true);
+				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.getSelectedTest()->NodeArea, true);
 				close();
 			}
 
@@ -114,7 +117,7 @@ void previewWindow::render()
 			{
 				TEST_MANAGER.addTest();
 
-				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.list.back()->nodeArea);
+				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.list.back()->NodeArea);
 				close();
 			}
 		}
@@ -154,14 +157,14 @@ void previewWindow::mainContextMenu()
 
 		if (ImGui::MenuItem("Screen compare node..."))
 		{
-			std::string path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, pngLoadFilter, 1);
+			std::string Path;
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
 
-			if (path != "")
+			if (Path != "")
 			{
 				std::vector<unsigned char> rawData;
 				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, path);
+				int error = lodepng::decode(rawData, uWidth, uHeight, Path);
 
 				if (error == 0)
 				{
@@ -180,12 +183,12 @@ void previewWindow::mainContextMenu()
 
 		if (ImGui::MenuItem("Application lunch node..."))
 		{
-			std::string path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, applicationLoadFilter, 1);
+			std::string Path;
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
 
-			if (path != "")
+			if (Path != "")
 			{
-				LunchApplicationAction* newAction = new LunchApplicationAction(path);
+				LunchApplicationAction* newAction = new LunchApplicationAction(Path);
 				globalActionNode* newNode = new globalActionNode(newAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
@@ -316,7 +319,7 @@ void previewWindow::positionNodesInTargetCenter()
 	if (TEST_MANAGER.getSelectedTest() == nullptr)
 		return;
 
-	ImVec2 viewCenter = TEST_MANAGER.getSelectedTest()->nodeArea->GetRenderedViewCenter();
+	ImVec2 viewCenter = TEST_MANAGER.getSelectedTest()->NodeArea->GetRenderedViewCenter();
 	ImVec2 nodesAABBCenter = currentNodeArea->GetAllElementsAABBCenter();
 	nodesAABBCenter -= currentNodeArea->GetRenderOffset();
 

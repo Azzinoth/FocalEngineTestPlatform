@@ -529,8 +529,8 @@ std::string FEFileSystem::GetCurrentWorkingPath()
 
 std::string FEFileSystem::GetFileExtension(const std::string& Path)
 {
-	std::filesystem::path filePath(Path);
-	return filePath.extension().string();
+	std::filesystem::path FilePath(Path);
+	return FilePath.extension().string();
 }
 
 std::string FEFileSystem::GetDirectoryPath(const std::string& FullPath)

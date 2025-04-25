@@ -34,7 +34,7 @@ class FETPAction
 	//static std::unordered_map<std::string, bool> seenIDs;
 	void setID(std::string newID);
 public:
-	FETPAction(FETP_ACTION_TYPE type = FETP_BASE_ACTION);
+	FETPAction(FETP_ACTION_TYPE Type = FETP_BASE_ACTION);
 	FETPAction(const FETPAction& src);
 
 	virtual ~FETPAction();
@@ -50,29 +50,29 @@ public:
 
 	//static bool wasIDseen(std::string ID);
 
-	static std::string FETPActionTypeToString(FETP_ACTION_TYPE type)
+	static std::string FETPActionTypeToString(FETP_ACTION_TYPE Type)
 	{
-		if (type == FETP_BASE_ACTION)
+		if (Type == FETP_BASE_ACTION)
 		{
 			return "base";
 		}
-		else if (type == FETP_KEYBOARD_ACTION)
+		else if (Type == FETP_KEYBOARD_ACTION)
 		{
 			return "Keyboard";
 		}
-		else if (type == FETP_MOUSE_ACTION)
+		else if (Type == FETP_MOUSE_ACTION)
 		{
 			return "Mouse";
 		}
-		else if (type == FETP_SCREENSHOOT_COMPARE_ACTION)
+		else if (Type == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
 			return "Screenshoot";
 		}
-		else if (type == FETP_LUNCH_APPLICATION_ACTION)
+		else if (Type == FETP_LUNCH_APPLICATION_ACTION)
 		{
 			return "Lunch application";
 		}
-		else if (type == FETP_SLEEP_ACTION)
+		else if (Type == FETP_SLEEP_ACTION)
 		{
 			return "Sleep";
 		}

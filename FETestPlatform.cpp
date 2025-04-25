@@ -1,179 +1,122 @@
 #include "FETestPlatform.h"
 using namespace FocalEngine;
 
-std::function<void(int key, int scancode, int action, int mods)> FETestPlatform::clientKeyboardCallback = nullptr;
-
 FETestPlatform::FETestPlatform() {};
 
-void FETestPlatform::screenDataInitialization()
+void FETestPlatform::ScreenDataInitialization()
 {
-	HWND hwnd;
-	RECT rect;
+	HWND HWND;
+	RECT Rect;
 
-	hwnd = GetDesktopWindow();
-	GetClientRect(hwnd, &rect);
-	GetWindowRect(hwnd, &rect);
+	HWND = GetDesktopWindow();
+	GetClientRect(HWND, &Rect);
+	GetWindowRect(HWND, &Rect);
 
-	int temp = GetSystemMetrics(SM_CYSCREEN);
-
-	screenW = rect.right;
-	screenH = rect.bottom;
+	ScreenWidth = Rect.right;
+	ScreenHeight = Rect.bottom;
 }
 
-void FETestPlatform::setImguiStyle()
+void FETestPlatform::SetImguiStyle()
 {
-	ImGuiStyle* style = &ImGui::GetStyle();
-	ImVec4* colors = style->Colors;
+	ImGuiStyle* Style = &ImGui::GetStyle();
+	ImVec4* Colors = Style->Colors;
 
-	style->WindowRounding = 2.0f;
-	style->ScrollbarRounding = 3.0f;
-	style->GrabRounding = 2.0f;
-	style->AntiAliasedLines = true;
-	style->AntiAliasedFill = true;
-	style->WindowRounding = 2;
-	style->ChildRounding = 2;
-	style->ScrollbarSize = 16;
-	style->ScrollbarRounding = 3;
-	style->GrabRounding = 2;
-	style->ItemSpacing.x = 10;
-	style->ItemSpacing.y = 4;
-	style->IndentSpacing = 22;
-	style->FramePadding.x = 6;
-	style->FramePadding.y = 4;
-	style->Alpha = 1.0f;
-	style->FrameRounding = 3.0f;
+	Style->WindowRounding = 2.0f;
+	Style->ScrollbarRounding = 3.0f;
+	Style->GrabRounding = 2.0f;
+	Style->AntiAliasedLines = true;
+	Style->AntiAliasedFill = true;
+	Style->WindowRounding = 2;
+	Style->ChildRounding = 2;
+	Style->ScrollbarSize = 16;
+	Style->ScrollbarRounding = 3;
+	Style->GrabRounding = 2;
+	Style->ItemSpacing.x = 10;
+	Style->ItemSpacing.y = 4;
+	Style->IndentSpacing = 22;
+	Style->FramePadding.x = 6;
+	Style->FramePadding.y = 4;
+	Style->Alpha = 1.0f;
+	Style->FrameRounding = 3.0f;
 
-	colors[ImGuiCol_Text] = ImVec4(255.0f / 255.0f, 243.0f / 255.0f, 255.0f / 255.0f, 1.00f);
-	colors[ImGuiCol_TextDisabled] = ImVec4(158.0f / 255.0f, 158.0f / 255.0f, 158.0f / 255.0f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(43.0f / 255.0f, 43.0f / 255.0f, 43.0f / 255.0f, 1.00f);
-	colors[ImGuiCol_PopupBg] = ImVec4(60.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 0.98f);
+	Colors[ImGuiCol_Text] = ImVec4(255.0f / 255.0f, 243.0f / 255.0f, 255.0f / 255.0f, 1.00f);
+	Colors[ImGuiCol_TextDisabled] = ImVec4(158.0f / 255.0f, 158.0f / 255.0f, 158.0f / 255.0f, 1.00f);
+	Colors[ImGuiCol_WindowBg] = ImVec4(43.0f / 255.0f, 43.0f / 255.0f, 43.0f / 255.0f, 1.00f);
+	Colors[ImGuiCol_PopupBg] = ImVec4(60.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 0.98f);
 
-	colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[ImGuiCol_Border] = ImVec4(0.71f, 0.71f, 0.71f, 0.08f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.04f);
-	colors[ImGuiCol_FrameBg] = ImVec4(0.71f, 0.71f, 0.71f, 0.55f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.94f, 0.94f, 0.94f, 0.55f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.71f, 0.78f, 0.69f, 0.98f);
-	colors[ImGuiCol_TitleBg] = ImVec4(0.41f, 0.68f, 0.89f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.41f, 0.68f, 0.89f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.47f, 0.83f, 1.00f);
+	Colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	Colors[ImGuiCol_Border] = ImVec4(0.71f, 0.71f, 0.71f, 0.08f);
+	Colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.04f);
+	Colors[ImGuiCol_FrameBg] = ImVec4(0.71f, 0.71f, 0.71f, 0.55f);
+	Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.94f, 0.94f, 0.94f, 0.55f);
+	Colors[ImGuiCol_FrameBgActive] = ImVec4(0.71f, 0.78f, 0.69f, 0.98f);
+	Colors[ImGuiCol_TitleBg] = ImVec4(0.41f, 0.68f, 0.89f, 1.00f);
+	Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.41f, 0.68f, 0.89f, 1.00f);
+	Colors[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.47f, 0.83f, 1.00f);
 
-	colors[ImGuiCol_MenuBarBg] = ImVec4(92.0f / 255.0f, 92.0f / 255.0f, 92.0f / 255.0f, 1.00f);
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.20f, 0.25f, 0.30f, 0.61f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.90f, 0.90f, 0.90f, 0.30f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.92f, 0.92f, 0.92f, 0.78f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[ImGuiCol_CheckMark] = ImVec4(0.184f, 0.407f, 0.193f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.26f, 0.59f, 0.98f, 0.78f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[ImGuiCol_Button] = ImVec4(0.71f, 0.78f, 0.69f, 0.40f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.725f, 0.805f, 0.702f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.793f, 0.900f, 0.836f, 1.00f);
-	colors[ImGuiCol_Header] = ImVec4(0.71f, 0.78f, 0.69f, 0.31f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.71f, 0.78f, 0.69f, 0.80f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.71f, 0.78f, 0.69f, 1.00f);
-	colors[ImGuiCol_Separator] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.14f, 0.44f, 0.80f, 0.78f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.14f, 0.44f, 0.80f, 1.00f);
-	colors[ImGuiCol_ResizeGrip] = ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.45f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.78f);
-	colors[ImGuiCol_PlotLines] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
-	colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
-	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
-	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-	colors[ImGuiCol_DragDropTarget] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-	colors[ImGuiCol_NavHighlight] = colors[ImGuiCol_HeaderHovered];
-	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
+	Colors[ImGuiCol_MenuBarBg] = ImVec4(92.0f / 255.0f, 92.0f / 255.0f, 92.0f / 255.0f, 1.00f);
+	Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.20f, 0.25f, 0.30f, 0.61f);
+	Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.90f, 0.90f, 0.90f, 0.30f);
+	Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.92f, 0.92f, 0.92f, 0.78f);
+	Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	Colors[ImGuiCol_CheckMark] = ImVec4(0.184f, 0.407f, 0.193f, 1.00f);
+	Colors[ImGuiCol_SliderGrab] = ImVec4(0.26f, 0.59f, 0.98f, 0.78f);
+	Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+	Colors[ImGuiCol_Button] = ImVec4(0.71f, 0.78f, 0.69f, 0.40f);
+	Colors[ImGuiCol_ButtonHovered] = ImVec4(0.725f, 0.805f, 0.702f, 1.00f);
+	Colors[ImGuiCol_ButtonActive] = ImVec4(0.793f, 0.900f, 0.836f, 1.00f);
+	Colors[ImGuiCol_Header] = ImVec4(0.71f, 0.78f, 0.69f, 0.31f);
+	Colors[ImGuiCol_HeaderHovered] = ImVec4(0.71f, 0.78f, 0.69f, 0.80f);
+	Colors[ImGuiCol_HeaderActive] = ImVec4(0.71f, 0.78f, 0.69f, 1.00f);
+	Colors[ImGuiCol_Separator] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+	Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.14f, 0.44f, 0.80f, 0.78f);
+	Colors[ImGuiCol_SeparatorActive] = ImVec4(0.14f, 0.44f, 0.80f, 1.00f);
+	Colors[ImGuiCol_ResizeGrip] = ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
+	Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.45f);
+	Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.78f);
+	Colors[ImGuiCol_PlotLines] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+	Colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+	Colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+	Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+	Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+	Colors[ImGuiCol_DragDropTarget] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+	Colors[ImGuiCol_NavHighlight] = Colors[ImGuiCol_HeaderHovered];
+	Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
 }
 
-void FETestPlatform::createWindow()
+void FETestPlatform::CreateMainWindow()
 {
 	APPLICATION.AddWindow(1500, 1000, "FETestPlatform");
-	APPLICATION.GetMainWindow()->AddOnKeyCallback(keyboardCallback);
+	
+	ScreenDataInitialization();
 
-	screenDataInitialization();
+	ImGuiIO& IO = ImGui::GetIO();
 
-	ImGuiIO& io = ImGui::GetIO();
+	size_t PathLength = strlen("Resources//imgui.ini") + 1;
+	char* ImguiIniFile = new char[PathLength];
+	strcpy_s(ImguiIniFile, PathLength, "Resources//imgui.ini");
+	IO.IniFilename = ImguiIniFile;
+	IO.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 16);
+	IO.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 32);
+	IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	size_t pathLen = strlen("Resources//imgui.ini") + 1;
-	char* imguiIniFile = new char[pathLen];
-	strcpy_s(imguiIniFile, pathLen, "Resources//imgui.ini");
-	io.IniFilename = imguiIniFile;
-	io.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 16);
-	io.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 32);
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-	io.DisplaySize = ImVec2(float(screenW), float(screenH));
+	IO.DisplaySize = ImVec2(float(ScreenWidth), float(ScreenHeight));
 	ImGui::StyleColorsDark();
 
-	setImguiStyle();
+	SetImguiStyle();
 }
 
-bool FETestPlatform::IsNotTerminated()
+size_t FETestPlatform::GetScreenWidth()
 {
-	return APPLICATION.IsNotTerminated();
+	return ScreenWidth;
 }
 
-void FETestPlatform::beginFrame()
+size_t FETestPlatform::GetScreenHeight()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	APPLICATION.BeginFrame();
+	return ScreenHeight;
 }
 
-void FETestPlatform::endFrame()
-{
-	APPLICATION.EndFrame();
-}
-
-size_t FETestPlatform::getScreenWidth()
-{
-	return screenW;
-}
-
-size_t FETestPlatform::getScreenHeight()
-{
-	return screenH;
-}
-
-void FETestPlatform::setWindowTitle(std::string newTitle)
+void FETestPlatform::SetWindowTitle(std::string newTitle)
 {
 	APPLICATION.GetMainWindow()->SetTitle(newTitle);
-}
-
-void FETestPlatform::minimizeWindow()
-{
-	APPLICATION.GetMainWindow()->Minimize();
-}
-
-void FETestPlatform::restoreWindow()
-{
-	APPLICATION.GetMainWindow()->Restore();
-}
-
-void FETestPlatform::setKeyboardCallback(std::function<void(int key, int scancode, int action, int mods)> func)
-{
-	clientKeyboardCallback = func;
-}
-
-void FETestPlatform::keyboardCallback(int key, int scancode, int action, int mods)
-{
-	if (clientKeyboardCallback != nullptr)
-		clientKeyboardCallback(key, scancode, action, mods);
-}
-
-size_t FETestPlatform::getWindowWidth()
-{
-	int width, height;
-	APPLICATION.GetMainWindow()->GetSize(&width, &height);
-	return width;
-}
-
-size_t FETestPlatform::getWindowHeight()
-{
-	int width, height;
-	APPLICATION.GetMainWindow()->GetSize(&width, &height);
-	return height;
 }

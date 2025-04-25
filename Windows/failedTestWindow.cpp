@@ -14,7 +14,7 @@ failedTestWindow::~failedTestWindow()
 
 void failedTestWindow::show(FETestResult* result)
 {
-	if (result == nullptr || result->success)
+	if (result == nullptr || result->bIsSuccessful)
 		return;
 
 	this->result = result;
@@ -22,7 +22,7 @@ void failedTestWindow::show(FETestResult* result)
 	size = ImVec2(1024, 900);
 	position = ImVec2(0.0, 0.0);
 
-	std::string tempCaption = std::string("Test ") + "\"" + result->parent->getName() +"\"" + " failed information";
+	std::string tempCaption = std::string("Test ") + "\"" + result->Parent->GetName() +"\"" + " failed information";
 	strcpy_s(caption, tempCaption.size() + 1, tempCaption.c_str());
 
 	flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
@@ -41,10 +41,10 @@ void failedTestWindow::render()
 	if (!isVisible())
 		return;
 
-	ImGui::Text(("Fail action ID: " + result->failedAction->getID()).c_str());
-	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(result->failReason)).c_str());
+	ImGui::Text(("Fail action ID: " + result->FailedAction->getID()).c_str());
+	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(result->FailReason)).c_str());
 
-	if (result->failReason == FE_TEST_FAIL_SCREENSHOOT_COMPARE)
+	if (result->FailReason == FE_TEST_FAIL_SCREENSHOOT_COMPARE)
 	{
 		if (result->getScreenshootCompareResult() == nullptr)
 		{
@@ -52,8 +52,8 @@ void failedTestWindow::render()
 		}
 		else
 		{
-			ImGui::Text(("simularity: " + std::to_string(result->getScreenshootCompareResult()->similarity)).c_str());
-			glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(result->getScreenshootCompareResult()->difference->GetWidth(), result->getScreenshootCompareResult()->difference->GetHeight(),
+			ImGui::Text(("simularity: " + std::to_string(result->getScreenshootCompareResult()->Similarity)).c_str());
+			glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(result->getScreenshootCompareResult()->Difference->GetWidth(), result->getScreenshootCompareResult()->Difference->GetHeight(),
 				size_t((ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x) * 0.925f),
 				size_t((ImGui::GetWindowContentRegionMax().y - ImGui::GetWindowContentRegionMin().y) - 90.0f));
 
@@ -63,7 +63,7 @@ void failedTestWindow::render()
 			ImVec2 imagePosition = ImVec2(ImGui::GetWindowContentRegionMin().x + 20, ImGui::GetWindowContentRegionMin().y + 60);
 
 			ImGui::SetCursorPos(imagePosition);
-			ImGui::Image((void*)(intptr_t)result->getScreenshootCompareResult()->difference->GetTextureID(),
+			ImGui::Image((void*)(intptr_t)result->getScreenshootCompareResult()->Difference->GetTextureID(),
 				ImVec2(imageSize.x, imageSize.y),
 				ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 		}

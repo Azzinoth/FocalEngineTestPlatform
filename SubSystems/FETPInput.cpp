@@ -149,7 +149,7 @@ void FETPInput::setGlobalMouseCallback(std::function<void(MouseAction mouseActio
 	clientGlobalMouseCallback = func;
 }
 
-void FETPInput::keyEvent(WPARAM type, DWORD vkCode)
+void FETPInput::keyEvent(WPARAM Type, DWORD vkCode)
 {
 	INPUT Inputs;
 	ZeroMemory(&Inputs, sizeof(Inputs));
@@ -183,7 +183,7 @@ void FETPInput::keyEvent(WPARAM type, DWORD vkCode)
 	//	Inputs.ki.dwFlags = 0;
 	//}
 
-	Inputs.ki.dwFlags = (type == WM_KEYUP || type == WM_SYSKEYUP) ? KEYEVENTF_KEYUP : 0;
+	Inputs.ki.dwFlags = (Type == WM_KEYUP || Type == WM_SYSKEYUP) ? KEYEVENTF_KEYUP : 0;
 
 	//https://stackoverflow.com/questions/21197257/keybd-event-keyeventf-extendedkey-explanation-required
 	if (vkCode == 46)

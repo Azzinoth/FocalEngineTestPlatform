@@ -28,34 +28,34 @@ void testPropertiesWindow::render()
 			ImGui::Text("Name");
 
 			ImGui::TableNextColumn();
-			ImGui::Text(TEST_MANAGER.getSelectedTest()->getName().c_str());
+			ImGui::Text(TEST_MANAGER.getSelectedTest()->GetName().c_str());
 
 			ImGui::TableNextColumn();
 			ImGui::Text("File path");
 
 			ImGui::TableNextColumn();
-			ImGui::Text(TEST_MANAGER.getSelectedTest()->filePath.c_str());
+			ImGui::Text(TEST_MANAGER.getSelectedTest()->FilePath.c_str());
 
 			ImGui::TableNextColumn();
 			ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y + 5.0f));
 			ImGui::Text("Speed factor");
 
 			ImGui::TableNextColumn();
-			float speedFactor = TEST_MANAGER.getSelectedTest()->getSpeedFactor();
-			ImGui::DragFloat("##speedFactor", &speedFactor, 0.005f);
-			TEST_MANAGER.getSelectedTest()->setSpeedFactor(speedFactor);
+			float SpeedFactor = TEST_MANAGER.getSelectedTest()->GetSpeedFactor();
+			ImGui::DragFloat("##speedFactor", &SpeedFactor, 0.005f);
+			TEST_MANAGER.getSelectedTest()->SetSpeedFactor(SpeedFactor);
 
 			ImGui::TableNextColumn();
 			ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y + 5.0f));
 			ImGui::Text("Loop count");
 
-			int loopCount = TEST_MANAGER.getSelectedTest()->getLoopCount();
-			ImGui::DragInt("##loopCount", &loopCount);
-			TEST_MANAGER.getSelectedTest()->setLoopCount(loopCount);
+			int LoopCount = TEST_MANAGER.getSelectedTest()->GetLoopCount();
+			ImGui::DragInt("##loopCount", &LoopCount);
+			TEST_MANAGER.getSelectedTest()->SetLoopCount(LoopCount);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("Last run time");
-			FETestResult* lastTestResult = TEST_MANAGER.getSelectedTest()->getLastTestResult();
+			FETestResult* lastTestResult = TEST_MANAGER.getSelectedTest()->GetLastTestResult();
 			if (lastTestResult == nullptr)
 			{
 				ImGui::TableNextColumn();
@@ -64,7 +64,7 @@ void testPropertiesWindow::render()
 			else
 			{
 				ImGui::TableNextColumn();
-				std::string time = std::to_string((lastTestResult->endTime - lastTestResult->startTime) / 1000.0f);
+				std::string time = std::to_string((lastTestResult->EndTime - lastTestResult->StartTime) / 1000.0f);
 				ImGui::Text((time + " sec").c_str());
 			}
 
@@ -79,7 +79,7 @@ void testPropertiesWindow::render()
 			{
 				ImGui::TableNextColumn();
 				ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y + 3.0f));
-				lastTestResult->success ? ImGui::Text("Success") : ImGui::Text("Failed");
+				lastTestResult->bIsSuccessful ? ImGui::Text("Success") : ImGui::Text("Failed");
 				ImGui::SameLine();
 				ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y - 4.0f));
 				if (ImGui::Button("...", ImVec2(35.0f, 20.0f)))
@@ -93,7 +93,7 @@ void testPropertiesWindow::render()
 
 			ImGui::TableNextColumn();
 			ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y + 3.0f));
-			ImGui::Text((std::to_string(TEST_MANAGER.getSelectedTest()->beforeStart.size()) + " Actions").c_str());
+			ImGui::Text((std::to_string(TEST_MANAGER.getSelectedTest()->BeforeStart.size()) + " Actions").c_str());
 			ImGui::SameLine();
 			ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPos().x, ImGui::GetCursorPos().y - 4.0f));
 			ImGui::PushID("secondButton");
@@ -117,8 +117,8 @@ void testPropertiesWindow::render()
 			macrosCount = 0;
 			int beginY = int(ImGui::GetCursorPos().y);
 
-			auto currentMacro = TEST_MANAGER.getSelectedTest()->macrosToReplace.begin();
-			while (currentMacro != TEST_MANAGER.getSelectedTest()->macrosToReplace.end())
+			auto currentMacro = TEST_MANAGER.getSelectedTest()->MacrosToReplace.begin();
+			while (currentMacro != TEST_MANAGER.getSelectedTest()->MacrosToReplace.end())
 			{
 				ImGui::TableNextColumn();
 
@@ -127,8 +127,8 @@ void testPropertiesWindow::render()
 				if (macrosText != currentMacro->first && strlen(macrosText) >= 3 && macrosText[0] == '$' && macrosText[1] == '(' && macrosText[strlen(macrosText) - 1] == ')')
 				{
 					std::string second = currentMacro->second;
-					TEST_MANAGER.getSelectedTest()->macrosToReplace.erase(currentMacro->first);
-					TEST_MANAGER.getSelectedTest()->addMacro(macrosText, second);
+					TEST_MANAGER.getSelectedTest()->MacrosToReplace.erase(currentMacro->first);
+					TEST_MANAGER.getSelectedTest()->AddMacro(macrosText, second);
 					break;
 				}
 
@@ -138,8 +138,8 @@ void testPropertiesWindow::render()
 				if (macrosTextSecond != currentMacro->second && strlen(macrosTextSecond) > 1)
 				{
 					std::string first = currentMacro->first;
-					TEST_MANAGER.getSelectedTest()->macrosToReplace.erase(currentMacro->first);
-					TEST_MANAGER.getSelectedTest()->addMacro(first, macrosTextSecond);
+					TEST_MANAGER.getSelectedTest()->MacrosToReplace.erase(currentMacro->first);
+					TEST_MANAGER.getSelectedTest()->AddMacro(first, macrosTextSecond);
 					break;
 				}
 
@@ -159,11 +159,11 @@ void testPropertiesWindow::render()
 				ImGui::PushID(("button" + std::to_string(i)).c_str());
 				if (ImGui::Button("-", ImVec2(25.0f, 25.0f)))
 				{
-					auto currentMacro = TEST_MANAGER.getSelectedTest()->macrosToReplace.begin();
+					auto currentMacro = TEST_MANAGER.getSelectedTest()->MacrosToReplace.begin();
 					for (size_t j = 0; j < i; j++)
 						currentMacro++;
 
-					TEST_MANAGER.getSelectedTest()->macrosToReplace.erase(currentMacro->first);
+					TEST_MANAGER.getSelectedTest()->MacrosToReplace.erase(currentMacro->first);
 				}
 				ImGui::PopID();
 			}
@@ -176,8 +176,8 @@ void testPropertiesWindow::render()
 			
 			if (ImGui::Button("Add macro", ImVec2(125.0f, 25.0f)))
 			{
-				std::string macro = "$(MACRO_" + std::to_string(TEST_MANAGER.getSelectedTest()->macrosToReplace.size())  + ")";
-				TEST_MANAGER.getSelectedTest()->addMacro(macro, "YOUR TEXT");
+				std::string macro = "$(MACRO_" + std::to_string(TEST_MANAGER.getSelectedTest()->MacrosToReplace.size())  + ")";
+				TEST_MANAGER.getSelectedTest()->AddMacro(macro, "YOUR TEXT");
 			}
 		}
 	}

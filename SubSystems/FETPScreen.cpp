@@ -4,7 +4,7 @@ bool ScreenshootCompareAction::bUseGPU = true;
 
 FETPScreen::FETPScreen()
 {
-	screenData = new unsigned char[TEST_PLATFORM.getScreenWidth() * TEST_PLATFORM.getScreenHeight() * 4];
+	screenData = new unsigned char[TEST_PLATFORM.GetScreenWidth() * TEST_PLATFORM.GetScreenHeight() * 4];
 };
 
 unsigned char* FETPScreen::getScreenData()
@@ -27,7 +27,7 @@ void FETPScreen::updateScreenData()
 	//QueryPerformanceCounter(&StartingTime);
 
 	static HDC hScreen = GetDC(GetDesktopWindow());
-	static HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, static_cast<int>(TEST_PLATFORM.getScreenWidth()), static_cast<int>(TEST_PLATFORM.getScreenHeight()));
+	static HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, static_cast<int>(TEST_PLATFORM.GetScreenWidth()), static_cast<int>(TEST_PLATFORM.GetScreenHeight()));
 	static HDC hdcMem = CreateCompatibleDC(hScreen);
 
 	/*HDC hScreen = GetDC(GetDesktopWindow());
@@ -38,7 +38,7 @@ void FETPScreen::updateScreenData()
 	
 
 	HGDIOBJ hOld = SelectObject(hdcMem, hBitmap);
-	BitBlt(hdcMem, 0, 0, static_cast<int>(TEST_PLATFORM.getScreenWidth()), static_cast<int>(TEST_PLATFORM.getScreenWidth()), hScreen, 0, 0, SRCCOPY);
+	BitBlt(hdcMem, 0, 0, static_cast<int>(TEST_PLATFORM.GetScreenWidth()), static_cast<int>(TEST_PLATFORM.GetScreenWidth()), hScreen, 0, 0, SRCCOPY);
 	SelectObject(hdcMem, hOld);
 
 	
@@ -51,13 +51,13 @@ void FETPScreen::updateScreenData()
 	bmi.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.biPlanes = 1;
 	bmi.biBitCount = 32;
-	bmi.biWidth = static_cast<LONG>(TEST_PLATFORM.getScreenWidth());
-	bmi.biHeight = -int(TEST_PLATFORM.getScreenHeight());
+	bmi.biWidth = static_cast<LONG>(TEST_PLATFORM.GetScreenWidth());
+	bmi.biHeight = -int(TEST_PLATFORM.GetScreenHeight());
 	bmi.biCompression = BI_RGB;
 	bmi.biSizeImage = 0;
 
-	GetDIBits(hdcMem, hBitmap, 0, static_cast<UINT>(TEST_PLATFORM.getScreenHeight()), screenData, (BITMAPINFO*)&bmi, DIB_RGB_COLORS);
-	for (size_t i = 0; i < 4 * TEST_PLATFORM.getScreenWidth() * TEST_PLATFORM.getScreenHeight(); i += 4)
+	GetDIBits(hdcMem, hBitmap, 0, static_cast<UINT>(TEST_PLATFORM.GetScreenHeight()), screenData, (BITMAPINFO*)&bmi, DIB_RGB_COLORS);
+	for (size_t i = 0; i < 4 * TEST_PLATFORM.GetScreenWidth() * TEST_PLATFORM.GetScreenHeight(); i += 4)
 	{
 		std::swap(screenData[i], screenData[i + 2]);
 	}
@@ -92,10 +92,10 @@ void FETPScreen::getScreenRegion(unsigned char* data, int left, int top, int wid
 	if (width <= 0 || height <= 0 || top < 0 || left < 0)
 		return;
 
-	if (size_t(top + height) > TEST_PLATFORM.getScreenHeight())
+	if (size_t(top + height) > TEST_PLATFORM.GetScreenHeight())
 		return;
 
-	if (size_t(left + width) > TEST_PLATFORM.getScreenWidth())
+	if (size_t(left + width) > TEST_PLATFORM.GetScreenWidth())
 		return;
 
 	size_t destenationIndex = 0;
@@ -103,7 +103,7 @@ void FETPScreen::getScreenRegion(unsigned char* data, int left, int top, int wid
 	{
 		for (size_t j = left; j < size_t(left + width); j++)
 		{
-			size_t sourceIndex = (i * TEST_PLATFORM.getScreenWidth() + j) * 4;
+			size_t sourceIndex = (i * TEST_PLATFORM.GetScreenWidth() + j) * 4;
 			data[destenationIndex++] = screenData[sourceIndex];
 			data[destenationIndex++] = screenData[sourceIndex + 1];
 			data[destenationIndex++] = screenData[sourceIndex + 2];
@@ -112,14 +112,14 @@ void FETPScreen::getScreenRegion(unsigned char* data, int left, int top, int wid
 	}
 }
 
-size_t FETPScreen::getScreenWidth()
+size_t FETPScreen::GetScreenWidth()
 {
-	return TEST_PLATFORM.getScreenWidth();
+	return TEST_PLATFORM.GetScreenWidth();
 }
 
-size_t FETPScreen::getScreenHeight()
+size_t FETPScreen::GetScreenHeight()
 {
-	return TEST_PLATFORM.getScreenHeight();
+	return TEST_PLATFORM.GetScreenHeight();
 }
 
 int FETPScreen::compare(size_t width, size_t height, unsigned char* firstData, unsigned char* secondData, unsigned char* diffData, int maxColorShift)
@@ -131,22 +131,22 @@ int FETPScreen::compare(size_t width, size_t height, unsigned char* firstData, u
 	int count = 0;
 	for (int i = 0; i < dataLength; i+=4)
 	{
-		int difference = abs(firstData[i] - secondData[i]);
-		diffData[i] = difference;
+		int Difference = abs(firstData[i] - secondData[i]);
+		diffData[i] = Difference;
 
-		if (difference > maxColorShift)
+		if (Difference > maxColorShift)
 			count++;
 
-		difference = abs(firstData[i + 1] - secondData[i + 1]);
-		diffData[i] += difference;
+		Difference = abs(firstData[i + 1] - secondData[i + 1]);
+		diffData[i] += Difference;
 
-		if (difference > maxColorShift)
+		if (Difference > maxColorShift)
 			count++;
 
-		difference = abs(firstData[i + 2] - secondData[i + 2]);
-		diffData[i] += difference;
+		Difference = abs(firstData[i + 2] - secondData[i + 2]);
+		diffData[i] += Difference;
 
-		if (difference > maxColorShift)
+		if (Difference > maxColorShift)
 			count++;
 
 		diffData[i] /= 3;
@@ -155,8 +155,8 @@ int FETPScreen::compare(size_t width, size_t height, unsigned char* firstData, u
 		diffData[i + 3] = 255;
 	}
 
-	int similarity = int(100.0f - float(count) / float(dataLength) * 100.0f);
-	return similarity;
+	int Similarity = int(100.0f - float(count) / float(dataLength) * 100.0f);
+	return Similarity;
 }
 
 glm::vec2 FETPScreen::imageSizeInRegion(size_t imageW, size_t imageH, size_t regionW, size_t regionH)
@@ -201,16 +201,16 @@ int FETPScreen::simpleCompare(size_t width, size_t height, unsigned char* firstD
 	int count = 0;
 	for (int i = 0; i < dataLength; i += 4)
 	{
-		int difference = abs(firstData[i] - secondData[i]);
-		if (difference > maxColorShift)
+		int Difference = abs(firstData[i] - secondData[i]);
+		if (Difference > maxColorShift)
 			count++;
 
-		difference = abs(firstData[i + 1] - secondData[i + 1]);
-		if (difference > maxColorShift)
+		Difference = abs(firstData[i + 1] - secondData[i + 1]);
+		if (Difference > maxColorShift)
 			count++;
 
-		difference = abs(firstData[i + 2] - secondData[i + 2]);
-		if (difference > maxColorShift)
+		Difference = abs(firstData[i + 2] - secondData[i + 2]);
+		if (Difference > maxColorShift)
 			count++;
 
 		// Early way out if more than 5 % difference.
@@ -218,8 +218,8 @@ int FETPScreen::simpleCompare(size_t width, size_t height, unsigned char* firstD
 			return 0;
 	}
 
-	int similarity = int(100.0f - float(count) / float(dataLength) * 100.0f);
-	return similarity;
+	int Similarity = int(100.0f - float(count) / float(dataLength) * 100.0f);
+	return Similarity;
 }
 
 FETPImage* FETPScreen::GetScreenDataAsImage()
@@ -491,22 +491,22 @@ bool FETPScreen::searchOnScreen(size_t width, size_t height, unsigned char* data
 	DWORD totalTimeRegion = 0;
 	int iteration = 0;
 
-	for (size_t i = 0; i < getScreenWidth(); i++)
+	for (size_t i = 0; i < GetScreenWidth(); i++)
 	{
-		for (size_t j = 0; j < getScreenHeight(); j++)
+		for (size_t j = 0; j < GetScreenHeight(); j++)
 		{
-			if (j + height >= getScreenHeight() ||
-				i + width >= getScreenWidth())
+			if (j + height >= GetScreenHeight() ||
+				i + width >= GetScreenWidth())
 				continue;
 
-			int similarity = 0;
+			int Similarity = 0;
 			int count = 0;
 
 			for (size_t k = j; k < size_t(j + height); k++)
 			{
 				for (size_t l = i; l < size_t(i + width); l++)
 				{
-					size_t sourceIndex = (k * TEST_PLATFORM.getScreenWidth() + l) * 4;
+					size_t sourceIndex = (k * TEST_PLATFORM.GetScreenWidth() + l) * 4;
 					size_t Index = ((k - j) * width + l - i) * 4;
 
 					if (abs(data[Index] - screenData[sourceIndex]) > maxColorShift)
@@ -534,16 +534,16 @@ bool FETPScreen::searchOnScreen(size_t width, size_t height, unsigned char* data
 				}
 			}
 
-			similarity = int(100.0f - float(count) / float(dataLenght) * 100.0f);
+			Similarity = int(100.0f - float(count) / float(dataLenght) * 100.0f);
 
-			if (localMaxSimilarity < similarity)
+			if (localMaxSimilarity < Similarity)
 			{
-				localMaxSimilarity = similarity;
+				localMaxSimilarity = Similarity;
 				maxSimilarityX = static_cast<int>(i);
 				maxSimilarityY = static_cast<int>(j);
 			}
 			
-			if (similarity >= correctnessThreshold)
+			if (Similarity >= correctnessThreshold)
 			{
 				x = i;
 				y = j;
@@ -572,7 +572,7 @@ void screenSearchInfo::setSearchOnScreenMode(bool newValue)
 	searchOnScreen = newValue;
 
 	screenRegionMin = ImVec2(0, 0);
-	screenRegionMax = ImVec2(float(TEST_PLATFORM.getScreenWidth()), float(TEST_PLATFORM.getScreenHeight()));
+	screenRegionMax = ImVec2(float(TEST_PLATFORM.GetScreenWidth()), float(TEST_PLATFORM.GetScreenHeight()));
 }
 
 void screenSearchInfo::setScreenRegion(ImVec2 ScreenRegionMin, ImVec2 ScreenRegionMax)

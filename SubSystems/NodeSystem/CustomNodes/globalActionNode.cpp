@@ -326,13 +326,13 @@ void globalActionNode::Draw()
 			}
 			else if (Data->getType() == FETP_LUNCH_APPLICATION_ACTION)
 			{
-				std::string path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(path, applicationLoadFilter, 1);
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
 
-				if (path != "")
+				if (Path != "")
 				{
 					LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
-					action->applicationPath = path;
+					action->applicationPath = Path;
 				}
 			}
 			else

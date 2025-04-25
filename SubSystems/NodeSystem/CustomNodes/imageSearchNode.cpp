@@ -154,7 +154,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				FETPImage* TestScreenShoot = nullptr;
 				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
 
-				int similarity = 0;
+				int Similarity = 0;
 				size_t x = 0;
 				size_t y = 0;
 
