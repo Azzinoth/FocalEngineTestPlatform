@@ -14,7 +14,7 @@ TestManager::~TestManager()
 
 }
 
-void TestManager::addTest(std::string FilePath)
+void TestManager::AddTest(std::string FilePath)
 {
 	if (FilePath != "")
 	{
@@ -29,7 +29,7 @@ void TestManager::addTest(std::string FilePath)
 	else
 	{
 		FETest* newTest = new FETest();
-		newTest->SetName(getNewTestName());
+		newTest->SetName(GetNewTestName());
 
 		list.push_back(newTest);
 	}
@@ -133,20 +133,20 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 	return nullptr;
 }
 
-std::string TestManager::getNewTestName()
+std::string TestManager::GetNewTestName()
 {
-	std::string newName = "new test_";
-	size_t index = 0;
+	std::string NewName = "new test_";
+	size_t Index = 0;
 
-	while (!isTestNameFree(newName + std::to_string(index)))
+	while (!IsTestNameFree(NewName + std::to_string(Index)))
 	{
-		index++;
+		Index++;
 	}
 
-	return newName + std::to_string(index);
+	return NewName + std::to_string(Index);
 }
 
-bool TestManager::isTestNameFree(std::string Name)
+bool TestManager::IsTestNameFree(std::string Name)
 {
 	for (size_t i = 0; i < list.size(); i++)
 	{
@@ -160,18 +160,18 @@ bool TestManager::isTestNameFree(std::string Name)
 void TestManager::setSelelectedTestIndex(size_t index)
 {
 	if (index < list.size())
-		selelectedTestIndex = index;
+		SelelectedTestIndex = index;
 }
 
 size_t TestManager::getSelectedTestIndex()
 {
-	return selelectedTestIndex;
+	return SelelectedTestIndex;
 }
 
 FETest* TestManager::getSelectedTest()
 {
-	if (selelectedTestIndex < list.size())
-		return list[selelectedTestIndex];
+	if (SelelectedTestIndex < list.size())
+		return list[SelelectedTestIndex];
 
 	return nullptr;
 }
@@ -190,8 +190,8 @@ void TestManager::removeTest(size_t testIndex)
 	if (testIndex >= list.size())
 		return;
 
-	if (selelectedTestIndex == testIndex)
-		selelectedTestIndex = 0;
+	if (SelelectedTestIndex == testIndex)
+		SelelectedTestIndex = 0;
 
 	list.erase(list.begin() + testIndex);
 }
@@ -202,7 +202,7 @@ void TestManager::renameTest(FETest* test, std::string newName)
 	{
 		if (list[i] == test)
 		{
-			if (isTestNameFree(newName))
+			if (IsTestNameFree(newName))
 				list[i]->SetName(newName);
 
 			return;
@@ -215,7 +215,7 @@ void TestManager::renameTest(size_t testIndex, std::string newName)
 	if (testIndex >= list.size())
 		return;
 
-	if (isTestNameFree(newName))
+	if (IsTestNameFree(newName))
 		list[testIndex]->SetName(newName);
 }
 
@@ -296,6 +296,6 @@ void TestManager::openTestSet(std::string FilePath)
 		localPath += FocalEngine::FILE_SYSTEM.GetFileName(root["tests"][testList[i].c_str()]["path"].asCString());
 		localPath += ".fetp";
 
-		TEST_MANAGER.addTest(localPath);
+		TEST_MANAGER.AddTest(localPath);
 	}
 }

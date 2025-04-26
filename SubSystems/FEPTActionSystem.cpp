@@ -7,623 +7,257 @@ FEPTActionSystem::FEPTActionSystem()
 
 FEPTActionSystem::~FEPTActionSystem() {}
 
-void FEPTActionSystem::takeScreenshoot()
+VisNodeSys::Node* FEPTActionSystem::GetNextNode(VisNodeSys::Node* CurrentNode)
 {
-	if (recording)
+	if (CurrentNode->GetType() == "beginNode")
 	{
-		if (GetTickCount() - lastTimeScreenshootWasTaken > 500)
-		{
-			lastTimeScreenshootWasTaken = GetTickCount();
-			unsigned char* tempScreenshoot = SCREEN_SYSTEM.GetScreenData();
-
-			size_t screenshootSize = SCREEN_SYSTEM.GetScreenWidth() * SCREEN_SYSTEM.GetScreenHeight() * 4;
-			unsigned char* newScreenshoot = new unsigned char[screenshootSize];
-			memcpy_s(newScreenshoot, screenshootSize, tempScreenshoot, screenshootSize);
-
-			addAction(new ScreenshootCompareAction(newScreenshoot, lastTimeScreenshootWasTaken));
-		}
+		beginNode* Node = reinterpret_cast<beginNode*>(CurrentNode);
+		return Node->GetNextNode();
 	}
-}
-
-VisNodeSys::Node* FEPTActionSystem::getNextNode(VisNodeSys::Node* currentNode)
-{
-	if (currentNode->GetType() == "beginNode")
+	else if (CurrentNode->GetType() == "globalActionNode")
 	{
-		beginNode* node = reinterpret_cast<beginNode*>(currentNode);
-		return node->GetNextNode();
+		globalActionNode* Node = reinterpret_cast<globalActionNode*>(CurrentNode);
+		return Node->GetNextNode();
 	}
-	else if (currentNode->GetType() == "globalActionNode")
+	else if (CurrentNode->GetType() == "combinedActionNode")
 	{
-		globalActionNode* node = reinterpret_cast<globalActionNode*>(currentNode);
-		return node->GetNextNode();
-	}
-	else if (currentNode->GetType() == "combinedActionNode")
-	{
-		combinedActionNode* node = reinterpret_cast<combinedActionNode*>(currentNode);
-		return node->GetNextNode();
+		combinedActionNode* Node = reinterpret_cast<combinedActionNode*>(CurrentNode);
+		return Node->GetNextNode();
 	}
 
 	return nullptr;
 }
 
-std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(VisNodeSys::Node* currentNode)
+std::vector<FETPAction*> FEPTActionSystem::GetActionsFromNode(VisNodeSys::Node* CurrentNode)
 {
-	std::vector<FETPAction*> result;
+	std::vector<FETPAction*> Result;
 
-	if (currentNode->GetType() == "beginNode")
+	if (CurrentNode->GetType() == "beginNode")
 	{
-		return result;
+		return Result;
 	}
-	else if (currentNode->GetType() == "globalActionNode")
+	else if (CurrentNode->GetType() == "globalActionNode")
 	{
-		globalActionNode* node = reinterpret_cast<globalActionNode*>(currentNode);
-		result.push_back(node->GetData());
+		globalActionNode* Node = reinterpret_cast<globalActionNode*>(CurrentNode);
+		Result.push_back(Node->GetData());
 	}
-	else if (currentNode->GetType() == "combinedActionNode")
+	else if (CurrentNode->GetType() == "combinedActionNode")
 	{
-		combinedActionNode* node = reinterpret_cast<combinedActionNode*>(currentNode);
-		return node->GetData();
+		combinedActionNode* Node = reinterpret_cast<combinedActionNode*>(CurrentNode);
+		return Node->GetData();
 	}
 
-	return result;
+	return Result;
 }
 
-FETPImage* FEPTActionSystem::imageToUse(CompareImageInfo* imageInfo)
+bool FEPTActionSystem::Run(FETest* TestToRun)
 {
-	if (imageInfo->image == nullptr)
-		return nullptr;
-	
-	//if (size_t(imageInfo->image->getHeight()) != TEST_PLATFORM.getScreenHeight() ||
-	//	size_t(imageInfo->image->getWidth()) != TEST_PLATFORM.getScreenWidth())
-	//	return nullptr;
-
-	if (imageInfo->partialImage != nullptr)
+	if (TestToRun == nullptr || TestToRun->GetBeginNode() == nullptr)
 	{
-		if (size_t(imageInfo->partialImageTop + imageInfo->partialImage->GetHeight()) > TEST_PLATFORM.GetScreenHeight() ||
-			size_t(imageInfo->partialImageLeft + imageInfo->partialImage->GetWidth()) > TEST_PLATFORM.GetScreenWidth())
-			return nullptr;
-
-		return imageInfo->partialImage;
-	}
-	else
-	{
-		return imageInfo->image;
-	}
-
-	return nullptr;
-}
-
-// FIX ME! Should I have it ?
-bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
-{
-	for (size_t i = 0; i < action->imagesInfo.size(); i++)
-		action->imagesInfo[i]->lastRunResult = false;
-
-	for (size_t i = 0; i < action->imagesInfo.size(); i++)
-	{
-		FETPImage* image = imageToUse(action->imagesInfo[i]);
-		if (image == nullptr)
-		{
-			currentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-			currentTestResult->FailedAction = action;
-			continue;
-		}
-
-		std::vector<unsigned char> tempScreenshoot;
-		tempScreenshoot.resize(image->GetWidth() * image->GetHeight() * 4);
-
-		std::vector<unsigned char> tempDifferenceData;
-		tempDifferenceData.resize(tempScreenshoot.size());
-
-		FETPImage* TestScreenShoot = nullptr;
-
-		if (action->imagesInfo[i]->partialImage != nullptr)
-		{
-			if (!action->bUseGPU)
-			{
-				SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
-			}
-			else
-			{
-				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage(0);
-			}
-		}
-		else
-		{
-			SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
-		}
-
-		
-		
-		int Similarity = 0;
-		unsigned char* tempRawData = image->GetRawData();
-		if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
-		{
-			size_t x = 0;
-			size_t y = 0;
-
-			FocalEngine::TIME.BeginTimeStamp("M");
-			bool found = false;
-			if (!action->bUseGPU)
-			{
-				found = SCREEN_SYSTEM.bSearchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
-			}
-			else
-			{
-				glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
-				found = Position.x != -1 && Position.y != -1;
-				x = static_cast<size_t>(Position.x);
-				y = static_cast<size_t>(Position.y);
-			}
-			auto Time = FocalEngine::TIME.EndTimeStamp("M");
-
-			if (found)
-			{
-				INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->GetXShiftFromFound()),
-										 static_cast<int>(y + action->imagesInfo[i]->screenSearch->GetYShiftFromFound()));
-				action->imagesInfo[i]->lastRunResult = true;
-				return true;
-			}
-		}
-		else
-		{
-			Similarity = SCREEN_SYSTEM.Compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
-		}
-		delete[] tempRawData;
-
-		if (Similarity < action->imagesInfo[i]->correctnessThreshold)
-		{
-			if (!action->imagesInfo[i]->severalAttempts)
-			{
-				currentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-				currentTestResult->FailedAction = action;
-
-				FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->GetWidth(), image->GetHeight());
-				FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->GetWidth(), image->GetHeight());
-				currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, Similarity));
-
-				continue;
-			}
-			else
-			{
-				DWORD beginTime = GetTickCount();
-				while (Similarity < action->imagesInfo[i]->correctnessThreshold)
-				{
-					Sleep(10);
-					if (action->imagesInfo[i]->partialImage != nullptr)
-					{
-						if (!action->bUseGPU)
-						{
-							SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
-						}
-						else
-						{
-							delete TestScreenShoot;
-							TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage(0);
-						}
-					}
-					else
-					{
-						SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
-					}
-
-					//int similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data());
-					int Similarity = 0;
-					unsigned char* tempRawData = image->GetRawData();
-					if (action->imagesInfo[i]->screenSearch != nullptr && action->imagesInfo[i]->partialImage != nullptr)
-					{
-						size_t x = 0;
-						size_t y = 0;
-
-						bool found = false;
-						if (!action->bUseGPU)
-						{
-							found = SCREEN_SYSTEM.bSearchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &Similarity);
-						}
-						else
-						{
-							glm::vec2 Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, action->imagesInfo[i]->partialImage, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
-							found = Position.x != -1 && Position.y != -1;
-							x = static_cast<size_t>(Position.x);
-							y = static_cast<size_t>(Position.y);
-						}
-
-						if (found)
-						{
-							INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->GetXShiftFromFound()),
-													 static_cast<int>(y + action->imagesInfo[i]->screenSearch->GetYShiftFromFound()));
-							action->imagesInfo[i]->lastRunResult = true;
-							return true;
-						}
-					}
-					else
-					{
-						Similarity = SCREEN_SYSTEM.Compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
-					}
-					delete[] tempRawData;
-
-					if (Similarity > action->imagesInfo[i]->correctnessThreshold)
-					{
-						action->imagesInfo[i]->lastRunResult = true;
-						return true;
-					}
-
-					if (GetTickCount() - beginTime > DWORD(action->imagesInfo[i]->severalAttemptsTimeout))
-					{
-						currentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
-						currentTestResult->FailedAction = action;
-
-						FETPImage* currentScreenshoot = new FETPImage(tempScreenshoot.data(), image->GetWidth(), image->GetHeight());
-						FETPImage* diffMap = new FETPImage(tempDifferenceData.data(), image->GetWidth(), image->GetHeight());
-						currentTestResult->setScreenshootCompareResult(new FETestScreenshootCompareResult(image, currentScreenshoot, diffMap, Similarity));
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			action->imagesInfo[i]->lastRunResult = true;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
-{
-	for (size_t i = 0; i < actions.size(); i++)
-	{
-		if (actions[i]->GetType() == FETP_KEYBOARD_ACTION)
-		{
-			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(actions[i]);
-			if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
-			{
-				INPUT_SYSTEM.keyEvent(WM_KEYDOWN, action->additionalInfo.vkCode);
-			}
-			else if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
-			{
-				INPUT_SYSTEM.keyEvent(WM_KEYUP, action->additionalInfo.vkCode);
-			}
-		}
-		else if (actions[i]->GetType() == FETP_MOUSE_ACTION)
-		{
-			MouseAction* action = reinterpret_cast<MouseAction*>(actions[i]);
-
-			if (action->wParam == WM_MOUSEMOVE)
-			{
-				//INPUT_SYSTEM.mouseMoveTo(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
-			}
-			else if (action->wParam == WM_LBUTTONUP)
-			{
-				//INPUT_SYSTEM.mouseUp();
-			}
-			else if (action->wParam == WM_RBUTTONUP)
-			{
-				INPUT_SYSTEM.mouseUp(false);
-			}
-			else if (action->wParam == WM_LBUTTONDOWN)
-			{
-				//INPUT_SYSTEM.mouseDown();
-			}
-			else if (action->wParam == WM_RBUTTONDOWN)
-			{
-				INPUT_SYSTEM.mouseDown(false);
-			}
-			else if (action->wParam == WM_MOUSEWHEEL)
-			{
-				INPUT_SYSTEM.mouseWheel((short)HIWORD(action->additionalInfo.mouseData));
-			}
-		}
-		else if (actions[i]->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
-		{
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(actions[i]);
-			if (!execute(action))
-				return false;
-		}
-		else if (actions[i]->GetType() == FETP_LUNCH_APPLICATION_ACTION)
-		{
-			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(actions[i]);
-			if (!FocalEngine::FILE_SYSTEM.DoesFileExist(action->applicationPath.c_str()))
-			{
-				currentTestResult->FailReason = FE_TEST_FAIL_CANT_FIND_FILE;
-				currentTestResult->FailedAction = action;
-				return false;
-			}
-
-			ShellExecuteA(NULL, NULL, action->applicationPath.c_str(), NULL, FocalEngine::FILE_SYSTEM.GetDirectoryPath(action->applicationPath).c_str(), SW_NORMAL);
-		}
-		/*else if (actions[i]->getType() == FETP_SLEEP_ACTION)
-		{
-			SleepAction* action = reinterpret_cast<SleepAction*>(actions[i]);
-			Sleep(DWORD(action->sleepFor * currentlyRunning->getSpeedFactor()));
-		}*/
-	}
-
-	return true;
-}
-
-bool FEPTActionSystem::run(FETest* testToRun)
-{
-	if (testToRun == nullptr || testToRun->GetBeginNode() == nullptr)
-	{
-		currentlyRunning = nullptr;
+		CurrentlyRunning = nullptr;
 		return false;
 	}
 
 	FocalEngine::APPLICATION.GetMainWindow()->Minimize();
 	Sleep(10);
-	currentlyRunning = testToRun;
-	currentTestResult = new FETestResult();
-	currentTestResult->Parent = currentlyRunning;
-	currentTestResult->StartTime = GetTickCount();
+	CurrentlyRunning = TestToRun;
+	CurrentTestResult = new FETestResult();
+	CurrentTestResult->Parent = CurrentlyRunning;
+	CurrentTestResult->StartTime = GetTickCount();
 
-	currentlyRunning->BeforeBegin();
+	CurrentlyRunning->BeforeBegin();
 
-	basicLogicNode* currentNode = currentlyRunning->GetBeginNode();
-	currentlyRunning->NodeArea->TriggerOrphanSocketEvent(currentNode, EXECUTE);
-	
-	/*while (currentNode != nullptr)
+	basicLogicNode* CurrentNode = CurrentlyRunning->GetBeginNode();
+	CurrentlyRunning->NodeArea->TriggerOrphanSocketEvent(CurrentNode, EXECUTE);
+	CurrentTestResult->bIsSuccessful = true;
+	CurrentTestResult->EndTime = GetTickCount();
+	CurrentlyRunning->AddResult(CurrentTestResult);
+
+	if (CurrentlyRunning->GetLoopCount() <= 1)
 	{
-		std::string originalText = "";
-		std::vector<FETPAction*> actions = getActionsFromNode(currentNode);
-		if (currentNode->GetType() == "combinedActionNode")
-		{
-			std::string originalText = ACTION_SYSTEM.extractText(actions);
-			if (currentlyRunning->replaceMacro(originalText))
-				actions = generateInputTextActions(originalText, 20);
-		}
-
-		if (!execute(actions))
-		{
-			currentTestResult->success = false;
-			currentTestResult->endTime = GetTickCount();
-			currentlyRunning->addResult(currentTestResult);
-			currentlyRunning = nullptr;
-			TEST_PLATFORM.restoreWindow();
-			return false;
-		}
-
-		currentNode = currentNode->GetNextNode();
-	}*/
-
-
-	currentTestResult->bIsSuccessful = true;
-	currentTestResult->EndTime = GetTickCount();
-	currentlyRunning->AddResult(currentTestResult);
-
-	if (currentlyRunning->GetLoopCount() <= 1)
-	{
-		currentlyRunning = nullptr;
+		CurrentlyRunning = nullptr;
 		FocalEngine::APPLICATION.GetMainWindow()->Restore();
 	}
 	
 	return true;
 }
 
-void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, NodeArea* NodeArea, bool copyActions)
+void FEPTActionSystem::PlaceStructuredNodes(std::vector<FETPAction*> actions, NodeArea* NodeArea, bool copyActions)
 {
-	static int leftPadding = 15;
-	static int nodesPerW = 4;
-	static int nodesPerH = 4;
-	static int disBetweenOnW = 40;
-	static int disBetweenOnH = 150;
+	static int LeftPadding = 15;
+	static int MaxNodesPerWidth = 4;
+	static int MaxNodesPerHeight = 4;
+	static int DistanceBetweenNodesHorizontally = 40;
+	static int DistanceBetweenNodesVertically = 150;
 
-	FETPAction* testAction = new FETPAction();
-	globalActionNode* testNode = new globalActionNode(testAction);
+	FETPAction* TestAction = new FETPAction();
+	globalActionNode* TestNode = new globalActionNode(TestAction);
 
-	if (testNode->GetStyle() == CIRCLE)
+	if (TestNode->GetStyle() == CIRCLE)
 	{
-		nodesPerW = 6;
-		nodesPerH = 6;
-		disBetweenOnW = 15;
-		disBetweenOnH = int(NODE_DIAMETER + 15.0f);
+		MaxNodesPerWidth = 6;
+		MaxNodesPerHeight = 6;
+		DistanceBetweenNodesHorizontally = 15;
+		DistanceBetweenNodesVertically = int(NODE_DIAMETER + 15.0f);
 	}
 	else
 	{
-		nodesPerW = 4;
-		disBetweenOnW = 40;
-		disBetweenOnH = 150;
+		MaxNodesPerWidth = 4;
+		DistanceBetweenNodesHorizontally = 40;
+		DistanceBetweenNodesVertically = 150;
 	}
 
-	delete testNode;
+	delete TestNode;
 
-	int showedIndex = 0;
-	VisNodeSys::Node* prevNode = nullptr;
+	int ShowedIndex = 0;
+	VisNodeSys::Node* PreviousNode = nullptr;
 	for (size_t i = 0; i < actions.size(); i++)
 	{
-		VisNodeSys::Node* newNode = nullptr;
+		VisNodeSys::Node* NewNode = nullptr;
 
 		if (!copyActions)
 		{
 			if (actions[i]->GetType() != FETP_SLEEP_ACTION)
-				newNode = tryToPackActions(i);
+				NewNode = TryToPackActions(i);
 
-			if (newNode == nullptr)
-				newNode = new globalActionNode(actions[i]);
+			if (NewNode == nullptr)
+				NewNode = new globalActionNode(actions[i]);
 		}
 		else
 		{
-			newNode = new globalActionNode(copyAction(actions[i]));
+			NewNode = new globalActionNode(CopyAction(actions[i]));
 		}
 
 		int Width, Height;
 		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
 
-		int xPosition = leftPadding;
-		xPosition += (showedIndex % nodesPerW * int(newNode->GetSize().x + disBetweenOnW));
-		xPosition %= Width;
+		int XPosition = LeftPadding;
+		XPosition += (ShowedIndex % MaxNodesPerWidth * int(NewNode->GetSize().x + DistanceBetweenNodesHorizontally));
+		XPosition %= Width;
 
-		int yPosition = showedIndex / nodesPerH;
-		yPosition *= disBetweenOnH;
+		int YPosition = ShowedIndex / MaxNodesPerHeight;
+		YPosition *= DistanceBetweenNodesVertically;
 
-		newNode->SetPosition(ImVec2(float(xPosition), float(yPosition)));
-		NodeArea->AddNode(newNode);
+		NewNode->SetPosition(ImVec2(float(XPosition), float(YPosition)));
+		NodeArea->AddNode(NewNode);
 
-		if (prevNode != nullptr)
-			NodeArea->TryToConnect(prevNode, 0, newNode, 0);
-		prevNode = newNode;
-		showedIndex++;
+		if (PreviousNode != nullptr)
+			NodeArea->TryToConnect(PreviousNode, 0, NewNode, 0);
+		PreviousNode = NewNode;
+		ShowedIndex++;
 	}
 }
 
-void FEPTActionSystem::recordModeSwitch()
+void FEPTActionSystem::SwitchRecordMode()
 {
-	if (GetTickCount() - lastTimeRecordModeWasChanged > 500)
+	if (GetTickCount() - LastRecordModeChangeTimestamp > 500)
 	{
-		lastTimeRecordModeWasChanged = GetTickCount();
+		LastRecordModeChangeTimestamp = GetTickCount();
 
-		recording ? FocalEngine::APPLICATION.GetMainWindow()->Restore() : FocalEngine::APPLICATION.GetMainWindow()->Minimize();
-		recording = !recording;
+		bIsRecording ? FocalEngine::APPLICATION.GetMainWindow()->Restore() : FocalEngine::APPLICATION.GetMainWindow()->Minimize();
+		bIsRecording = !bIsRecording;
 
-		if (recording)
+		if (bIsRecording)
 		{
-			recordedActions.clear();
+			RecordedActions.clear();
 		}
 		else
 		{
-			if (finishRecordingCallback != nullptr)
-				finishRecordingCallback(recordedActions);
-
-			//placeStructuredNodes(recordedActions, nodeArea);
-			//recordedActions.clear();
+			if (OnFinishRecordingCallback != nullptr)
+				OnFinishRecordingCallback(RecordedActions);
 		}
 	}
 }
 
-void FEPTActionSystem::newKeyboardAction(KeyboardAction keyAction)
+void FEPTActionSystem::NewKeyboardAction(KeyboardAction KeyAction)
 {
-	if (keyAction.wParam == WM_KEYDOWN || keyAction.wParam == WM_SYSKEYDOWN)
+	if (KeyAction.EventType == WM_KEYDOWN || KeyAction.EventType == WM_SYSKEYDOWN)
 	{
-		if (pressedKeys.find(keyAction.additionalInfo.vkCode) != pressedKeys.end())
+		if (PressedKeysMap.find(KeyAction.HookInfo.vkCode) != PressedKeysMap.end())
 			return;
 
-		pressedKeys[keyAction.additionalInfo.vkCode] = true;
+		PressedKeysMap[KeyAction.HookInfo.vkCode] = true;
 
-		if (pressedKeys.find(164) != pressedKeys.end())
+		if (PressedKeysMap.find(164) != PressedKeysMap.end())
 		{
-			altTempStorage = keyAction;
+			altTempStorage = KeyAction;
 			return;
 		}
 	}
-	else if (keyAction.wParam == WM_KEYUP || keyAction.wParam == WM_SYSKEYUP)
+	else if (KeyAction.EventType == WM_KEYUP || KeyAction.EventType == WM_SYSKEYUP)
 	{
-		if (pressedKeys.find(164) != pressedKeys.end() && keyAction.additionalInfo.vkCode == 164)
+		if (PressedKeysMap.find(164) != PressedKeysMap.end() && KeyAction.HookInfo.vkCode == 164)
 		{
-			lastLeftAltUp = keyAction;
+			LastLeftAltUp = KeyAction;
 
-			pressedKeys.erase(keyAction.additionalInfo.vkCode);
+			PressedKeysMap.erase(KeyAction.HookInfo.vkCode);
 			return;
 		}
 
-		DWORD timeFromLastLeftAltUp = 1000;
-		if (lastLeftAltUp.wParam != 0)
-			timeFromLastLeftAltUp = GetTickCount() - lastLeftAltUp.additionalInfo.time;
+		DWORD TimeFromLastLeftAltUp = 1000;
+		if (LastLeftAltUp.EventType != 0)
+			TimeFromLastLeftAltUp = GetTickCount() - LastLeftAltUp.HookInfo.time;
 
-		if (keyAction.additionalInfo.vkCode == 77 &&
-			(pressedKeys.find(164) != pressedKeys.end() || (timeFromLastLeftAltUp < 100)))
+		if (KeyAction.HookInfo.vkCode == 77 &&
+		   (PressedKeysMap.find(164) != PressedKeysMap.end() || (TimeFromLastLeftAltUp < 100)))
 		{
-			lastLeftAltUp = KeyboardAction();
-			recordModeSwitch();
+			LastLeftAltUp = KeyboardAction();
+			SwitchRecordMode();
 
-			pressedKeys.erase(keyAction.additionalInfo.vkCode);
+			PressedKeysMap.erase(KeyAction.HookInfo.vkCode);
 			return;
 		}
-		else if (keyAction.additionalInfo.vkCode == 67 &&
-			(pressedKeys.find(164) != pressedKeys.end() || (timeFromLastLeftAltUp < 100)))
+		else if (KeyAction.HookInfo.vkCode == 67 &&
+				(PressedKeysMap.find(164) != PressedKeysMap.end() || (TimeFromLastLeftAltUp < 100)))
 		{
-			ACTION_SYSTEM.takeScreenshoot();
-
-			pressedKeys.erase(keyAction.additionalInfo.vkCode);
+			PressedKeysMap.erase(KeyAction.HookInfo.vkCode);
 			return;
 		}
 		else
 		{
-			//if (lastLeftAltUp.wParam != 0 && actionsRecord && GetTickCount() - lastLeftAltUp.additionalInfo.time > 100)
-			//{
-			//	// We need to insert action according to it's time stamp.
-			//	for (size_t i = 0; i < recordedActions.size(); i++)
-			//	{
-			//		if (recordedActions[i].time > lastLeftAltUp.additionalInfo.time)
-			//		{
-			//			recordedActions.insert(recordedActions.begin() + i, globalActionWrapper(globalKeyboardActionInfo(lastLeftAltUp), globalMouseActionInfo(), screenshootActionInfo()));
-			//			break;
-			//		}
 
-			//		if (i == recordedActions.size() - 1)
-			//		{
-			//			recordedActions.push_back(globalActionWrapper(globalKeyboardActionInfo(lastLeftAltUp), globalMouseActionInfo(), screenshootActionInfo()));
-			//			break;
-			//		}
-			//	}
-			//	
-			//	lastLeftAltUp = globalKeyboardActionInfo();
-			//}
-
-			//if (altTempStorage.wParam != 0 && actionsRecord)
-			//{
-			//	// We need to insert action according to it's time stamp.
-			//	for (size_t i = 0; i < recordedActions.size(); i++)
-			//	{
-			//		if (recordedActions[i].time > altTempStorage.additionalInfo.time)
-			//		{
-			//			recordedActions.insert(recordedActions.begin() + i, globalActionWrapper(globalKeyboardActionInfo(altTempStorage), globalMouseActionInfo(), screenshootActionInfo()));
-			//			break;
-			//		}
-
-			//		if (i == recordedActions.size() - 1)
-			//		{
-			//			recordedActions.push_back(globalActionWrapper(globalKeyboardActionInfo(altTempStorage), globalMouseActionInfo(), screenshootActionInfo()));
-			//			break;
-			//		}
-			//	}
-
-			//	//recordedActions.push_back(globalActionWrapper(globalKeyboardActionInfo(altTempStorage), globalMouseActionInfo(), screenshootActionInfo()));
-			//	altTempStorage = globalKeyboardActionInfo();
-			//}
 		}
 
-		pressedKeys.erase(keyAction.additionalInfo.vkCode);
+		PressedKeysMap.erase(KeyAction.HookInfo.vkCode);
 	}
 
-	if (recording)
+	if (bIsRecording)
 	{
-		addAction(new KeyboardAction(keyAction));
-	}
-}
-
-void FEPTActionSystem::newMouseAction(MouseAction mouseAction)
-{
-	if (recording)
-	{
-		addAction(new MouseAction(mouseAction));
+		AddAction(new KeyboardAction(KeyAction));
 	}
 }
 
-void FEPTActionSystem::findAndDeleteKeys()
+void FEPTActionSystem::NewMouseAction(MouseAction NewMouseAction)
 {
-	if (keysToDelete.size() != 0)
+	if (bIsRecording)
 	{
-		for (int i = static_cast<int>(recordedActions.size() - 1); i >= 0; i--)
+		AddAction(new MouseAction(NewMouseAction));
+	}
+}
+
+void FEPTActionSystem::FindAndDeleteKeys()
+{
+	if (KeysToDelete.size() != 0)
+	{
+		for (int i = static_cast<int>(RecordedActions.size() - 1); i >= 0; i--)
 		{
-			if (recordedActions[i]->GetType() != FETP_KEYBOARD_ACTION)
+			if (RecordedActions[i]->GetType() != FETP_KEYBOARD_ACTION)
 				continue;
 
-			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(recordedActions[i]);
-
-			for (int j = 0; j < int(keysToDelete.size()); j++)
+			KeyboardAction* Action = reinterpret_cast<KeyboardAction*>(RecordedActions[i]);
+			for (int j = 0; j < int(KeysToDelete.size()); j++)
 			{
-				if (keysToDelete.size() == 0 || recordedActions.size() == 0)
+				if (KeysToDelete.size() == 0 || RecordedActions.size() == 0)
 					break;
-				if (action->additionalInfo.vkCode == keysToDelete[j].additionalInfo.vkCode)
+
+				if (Action->HookInfo.vkCode == KeysToDelete[j].HookInfo.vkCode)
 				{
-					if ((keysToDelete[j].wParam == WM_KEYUP && (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)) ||
-						(keysToDelete[j].wParam == WM_KEYDOWN && (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)))
+					if ((KeysToDelete[j].EventType == WM_KEYUP && (Action->EventType == WM_KEYUP || Action->EventType == WM_SYSKEYUP)) ||
+						(KeysToDelete[j].EventType == WM_KEYDOWN && (Action->EventType == WM_KEYDOWN || Action->EventType == WM_SYSKEYDOWN)))
 					{
-						delete action;
-						recordedActions.erase(recordedActions.begin() + i, recordedActions.begin() + i + 1);
-						keysToDelete.erase(keysToDelete.begin() + j, keysToDelete.begin() + j + 1);
+						delete Action;
+						RecordedActions.erase(RecordedActions.begin() + i, RecordedActions.begin() + i + 1);
+						KeysToDelete.erase(KeysToDelete.begin() + j, KeysToDelete.begin() + j + 1);
 
 						j--;
 
@@ -636,148 +270,148 @@ void FEPTActionSystem::findAndDeleteKeys()
 	}
 }
 
-void FEPTActionSystem::update()
+void FEPTActionSystem::Update()
 {
-	findAndDeleteKeys();
+	FindAndDeleteKeys();
 }
 
-FETPAction* FEPTActionSystem::getAction(size_t index)
+FETPAction* FEPTActionSystem::GetAction(size_t Index)
 {
-	if (index >= recordedActions.size())
+	if (Index >= RecordedActions.size())
 		return nullptr;
 
-	return recordedActions[index];
+	return RecordedActions[Index];
 }
 
-void FEPTActionSystem::addAction(FETPAction* newAction)
+void FEPTActionSystem::AddAction(FETPAction* NewAction)
 {
-	recordedActions.push_back(newAction);
-	if (recordedActions.size() > 1)
+	RecordedActions.push_back(NewAction);
+	if (RecordedActions.size() > 1)
 	{
-		int sleepAfter = 0;
-		sleepAfter = newAction->GetTimeStamp() - recordedActions[recordedActions.size() - 2]->GetTimeStamp();
-		if (sleepAfter < 0)
-			sleepAfter = 0;
+		int DelayBetweenActions = 0;
+		DelayBetweenActions = NewAction->GetTimeStamp() - RecordedActions[RecordedActions.size() - 2]->GetTimeStamp();
+		if (DelayBetweenActions < 0)
+			DelayBetweenActions = 0;
 
-		if (sleepAfter != 0)
-			recordedActions.insert(recordedActions.end() - 1, new SleepAction(sleepAfter));
+		if (DelayBetweenActions != 0)
+			RecordedActions.insert(RecordedActions.end() - 1, new SleepAction(DelayBetweenActions));
 	}
 }
 
-void FEPTActionSystem::filterActions(size_t startIndex, std::function<bool(FETPAction*, int)> filerFunction, std::vector<FETPAction*>& output, bool stopOnFirstNonMatch)
+void FEPTActionSystem::FilterActions(size_t StartIndex, std::function<bool(FETPAction*, int)> FilerFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch)
 {
-	if (startIndex >= recordedActions.size())
+	if (StartIndex >= RecordedActions.size())
 		return;
 
-	output.clear();
+	Output.clear();
 
 	while (true)
 	{
-		if (startIndex >= recordedActions.size())
+		if (StartIndex >= RecordedActions.size())
 			break;
 
-		if (filerFunction(recordedActions[startIndex], static_cast<int>(output.size())))
+		if (FilerFunction(RecordedActions[StartIndex], static_cast<int>(Output.size())))
 		{
-			output.push_back(recordedActions[startIndex]);
+			Output.push_back(RecordedActions[StartIndex]);
 		}
-		else if (stopOnFirstNonMatch)
+		else if (StopOnFirstNonMatch)
 		{
 			return;
 		}
 
-		startIndex++;
+		StartIndex++;
 	}
 }
 
-bool FEPTActionSystem::mouseMoveActionFilter(FETPAction* action, int outputCount)
+bool FEPTActionSystem::MouseMoveActionFilter(FETPAction* Action, int OutputCount)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return false;
 
-	if (action->GetType() == FETP_SLEEP_ACTION)
+	if (Action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->GetType() == FETP_MOUSE_ACTION)
+	if (Action->GetType() == FETP_MOUSE_ACTION)
 	{
-		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_MOUSEMOVE)
+		if (reinterpret_cast<MouseAction*>(Action)->EventType == WM_MOUSEMOVE)
 			return true;
 	}
 
 	return false;
 }
 
-bool FEPTActionSystem::mouseLeftButtonActionFilter(FETPAction* action, int outputCount)
+bool FEPTActionSystem::MouseLeftButtonActionFilter(FETPAction* Action, int OutputCount)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return false;
 
-	if (outputCount >= 3)
+	if (OutputCount >= 3)
 		return false;
 
-	if (action->GetType() == FETP_SLEEP_ACTION)
+	if (Action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->GetType() == FETP_MOUSE_ACTION)
+	if (Action->GetType() == FETP_MOUSE_ACTION)
 	{
-		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_LBUTTONDOWN || reinterpret_cast<MouseAction*>(action)->wParam == WM_LBUTTONUP)
+		if (reinterpret_cast<MouseAction*>(Action)->EventType == WM_LBUTTONDOWN || reinterpret_cast<MouseAction*>(Action)->EventType == WM_LBUTTONUP)
 			return true;
 	}
 
 	return false;
 }
 
-bool FEPTActionSystem::mouseRightButtonActionFilter(FETPAction* action, int outputCount)
+bool FEPTActionSystem::MouseRightButtonActionFilter(FETPAction* Action, int OutputCount)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return false;
 
-	if (outputCount >= 3)
+	if (OutputCount >= 3)
 		return false;
 
-	if (action->GetType() == FETP_SLEEP_ACTION)
+	if (Action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->GetType() == FETP_MOUSE_ACTION)
+	if (Action->GetType() == FETP_MOUSE_ACTION)
 	{
-		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_RBUTTONDOWN || reinterpret_cast<MouseAction*>(action)->wParam == WM_RBUTTONUP)
+		if (reinterpret_cast<MouseAction*>(Action)->EventType == WM_RBUTTONDOWN || reinterpret_cast<MouseAction*>(Action)->EventType == WM_RBUTTONUP)
 			return true;
 	}
 
 	return false;
 }
 
-bool FEPTActionSystem::mouseWheelActionFilter(FETPAction* action, int outputCount)
+bool FEPTActionSystem::MouseWheelActionFilter(FETPAction* Action, int OutputCount)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return false;
 
-	if (action->GetType() == FETP_SLEEP_ACTION)
+	if (Action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->GetType() == FETP_MOUSE_ACTION)
+	if (Action->GetType() == FETP_MOUSE_ACTION)
 	{
-		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_MOUSEWHEEL)
+		if (reinterpret_cast<MouseAction*>(Action)->EventType == WM_MOUSEWHEEL)
 			return true;
 	}
 
 	return false;
 }
 
-bool FEPTActionSystem::keyboardTextActionFilter(FETPAction* action, int outputCount)
+bool FEPTActionSystem::KeyboardTextActionFilter(FETPAction* Action, int OutputCount)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return false;
 
-	if (action->GetType() == FETP_SLEEP_ACTION)
+	if (Action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->GetType() == FETP_KEYBOARD_ACTION)
+	if (Action->GetType() == FETP_KEYBOARD_ACTION)
 	{
-		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(action);
-		if (keyboardAction->wParam == WM_KEYDOWN || keyboardAction->wParam == WM_SYSKEYDOWN ||
-			keyboardAction->wParam == WM_KEYUP || keyboardAction->wParam == WM_SYSKEYUP)
+		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(Action);
+		if (keyboardAction->EventType == WM_KEYDOWN || keyboardAction->EventType == WM_SYSKEYDOWN ||
+			keyboardAction->EventType == WM_KEYUP || keyboardAction->EventType == WM_SYSKEYUP)
 		{
-			if (INPUT_SYSTEM.getChar(keyboardAction) != 0 || keyboardAction->additionalInfo.vkCode == VK_RSHIFT || keyboardAction->additionalInfo.vkCode == VK_CAPITAL)
+			if (INPUT_SYSTEM.GetCharFromAction(keyboardAction) != 0 || keyboardAction->HookInfo.vkCode == VK_RSHIFT || keyboardAction->HookInfo.vkCode == VK_CAPITAL)
 				return true;
 		}
 	}
@@ -785,24 +419,24 @@ bool FEPTActionSystem::keyboardTextActionFilter(FETPAction* action, int outputCo
 	return false;
 }
 
-bool FEPTActionSystem::keyboardPressActionFilter(FETPAction* action, int outputCount)
+bool FEPTActionSystem::KeyboardPressActionFilter(FETPAction* Action, int OutputCount)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return false;
 
-	if (outputCount >= 3)
+	if (OutputCount >= 3)
 		return false;
 
-	if (action->GetType() == FETP_SLEEP_ACTION)
+	if (Action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->GetType() == FETP_KEYBOARD_ACTION)
+	if (Action->GetType() == FETP_KEYBOARD_ACTION)
 	{
-		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(action);
-		if (keyboardAction->wParam == WM_KEYDOWN || keyboardAction->wParam == WM_SYSKEYDOWN ||
-			keyboardAction->wParam == WM_KEYUP || keyboardAction->wParam == WM_SYSKEYUP)
+		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(Action);
+		if (keyboardAction->EventType == WM_KEYDOWN || keyboardAction->EventType == WM_SYSKEYDOWN ||
+			keyboardAction->EventType == WM_KEYUP || keyboardAction->EventType == WM_SYSKEYUP)
 		{
-			if (INPUT_SYSTEM.getChar(keyboardAction) == 0 && keyboardAction->additionalInfo.vkCode != VK_RSHIFT && keyboardAction->additionalInfo.vkCode != VK_CAPITAL)
+			if (INPUT_SYSTEM.GetCharFromAction(keyboardAction) == 0 && keyboardAction->HookInfo.vkCode != VK_RSHIFT && keyboardAction->HookInfo.vkCode != VK_CAPITAL)
 				return true;
 		}
 	}
@@ -810,160 +444,160 @@ bool FEPTActionSystem::keyboardPressActionFilter(FETPAction* action, int outputC
 	return false;
 }
 
-VisNodeSys::Node* FEPTActionSystem::tryToPackActions(size_t& index)
+VisNodeSys::Node* FEPTActionSystem::TryToPackActions(size_t& Index)
 {
-	std::vector<FETPAction*> actionsToCombine;
+	std::vector<FETPAction*> ActionsToCombine;
 
-	filterActions(index, mouseMoveActionFilter, actionsToCombine);
-	if (actionsToCombine.size() > 1)
+	FilterActions(Index, MouseMoveActionFilter, ActionsToCombine);
+	if (ActionsToCombine.size() > 1)
 	{
-		index += actionsToCombine.size() - 1;
-		return new combinedActionNode(actionsToCombine, FETP_COMBINED_MOUSE_MOVE_ACTION);
+		Index += ActionsToCombine.size() - 1;
+		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_MOUSE_MOVE_ACTION);
 	}
 
-	filterActions(index, mouseLeftButtonActionFilter, actionsToCombine);
-	if (actionsToCombine.size() > 1)
+	FilterActions(Index, MouseLeftButtonActionFilter, ActionsToCombine);
+	if (ActionsToCombine.size() > 1)
 	{
-		index += actionsToCombine.size() - 1;
-		return new combinedActionNode(actionsToCombine, FETP_COMBINED_LEFT_MOUSE_ACTION);
+		Index += ActionsToCombine.size() - 1;
+		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_LEFT_MOUSE_ACTION);
 	}
 
-	filterActions(index, mouseRightButtonActionFilter, actionsToCombine);
-	if (actionsToCombine.size() > 1)
+	FilterActions(Index, MouseRightButtonActionFilter, ActionsToCombine);
+	if (ActionsToCombine.size() > 1)
 	{
-		index += actionsToCombine.size() - 1;
-		return new combinedActionNode(actionsToCombine, FETP_COMBINED_RIGHT_MOUSE_ACTION);
+		Index += ActionsToCombine.size() - 1;
+		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_RIGHT_MOUSE_ACTION);
 	}
 
-	filterActions(index, mouseWheelActionFilter, actionsToCombine);
-	if (actionsToCombine.size() > 1)
+	FilterActions(Index, MouseWheelActionFilter, ActionsToCombine);
+	if (ActionsToCombine.size() > 1)
 	{
-		index += actionsToCombine.size() - 1;
-		return new combinedActionNode(actionsToCombine, FETP_COMBINED_WHEEL_MOUSE_ACTION);
+		Index += ActionsToCombine.size() - 1;
+		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_WHEEL_MOUSE_ACTION);
 	}
 
-	filterActions(index, keyboardPressActionFilter, actionsToCombine);
-	if (actionsToCombine.size() > 1)
+	FilterActions(Index, KeyboardPressActionFilter, ActionsToCombine);
+	if (ActionsToCombine.size() > 1)
 	{
-		index += actionsToCombine.size() - 1;
-		return new combinedActionNode(actionsToCombine, FETP_COMBINED_KEY_PRESS_ACTION);
+		Index += ActionsToCombine.size() - 1;
+		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_KEY_PRESS_ACTION);
 	}
 
-	filterActions(index, keyboardTextActionFilter, actionsToCombine);
-	if (actionsToCombine.size() > 1)
+	FilterActions(Index, KeyboardTextActionFilter, ActionsToCombine);
+	if (ActionsToCombine.size() > 1)
 	{
-		index += actionsToCombine.size() - 1;
-		return new combinedActionNode(actionsToCombine, FETP_COMBINED_TEXT_INPUT_ACTION);
+		Index += ActionsToCombine.size() - 1;
+		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_TEXT_INPUT_ACTION);
 	}
 
 	return nullptr;
 }
 
-void FEPTActionSystem::newAction(FETPAction* newAction)
+void FEPTActionSystem::NewAction(FETPAction* NewAction)
 {
-	if (newAction != nullptr)
-		addAction(newAction);
+	if (NewAction != nullptr)
+		AddAction(NewAction);
 }
 
-void FEPTActionSystem::setFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> callback)
+void FEPTActionSystem::SetOnFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> Callback)
 {
-	finishRecordingCallback = callback;
+	OnFinishRecordingCallback = Callback;
 }
 
-FETPAction* FEPTActionSystem::copyAction(FETPAction* src)
+FETPAction* FEPTActionSystem::CopyAction(FETPAction* Other)
 {
-	if (src->GetType() == FETP_KEYBOARD_ACTION)
+	if (Other->GetType() == FETP_KEYBOARD_ACTION)
 	{
-		return new KeyboardAction(*reinterpret_cast<KeyboardAction*>(src));
+		return new KeyboardAction(*reinterpret_cast<KeyboardAction*>(Other));
 	}
-	else if (src->GetType() == FETP_MOUSE_ACTION)
+	else if (Other->GetType() == FETP_MOUSE_ACTION)
 	{
-		return new MouseAction(*reinterpret_cast<MouseAction*>(src));
+		return new MouseAction(*reinterpret_cast<MouseAction*>(Other));
 	}
-	else if (src->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (Other->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		return new ScreenshootCompareAction(*reinterpret_cast<ScreenshootCompareAction*>(src));
+		return new ScreenshootCompareAction(*reinterpret_cast<ScreenshootCompareAction*>(Other));
 	}
-	else if (src->GetType() == FETP_SLEEP_ACTION)
+	else if (Other->GetType() == FETP_SLEEP_ACTION)
 	{
-		return new SleepAction(*reinterpret_cast<SleepAction*>(src));
+		return new SleepAction(*reinterpret_cast<SleepAction*>(Other));
 	}
-	else if (src->GetType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (Other->GetType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
-		return new LunchApplicationAction(*reinterpret_cast<LunchApplicationAction*>(src));
+		return new LunchApplicationAction(*reinterpret_cast<LunchApplicationAction*>(Other));
 	}
 	else
 	{
-		return new FETPAction(*src);
+		return new FETPAction(*Other);
 	}
 }
 
-std::string FEPTActionSystem::extractText(std::vector<FETPAction*> actions)
+std::string FEPTActionSystem::ExtractText(std::vector<FETPAction*> Actions)
 {
-	std::string result = "";
-	for (size_t i = 0; i < actions.size(); i++)
+	std::string Result = "";
+	for (size_t i = 0; i < Actions.size(); i++)
 	{
-		if (actions[i]->GetType() != FETP_KEYBOARD_ACTION)
+		if (Actions[i]->GetType() != FETP_KEYBOARD_ACTION)
 			continue;
 
-		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(actions[i]);
-		if (action->wParam == WM_KEYUP)
+		KeyboardAction* Action = reinterpret_cast<KeyboardAction*>(Actions[i]);
+		if (Action->EventType == WM_KEYUP)
 		{
-			char tempChar = INPUT_SYSTEM.getChar(action);
-			if (tempChar != 0)
-				result += tempChar;
+			char TemporaryChar = INPUT_SYSTEM.GetCharFromAction(Action);
+			if (TemporaryChar != 0)
+				Result += TemporaryChar;
 		}
 	}
 
-	return result;
+	return Result;
 }
 
-std::vector<FETPAction*> FEPTActionSystem::generateInputTextActions(std::string text, int avarageDelay)
+std::vector<FETPAction*> FEPTActionSystem::GenerateInputTextActions(std::string Text, int AverageDelay)
 {
-	std::vector<FETPAction*> result;
-	for (size_t i = 0; i < text.size(); i++)
+	std::vector<FETPAction*> Result;
+	for (size_t i = 0; i < Text.size(); i++)
 	{
-		int convertedKey = VkKeyScanExA(char(text[i]), GetKeyboardLayout(0));
-		int vkCode = convertedKey & 0xff;
-		int keysState = (convertedKey & 0xff00) >> 8;
+		int ConvertedKey = VkKeyScanExA(char(Text[i]), GetKeyboardLayout(0));
+		int VirtualKeyCode = ConvertedKey & 0xff;
+		int KeysState = (ConvertedKey & 0xff00) >> 8;
 
 		// Can't find appropriate key for that char.
-		if (vkCode == -1)
+		if (VirtualKeyCode == -1)
 			continue;
 
-		if (keysState & 1)
+		if (KeysState & 1)
 		{
-			KeyboardAction* newAction = new KeyboardAction();
-			newAction->additionalInfo.vkCode = 0x10;
-			newAction->wParam = WM_KEYDOWN;
-			newAction->shiftPressed = false;
-			result.push_back(newAction);
+			KeyboardAction* NewAction = new KeyboardAction();
+			NewAction->HookInfo.vkCode = 0x10;
+			NewAction->EventType = WM_KEYDOWN;
+			NewAction->bShiftPressed = false;
+			Result.push_back(NewAction);
 		}
 
-		KeyboardAction* newAction = new KeyboardAction();
-		newAction->additionalInfo.vkCode = vkCode;
-		newAction->wParam = WM_KEYDOWN;
-		newAction->shiftPressed = keysState & 1;
-		result.push_back(newAction);
+		KeyboardAction* NewAction = new KeyboardAction();
+		NewAction->HookInfo.vkCode = VirtualKeyCode;
+		NewAction->EventType = WM_KEYDOWN;
+		NewAction->bShiftPressed = KeysState & 1;
+		Result.push_back(NewAction);
 
-		SleepAction* newSleepAction = new SleepAction(avarageDelay);
-		result.push_back(newSleepAction);
+		SleepAction* NewSleepAction = new SleepAction(AverageDelay);
+		Result.push_back(NewSleepAction);
 
-		newAction = new KeyboardAction();
-		newAction->additionalInfo.vkCode = vkCode;
-		newAction->wParam = WM_KEYUP;
-		newAction->shiftPressed = keysState & 1;
-		result.push_back(newAction);
+		NewAction = new KeyboardAction();
+		NewAction->HookInfo.vkCode = VirtualKeyCode;
+		NewAction->EventType = WM_KEYUP;
+		NewAction->bShiftPressed = KeysState & 1;
+		Result.push_back(NewAction);
 
-		if (keysState & 1)
+		if (KeysState & 1)
 		{
-			KeyboardAction* newAction = new KeyboardAction();
-			newAction->additionalInfo.vkCode = 0x10;
-			newAction->wParam = WM_KEYUP;
-			newAction->shiftPressed = false;
-			result.push_back(newAction);
+			KeyboardAction* NewAction = new KeyboardAction();
+			NewAction->HookInfo.vkCode = 0x10;
+			NewAction->EventType = WM_KEYUP;
+			NewAction->bShiftPressed = false;
+			Result.push_back(NewAction);
 		}
 	}
 
-	return result;
+	return Result;
 }

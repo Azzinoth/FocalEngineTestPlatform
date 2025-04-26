@@ -43,28 +43,28 @@ void actionEditPopup::render()
 			SleepAction* action = reinterpret_cast<SleepAction*>(currentAction);
 			ImGui::SetNextItemWidth(150);
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - (150.0f + 80.0f) / 2.0f);
-			int sleepFor = action->sleepFor;
-			if (ImGui::InputInt("sleep for", &sleepFor))
-				action->sleepFor = sleepFor;
+			int SleepDurationMS = action->SleepDurationMS;
+			if (ImGui::InputInt("sleep for", &SleepDurationMS))
+				action->SleepDurationMS = SleepDurationMS;
 		}
 		else if (currentAction->GetType() == FETP_MOUSE_ACTION)
 		{
 			MouseAction* action = reinterpret_cast<MouseAction*>(currentAction);
 
-			if (action->wParam == WM_MOUSEMOVE)
+			if (action->EventType == WM_MOUSEMOVE)
 			{
 				ImGui::SetNextItemWidth(140);
 				static int position[] = { 0, 0 };
-				position[0] = action->additionalInfo.pt.x;
-				position[1] = action->additionalInfo.pt.y;
+				position[0] = action->HookInfo.pt.x;
+				position[1] = action->HookInfo.pt.y;
 
 				ImGui::InputInt2("position", position);
 
-				action->additionalInfo.pt.x = position[0];
-				action->additionalInfo.pt.y = position[1];
+				action->HookInfo.pt.x = position[0];
+				action->HookInfo.pt.y = position[1];
 			}
 
-			if (action->wParam == WM_MOUSEWHEEL)
+			if (action->EventType == WM_MOUSEWHEEL)
 			{
 				static int value = 0;
 
@@ -73,7 +73,7 @@ void actionEditPopup::render()
 				ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, yPosition));
 
 				ImGui::SetNextItemWidth(140);
-				value = (short)HIWORD(action->additionalInfo.mouseData);
+				value = (short)HIWORD(action->HookInfo.mouseData);
 				ImGui::InputInt("wheel movement", &value);
 			}
 		}
@@ -81,9 +81,9 @@ void actionEditPopup::render()
 		{
 			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(currentAction);
 			ImGui::SetNextItemWidth(80);
-			int keyCode = action->additionalInfo.vkCode;
+			int keyCode = action->HookInfo.vkCode;
 			ImGui::InputInt("key code", &keyCode);
-			action->additionalInfo.vkCode = keyCode;
+			action->HookInfo.vkCode = keyCode;
 		}
 
 		ImGui::SetItemDefaultFocus();

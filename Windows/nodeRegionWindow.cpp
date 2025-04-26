@@ -77,8 +77,8 @@ void nodeRegionWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("Sleep node"))
 			{
-				SleepAction* newAction = new SleepAction(10);
-				newNode = new globalActionNode(newAction);
+				SleepAction* NewAction = new SleepAction(10);
+				newNode = new globalActionNode(NewAction);
 			}
 
 			if (ImGui::MenuItem("Screen compare node..."))
@@ -96,10 +96,10 @@ void nodeRegionWindow::mainContextMenu()
 					{
 						unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
 						memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-						ScreenshootCompareAction* newAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
+						ScreenshootCompareAction* NewAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
 						delete[] tempData;
 
-						newNode = new globalActionNode(newAction);
+						newNode = new globalActionNode(NewAction);
 					}
 				}
 			}
@@ -107,12 +107,12 @@ void nodeRegionWindow::mainContextMenu()
 			if (ImGui::MenuItem("Application lunch node..."))
 			{
 				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
 
 				if (Path != "")
 				{
-					LunchApplicationAction* newAction = new LunchApplicationAction(Path);
-					newNode = new globalActionNode(newAction);
+					LunchApplicationAction* NewAction = new LunchApplicationAction(Path);
+					newNode = new globalActionNode(NewAction);
 				}
 			}
 
@@ -120,43 +120,43 @@ void nodeRegionWindow::mainContextMenu()
 			{
 				if (ImGui::MenuItem("Move"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("LeftButtonDown"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_LBUTTONDOWN;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_LBUTTONDOWN;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("LeftButtonUp"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_LBUTTONUP;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_LBUTTONUP;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("RightButtonDown"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_RBUTTONDOWN;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_RBUTTONDOWN;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("RightButtonUp"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_RBUTTONUP;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_RBUTTONUP;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("WheelRotation"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_MOUSEWHEEL;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_MOUSEWHEEL;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				ImGui::EndMenu();
@@ -166,16 +166,16 @@ void nodeRegionWindow::mainContextMenu()
 			{
 				if (ImGui::MenuItem("KeyDown"))
 				{
-					KeyboardAction* newAction = new KeyboardAction();
-					newAction->wParam = WM_KEYDOWN;
-					newNode = new globalActionNode(newAction);
+					KeyboardAction* NewAction = new KeyboardAction();
+					NewAction->EventType = WM_KEYDOWN;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("KeyUp"))
 				{
-					KeyboardAction* newAction = new KeyboardAction();
-					newAction->wParam = WM_KEYUP;
-					newNode = new globalActionNode(newAction);
+					KeyboardAction* NewAction = new KeyboardAction();
+					NewAction->EventType = WM_KEYUP;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("Combined text input..."))
@@ -217,7 +217,7 @@ void nodeRegionWindow::mainContextMenu()
 		{
 			previewWindow::GetInstance().show(true);
 			previewWindow::GetInstance().currentNodeArea->Clear();
-			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
+			ACTION_SYSTEM.PlaceStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
 		}
 	}
 }

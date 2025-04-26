@@ -187,37 +187,17 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			{
 				ImageToLookFor = reinterpret_cast<FETPImage*>(TempData);
 
-				std::vector<unsigned char> tempScreenshoot;
-				tempScreenshoot.resize(ImageToLookFor->GetWidth() * ImageToLookFor->GetHeight() * 4);
+				FETPImage* CurrentScreenshot = nullptr;
+				CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(MonitorIndex);
 
-				std::vector<unsigned char> tempDifferenceData;
-				tempDifferenceData.resize(tempScreenshoot.size());
-
-				FETPImage* TestScreenShoot = nullptr;
-				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage(MonitorIndex);
-
-				int Similarity = 0;
-				size_t x = 0;
-				size_t y = 0;
-
-				bool found = false;
 				glm::vec2 Position = glm::vec2(-1.0f);
-				if (TestScreenShoot != nullptr)
-					Position = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenShoot, ImageToLookFor, Simularity, MaxColorShift);
-				found = Position.x != -1 && Position.y != -1;
-				x = static_cast<size_t>(Position.x);
-				y = static_cast<size_t>(Position.y);
+				if (CurrentScreenshot != nullptr)
+					Position = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Simularity, MaxColorShift);
 
+				bFound = Position.x != -1 && Position.y != -1;
 				FoundPosition = Position;
-				bFound = found;
 
-				if (found)
-				{
-					int y = 0;
-					y++;
-				}
-
-				delete TestScreenShoot;
+				delete CurrentScreenshot;
 
 				if (Output[0]->GetConnectedSockets().size() > 0)
 					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

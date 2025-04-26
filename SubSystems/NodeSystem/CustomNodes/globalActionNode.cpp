@@ -89,13 +89,13 @@ void globalActionNode::Initialize(FETPAction* Data)
 	if (Data->GetType() == FETP_KEYBOARD_ACTION)
 	{
 		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
-		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
+		if (action->EventType == WM_KEYDOWN || action->EventType == WM_SYSKEYDOWN)
 		{
 			SetName("keyDown");
 			TitleBackgroundColor = ImColor(34, 177, 76);
 			TitleBackgroundColorHovered = ImColor(32, 166, 72);
 		}
-		else if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
+		else if (action->EventType == WM_KEYUP || action->EventType == WM_SYSKEYUP)
 		{
 			SetName("keyUp");
 			TitleBackgroundColor = ImColor(181, 230, 29);
@@ -105,37 +105,37 @@ void globalActionNode::Initialize(FETPAction* Data)
 	else if (Data->GetType() == FETP_MOUSE_ACTION)
 	{
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
-		if (action->wParam == WM_LBUTTONUP)
+		if (action->EventType == WM_LBUTTONUP)
 		{
 			SetName("mouseLeftUp");
 			TitleBackgroundColor = ImColor(153, 217, 234);
 			TitleBackgroundColorHovered = ImColor(124, 207, 228);
 		}
-		else if (action->wParam == WM_RBUTTONUP)
+		else if (action->EventType == WM_RBUTTONUP)
 		{
 			SetName("mouseRightUp");
 			TitleBackgroundColor = ImColor(200, 191, 231);
 			TitleBackgroundColorHovered = ImColor(171, 157, 219);
 		}
-		else if (action->wParam == WM_LBUTTONDOWN)
+		else if (action->EventType == WM_LBUTTONDOWN)
 		{
 			SetName("mouseLeftDown");
 			TitleBackgroundColor = ImColor(0, 162, 232);
 			TitleBackgroundColorHovered = ImColor(0, 152, 217);
 		}
-		else if (action->wParam == WM_RBUTTONDOWN)
+		else if (action->EventType == WM_RBUTTONDOWN)
 		{
 			SetName("mouseRightDown");
 			TitleBackgroundColor = ImColor(163, 73, 164);
 			TitleBackgroundColorHovered = ImColor(147, 66, 147);
 		}
-		else if (action->wParam == WM_MOUSEMOVE)
+		else if (action->EventType == WM_MOUSEMOVE)
 		{
 			SetName("mouseMove");
 			TitleBackgroundColor = ImColor(136, 0, 21);
 			TitleBackgroundColorHovered = ImColor(113, 0, 17);
 		}
-		else if (action->wParam == WM_MOUSEWHEEL)
+		else if (action->EventType == WM_MOUSEWHEEL)
 		{
 			SetName("mouseWheel");
 			TitleBackgroundColor = ImColor(136, 0, 21);
@@ -207,13 +207,13 @@ void globalActionNode::Draw()
 		{
 			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
 			ImGui::SetNextItemWidth(80);
-			int keyCode = action->additionalInfo.vkCode;
+			int keyCode = action->HookInfo.vkCode;
 			if (ImGui::InputInt("key code", &keyCode))
 			{
 				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 
-			action->additionalInfo.vkCode = keyCode;
+			action->HookInfo.vkCode = keyCode;
 		}
 		else if (Data->GetType() == FETP_MOUSE_ACTION)
 		{
@@ -235,7 +235,7 @@ void globalActionNode::Draw()
 				action->additionalInfo.pt.y = position[1];
 			}*/
 
-			if (action->wParam == WM_MOUSEWHEEL)
+			if (action->EventType == WM_MOUSEWHEEL)
 			{
 				static int value = 0;
 
@@ -244,7 +244,7 @@ void globalActionNode::Draw()
 				ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
 				ImGui::SetNextItemWidth(140);
-				value = (short)HIWORD(action->additionalInfo.mouseData);
+				value = (short)HIWORD(action->HookInfo.mouseData);
 				ImGui::InputInt("wheel movement", &value);
 			}
 		}
@@ -255,12 +255,12 @@ void globalActionNode::Draw()
 			if (action->imagesInfo.size() > 0 && action->imagesInfo[0] != nullptr)
 			{
 				ImGui::SetCursorScreenPos(ImVec2(xPosition - 10.0f, yPosition - 10.0f));
-				glm::vec2 imageSize = SCREEN_SYSTEM.ImageSizeInRegion(action->imagesInfo[0]->image->GetWidth(),
-					action->imagesInfo[0]->image->GetHeight(),
+				glm::vec2 imageSize = SCREEN_SYSTEM.ImageSizeInRegion(action->imagesInfo[0]->Image->GetWidth(),
+					action->imagesInfo[0]->Image->GetHeight(),
 					size_t(this->GetClientRegionSize().x * 0.95f),
 					size_t(this->GetClientRegionSize().y * 0.55f));
 
-				ImGui::Image((void*)(intptr_t)action->imagesInfo[0]->image->GetTextureID(),
+				ImGui::Image((void*)(intptr_t)action->imagesInfo[0]->Image->GetTextureID(),
 					ImVec2(imageSize.x, imageSize.y),
 					ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 
@@ -284,17 +284,17 @@ void globalActionNode::Draw()
 		{
 			SleepAction* action = reinterpret_cast<SleepAction*>(Data);
 			ImGui::SetNextItemWidth(80);
-			int sleepFor = action->sleepFor;
-			if (ImGui::InputInt("sleep for", &sleepFor))
+			int SleepDurationMS = action->SleepDurationMS;
+			if (ImGui::InputInt("sleep for", &SleepDurationMS))
 			{
-				action->sleepFor = sleepFor;
+				action->SleepDurationMS = SleepDurationMS;
 				ParentArea->PropagateUpdateToConnectedNodes(this);
 			}
 		}
 		else if (Data->GetType() == FETP_LUNCH_APPLICATION_ACTION)
 		{
 			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
-			ImGui::Text(action->applicationPath.c_str());
+			ImGui::Text(action->ApplicationPath.c_str());
 		}
 	}
 	else if (GetStyle() == CIRCLE)
@@ -327,12 +327,12 @@ void globalActionNode::Draw()
 			else if (Data->GetType() == FETP_LUNCH_APPLICATION_ACTION)
 			{
 				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
 
 				if (Path != "")
 				{
 					LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
-					action->applicationPath = Path;
+					action->ApplicationPath = Path;
 				}
 			}
 			else
@@ -457,41 +457,41 @@ void globalActionNode::ShowTooltip()
 	if (Data->GetType() == FETP_KEYBOARD_ACTION)
 	{
 		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
-		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
+		if (action->EventType == WM_KEYDOWN || action->EventType == WM_SYSKEYDOWN)
 			textToShow += "\nSub type: Key down";
-		if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
+		if (action->EventType == WM_KEYUP || action->EventType == WM_SYSKEYUP)
 			textToShow += "\nSub type: Key up";
 
-		textToShow += "\nKey code: " + std::to_string(int(action->additionalInfo.vkCode));
+		textToShow += "\nKey code: " + std::to_string(int(action->HookInfo.vkCode));
 	}
 	else if (Data->GetType() == FETP_MOUSE_ACTION)
 	{
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
-		if (action->wParam == WM_MOUSEMOVE)
+		if (action->EventType == WM_MOUSEMOVE)
 		{
 			textToShow += "\nSub type: Move";
-			textToShow += "\nTo position: x = " + std::to_string(int(action->additionalInfo.pt.x)) + " y = " + std::to_string(int(action->additionalInfo.pt.y));
+			textToShow += "\nTo position: x = " + std::to_string(int(action->HookInfo.pt.x)) + " y = " + std::to_string(int(action->HookInfo.pt.y));
 		}
-		else if (action->wParam == WM_LBUTTONDOWN)
+		else if (action->EventType == WM_LBUTTONDOWN)
 		{
 			textToShow += "\nSub type: Left Down";
 		}
-		else if (action->wParam == WM_LBUTTONUP)
+		else if (action->EventType == WM_LBUTTONUP)
 		{
 			textToShow += "\nSub type: Left Up";
 		}
-		else if (action->wParam == WM_RBUTTONDOWN)
+		else if (action->EventType == WM_RBUTTONDOWN)
 		{
 			textToShow += "\nSub type: Right Down";
 		}
-		else if (action->wParam == WM_RBUTTONUP)
+		else if (action->EventType == WM_RBUTTONUP)
 		{
 			textToShow += "\nSub type: Right Up";
 		}
-		else if (action->wParam == WM_MOUSEWHEEL)
+		else if (action->EventType == WM_MOUSEWHEEL)
 		{
 			textToShow += "\nSub type: Wheel";
-			textToShow += "\nScroll amount: " + std::to_string((short)HIWORD(action->additionalInfo.mouseData));
+			textToShow += "\nScroll amount: " + std::to_string((short)HIWORD(action->HookInfo.mouseData));
 		}
 	}
 	else if (Data->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
@@ -502,12 +502,12 @@ void globalActionNode::ShowTooltip()
 	{
 		LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(Data);
 		textToShow += "\nSub type: Lunch Application";
-		textToShow += "\nPath: " + action->applicationPath;
+		textToShow += "\nPath: " + action->ApplicationPath;
 	}
 	else if (Data->GetType() == FETP_SLEEP_ACTION)
 	{
 		SleepAction* action = reinterpret_cast<SleepAction*>(Data);
-		textToShow += "\nDuration: " + std::to_string(action->sleepFor);
+		textToShow += "\nDuration: " + std::to_string(action->SleepDurationMS);
 	}
 
 	ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
@@ -561,39 +561,39 @@ void globalActionNode::RenderIcon()
 	{
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 7.0f, ImGui::GetCursorScreenPos().y + 7.0f));
 		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(Data);
-		if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
+		if (action->EventType == WM_KEYDOWN || action->EventType == WM_SYSKEYDOWN)
 			ImGui::Image((void*)(intptr_t)KeyDownIcon->GetTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
-		if (action->wParam == WM_KEYUP || action->wParam == WM_SYSKEYUP)
+		if (action->EventType == WM_KEYUP || action->EventType == WM_SYSKEYUP)
 			ImGui::Image((void*)(intptr_t)KeyUpIcon->GetTextureID(), ImVec2(102.0f, 102.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 	}
 	else if (Data->GetType() == FETP_MOUSE_ACTION)
 	{
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data);
-		if (action->wParam == WM_MOUSEMOVE)
+		if (action->EventType == WM_MOUSEMOVE)
 		{
 			ImGui::Image((void*)(intptr_t)MoveMouseIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
-		else if (action->wParam == WM_LBUTTONDOWN)
+		else if (action->EventType == WM_LBUTTONDOWN)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
 			ImGui::Image((void*)(intptr_t)LeftMouseDownIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
-		else if (action->wParam == WM_LBUTTONUP)
+		else if (action->EventType == WM_LBUTTONUP)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
 			ImGui::Image((void*)(intptr_t)LeftMouseUpIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
-		else if (action->wParam == WM_RBUTTONDOWN)
+		else if (action->EventType == WM_RBUTTONDOWN)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
 			ImGui::Image((void*)(intptr_t)RightMouseDownIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
-		else if (action->wParam == WM_RBUTTONUP)
+		else if (action->EventType == WM_RBUTTONUP)
 		{
 			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 2.0f, ImGui::GetCursorScreenPos().y));
 			ImGui::Image((void*)(intptr_t)RightMouseUpIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
-		else if (action->wParam == WM_MOUSEWHEEL)
+		else if (action->EventType == WM_MOUSEWHEEL)
 		{
 			ImGui::Image((void*)(intptr_t)ScrollMouseIcon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}

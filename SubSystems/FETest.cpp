@@ -232,14 +232,14 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 			ScreenshootCompareAction* CurrentAction = reinterpret_cast<ScreenshootCompareAction*>(CurrentNode->GetData());
 			for (size_t j = 0; j < CurrentAction->imagesInfo.size(); j++)
 			{
-				if (CurrentAction->imagesInfo[j]->image != nullptr)
+				if (CurrentAction->imagesInfo[j]->Image != nullptr)
 				{
 					std::string FileName = DirectoryPath + "screenshot_";
 					FileName += CurrentAction->GetID();
 					FileName += "_" + std::to_string(j) + "_";
 					FileName += ".png";
 
-					CurrentAction->imagesInfo[j]->image->SetFullPath(FileName);
+					CurrentAction->imagesInfo[j]->Image->SetFullPath(FileName);
 				}
 
 				if (CurrentAction->imagesInfo[j]->partialImage != nullptr)
@@ -287,14 +287,14 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 					ScreenshootCompareAction* CurrentAction = reinterpret_cast<ScreenshootCompareAction*>(CurrentNode->GetData());
 					for (size_t k = 0; k < CurrentAction->imagesInfo.size(); k++)
 					{
-						if (CurrentAction->imagesInfo[k]->image != nullptr)
+						if (CurrentAction->imagesInfo[k]->Image != nullptr)
 						{
 							std::string FileName = DirectoryPath + "screenshot_";
 							FileName += CurrentAction->GetID();
 							FileName += "_" + std::to_string(k) + "_";
 							FileName += ".png";
 
-							CurrentAction->imagesInfo[k]->image->SetFullPath(FileName);
+							CurrentAction->imagesInfo[k]->Image->SetFullPath(FileName);
 						}
 
 						if (CurrentAction->imagesInfo[k]->partialImage != nullptr)

@@ -49,7 +49,7 @@ void mouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connected
 
 	if (EventType == EXECUTE)
 	{
-		INPUT_SYSTEM.mouseUp();
+		INPUT_SYSTEM.SimulateMouseUp();
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

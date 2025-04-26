@@ -26,16 +26,16 @@ void testStartPreparationsWindow::render()
 	//ImGui::ImageButton((void*)(intptr_t)texture->getTextureID(), size, uv0, uv1, framePadding, backgroundColor, tintColor);
 	if (ImGui::Button("Add delete file action"))
 	{
-		FETestBeforeAction* newAction = new FETestBeforeAction();
-		newAction->Type = FE_BEFORE_TEST_ACTION_DELETE_FILE;
-		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(newAction);
+		FETestBeforeAction* NewAction = new FETestBeforeAction();
+		NewAction->Type = FE_BEFORE_TEST_ACTION_DELETE_FILE;
+		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(NewAction);
 	}
 
 	if (ImGui::Button("Add delete folder action"))
 	{
-		FETestBeforeAction* newAction = new FETestBeforeAction();
-		newAction->Type = FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
-		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(newAction);
+		FETestBeforeAction* NewAction = new FETestBeforeAction();
+		NewAction->Type = FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
+		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(NewAction);
 	}
 
 	if (ImGui::BeginListBox("##Actions ListBox", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowContentRegionMax().y - 250.0f)))

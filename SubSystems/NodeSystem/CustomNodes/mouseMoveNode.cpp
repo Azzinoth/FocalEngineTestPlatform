@@ -102,7 +102,7 @@ void mouseMoveNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSock
 
 	if (EventType == EXECUTE)
 	{
-		INPUT_SYSTEM.mouseMoveTo(static_cast<int>(Data.x), static_cast<int>(Data.y));
+		INPUT_SYSTEM.SimulateMouseMoveTo(static_cast<int>(Data.x), static_cast<int>(Data.y));
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

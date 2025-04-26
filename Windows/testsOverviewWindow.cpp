@@ -127,14 +127,14 @@ void testsOverviewWindow::renderContextMenu()
 
 			if (ImGui::MenuItem("Run"))
 			{
-				ACTION_SYSTEM.run(TEST_MANAGER.list[hoveredTestIndex]);
+				ACTION_SYSTEM.Run(TEST_MANAGER.list[hoveredTestIndex]);
 			}
 		}
 		else
 		{
 			if (ImGui::MenuItem("Add new test"))
 			{
-				TEST_MANAGER.addTest();
+				TEST_MANAGER.AddTest();
 				TEST_MANAGER.setSelelectedTestIndex(TEST_MANAGER.list.size() - 1);
 			}
 
@@ -153,7 +153,7 @@ void testsOverviewWindow::renderContextMenu()
 
 					for (size_t i = 0; i < TEST_MANAGER.list.size(); i++)
 					{
-						bool result = ACTION_SYSTEM.run(TEST_MANAGER.list[i]);
+						bool result = ACTION_SYSTEM.Run(TEST_MANAGER.list[i]);
 						Sleep(250);
 					}
 				}

@@ -67,7 +67,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		SetName("COMBINED_MOUSE_MOVE");
 
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
-		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		BeginPosition = glm::vec2(action->HookInfo.pt.x, action->HookInfo.pt.y);
 
 		EndPosition = glm::vec2(0);
 		for (int i = static_cast<int>(Data.size() - 1); i >= 0; i--)
@@ -75,7 +75,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 			if (Data[i]->GetType() == FETP_MOUSE_ACTION)
 			{
 				action = reinterpret_cast<MouseAction*>(Data[i]);
-				EndPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+				EndPosition = glm::vec2(action->HookInfo.pt.x, action->HookInfo.pt.y);
 
 				break;
 			}
@@ -88,7 +88,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		TitleBackgroundColorHovered = ImColor(0, 152, 217);
 
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
-		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		BeginPosition = glm::vec2(action->HookInfo.pt.x, action->HookInfo.pt.y);
 	}
 	else if (ActionType == FETP_COMBINED_RIGHT_MOUSE_ACTION)
 	{
@@ -97,7 +97,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		TitleBackgroundColorHovered = ImColor(147, 66, 147);
 
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
-		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		BeginPosition = glm::vec2(action->HookInfo.pt.x, action->HookInfo.pt.y);
 	}
 	else if (ActionType == FETP_COMBINED_WHEEL_MOUSE_ACTION)
 	{
@@ -106,14 +106,14 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		TitleBackgroundColorHovered = ImColor(147, 66, 147);
 
 		MouseAction* action = reinterpret_cast<MouseAction*>(Data[0]);
-		BeginPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+		BeginPosition = glm::vec2(action->HookInfo.pt.x, action->HookInfo.pt.y);
 	}
 	else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
 	{
 		SetName("COMBINED_KEY_PRESS");
 		if (Data[0]->GetType() == FETP_KEYBOARD_ACTION)
 		{
-			Text = "vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->additionalInfo.vkCode));
+			Text = "vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->HookInfo.vkCode));
 		}
 	}
 	else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
@@ -122,7 +122,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		TitleBackgroundColor = ImColor(163, 73, 164);
 		TitleBackgroundColorHovered = ImColor(147, 66, 147);
 
-		Text = ACTION_SYSTEM.extractText(Data);
+		Text = ACTION_SYSTEM.ExtractText(Data);
 		/*text = "";
 		for (size_t i = 0; i < data.size(); i++)
 		{
@@ -235,7 +235,7 @@ void combinedActionNode::Draw()
 			yPosition += 20.0f;
 			ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 
-			ImGui::Text(("vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->additionalInfo.vkCode))).c_str());
+			ImGui::Text(("vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->HookInfo.vkCode))).c_str());
 		}
 		else if (ActionType == FETP_COMBINED_TEXT_INPUT_ACTION)
 		{
@@ -383,7 +383,7 @@ void combinedActionNode::ChangeText(std::string NewText, int AvarageDelay)
 		{
 			if (Data[i]->GetType() == FETP_SLEEP_ACTION)
 			{
-				totalSleepTime += reinterpret_cast<SleepAction*>(Data[i])->sleepFor;
+				totalSleepTime += reinterpret_cast<SleepAction*>(Data[i])->SleepDurationMS;
 				totalSleepNodes++;
 			}
 		}
@@ -398,7 +398,7 @@ void combinedActionNode::ChangeText(std::string NewText, int AvarageDelay)
 		delete Data[i];
 	Data.clear();
 
-	Data = ACTION_SYSTEM.generateInputTextActions(NewText, 20);
+	Data = ACTION_SYSTEM.GenerateInputTextActions(NewText, 20);
 
 	//for (size_t i = 0; i < newText.size(); i++)
 	//{

@@ -115,7 +115,7 @@ void previewWindow::render()
 			newTestButton->render();
 			if (newTestButton->getWasClicked())
 			{
-				TEST_MANAGER.addTest();
+				TEST_MANAGER.AddTest();
 
 				NODE_SYSTEM.MoveNodesTo(currentNodeArea, TEST_MANAGER.list.back()->NodeArea);
 				close();
@@ -148,8 +148,8 @@ void previewWindow::mainContextMenu()
 	{
 		if (ImGui::MenuItem("Sleep node"))
 		{
-			SleepAction* newAction = new SleepAction(10);
-			globalActionNode* newNode = new globalActionNode(newAction);
+			SleepAction* NewAction = new SleepAction(10);
+			globalActionNode* newNode = new globalActionNode(NewAction);
 			newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 			currentNodeArea->AddNode(newNode);
@@ -170,10 +170,10 @@ void previewWindow::mainContextMenu()
 				{
 					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
 					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					ScreenshootCompareAction* newAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
+					ScreenshootCompareAction* NewAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
 					delete[] tempData;
 
-					globalActionNode* newNode = new globalActionNode(newAction);
+					globalActionNode* newNode = new globalActionNode(NewAction);
 					newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 					currentNodeArea->AddNode(newNode);
@@ -184,12 +184,12 @@ void previewWindow::mainContextMenu()
 		if (ImGui::MenuItem("Application lunch node..."))
 		{
 			std::string Path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
 
 			if (Path != "")
 			{
-				LunchApplicationAction* newAction = new LunchApplicationAction(Path);
-				globalActionNode* newNode = new globalActionNode(newAction);
+				LunchApplicationAction* NewAction = new LunchApplicationAction(Path);
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -200,8 +200,8 @@ void previewWindow::mainContextMenu()
 		{
 			if (ImGui::MenuItem("Move"))
 			{
-				MouseAction* newAction = new MouseAction();
-				globalActionNode* newNode = new globalActionNode(newAction);
+				MouseAction* NewAction = new MouseAction();
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -209,9 +209,9 @@ void previewWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("LeftButtonDown"))
 			{
-				MouseAction* newAction = new MouseAction();
-				newAction->wParam = WM_LBUTTONDOWN;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				MouseAction* NewAction = new MouseAction();
+				NewAction->EventType = WM_LBUTTONDOWN;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -219,9 +219,9 @@ void previewWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("LeftButtonUp"))
 			{
-				MouseAction* newAction = new MouseAction();
-				newAction->wParam = WM_LBUTTONUP;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				MouseAction* NewAction = new MouseAction();
+				NewAction->EventType = WM_LBUTTONUP;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -229,9 +229,9 @@ void previewWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("RightButtonDown"))
 			{
-				MouseAction* newAction = new MouseAction();
-				newAction->wParam = WM_RBUTTONDOWN;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				MouseAction* NewAction = new MouseAction();
+				NewAction->EventType = WM_RBUTTONDOWN;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -239,9 +239,9 @@ void previewWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("RightButtonUp"))
 			{
-				MouseAction* newAction = new MouseAction();
-				newAction->wParam = WM_RBUTTONUP;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				MouseAction* NewAction = new MouseAction();
+				NewAction->EventType = WM_RBUTTONUP;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -249,9 +249,9 @@ void previewWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("WheelRotation"))
 			{
-				MouseAction* newAction = new MouseAction();
-				newAction->wParam = WM_MOUSEWHEEL;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				MouseAction* NewAction = new MouseAction();
+				NewAction->EventType = WM_MOUSEWHEEL;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -264,9 +264,9 @@ void previewWindow::mainContextMenu()
 		{
 			if (ImGui::MenuItem("KeyDown"))
 			{
-				KeyboardAction* newAction = new KeyboardAction();
-				newAction->wParam = WM_KEYDOWN;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				KeyboardAction* NewAction = new KeyboardAction();
+				NewAction->EventType = WM_KEYDOWN;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);
@@ -274,9 +274,9 @@ void previewWindow::mainContextMenu()
 
 			if (ImGui::MenuItem("KeyUp"))
 			{
-				KeyboardAction* newAction = new KeyboardAction();
-				newAction->wParam = WM_KEYUP;
-				globalActionNode* newNode = new globalActionNode(newAction);
+				KeyboardAction* NewAction = new KeyboardAction();
+				NewAction->EventType = WM_KEYUP;
+				globalActionNode* newNode = new globalActionNode(NewAction);
 				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
 
 				currentNodeArea->AddNode(newNode);

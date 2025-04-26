@@ -8,7 +8,7 @@ testEditorWinow::testEditorWinow()
 	std::string tempCaption = "main area";
 	strcpy_s(caption, tempCaption.size() + 1, tempCaption.c_str());
 	
-	ACTION_SYSTEM.setFinishRecordingCallback(finishRecordingCallback);
+	ACTION_SYSTEM.SetOnFinishRecordingCallback(OnFinishRecordingCallback);
 }
 
 testEditorWinow::~testEditorWinow()
@@ -183,12 +183,12 @@ void testEditorWinow::mainContextMenu()
 			if (ImGui::MenuItem("Application lunch node..."))
 			{
 				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, applicationLoadFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
 
 				if (Path != "")
 				{
-					LunchApplicationAction* newAction = new LunchApplicationAction(Path);
-					newNode = new globalActionNode(newAction);
+					LunchApplicationAction* NewAction = new LunchApplicationAction(Path);
+					newNode = new globalActionNode(NewAction);
 				}
 			}
 
@@ -223,23 +223,23 @@ void testEditorWinow::mainContextMenu()
 
 				if (ImGui::MenuItem("RightButtonDown"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_RBUTTONDOWN;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_RBUTTONDOWN;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("RightButtonUp"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_RBUTTONUP;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_RBUTTONUP;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("WheelRotation"))
 				{
-					MouseAction* newAction = new MouseAction();
-					newAction->wParam = WM_MOUSEWHEEL;
-					newNode = new globalActionNode(newAction);
+					MouseAction* NewAction = new MouseAction();
+					NewAction->EventType = WM_MOUSEWHEEL;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				ImGui::EndMenu();
@@ -249,16 +249,16 @@ void testEditorWinow::mainContextMenu()
 			{
 				if (ImGui::MenuItem("KeyDown"))
 				{
-					KeyboardAction* newAction = new KeyboardAction();
-					newAction->wParam = WM_KEYDOWN;
-					newNode = new globalActionNode(newAction);
+					KeyboardAction* NewAction = new KeyboardAction();
+					NewAction->EventType = WM_KEYDOWN;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("KeyUp"))
 				{
-					KeyboardAction* newAction = new KeyboardAction();
-					newAction->wParam = WM_KEYUP;
-					newNode = new globalActionNode(newAction);
+					KeyboardAction* NewAction = new KeyboardAction();
+					NewAction->EventType = WM_KEYUP;
+					newNode = new globalActionNode(NewAction);
 				}
 
 				if (ImGui::MenuItem("Combined text input..."))
@@ -318,7 +318,7 @@ void testEditorWinow::mainContextMenu()
 		{
 			previewWindow::GetInstance().show(true);
 			previewWindow::GetInstance().currentNodeArea->Clear();
-			ACTION_SYSTEM.placeStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
+			ACTION_SYSTEM.PlaceStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
 		}
 	}
 	else if (TEST_MANAGER.getSelectedTest()->NodeArea->GetSelected().size() > 1)
@@ -407,13 +407,13 @@ void testEditorWinow::nodeCallback(VisNodeSys::Node* node, NODE_EVENT eventWithN
 	);
 }
 
-void testEditorWinow::finishRecordingCallback(std::vector<FETPAction*>& recordedActions)
+void testEditorWinow::OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions)
 {
-	if (recordedActions.size() != 0)
+	if (RecordedActions.size() != 0)
 	{
 		previewWindow::GetInstance().show();
-		ACTION_SYSTEM.placeStructuredNodes(recordedActions, previewWindow::GetInstance().currentNodeArea);
-		recordedActions.clear();
+		ACTION_SYSTEM.PlaceStructuredNodes(RecordedActions, previewWindow::GetInstance().currentNodeArea);
+		RecordedActions.clear();
 	}
 }
 
@@ -426,7 +426,7 @@ void testEditorWinow::renderMainMenu()
 		{
 			if (ImGui::MenuItem("New test"))
 			{
-				TEST_MANAGER.addTest();
+				TEST_MANAGER.AddTest();
 				TEST_MANAGER.setSelelectedTestIndex(TEST_MANAGER.list.size() - 1);
 			}
 
@@ -436,7 +436,7 @@ void testEditorWinow::renderMainMenu()
 			if (ImGui::MenuItem("Save test...") && TEST_MANAGER.getSelectedTest() != nullptr)
 			{
 				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, saveFileFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, SaveFileFilter, 1);
 
 				if (Path != "")
 				{
@@ -453,11 +453,11 @@ void testEditorWinow::renderMainMenu()
 			if (ImGui::MenuItem("Load test..."))
 			{
 				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, openFETPFileFilter, 1);
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, OpenFETPFileFilter, 1);
 
 				if (Path != "")
 				{
-					TEST_MANAGER.addTest(Path);
+					TEST_MANAGER.AddTest(Path);
 					TEST_MANAGER.setSelelectedTestIndex(TEST_MANAGER.list.size() - 1);
 				}
 			}

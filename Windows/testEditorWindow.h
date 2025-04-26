@@ -11,7 +11,7 @@ class testEditorWinow : public FEImGuiWindow
 	static ImVec2 mousePositionWhenContextMenuWasOpened;
 
 	static void nodeCallback(VisNodeSys::Node* node, VisNodeSys::NODE_EVENT eventWithNode);
-	static void finishRecordingCallback(std::vector<FETPAction*>& recordedActions);
+	static void OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions);
 
 	void renderMainMenu();
 

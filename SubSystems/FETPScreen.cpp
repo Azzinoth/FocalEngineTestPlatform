@@ -567,9 +567,9 @@ bool ScreenSearchInfo::GetSearchOnScreenMode()
 	return bSearchOnScreen;
 }
 
-void ScreenSearchInfo::SetSearchOnScreenMode(bool newValue)
+void ScreenSearchInfo::SetSearchOnScreenMode(bool NewValue)
 {
-	bSearchOnScreen = newValue;
+	bSearchOnScreen = NewValue;
 
 	ScreenRegionMin = ImVec2(0, 0);
 	ScreenRegionMax = ImVec2(float(TEST_PLATFORM.GetScreenWidth()), float(TEST_PLATFORM.GetScreenHeight()));
@@ -599,9 +599,9 @@ int ScreenSearchInfo::GetXShiftFromFound()
 	return XShiftFromFound;
 }
 
-void ScreenSearchInfo::SetXShiftFromFound(int newValue)
+void ScreenSearchInfo::SetXShiftFromFound(int NewValue)
 {
-	XShiftFromFound = newValue;
+	XShiftFromFound = NewValue;
 }
 
 int ScreenSearchInfo::GetYShiftFromFound()
@@ -609,7 +609,7 @@ int ScreenSearchInfo::GetYShiftFromFound()
 	return YShiftFromFound;
 }
 
-void ScreenSearchInfo::SetYShiftFromFound(int newValue)
+void ScreenSearchInfo::SetYShiftFromFound(int NewValue)
 {
-	YShiftFromFound = newValue;
+	YShiftFromFound = NewValue;
 }

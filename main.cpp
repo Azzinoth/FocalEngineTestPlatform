@@ -6,7 +6,7 @@ void MainWindowRender()
  {
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 	
-	INPUT_SYSTEM.update();
+	INPUT_SYSTEM.Update();
 	
 	testsOverviewWindow::GetInstance().render();
 	testEditorWinow::GetInstance().render();
@@ -20,7 +20,7 @@ void MainWindowRender()
 	
 	textInputPopup::GetInstance().render();
 	actionEditPopup::GetInstance().render();
-	ACTION_SYSTEM.update();
+	ACTION_SYSTEM.Update();
 
 	if (TEST_MANAGER.getSelectedTest() != nullptr)
 	{
@@ -74,12 +74,12 @@ void KeyButtonCallback(int key, int scancode, int action, int mods)
 		if (textInputPopup::GetInstance().isOpened())
 			return;
 
-		ACTION_SYSTEM.run(TEST_MANAGER.getSelectedTest());
+		ACTION_SYSTEM.Run(TEST_MANAGER.getSelectedTest());
 
 		while (TEST_MANAGER.getSelectedTest()->GetLoopCount() > 1)
 		{
 			TEST_MANAGER.getSelectedTest()->SetLoopCount(TEST_MANAGER.getSelectedTest()->GetLoopCount() - 1);
-			ACTION_SYSTEM.run(TEST_MANAGER.getSelectedTest());
+			ACTION_SYSTEM.Run(TEST_MANAGER.getSelectedTest());
 		}
 	}
 
@@ -91,12 +91,12 @@ void KeyButtonCallback(int key, int scancode, int action, int mods)
 
 void globalKeyButtonsCallback(KeyboardAction keyAction)
 {
-	ACTION_SYSTEM.newKeyboardAction(keyAction);
+	ACTION_SYSTEM.NewKeyboardAction(keyAction);
 }
 
 void globalMouseCallback(MouseAction mouseAction)
 {
-	ACTION_SYSTEM.newMouseAction(mouseAction);
+	ACTION_SYSTEM.NewMouseAction(mouseAction);
 }
 
 double MouseX, MouseY;
@@ -191,9 +191,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	APPLICATION.GetMainWindow()->SetRenderFunction(MainWindowRender);
 
-	INPUT_SYSTEM.initialize();
-	INPUT_SYSTEM.setGlobalKeyboardCallback(globalKeyButtonsCallback);
-	INPUT_SYSTEM.setGlobalMouseCallback(globalMouseCallback);
+	INPUT_SYSTEM.Initialize();
+	INPUT_SYSTEM.SetGlobalKeyboardCallback(globalKeyButtonsCallback);
+	INPUT_SYSTEM.SetGlobalMouseCallback(globalMouseCallback);
 
 	testsOverviewWindow::GetInstance().show();
 	testEditorWinow::GetInstance().show();

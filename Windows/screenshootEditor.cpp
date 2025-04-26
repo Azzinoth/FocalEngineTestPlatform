@@ -141,16 +141,16 @@ void screenshootEditor::render()
 	}
 
 	if (subImageIndex < currentAction->imagesInfo.size() &&
-		currentAction->imagesInfo[subImageIndex]->image->GetWidth() != 0 &&
-		currentAction->imagesInfo[subImageIndex]->image->GetHeight() != 0)
+		currentAction->imagesInfo[subImageIndex]->Image->GetWidth() != 0 &&
+		currentAction->imagesInfo[subImageIndex]->Image->GetHeight() != 0)
 	{
 		CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 		ImGui::SetCursorPos(imagePosition);
-		ImGui::Image((void*)(intptr_t)currentImageInfo->image->GetTextureID(),
+		ImGui::Image((void*)(intptr_t)currentImageInfo->Image->GetTextureID(),
 					 ImVec2(imageSize.x, imageSize.y),
 					 ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 
-		float resizeRatio = imageSize.x / currentImageInfo->image->GetWidth();
+		float resizeRatio = imageSize.x / currentImageInfo->Image->GetWidth();
 		float twoPixelsResized = 2.0f * resizeRatio;
 		// Left scroller.
 		left.setPosition(ImVec2(left.getPosition().x, imagePosition.y));
@@ -246,8 +246,8 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 
 	CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
-	imageSize = SCREEN_SYSTEM.ImageSizeInRegion(currentImageInfo->image->GetWidth(),
-												currentImageInfo->image->GetHeight(),
+	imageSize = SCREEN_SYSTEM.ImageSizeInRegion(currentImageInfo->Image->GetWidth(),
+												currentImageInfo->Image->GetHeight(),
 												size_t((windowContentRegionMax.x - windowContentRegionMin.x) * 0.925f),
 												size_t((windowContentRegionMax.y - windowContentRegionMin.y) - 80.0f));
 
@@ -264,11 +264,11 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 
 	if (currentImageInfo->partialImage != nullptr)
 	{
-		leftInPercent = float(currentImageInfo->partialImageLeft) / float(currentImageInfo->image->GetWidth());
-		rigthInPercent = leftInPercent + float(currentImageInfo->partialImage->GetWidth()) / float(currentImageInfo->image->GetWidth());
+		leftInPercent = float(currentImageInfo->partialImageLeft) / float(currentImageInfo->Image->GetWidth());
+		rigthInPercent = leftInPercent + float(currentImageInfo->partialImage->GetWidth()) / float(currentImageInfo->Image->GetWidth());
 
-		topInPercent = float(currentImageInfo->partialImageTop) / float(currentImageInfo->image->GetHeight());
-		bottomInPercent = topInPercent + float(currentImageInfo->partialImage->GetHeight()) / float(currentImageInfo->image->GetHeight());
+		topInPercent = float(currentImageInfo->partialImageTop) / float(currentImageInfo->Image->GetHeight());
+		bottomInPercent = topInPercent + float(currentImageInfo->partialImage->GetHeight()) / float(currentImageInfo->Image->GetHeight());
 	}
 
 	left.setPosition(ImVec2(imagePosition.x + imageSize.x * leftInPercent, imagePosition.y));
@@ -294,8 +294,8 @@ void screenshootEditor::loadPNGToCurrent()
 
 		if (error == 0)
 		{
-			if (currentAction->imagesInfo[subImageIndex]->image != nullptr)
-				delete currentAction->imagesInfo[subImageIndex]->image;
+			if (currentAction->imagesInfo[subImageIndex]->Image != nullptr)
+				delete currentAction->imagesInfo[subImageIndex]->Image;
 
 			if (currentAction->imagesInfo[subImageIndex]->partialImage != nullptr)
 				delete currentAction->imagesInfo[subImageIndex]->partialImage;
@@ -306,7 +306,7 @@ void screenshootEditor::loadPNGToCurrent()
 
 			unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
 			memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-			currentAction->imagesInfo[subImageIndex]->image = new FETPImage(tempData, uWidth, uHeight);
+			currentAction->imagesInfo[subImageIndex]->Image = new FETPImage(tempData, uWidth, uHeight);
 			delete[] tempData;
 
 			changeCurrentImageVariant(subImageIndex);
@@ -319,20 +319,20 @@ void screenshootEditor::cutOutPartialImage()
 	CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
 	float percentage = (left.getPosition().x - imagePosition.x) / imageSize.x;
-	int minX = int(floor(currentImageInfo->image->GetWidth() * percentage));
+	int minX = int(floor(currentImageInfo->Image->GetWidth() * percentage));
 
 	percentage = (top.getPosition().y - imagePosition.y) / imageSize.y;
-	int minY = int(floor(currentImageInfo->image->GetHeight() * percentage));
+	int minY = int(floor(currentImageInfo->Image->GetHeight() * percentage));
 
 	percentage = (right.getPosition().x - imagePosition.x) / imageSize.x;
-	int maxX = int(floor(currentImageInfo->image->GetWidth() * percentage));
+	int maxX = int(floor(currentImageInfo->Image->GetWidth() * percentage));
 
 	percentage = (bottom.getPosition().y - imagePosition.y) / imageSize.y;
-	int maxY = int(floor(currentImageInfo->image->GetHeight() * percentage));
+	int maxY = int(floor(currentImageInfo->Image->GetHeight() * percentage));
 
 	int newImageW = maxX - minX;
 
-	FETPImage* newImage = currentImageInfo->image->GetRegion(minX,
+	FETPImage* newImage = currentImageInfo->Image->GetRegion(minX,
 															 minY,
 															 maxX - minX,
 															 maxY - minY);

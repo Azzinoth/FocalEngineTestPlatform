@@ -30,6 +30,7 @@ private:
 
 #define SCREEN_SYSTEM FETPScreen::GetInstance()
  
+// FIX ME! Do I need it?
 struct ScreenSearchInfo
 {
 private:
@@ -45,18 +46,18 @@ public:
 	{
 	}
 
-	ScreenSearchInfo(ScreenSearchInfo& src)
+	ScreenSearchInfo(ScreenSearchInfo& Other)
 	{
-		ScreenRegionMin = src.ScreenRegionMin;
-		ScreenRegionMax = src.ScreenRegionMax;
-		bSearchOnScreen = src.bSearchOnScreen;
+		ScreenRegionMin = Other.ScreenRegionMin;
+		ScreenRegionMax = Other.ScreenRegionMax;
+		bSearchOnScreen = Other.bSearchOnScreen;
 
-		XShiftFromFound = src.XShiftFromFound;
-		YShiftFromFound = src.YShiftFromFound;
+		XShiftFromFound = Other.XShiftFromFound;
+		YShiftFromFound = Other.YShiftFromFound;
 	}
 
 	bool GetSearchOnScreenMode();
-	void SetSearchOnScreenMode(bool newValue);
+	void SetSearchOnScreenMode(bool NewValue);
 
 	ImVec2 GetScreenMinRegion();
 	ImVec2 GetScreenMaxRegion();
@@ -64,16 +65,17 @@ public:
 	void SetScreenRegion(ImVec2 ScreenRegionMin, ImVec2 ScreenRegionMax);
 
 	int GetXShiftFromFound();
-	void SetXShiftFromFound(int newValue);
+	void SetXShiftFromFound(int NewValue);
 
 	int GetYShiftFromFound();
-	void SetYShiftFromFound(int newValue);
+	void SetYShiftFromFound(int NewValue);
 };
 
+// FIX ME! Do I need it?
 struct CompareImageInfo
 {
 public:
-	FETPImage* image = nullptr;
+	FETPImage* Image = nullptr;
 	bool lastRunResult = false;
 	int correctnessThreshold = 95;
 	int maxColorShift = 4;
@@ -90,7 +92,7 @@ public:
 
 	CompareImageInfo()
 	{
-		image = nullptr;
+		Image = nullptr;
 		partialImage = nullptr;
 
 		partialImageLeft = 0;
@@ -99,7 +101,7 @@ public:
 
 	CompareImageInfo(CompareImageInfo& src)
 	{
-		image = new FETPImage(*src.image);
+		Image = new FETPImage(*src.Image);
 		if (src.partialImage != nullptr)
 			partialImage = new FETPImage(*src.partialImage);
 
@@ -117,9 +119,9 @@ public:
 		severalAttemptsTimeout = src.severalAttemptsTimeout;
 	}
 
-	CompareImageInfo(FETPImage* image)
+	CompareImageInfo(FETPImage* Image)
 	{
-		this->image = image;
+		this->Image = Image;
 
 		partialImageLeft = 0;
 		partialImageTop = 0;
@@ -127,7 +129,7 @@ public:
 
 	~CompareImageInfo()
 	{
-		delete image;
+		delete Image;
 		delete partialImage;
 		delete screenSearch;
 	}
@@ -236,7 +238,7 @@ public:
 			FileName += "_" + Index + "_";
 			FileName += ".png";
 			CompareImageInfos[Index]["screenshot_fileName"] = FileName;
-			CompareImageInfos[Index]["screenshot_fullPath"] = imagesInfo[i]->image->GetFullPath();
+			CompareImageInfos[Index]["screenshot_fullPath"] = imagesInfo[i]->Image->GetFullPath();
 
 			CompareImageInfos[Index]["partialImageLeft"] = imagesInfo[i]->partialImageLeft;
 			CompareImageInfos[Index]["partialImageTop"] = imagesInfo[i]->partialImageTop;
@@ -322,11 +324,11 @@ public:
 	{
 		for (size_t i = 0; i < imagesInfo.size(); i++)
 		{
-			if (imagesInfo[i]->image != nullptr)
+			if (imagesInfo[i]->Image != nullptr)
 			{
-				unsigned char* tempRawData = imagesInfo[i]->image->GetRawData();
+				unsigned char* tempRawData = imagesInfo[i]->Image->GetRawData();
 				// One possibility why it is empty is that user copy node to clipboard.
-				if (imagesInfo[i]->image->GetFullPath() == "")
+				if (imagesInfo[i]->Image->GetFullPath() == "")
 				{
 					// So we need to save it to temp location.
 					std::string tempDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FocalEngine::FILE_SYSTEM.GetCurrentWorkingPath().c_str());
@@ -334,9 +336,9 @@ public:
 					fileName += GetID();
 					fileName += "_" + std::to_string(i) + "_";
 					fileName += ".png";
-					imagesInfo[i]->image->SetFullPath(fileName);
+					imagesInfo[i]->Image->SetFullPath(fileName);
 				}
-				lodepng::encode(imagesInfo[i]->image->GetFullPath(), tempRawData, imagesInfo[i]->image->GetWidth(), imagesInfo[i]->image->GetHeight());
+				lodepng::encode(imagesInfo[i]->Image->GetFullPath(), tempRawData, imagesInfo[i]->Image->GetWidth(), imagesInfo[i]->Image->GetHeight());
 				delete[] tempRawData;
 			}
 
