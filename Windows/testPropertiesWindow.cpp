@@ -64,8 +64,8 @@ void testPropertiesWindow::render()
 			else
 			{
 				ImGui::TableNextColumn();
-				std::string time = std::to_string((lastTestResult->EndTime - lastTestResult->StartTime) / 1000.0f);
-				ImGui::Text((time + " sec").c_str());
+				std::string Time = std::to_string((lastTestResult->EndTime - lastTestResult->StartTime) / 1000.0f);
+				ImGui::Text((Time + " sec").c_str());
 			}
 
 			ImGui::TableNextColumn();

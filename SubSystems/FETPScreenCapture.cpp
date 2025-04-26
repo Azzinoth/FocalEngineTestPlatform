@@ -2,6 +2,62 @@
 
 FETPScreenCapture::FETPScreenCapture()
 {
+	InitializeDirectX();
+
+    std::vector<FocalEngine::MonitorInfo> Monitors = FocalEngine::APPLICATION.GetMonitors();
+	PerMonitorStagingTextures.resize(Monitors.size());
+    for (size_t i = 0; i < Monitors.size(); i++)
+    {
+		PerMonitorStagingTextures[i] = nullptr;
+
+        OutputDuplication Duplication(Device, static_cast<unsigned int>(i));
+        IDXGIOutputDuplication* outputDuplication = Duplication.outputDuplication;
+        if (outputDuplication == nullptr)
+            continue;
+
+        GetDesktopImage(outputDuplication);
+        ID3D11Texture2D* AcquiredDesktopImage = DesktopImageTexture;
+        if (AcquiredDesktopImage == nullptr)
+            continue;
+
+        DXGI_OUTDUPL_DESC DuplicationDescription;
+        outputDuplication->GetDesc(&DuplicationDescription);
+
+        const auto CurrentFormat = static_cast<int>(DuplicationDescription.ModeDesc.Format);
+        const auto AcceptableFormat =
+            CurrentFormat == DXGI_FORMAT_B8G8R8A8_UNORM ||
+            CurrentFormat == DXGI_FORMAT_B8G8R8X8_UNORM ||
+            CurrentFormat == DXGI_FORMAT_B8G8R8A8_TYPELESS ||
+            CurrentFormat == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB ||
+            CurrentFormat == DXGI_FORMAT_B8G8R8X8_TYPELESS ||
+            CurrentFormat == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
+
+        if (!AcceptableFormat)
+            continue;
+
+        D3D11_TEXTURE2D_DESC TextureDescription{};
+        TextureDescription.Width = DuplicationDescription.ModeDesc.Width;
+        TextureDescription.Height = DuplicationDescription.ModeDesc.Height;
+        TextureDescription.Format = DuplicationDescription.ModeDesc.Format;
+        TextureDescription.ArraySize = 1;
+        TextureDescription.BindFlags = 0;
+        TextureDescription.MiscFlags = 0;
+        TextureDescription.SampleDesc.Count = 1;
+        TextureDescription.SampleDesc.Quality = 0;
+        TextureDescription.MipLevels = 1;
+        TextureDescription.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        TextureDescription.Usage = D3D11_USAGE_STAGING;
+
+        HRESULT OperationResult = Device->CreateTexture2D(&TextureDescription, nullptr, &PerMonitorStagingTextures[i]);
+        if (FAILED(OperationResult))
+            continue;
+
+        Duplication.outputDuplication->Release();
+    }
+}
+
+void FETPScreenCapture::InitializeDirectX()
+{
     static const D3D_DRIVER_TYPE DriverTypes[] =
     {
         D3D_DRIVER_TYPE_HARDWARE,
@@ -25,7 +81,7 @@ FETPScreenCapture::FETPScreenCapture()
             nullptr,
             0,
             FeatureLevels,
-            static_cast<UINT>(std::size(FeatureLevels)),
+            static_cast<unsigned int>(std::size(FeatureLevels)),
             D3D11_SDK_VERSION,
             &Device,
             &FeatureLevel,
@@ -38,59 +94,9 @@ FETPScreenCapture::FETPScreenCapture()
         Device->Release();
         DeviceContext->Release();
     }
-
-    // Create StagingTexture which represents duplication image of desktop.
-    //Duplication = new OutputDuplication(Device);
-    OutputDuplication Duplication(Device);
-    IDXGIOutputDuplication* outputDuplication = Duplication.outputDuplication;
-    if (outputDuplication == nullptr)
-        return;
-
-    GetDesktopImage(outputDuplication);
-    ID3D11Texture2D* AcquiredDesktopImage = DesktopImageTexture;
-    if (AcquiredDesktopImage == nullptr)
-        return;
-
-    DXGI_OUTDUPL_DESC DuplicationDescription;
-    outputDuplication->GetDesc(&DuplicationDescription);
-    //Duplication->outputDuplication->GetDesc(&DuplicationDescription);
-
-    const auto CurrentFormat = static_cast<int>(DuplicationDescription.ModeDesc.Format);
-    const auto AcceptableFormat =
-        CurrentFormat == DXGI_FORMAT_B8G8R8A8_UNORM ||
-        CurrentFormat == DXGI_FORMAT_B8G8R8X8_UNORM ||
-        CurrentFormat == DXGI_FORMAT_B8G8R8A8_TYPELESS ||
-        CurrentFormat == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB ||
-        CurrentFormat == DXGI_FORMAT_B8G8R8X8_TYPELESS ||
-        CurrentFormat == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
-
-    if (!AcceptableFormat)
-        return;
-
-    D3D11_TEXTURE2D_DESC TextureDescription{};
-    TextureDescription.Width = DuplicationDescription.ModeDesc.Width;
-    TextureDescription.Height = DuplicationDescription.ModeDesc.Height;
-    TextureDescription.Format = DuplicationDescription.ModeDesc.Format;
-    TextureDescription.ArraySize = 1;
-    TextureDescription.BindFlags = 0;
-    TextureDescription.MiscFlags = 0;
-    TextureDescription.SampleDesc.Count = 1;
-    TextureDescription.SampleDesc.Quality = 0;
-    TextureDescription.MipLevels = 1;
-    TextureDescription.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-    TextureDescription.Usage = D3D11_USAGE_STAGING;
-
-    const auto hr = Device->CreateTexture2D(&TextureDescription, nullptr, &StagingTexture);
-    if (FAILED(hr))
-        return;
-    
-    if (StagingTexture == nullptr)
-        return;
-
-    Duplication.outputDuplication->Release();
 }
 
-FETPScreenCapture::OutputDuplication::OutputDuplication(ID3D11Device* Device, UINT MonitorIndex)
+FETPScreenCapture::OutputDuplication::OutputDuplication(ID3D11Device* Device, unsigned int MonitorIndex)
 {
     HRESULT OperationResult;
 
@@ -148,13 +154,13 @@ void FETPScreenCapture::GetDesktopImage(IDXGIOutputDuplication* OutputDuplicatio
     HRESULT OperationResult = E_FAIL;
     for (int i = 0; i < 10; i++)
     {
-        DXGI_OUTDUPL_FRAME_INFO fi{};
-        const int timeoutMsec = 500; // Milliseconds.
-        OperationResult = OutputDuplication->AcquireNextFrame(timeoutMsec, &fi, &DesktopResource);
-        if (SUCCEEDED(OperationResult) && (fi.LastPresentTime.QuadPart == 0))
+        DXGI_OUTDUPL_FRAME_INFO FrameInfo{};
+        const int TimeoutInMilliseconds = 500;
+        OperationResult = OutputDuplication->AcquireNextFrame(TimeoutInMilliseconds, &FrameInfo, &DesktopResource);
+        if (SUCCEEDED(OperationResult) && (FrameInfo.LastPresentTime.QuadPart == 0))
         {
             // If AcquireNextFrame() returns S_OK and
-            // fi.LastPresentTime.QuadPart == 0, it means
+            // FrameInfo.LastPresentTime.QuadPart == 0, it means
             // AcquireNextFrame() didn't acquire next frame yet.
             // We must wait next frame sync timing to retrieve
             // actual frame data.
@@ -183,9 +189,15 @@ void FETPScreenCapture::GetDesktopImage(IDXGIOutputDuplication* OutputDuplicatio
         return;
 }
 
-FETPImage* FETPScreenCapture::GetScreenImage(UINT MonitorIndex)
+FETPImage* FETPScreenCapture::GetScreenImage(unsigned int MonitorIndex)
 {
     FETPImage* Result = nullptr;
+
+	if (PerMonitorStagingTextures.empty())
+		return Result;
+
+	if (MonitorIndex >= PerMonitorStagingTextures.size())
+		return Result;
 
     OutputDuplication Duplication(Device, MonitorIndex);
     IDXGIOutputDuplication* outputDuplication = Duplication.outputDuplication;
@@ -199,7 +211,6 @@ FETPImage* FETPScreenCapture::GetScreenImage(UINT MonitorIndex)
 
     DXGI_OUTDUPL_DESC DuplicationDescription;
     outputDuplication->GetDesc(&DuplicationDescription);
-    //Duplication->outputDuplication->GetDesc(&DuplicationDescription);
 
     const auto CurrentFormat = static_cast<int>(DuplicationDescription.ModeDesc.Format);
     const auto AcceptableFormat =
@@ -213,14 +224,14 @@ FETPImage* FETPScreenCapture::GetScreenImage(UINT MonitorIndex)
     if (!AcceptableFormat)
         return Result;
 
-    DeviceContext->CopyResource(StagingTexture, AcquiredDesktopImage);
+    DeviceContext->CopyResource(PerMonitorStagingTextures[MonitorIndex], AcquiredDesktopImage);
     AcquiredDesktopImage->Release();
 
     D3D11_TEXTURE2D_DESC TextureDescription;
-    StagingTexture->GetDesc(&TextureDescription);
+    PerMonitorStagingTextures[MonitorIndex]->GetDesc(&TextureDescription);
 
     D3D11_MAPPED_SUBRESOURCE Resource;
-    const auto OperationResult = DeviceContext->Map(StagingTexture, D3D11CalcSubresource(0, 0, 0), D3D11_MAP_READ, 0, &Resource);
+    const auto OperationResult = DeviceContext->Map(PerMonitorStagingTextures[MonitorIndex], D3D11CalcSubresource(0, 0, 0), D3D11_MAP_READ, 0, &Resource);
     if (FAILED(OperationResult))
         return Result;
 
@@ -229,7 +240,7 @@ FETPImage* FETPScreenCapture::GetScreenImage(UINT MonitorIndex)
     int RawDataSize = Resource.RowPitch * TextureDescription.Height;
     unsigned char* RawData = new unsigned char[RawDataSize];
     memcpy(RawData, Resource.pData, RawDataSize);
-    DeviceContext->Unmap(StagingTexture, 0);
+    DeviceContext->Unmap(PerMonitorStagingTextures[MonitorIndex], 0);
 
     // Swap R and B channels.
     for (int i = 0; i < RawDataSize / 4; i++)

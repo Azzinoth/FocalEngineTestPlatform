@@ -14,9 +14,9 @@ void actionEditPopup::show(FETPAction* action)
 	if (action == nullptr)
 		return;
 
-	if (action->getType() == FETP_BASE_ACTION ||
-		action->getType() == FETP_SCREENSHOOT_COMPARE_ACTION || 
-		action->getType() == FETP_LUNCH_APPLICATION_ACTION)
+	if (action->GetType() == FETP_BASE_ACTION ||
+		action->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION || 
+		action->GetType() == FETP_LUNCH_APPLICATION_ACTION)
 		return;
 
 	currentAction = action;
@@ -38,7 +38,7 @@ void actionEditPopup::render()
 	ImGui::SetNextWindowPos(ImVec2(Width / 2 - popupSize.x / 2.0f, Height / 2 - popupSize.y / 2.0f));
 	if (ImGui::BeginPopupModal(popupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		if (currentAction->getType() == FETP_SLEEP_ACTION)
+		if (currentAction->GetType() == FETP_SLEEP_ACTION)
 		{
 			SleepAction* action = reinterpret_cast<SleepAction*>(currentAction);
 			ImGui::SetNextItemWidth(150);
@@ -47,7 +47,7 @@ void actionEditPopup::render()
 			if (ImGui::InputInt("sleep for", &sleepFor))
 				action->sleepFor = sleepFor;
 		}
-		else if (currentAction->getType() == FETP_MOUSE_ACTION)
+		else if (currentAction->GetType() == FETP_MOUSE_ACTION)
 		{
 			MouseAction* action = reinterpret_cast<MouseAction*>(currentAction);
 
@@ -77,7 +77,7 @@ void actionEditPopup::render()
 				ImGui::InputInt("wheel movement", &value);
 			}
 		}
-		else if (currentAction->getType() == FETP_KEYBOARD_ACTION)
+		else if (currentAction->GetType() == FETP_KEYBOARD_ACTION)
 		{
 			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(currentAction);
 			ImGui::SetNextItemWidth(80);

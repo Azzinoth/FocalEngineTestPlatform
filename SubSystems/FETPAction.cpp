@@ -3,67 +3,57 @@ using namespace FocalEngine;
 
 FETPAction::FETPAction(FETP_ACTION_TYPE Type)
 {
-	internalType = Type;
-	time = 0;
+	InternalType = Type;
+	Time = 0;
 	ID = APPLICATION.GetUniqueHexID();
 }
 
-FETPAction::FETPAction(const FETPAction& src)
+FETPAction::FETPAction(const FETPAction& Other)
 {
-	time = src.time;
-	internalType = src.internalType;
-	ID = src.ID;
+	Time = Other.Time;
+	InternalType = Other.InternalType;
+	ID = Other.ID;
 }
 
 FETPAction::~FETPAction()
 {
 }
 
-FETP_ACTION_TYPE FETPAction::getType()
+FETP_ACTION_TYPE FETPAction::GetType()
 {
-	return internalType;
+	return InternalType;
 }
 
-DWORD FETPAction::getTimeStamp()
+DWORD FETPAction::GetTimeStamp()
 {
-	return time;
+	return Time;
 }
 
-Json::Value FETPAction::toJson()
+Json::Value FETPAction::ToJson()
 {
 	Json::Value result;
 
 	result["ID"] = ID;
-	result["internalType"] = internalType;
-	result["time"] = unsigned int(time);
+	result["internalType"] = InternalType;
+	result["time"] = unsigned int(Time);
 
 	return result;
 }
 
-std::string FETPAction::getID()
+std::string FETPAction::GetID()
 {
 	return ID;
 }
 
-void FETPAction::fromJson(Json::Value json)
+void FETPAction::FromJson(Json::Value JsonData)
 {
-	ID = json["ID"].asCString();
-	//FETPAction::seenIDs[ID] = true;
+	ID = JsonData["ID"].asCString();
 
-	internalType = FETP_ACTION_TYPE(json["internalType"].asInt());
-	time = json["time"].asUInt();
+	InternalType = FETP_ACTION_TYPE(JsonData["internalType"].asInt());
+	Time = JsonData["time"].asUInt();
 }
 
-void FETPAction::setID(std::string newID)
+void FETPAction::SetID(std::string NewID)
 {
-	ID = newID;
-	//FETPAction::seenIDs[ID] = true;
+	ID = NewID;
 }
-
-//bool FETPAction::wasIDseen(std::string ID)
-//{
-//	if (seenIDs.find(ID) != seenIDs.end())
-//		return true;
-//
-//	return false;
-//}

@@ -14,7 +14,7 @@ void FEPTActionSystem::takeScreenshoot()
 		if (GetTickCount() - lastTimeScreenshootWasTaken > 500)
 		{
 			lastTimeScreenshootWasTaken = GetTickCount();
-			unsigned char* tempScreenshoot = SCREEN_SYSTEM.getScreenData();
+			unsigned char* tempScreenshoot = SCREEN_SYSTEM.GetScreenData();
 
 			size_t screenshootSize = SCREEN_SYSTEM.GetScreenWidth() * SCREEN_SYSTEM.GetScreenHeight() * 4;
 			unsigned char* newScreenshoot = new unsigned char[screenshootSize];
@@ -68,7 +68,7 @@ std::vector<FETPAction*> FEPTActionSystem::getActionsFromNode(VisNodeSys::Node* 
 	return result;
 }
 
-FETPImage* FEPTActionSystem::imageToUse(compareImageInfo* imageInfo)
+FETPImage* FEPTActionSystem::imageToUse(CompareImageInfo* imageInfo)
 {
 	if (imageInfo->image == nullptr)
 		return nullptr;
@@ -93,6 +93,7 @@ FETPImage* FEPTActionSystem::imageToUse(compareImageInfo* imageInfo)
 	return nullptr;
 }
 
+// FIX ME! Should I have it ?
 bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 {
 	for (size_t i = 0; i < action->imagesInfo.size(); i++)
@@ -120,16 +121,16 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 		{
 			if (!action->bUseGPU)
 			{
-				SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
+				SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
 			}
 			else
 			{
-				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage(0);
 			}
 		}
 		else
 		{
-			SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
+			SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
 		}
 
 		
@@ -145,7 +146,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 			bool found = false;
 			if (!action->bUseGPU)
 			{
-				found = SCREEN_SYSTEM.searchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
+				found = SCREEN_SYSTEM.bSearchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift);
 			}
 			else
 			{
@@ -154,19 +155,19 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 				x = static_cast<size_t>(Position.x);
 				y = static_cast<size_t>(Position.y);
 			}
-			auto time = FocalEngine::TIME.EndTimeStamp("M");
+			auto Time = FocalEngine::TIME.EndTimeStamp("M");
 
 			if (found)
 			{
-				INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound()),
-										 static_cast<int>(y + action->imagesInfo[i]->screenSearch->getYShiftFromFound()));
+				INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->GetXShiftFromFound()),
+										 static_cast<int>(y + action->imagesInfo[i]->screenSearch->GetYShiftFromFound()));
 				action->imagesInfo[i]->lastRunResult = true;
 				return true;
 			}
 		}
 		else
 		{
-			Similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
+			Similarity = SCREEN_SYSTEM.Compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
 		}
 		delete[] tempRawData;
 
@@ -193,17 +194,17 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 					{
 						if (!action->bUseGPU)
 						{
-							SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
+							SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), action->imagesInfo[i]->partialImageLeft, action->imagesInfo[i]->partialImageTop, image->GetWidth(), image->GetHeight());
 						}
 						else
 						{
 							delete TestScreenShoot;
-							TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+							TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage(0);
 						}
 					}
 					else
 					{
-						SCREEN_SYSTEM.getScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
+						SCREEN_SYSTEM.GetScreenRegion(tempScreenshoot.data(), 0, 0, image->GetWidth(), image->GetHeight());
 					}
 
 					//int similarity = SCREEN_SYSTEM.compare(image->getWidth(), image->getHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data());
@@ -217,7 +218,7 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 						bool found = false;
 						if (!action->bUseGPU)
 						{
-							found = SCREEN_SYSTEM.searchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &Similarity);
+							found = SCREEN_SYSTEM.bSearchOnScreen(image->GetWidth(), image->GetHeight(), tempRawData, x, y, float(action->imagesInfo[i]->correctnessThreshold), action->imagesInfo[i]->maxColorShift, &Similarity);
 						}
 						else
 						{
@@ -229,15 +230,15 @@ bool FEPTActionSystem::execute(ScreenshootCompareAction* action)
 
 						if (found)
 						{
-							INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->getXShiftFromFound()),
-													 static_cast<int>(y + action->imagesInfo[i]->screenSearch->getYShiftFromFound()));
+							INPUT_SYSTEM.mouseMoveTo(static_cast<int>(x + action->imagesInfo[i]->screenSearch->GetXShiftFromFound()),
+													 static_cast<int>(y + action->imagesInfo[i]->screenSearch->GetYShiftFromFound()));
 							action->imagesInfo[i]->lastRunResult = true;
 							return true;
 						}
 					}
 					else
 					{
-						Similarity = SCREEN_SYSTEM.compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
+						Similarity = SCREEN_SYSTEM.Compare(image->GetWidth(), image->GetHeight(), tempScreenshoot.data(), tempRawData, tempDifferenceData.data(), action->imagesInfo[i]->maxColorShift);
 					}
 					delete[] tempRawData;
 
@@ -274,7 +275,7 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 {
 	for (size_t i = 0; i < actions.size(); i++)
 	{
-		if (actions[i]->getType() == FETP_KEYBOARD_ACTION)
+		if (actions[i]->GetType() == FETP_KEYBOARD_ACTION)
 		{
 			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(actions[i]);
 			if (action->wParam == WM_KEYDOWN || action->wParam == WM_SYSKEYDOWN)
@@ -286,7 +287,7 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 				INPUT_SYSTEM.keyEvent(WM_KEYUP, action->additionalInfo.vkCode);
 			}
 		}
-		else if (actions[i]->getType() == FETP_MOUSE_ACTION)
+		else if (actions[i]->GetType() == FETP_MOUSE_ACTION)
 		{
 			MouseAction* action = reinterpret_cast<MouseAction*>(actions[i]);
 
@@ -315,13 +316,13 @@ bool FEPTActionSystem::execute(std::vector<FETPAction*> actions)
 				INPUT_SYSTEM.mouseWheel((short)HIWORD(action->additionalInfo.mouseData));
 			}
 		}
-		else if (actions[i]->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		else if (actions[i]->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
 			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(actions[i]);
 			if (!execute(action))
 				return false;
 		}
-		else if (actions[i]->getType() == FETP_LUNCH_APPLICATION_ACTION)
+		else if (actions[i]->GetType() == FETP_LUNCH_APPLICATION_ACTION)
 		{
 			LunchApplicationAction* action = reinterpret_cast<LunchApplicationAction*>(actions[i]);
 			if (!FocalEngine::FILE_SYSTEM.DoesFileExist(action->applicationPath.c_str()))
@@ -436,7 +437,7 @@ void FEPTActionSystem::placeStructuredNodes(std::vector<FETPAction*> actions, No
 
 		if (!copyActions)
 		{
-			if (actions[i]->getType() != FETP_SLEEP_ACTION)
+			if (actions[i]->GetType() != FETP_SLEEP_ACTION)
 				newNode = tryToPackActions(i);
 
 			if (newNode == nullptr)
@@ -606,7 +607,7 @@ void FEPTActionSystem::findAndDeleteKeys()
 	{
 		for (int i = static_cast<int>(recordedActions.size() - 1); i >= 0; i--)
 		{
-			if (recordedActions[i]->getType() != FETP_KEYBOARD_ACTION)
+			if (recordedActions[i]->GetType() != FETP_KEYBOARD_ACTION)
 				continue;
 
 			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(recordedActions[i]);
@@ -654,7 +655,7 @@ void FEPTActionSystem::addAction(FETPAction* newAction)
 	if (recordedActions.size() > 1)
 	{
 		int sleepAfter = 0;
-		sleepAfter = newAction->getTimeStamp() - recordedActions[recordedActions.size() - 2]->getTimeStamp();
+		sleepAfter = newAction->GetTimeStamp() - recordedActions[recordedActions.size() - 2]->GetTimeStamp();
 		if (sleepAfter < 0)
 			sleepAfter = 0;
 
@@ -693,10 +694,10 @@ bool FEPTActionSystem::mouseMoveActionFilter(FETPAction* action, int outputCount
 	if (action == nullptr)
 		return false;
 
-	if (action->getType() == FETP_SLEEP_ACTION)
+	if (action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->getType() == FETP_MOUSE_ACTION)
+	if (action->GetType() == FETP_MOUSE_ACTION)
 	{
 		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_MOUSEMOVE)
 			return true;
@@ -713,10 +714,10 @@ bool FEPTActionSystem::mouseLeftButtonActionFilter(FETPAction* action, int outpu
 	if (outputCount >= 3)
 		return false;
 
-	if (action->getType() == FETP_SLEEP_ACTION)
+	if (action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->getType() == FETP_MOUSE_ACTION)
+	if (action->GetType() == FETP_MOUSE_ACTION)
 	{
 		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_LBUTTONDOWN || reinterpret_cast<MouseAction*>(action)->wParam == WM_LBUTTONUP)
 			return true;
@@ -733,10 +734,10 @@ bool FEPTActionSystem::mouseRightButtonActionFilter(FETPAction* action, int outp
 	if (outputCount >= 3)
 		return false;
 
-	if (action->getType() == FETP_SLEEP_ACTION)
+	if (action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->getType() == FETP_MOUSE_ACTION)
+	if (action->GetType() == FETP_MOUSE_ACTION)
 	{
 		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_RBUTTONDOWN || reinterpret_cast<MouseAction*>(action)->wParam == WM_RBUTTONUP)
 			return true;
@@ -750,10 +751,10 @@ bool FEPTActionSystem::mouseWheelActionFilter(FETPAction* action, int outputCoun
 	if (action == nullptr)
 		return false;
 
-	if (action->getType() == FETP_SLEEP_ACTION)
+	if (action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->getType() == FETP_MOUSE_ACTION)
+	if (action->GetType() == FETP_MOUSE_ACTION)
 	{
 		if (reinterpret_cast<MouseAction*>(action)->wParam == WM_MOUSEWHEEL)
 			return true;
@@ -767,10 +768,10 @@ bool FEPTActionSystem::keyboardTextActionFilter(FETPAction* action, int outputCo
 	if (action == nullptr)
 		return false;
 
-	if (action->getType() == FETP_SLEEP_ACTION)
+	if (action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->getType() == FETP_KEYBOARD_ACTION)
+	if (action->GetType() == FETP_KEYBOARD_ACTION)
 	{
 		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(action);
 		if (keyboardAction->wParam == WM_KEYDOWN || keyboardAction->wParam == WM_SYSKEYDOWN ||
@@ -792,10 +793,10 @@ bool FEPTActionSystem::keyboardPressActionFilter(FETPAction* action, int outputC
 	if (outputCount >= 3)
 		return false;
 
-	if (action->getType() == FETP_SLEEP_ACTION)
+	if (action->GetType() == FETP_SLEEP_ACTION)
 		return true;
 
-	if (action->getType() == FETP_KEYBOARD_ACTION)
+	if (action->GetType() == FETP_KEYBOARD_ACTION)
 	{
 		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(action);
 		if (keyboardAction->wParam == WM_KEYDOWN || keyboardAction->wParam == WM_SYSKEYDOWN ||
@@ -871,23 +872,23 @@ void FEPTActionSystem::setFinishRecordingCallback(std::function<void(std::vector
 
 FETPAction* FEPTActionSystem::copyAction(FETPAction* src)
 {
-	if (src->getType() == FETP_KEYBOARD_ACTION)
+	if (src->GetType() == FETP_KEYBOARD_ACTION)
 	{
 		return new KeyboardAction(*reinterpret_cast<KeyboardAction*>(src));
 	}
-	else if (src->getType() == FETP_MOUSE_ACTION)
+	else if (src->GetType() == FETP_MOUSE_ACTION)
 	{
 		return new MouseAction(*reinterpret_cast<MouseAction*>(src));
 	}
-	else if (src->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+	else if (src->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
 		return new ScreenshootCompareAction(*reinterpret_cast<ScreenshootCompareAction*>(src));
 	}
-	else if (src->getType() == FETP_SLEEP_ACTION)
+	else if (src->GetType() == FETP_SLEEP_ACTION)
 	{
 		return new SleepAction(*reinterpret_cast<SleepAction*>(src));
 	}
-	else if (src->getType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (src->GetType() == FETP_LUNCH_APPLICATION_ACTION)
 	{
 		return new LunchApplicationAction(*reinterpret_cast<LunchApplicationAction*>(src));
 	}
@@ -902,7 +903,7 @@ std::string FEPTActionSystem::extractText(std::vector<FETPAction*> actions)
 	std::string result = "";
 	for (size_t i = 0; i < actions.size(); i++)
 	{
-		if (actions[i]->getType() != FETP_KEYBOARD_ACTION)
+		if (actions[i]->GetType() != FETP_KEYBOARD_ACTION)
 			continue;
 
 		KeyboardAction* action = reinterpret_cast<KeyboardAction*>(actions[i]);

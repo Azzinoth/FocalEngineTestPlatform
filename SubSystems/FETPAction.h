@@ -31,24 +31,22 @@ class FETPAction
 	friend globalActionNode;
 	friend FETest;
 
-	//static std::unordered_map<std::string, bool> seenIDs;
-	void setID(std::string newID);
+	void SetID(std::string NewID);
 public:
 	FETPAction(FETP_ACTION_TYPE Type = FETP_BASE_ACTION);
-	FETPAction(const FETPAction& src);
+	FETPAction(const FETPAction& Other);
 
 	virtual ~FETPAction();
 
-	std::string getID();
+	std::string GetID();
 
-	FETP_ACTION_TYPE getType();
-	DWORD getTimeStamp();
-	DWORD time;
+	FETP_ACTION_TYPE GetType();
+	// FIX ME! Change it to use uint64_t and FETime.
+	DWORD GetTimeStamp();
+	DWORD Time;
 
-	virtual Json::Value toJson();
-	virtual void fromJson(Json::Value json);
-
-	//static bool wasIDseen(std::string ID);
+	virtual Json::Value ToJson();
+	virtual void FromJson(Json::Value JsonData);
 
 	static std::string FETPActionTypeToString(FETP_ACTION_TYPE Type)
 	{
@@ -80,6 +78,6 @@ public:
 		return "None";
 	}
 protected:
-	FETP_ACTION_TYPE internalType;
+	FETP_ACTION_TYPE InternalType;
 	std::string ID;
 };

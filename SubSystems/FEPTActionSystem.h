@@ -53,7 +53,7 @@ class FEPTActionSystem
 	std::vector<FETPAction*> getActionsFromNode(VisNodeSys::Node* currentNode);
 	bool execute(std::vector<FETPAction*> action);
 
-	FETPImage* imageToUse(compareImageInfo* imageInfo);
+	FETPImage* imageToUse(CompareImageInfo* imageInfo);
 	bool execute(ScreenshootCompareAction* action);
 
 	std::function<void(std::vector<FETPAction*>&)> finishRecordingCallback = nullptr;

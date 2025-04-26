@@ -33,6 +33,7 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
 	AddSocket(new NodeSocket(this, "FLOAT", "Simularity", false));
 	AddSocket(new NodeSocket(this, "INT", "Color shift", false));
+	AddSocket(new NodeSocket(this, "INT", "Monitor", false));
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
 	AddSocket(new NodeSocket(this, "BOOL", "Found", true));
@@ -47,6 +48,7 @@ imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Sr
 
 	Simularity = Src.Simularity;
 	MaxColorShift = Src.MaxColorShift;
+	MonitorIndex = Src.MonitorIndex;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
@@ -64,6 +66,9 @@ Json::Value imageSearchNode::ToJson()
 	if (Input[3]->GetConnectedSockets().empty())
 		Result["MaxColorShift"] = MaxColorShift;
 
+	if (Input[4]->GetConnectedSockets().empty())
+		Result["MonitorIndex"] = MonitorIndex;
+
 	return Result;
 }
 
@@ -76,6 +81,9 @@ void imageSearchNode::FromJson(Json::Value Json)
 
 	if (Json.isMember("MaxColorShift"))
 		MaxColorShift = Json["MaxColorShift"].asInt();
+
+	if (Json.isMember("MonitorIndex"))
+		MonitorIndex = Json["MonitorIndex"].asInt();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
@@ -90,7 +98,7 @@ void imageSearchNode::Draw()
 	float Zoom = ParentArea->GetZoomFactor();
 
 	float xPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
-	float yPosition = ImGui::GetCursorScreenPos().y + 139.0f * Zoom;
+	float yPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
 
 	ImGui::BeginDisabled(Input[2]->GetConnectedSockets().size() != 0);
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
@@ -105,12 +113,31 @@ void imageSearchNode::Draw()
 	ImGui::EndDisabled();
 
 	xPosition += 7 * Zoom;
-	yPosition += 48 * Zoom;
+	yPosition += 38 * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
 	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 1, 0, 100);
 	if (MaxColorShift < 0)
 		MaxColorShift = 0;
+
+	xPosition -= 30 * Zoom;
+	yPosition += 38 * Zoom;
+	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetNextItemWidth(35.0f * Zoom);
+	int MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
+	int TemporaryMonitorIndex = MonitorIndex;
+	ImGui::DragInt("##MonitorIndex", &TemporaryMonitorIndex, 1, 0, 100);
+	if (MonitorIndex < 0)
+		MonitorIndex = 0;
+
+	if (MonitorIndex >= MonitorCount)
+		MonitorIndex = MonitorCount - 1;
+
+	if (TemporaryMonitorIndex != MonitorIndex)
+	{
+		MonitorIndex = TemporaryMonitorIndex;
+		//ParentArea->TriggerSocketEvent(Input[4], Input[4]->GetConnectedSockets()[0], UPDATE);
+	}
 }
 
 void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
@@ -132,6 +159,21 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			if (TempData != nullptr)
 				MaxColorShift = *reinterpret_cast<int*>(TempData);
 		}
+
+		if (Input[4]->GetConnectedSockets().size() > 0)
+		{
+			void* TempData = Input[4]->GetConnectedSockets()[0]->GetData();
+			if (TempData != nullptr)
+			{
+				int MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
+				unsigned int TemporaryMonitorIndex = *reinterpret_cast<unsigned int*>(TempData);
+
+				if (TemporaryMonitorIndex >= MonitorCount)
+					TemporaryMonitorIndex = MonitorCount - 1;
+
+				MonitorIndex = TemporaryMonitorIndex;
+			}
+		}
 	}
 
 	if (EventType == EXECUTE)
@@ -152,7 +194,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 				tempDifferenceData.resize(tempScreenshoot.size());
 
 				FETPImage* TestScreenShoot = nullptr;
-				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage();
+				TestScreenShoot = SCREEN_SYSTEM.GetScreenDataAsImage(MonitorIndex);
 
 				int Similarity = 0;
 				size_t x = 0;

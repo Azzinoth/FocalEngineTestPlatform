@@ -1,7 +1,7 @@
 #include "Windows/testsOverviewWindow.h"
 using namespace FocalEngine;
 
-GLFWcursor* cursor = nullptr;
+GLFWcursor* MouseCursor = nullptr;
 void MainWindowRender()
  {
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
@@ -22,31 +22,25 @@ void MainWindowRender()
 	actionEditPopup::GetInstance().render();
 	ACTION_SYSTEM.update();
 
-	if (cursor == nullptr)
-		cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-
-	//glfwSetCursor(APPLICATION.GetMainWindow()->GetGlfwWindow(), cursor);
-
-
 	if (TEST_MANAGER.getSelectedTest() != nullptr)
 	{
 		if (FILE_SYSTEM.DoesFileExist("Temporary.png"))
 		{
-			std::vector<unsigned char> rawData;
-			unsigned uWidth, uHeight;
-			int error = lodepng::decode(rawData, uWidth, uHeight, "Temporary.png");
+			std::vector<unsigned char> RawData;
+			unsigned ImageWidth, ImageHeight;
+			int Error = lodepng::decode(RawData, ImageWidth, ImageHeight, "Temporary.png");
 
-			imageNode* newNode = nullptr;
-			if (error == 0)
+			imageNode* NewNode = nullptr;
+			if (Error == 0)
 			{
-				newNode = new imageNode();
-				unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-				memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-				newNode->SetImage(new FETPImage(tempData, uWidth, uHeight));
+				NewNode = new imageNode();
+				unsigned char* tempData = new unsigned char[ImageWidth * ImageHeight * 4];
+				memcpy_s(tempData, ImageWidth * ImageHeight * 4, RawData.data(), ImageWidth * ImageHeight * 4);
+				NewNode->SetImage(new FETPImage(tempData, ImageWidth, ImageHeight));
 				delete[] tempData;
 
-				newNode->SetPosition(ImVec2(200, 200));
-				TEST_MANAGER.getSelectedTest()->NodeArea->AddNode(newNode);
+				NewNode->SetPosition(ImVec2(200, 200));
+				TEST_MANAGER.getSelectedTest()->NodeArea->AddNode(NewNode);
 			}
 
 			FILE_SYSTEM.DeleteFile("Temporary.png");
@@ -72,7 +66,7 @@ void MainWindowRender()
 	ImGui::PopStyleVar();
 }
 
-bool NeedToCreateWindow = false;
+bool bNeedToCreateWindow = false;
 void KeyButtonCallback(int key, int scancode, int action, int mods)
 {
 	if (key == 84 && action == GLFW_RELEASE && TEST_MANAGER.getSelectedTest() != nullptr)
@@ -91,7 +85,7 @@ void KeyButtonCallback(int key, int scancode, int action, int mods)
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
-		NeedToCreateWindow = true;
+		bNeedToCreateWindow = true;
 	}
 }
 
@@ -107,20 +101,21 @@ void globalMouseCallback(MouseAction mouseAction)
 
 double MouseX, MouseY;
 double MouseDownX, MouseDownY;
-//double MouseUpX, MouseDownY;
 FEWindow* FirstFullScreenWindow = nullptr;
 int MonitorIndex = 0;
-FETPImage* BackGround = nullptr;
+FETPImage* CapturedScreenshot = nullptr;
+FETPImage* DarkenedCapturedScreenshot = nullptr;
 void FirstMonitorScreenShotWindowRender()
 {
 	if (FirstFullScreenWindow == nullptr)
 		return;
 
-	if (BackGround == nullptr)
+	if (CapturedScreenshot == nullptr)
 	{
-		BackGround = FETPScreenCapture::GetInstance().GetScreenImage(MonitorIndex);
+		CapturedScreenshot = FETPScreenCapture::GetInstance().GetScreenImage(MonitorIndex);
+		DarkenedCapturedScreenshot = new FETPImage(*CapturedScreenshot);
 
-		BackGround->ModifyPixels([](unsigned char& R, unsigned char& G, unsigned char& B) {
+		DarkenedCapturedScreenshot->ModifyPixels([](unsigned char& R, unsigned char& G, unsigned char& B) {
 			R /= 2.5;
 			G /= 2.5;
 			B /= 2.5;
@@ -129,7 +124,9 @@ void FirstMonitorScreenShotWindowRender()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glfwSetCursor(FirstFullScreenWindow->GetGlfwWindow(), cursor);
+	if (MouseCursor == nullptr)
+		MouseCursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+	glfwSetCursor(FirstFullScreenWindow->GetGlfwWindow(), MouseCursor);
 
 	int Width, Height;
 	FirstFullScreenWindow->GetSize(&Width, &Height);
@@ -140,14 +137,11 @@ void FirstMonitorScreenShotWindowRender()
 	ImGui::SetNextWindowSize(ImVec2(Width, Height));
 	ImGui::Begin("FullScreenWindow", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar /*| ImGuiWindowFlags_NoInputs*/ | ImGuiWindowFlags_NoDecoration);
 
-	//ImGui::Text("Mouse Position: X: %f Y: %f", MouseX, MouseY);
-	//ImGui::Text("Mouse Down: X: %f Y: %f", MouseDownX, MouseDownY);
-
 	ImVec2 uv0 = ImVec2(0, 0);
 	ImVec2 uv1 = ImVec2(1, 1);
 	ImVec2 size = ImVec2(Width, Height);
-	if (BackGround != nullptr)
-		ImGui::Image((void*)(intptr_t)BackGround->GetTextureID(), size, uv0, uv1);
+	if (DarkenedCapturedScreenshot != nullptr)
+		ImGui::Image((void*)(intptr_t)DarkenedCapturedScreenshot->GetTextureID(), size, uv0, uv1);
 
 
 	/*if (ImGui::Button("Cancel"))
@@ -174,26 +168,10 @@ void FirstMonitorScreenShotWindowKeyCallback(int Key, int Scancode, int Action, 
 {
 	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
 	{
-		/*TIME.BeginTimeStamp("ScreenCapture");
-		BackGround = FETPScreenCapture::getInstance().GetScreenImage(0);
-
-		BackGround->ModifyPixels([](unsigned char& R, unsigned char& G, unsigned char& B) {
-			R /= 2.5;
-			G /= 2.5;
-			B /= 2.5;
-			});
-
-
-		auto TimePassed = TIME.EndTimeStamp("ScreenCapture");
-		MessageBoxA(NULL, ("Screen Capture Time: " + std::to_string(TimePassed) + "ms").c_str(), "Screen Capture Time", MB_OK);*/
-
-		//glfwSetWindowShouldClose(fullscreenWindow, GLFW_TRUE);
-		//return 0;
-
 		APPLICATION.CloseWindow(FirstFullScreenWindow);
 		FirstFullScreenWindow = nullptr;
-		delete BackGround;
-		BackGround = nullptr;
+		delete CapturedScreenshot;
+		CapturedScreenshot = nullptr;
 	}
 }
 
@@ -202,14 +180,13 @@ void SpecialWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
 {
 	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
 	{
-		NeedToCreateWindow = true;
+		bNeedToCreateWindow = true;
 	}
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	TEST_PLATFORM.CreateMainWindow();
-	//TEST_PLATFORM.SetKeyboardCallback(KeyButtonCallback);
 	APPLICATION.GetMainWindow()->AddOnKeyCallback(KeyButtonCallback);
 
 	APPLICATION.GetMainWindow()->SetRenderFunction(MainWindowRender);
@@ -225,14 +202,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	NODE_SYSTEM.Initialize();
 	NODE_SYSTEM.AssociateSocketTypeToColor("BOOL", ImColor(25, 25, 255));
 
-	auto SecondW = APPLICATION.AddWindow(800, 600, "Test Window");
-	SecondW->AddOnKeyCallback(SpecialWindowKeyCallback);
+	auto SecondWindow = APPLICATION.AddWindow(800, 600, "Test Window");
+	SecondWindow->AddOnKeyCallback(SpecialWindowKeyCallback);
 
 	while (APPLICATION.IsNotTerminated())
 	{
-		if (NeedToCreateWindow)
+		if (bNeedToCreateWindow)
 		{
-			NeedToCreateWindow = false;
+			bNeedToCreateWindow = false;
 
 			auto Monitor = APPLICATION.GetWindow(0)->DetermineCurrentMonitor();
 			MonitorIndex = APPLICATION.MonitorInfoToMonitorIndex(&Monitor);
@@ -255,16 +232,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 				else if (Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_RELEASE)
 				{
-					double MouseUpX = MouseX;
-					double MouseUpY = MouseY;
+					if (TEST_MANAGER.getSelectedTest() != nullptr)
+					{
+						double MouseUpX = MouseX;
+						double MouseUpY = MouseY;
 
-					FETPImage* Image = BackGround->GetRegion(MouseDownX, MouseDownY, abs(MouseDownX - MouseUpX)/*100*//*MouseUpX*/, abs(MouseDownY - MouseUpY)/*100*//*MouseUpY*/);
-					lodepng::encode("Temporary.png", Image->GetRawData(), Image->GetWidth(), Image->GetHeight());
+						FETPImage* Image = CapturedScreenshot->GetRegion(MouseDownX, MouseDownY, abs(MouseDownX - MouseUpX), abs(MouseDownY - MouseUpY));
+						if (Image != nullptr)
+							lodepng::encode("Temporary.png", Image->GetRawData(), Image->GetWidth(), Image->GetHeight());
+					}
 
 					APPLICATION.CloseWindow(FirstFullScreenWindow);
 					FirstFullScreenWindow = nullptr;
-					delete BackGround;
-					BackGround = nullptr;
+					delete CapturedScreenshot;
+					CapturedScreenshot = nullptr;
 				}
 			});
 

@@ -52,7 +52,7 @@ VisNodeSys::Node* TestManager::getNodeByAction(FETPAction* action)
 			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
-				if (actionNode->GetData()->getID() == searchedAction->getID())
+				if (actionNode->GetData()->GetID() == searchedAction->GetID())
 				{
 					foundNode = node;
 				}
@@ -64,7 +64,7 @@ VisNodeSys::Node* TestManager::getNodeByAction(FETPAction* action)
 				std::vector<FETPAction*> actionList = actionNode->GetData();
 				for (size_t j = 0; j < actionList.size(); j++)
 				{
-					if (actionList[j]->getID() == searchedAction->getID())
+					if (actionList[j]->GetID() == searchedAction->GetID())
 					{
 						foundNode = node;
 					}
@@ -101,7 +101,7 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 			if (node->GetType() == "globalActionNode")
 			{
 				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
-				if (actionNode->GetData()->getID() == searchedAction->getID())
+				if (actionNode->GetData()->GetID() == searchedAction->GetID())
 				{
 					foundNode = node;
 				}
@@ -113,7 +113,7 @@ FETest* TestManager::getTestByAction(FETPAction* action)
 				std::vector<FETPAction*> actionList = actionNode->GetData();
 				for (size_t j = 0; j < actionList.size(); j++)
 				{
-					if (actionList[j]->getID() == searchedAction->getID())
+					if (actionList[j]->GetID() == searchedAction->GetID())
 					{
 						foundNode = node;
 					}

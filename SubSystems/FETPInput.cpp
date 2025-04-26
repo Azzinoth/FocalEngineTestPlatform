@@ -33,7 +33,8 @@ void FETPInput::initialize()
 
 void FETPInput::mouseMoveTo(int x, int y)
 {
-	SetCursorPos(x, y);
+	// FIX ME! Here we should add the offset of the monitor
+	SetCursorPos(/*2560 +*/ x, y);
 }
 
 void FETPInput::mouseDown(bool leftbutton)

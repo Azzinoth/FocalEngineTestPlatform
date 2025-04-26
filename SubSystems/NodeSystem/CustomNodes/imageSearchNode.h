@@ -14,6 +14,7 @@ class imageSearchNode : public basicLogicNode
 	int MaxColorShift = 4;
 	glm::vec2 FoundPosition = glm::vec2(-1.0f);
 	bool bFound = false;
+	unsigned int MonitorIndex = 0;
 
 	std::function<void* ()> Vec2DataGetter = [this]() -> void* {
 		return &FoundPosition;

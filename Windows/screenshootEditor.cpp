@@ -107,24 +107,24 @@ void screenshootEditor::render()
 			}
 			else
 			{
-				currentAction->imagesInfo[subImageIndex]->screenSearch = new screenSearchInfo();
+				currentAction->imagesInfo[subImageIndex]->screenSearch = new ScreenSearchInfo();
 				//currentAction->imagesInfo[subImageIndex]->screenSearchsetScreenRegion(ImVec2 ScreenRegionMin, ImVec2 ScreenRegionMax);
 			}
 		}
 
 		if (currentAction->imagesInfo[subImageIndex]->screenSearch != nullptr)
 		{
-			int tempX = currentAction->imagesInfo[subImageIndex]->screenSearch->getXShiftFromFound();
+			int tempX = currentAction->imagesInfo[subImageIndex]->screenSearch->GetXShiftFromFound();
 			ImGui::SetNextItemWidth(80.0f);
 			ImGui::SetCursorPos(ImVec2(addImageVariantButton->getPosition().x + 380.0f, 70.0f));
 			ImGui::InputInt("xShiftFromFound", &tempX);
-			currentAction->imagesInfo[subImageIndex]->screenSearch->setXShiftFromFound(tempX);
+			currentAction->imagesInfo[subImageIndex]->screenSearch->SetXShiftFromFound(tempX);
 
-			int tempY = currentAction->imagesInfo[subImageIndex]->screenSearch->getYShiftFromFound();
+			int tempY = currentAction->imagesInfo[subImageIndex]->screenSearch->GetYShiftFromFound();
 			ImGui::SetNextItemWidth(80.0f);
 			ImGui::SetCursorPos(ImVec2(addImageVariantButton->getPosition().x + 380.0f + 80.0f + 10.0f + 150.0f, 70.0f));
 			ImGui::InputInt("yShiftFromFound", &tempY);
-			currentAction->imagesInfo[subImageIndex]->screenSearch->setYShiftFromFound(tempY);
+			currentAction->imagesInfo[subImageIndex]->screenSearch->SetYShiftFromFound(tempY);
 
 			bool bUseGPU = currentAction->bUseGPU;
 			ImGui::Checkbox("Use GPU", &bUseGPU);
@@ -144,7 +144,7 @@ void screenshootEditor::render()
 		currentAction->imagesInfo[subImageIndex]->image->GetWidth() != 0 &&
 		currentAction->imagesInfo[subImageIndex]->image->GetHeight() != 0)
 	{
-		compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
+		CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 		ImGui::SetCursorPos(imagePosition);
 		ImGui::Image((void*)(intptr_t)currentImageInfo->image->GetTextureID(),
 					 ImVec2(imageSize.x, imageSize.y),
@@ -217,7 +217,7 @@ void screenshootEditor::addNewImageVariant()
 
 		if (error == 0)
 		{
-			compareImageInfo* newImageInfo = new compareImageInfo(new FETPImage(rawData.data(), uWidth, uHeight));
+			CompareImageInfo* newImageInfo = new CompareImageInfo(new FETPImage(rawData.data(), uWidth, uHeight));
 			currentAction->imagesInfo.push_back(newImageInfo);
 			changeCurrentImageVariant(currentAction->imagesInfo.size() - 1);
 
@@ -244,9 +244,9 @@ void screenshootEditor::changeCurrentImageVariant(size_t newValue)
 
 	subImageIndex = newValue;
 
-	compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
+	CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
-	imageSize = SCREEN_SYSTEM.imageSizeInRegion(currentImageInfo->image->GetWidth(),
+	imageSize = SCREEN_SYSTEM.ImageSizeInRegion(currentImageInfo->image->GetWidth(),
 												currentImageInfo->image->GetHeight(),
 												size_t((windowContentRegionMax.x - windowContentRegionMin.x) * 0.925f),
 												size_t((windowContentRegionMax.y - windowContentRegionMin.y) - 80.0f));
@@ -316,7 +316,7 @@ void screenshootEditor::loadPNGToCurrent()
 
 void screenshootEditor::cutOutPartialImage()
 {
-	compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
+	CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
 	float percentage = (left.getPosition().x - imagePosition.x) / imageSize.x;
 	int minX = int(floor(currentImageInfo->image->GetWidth() * percentage));
@@ -347,7 +347,7 @@ void screenshootEditor::cutOutPartialImage()
 
 void screenshootEditor::useCompleteImage()
 {
-	compareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
+	CompareImageInfo* currentImageInfo = currentAction->imagesInfo[subImageIndex];
 
 	if (currentImageInfo->partialImage != nullptr)
 	{

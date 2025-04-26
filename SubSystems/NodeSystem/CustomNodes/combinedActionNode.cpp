@@ -72,7 +72,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 		EndPosition = glm::vec2(0);
 		for (int i = static_cast<int>(Data.size() - 1); i >= 0; i--)
 		{
-			if (Data[i]->getType() == FETP_MOUSE_ACTION)
+			if (Data[i]->GetType() == FETP_MOUSE_ACTION)
 			{
 				action = reinterpret_cast<MouseAction*>(Data[i]);
 				EndPosition = glm::vec2(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
@@ -111,7 +111,7 @@ void combinedActionNode::Initialize(std::vector<FETPAction*> Data, FETP_COMBINED
 	else if (ActionType == FETP_COMBINED_KEY_PRESS_ACTION)
 	{
 		SetName("COMBINED_KEY_PRESS");
-		if (Data[0]->getType() == FETP_KEYBOARD_ACTION)
+		if (Data[0]->GetType() == FETP_KEYBOARD_ACTION)
 		{
 			Text = "vkCode: " + std::to_string(int(reinterpret_cast<KeyboardAction*>(Data[0])->additionalInfo.vkCode));
 		}
@@ -313,8 +313,8 @@ Json::Value combinedActionNode::ToJson()
 
 	for (size_t i = 0; i < Data.size(); i++)
 	{
-		result["actions"][std::to_string(i)] = Data[i]->toJson();
-		if (Data[i]->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		result["actions"][std::to_string(i)] = Data[i]->ToJson();
+		if (Data[i]->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
 			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(Data[i]);
 			action->saveImagesToDisk();
@@ -364,7 +364,7 @@ void combinedActionNode::FromJson(Json::Value Json)
 			Data[index] = new SleepAction();
 		}
 		
-		Data[index]->fromJson(Json["actions"][actionsList[i]]);
+		Data[index]->FromJson(Json["actions"][actionsList[i]]);
 	}
 
 	Initialize(Data, ActionType);
@@ -381,7 +381,7 @@ void combinedActionNode::ChangeText(std::string NewText, int AvarageDelay)
 		int totalSleepNodes = 0;
 		for (size_t i = 0; i < Data.size(); i++)
 		{
-			if (Data[i]->getType() == FETP_SLEEP_ACTION)
+			if (Data[i]->GetType() == FETP_SLEEP_ACTION)
 			{
 				totalSleepTime += reinterpret_cast<SleepAction*>(Data[i])->sleepFor;
 				totalSleepNodes++;

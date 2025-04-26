@@ -41,7 +41,7 @@ void failedTestWindow::render()
 	if (!isVisible())
 		return;
 
-	ImGui::Text(("Fail action ID: " + result->FailedAction->getID()).c_str());
+	ImGui::Text(("Fail action ID: " + result->FailedAction->GetID()).c_str());
 	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(result->FailReason)).c_str());
 
 	if (result->FailReason == FE_TEST_FAIL_SCREENSHOOT_COMPARE)
@@ -53,7 +53,7 @@ void failedTestWindow::render()
 		else
 		{
 			ImGui::Text(("simularity: " + std::to_string(result->getScreenshootCompareResult()->Similarity)).c_str());
-			glm::vec2 imageSize = SCREEN_SYSTEM.imageSizeInRegion(result->getScreenshootCompareResult()->Difference->GetWidth(), result->getScreenshootCompareResult()->Difference->GetHeight(),
+			glm::vec2 imageSize = SCREEN_SYSTEM.ImageSizeInRegion(result->getScreenshootCompareResult()->Difference->GetWidth(), result->getScreenshootCompareResult()->Difference->GetHeight(),
 				size_t((ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x) * 0.925f),
 				size_t((ImGui::GetWindowContentRegionMax().y - ImGui::GetWindowContentRegionMin().y) - 90.0f));
 

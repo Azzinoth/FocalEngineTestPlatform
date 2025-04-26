@@ -36,7 +36,7 @@ struct KeyboardAction : public FETPAction
 		if (lParam != 0)
 		{
 			this->additionalInfo = *reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
-			time = this->additionalInfo.time;
+			Time = this->additionalInfo.time;
 		}
 	}
 
@@ -50,41 +50,41 @@ struct KeyboardAction : public FETPAction
 		this->capsLockActivated = ref.capsLockActivated;
 
 		this->additionalInfo = ref.additionalInfo;
-		time = this->additionalInfo.time;
+		Time = this->additionalInfo.time;
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
-		Json::Value result = FETPAction::toJson();
+		Json::Value Result = FETPAction::ToJson();
 
-		result["nCode"] = nCode;
-		result["wParam"] = wParam;
+		Result["nCode"] = nCode;
+		Result["wParam"] = wParam;
 
-		result["shiftPressed"] = shiftPressed;
-		result["capsLockActivated"] = capsLockActivated;
+		Result["shiftPressed"] = shiftPressed;
+		Result["capsLockActivated"] = capsLockActivated;
 
-		result["additionalInfo"]["dwExtraInfo"] = long long(additionalInfo.dwExtraInfo);
-		result["additionalInfo"]["flags"] = unsigned int(additionalInfo.flags);
-		result["additionalInfo"]["vkCode"] = unsigned int(additionalInfo.vkCode);
-		result["additionalInfo"]["scanCode"] = unsigned int(additionalInfo.scanCode);
+		Result["additionalInfo"]["dwExtraInfo"] = long long(additionalInfo.dwExtraInfo);
+		Result["additionalInfo"]["flags"] = unsigned int(additionalInfo.flags);
+		Result["additionalInfo"]["vkCode"] = unsigned int(additionalInfo.vkCode);
+		Result["additionalInfo"]["scanCode"] = unsigned int(additionalInfo.scanCode);
 
-		return result;
+		return Result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value Json)
 	{
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(Json);
 
-		nCode = json["nCode"].asInt();
-		wParam = json["wParam"].asInt();
+		nCode = Json["nCode"].asInt();
+		wParam = Json["wParam"].asInt();
 
-		shiftPressed = json["shiftPressed"].asBool();
-		capsLockActivated = json["capsLockActivated"].asBool();
+		shiftPressed = Json["shiftPressed"].asBool();
+		capsLockActivated = Json["capsLockActivated"].asBool();
 		
-		additionalInfo.dwExtraInfo = json["additionalInfo"]["dwExtraInfo"].asUInt();
-		additionalInfo.flags = json["additionalInfo"]["flags"].asUInt();
-		additionalInfo.vkCode = json["additionalInfo"]["vkCode"].asUInt();
-		additionalInfo.scanCode = json["additionalInfo"]["scanCode"].asUInt();
+		additionalInfo.dwExtraInfo = Json["additionalInfo"]["dwExtraInfo"].asUInt();
+		additionalInfo.flags = Json["additionalInfo"]["flags"].asUInt();
+		additionalInfo.vkCode = Json["additionalInfo"]["vkCode"].asUInt();
+		additionalInfo.scanCode = Json["additionalInfo"]["scanCode"].asUInt();
 	}
 };
 
@@ -98,7 +98,7 @@ struct MouseAction : public FETPAction
 
 	MouseAction() : FETPAction(FETP_MOUSE_ACTION)
 	{
-		time = 0;
+		Time = 0;
 		nCode = 0;
 		wParam = WM_MOUSEMOVE;
 
@@ -118,7 +118,7 @@ struct MouseAction : public FETPAction
 		if (lParam != 0)
 		{
 			this->additionalInfo = *reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
-			time = this->additionalInfo.time;
+			Time = this->additionalInfo.time;
 		}
 
 		screenWidth = SCREEN_SYSTEM.GetScreenWidth();
@@ -133,12 +133,12 @@ struct MouseAction : public FETPAction
 		screenHeight = ref.screenHeight;
 
 		additionalInfo = ref.additionalInfo;
-		time = additionalInfo.time;
+		Time = additionalInfo.time;
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
-		Json::Value result = FETPAction::toJson();
+		Json::Value result = FETPAction::ToJson();
 
 		result["nCode"] = nCode;
 		result["wParam"] = wParam;
@@ -155,9 +155,9 @@ struct MouseAction : public FETPAction
 		return result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value json)
 	{
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(json);
 
 		nCode = json["nCode"].asInt();
 		wParam = json["wParam"].asInt();
@@ -192,16 +192,16 @@ struct LunchApplicationAction : public FETPAction
 		this->applicationPath = applicationPath;
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
-		Json::Value result = FETPAction::toJson();
+		Json::Value result = FETPAction::ToJson();
 		result["applicationPath"] = applicationPath;
 		return result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value json)
 	{
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(json);
 		applicationPath = json["applicationPath"].asCString();
 	}
 };
@@ -220,16 +220,16 @@ struct SleepAction : public FETPAction
 		this->sleepFor = timeToSleep;
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
-		Json::Value result = FETPAction::toJson();
+		Json::Value result = FETPAction::ToJson();
 		result["sleepFor"] = sleepFor;
 		return result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value json)
 	{
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(json);
 		sleepFor = json["sleepFor"].asInt();
 	}
 };

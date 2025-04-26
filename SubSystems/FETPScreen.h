@@ -8,68 +8,69 @@ class FETPScreen
 public:
 	SINGLETON_PUBLIC_PART(FETPScreen)
 
-	unsigned char* getScreenData();
-	FETPImage* GetScreenDataAsImage();
-	void getScreenRegion(unsigned char* data, int left, int top, int width, int height, bool updateScreenDataFlag = true);
+	unsigned char* GetScreenData();
+	FETPImage* GetScreenDataAsImage(unsigned int MonitorIndex);
+	void GetScreenRegion(unsigned char* Data, int Left, int Top, int Width, int Height, bool UpdateScreenDataFlag = true);
 
 	size_t GetScreenWidth();
 	size_t GetScreenHeight();
 
-	int compare(size_t width, size_t height, unsigned char* firstData, unsigned char* secondData, unsigned char* diffData, int maxColorShift);
-	bool searchOnScreen(size_t width, size_t height, unsigned char* data, size_t& x, size_t& y, float correctnessThreshold, int maxColorShift, int* maxSimilarity = nullptr);
+	int Compare(size_t Width, size_t Height, unsigned char* FirstData, unsigned char* SecondData, unsigned char* DifferenceData, int MaxColorShift);
+	bool bSearchOnScreen(size_t Width, size_t Height, unsigned char* Data, size_t& X, size_t& Y, float CorrectnessThreshold, int MaxColorShift, int* MaxSimilarity = nullptr);
 
-	glm::vec2 imageSizeInRegion(size_t imageW, size_t imageH, size_t regionW, size_t regionH);
+	glm::vec2 ImageSizeInRegion(size_t ImageWidth, size_t ImageHeight, size_t RegionWidth, size_t RegionHeight);
 
-	void updateScreenData();
+	void UpdateScreenData();
 private:
 	SINGLETON_PRIVATE_PART(FETPScreen)
 
-	unsigned char* screenData = nullptr;
-	int simpleCompare(size_t width, size_t height, unsigned char* firstData, unsigned char* secondData, int maxColorShift);
+	unsigned char* ScreenData = nullptr;
+	int SimpleCompare(size_t Width, size_t Height, unsigned char* FirstData, unsigned char* SecondData, int MaxColorShift);
 };
 
 #define SCREEN_SYSTEM FETPScreen::GetInstance()
  
-struct screenSearchInfo
+struct ScreenSearchInfo
 {
 private:
-	ImVec2 screenRegionMin = ImVec2(0, 0);
-	ImVec2 screenRegionMax = ImVec2(0, 0);
-	bool searchOnScreen = false;
+	ImVec2 ScreenRegionMin = ImVec2(0, 0);
+	ImVec2 ScreenRegionMax = ImVec2(0, 0);
+	bool bSearchOnScreen = false;
 
-	int xShiftFromFound = 50;
-	int yShiftFromFound = 50;
+	// FIX ME! I think I do not need it anymore
+	int XShiftFromFound = 50;
+	int YShiftFromFound = 50;
 public:
-	screenSearchInfo()
+	ScreenSearchInfo()
 	{
 	}
 
-	screenSearchInfo(screenSearchInfo& src)
+	ScreenSearchInfo(ScreenSearchInfo& src)
 	{
-		screenRegionMin = src.screenRegionMin;
-		screenRegionMax = src.screenRegionMax;
-		searchOnScreen = src.searchOnScreen;
+		ScreenRegionMin = src.ScreenRegionMin;
+		ScreenRegionMax = src.ScreenRegionMax;
+		bSearchOnScreen = src.bSearchOnScreen;
 
-		xShiftFromFound = src.xShiftFromFound;
-		yShiftFromFound = src.yShiftFromFound;
+		XShiftFromFound = src.XShiftFromFound;
+		YShiftFromFound = src.YShiftFromFound;
 	}
 
-	bool getSearchOnScreenMode();
-	void setSearchOnScreenMode(bool newValue);
+	bool GetSearchOnScreenMode();
+	void SetSearchOnScreenMode(bool newValue);
 
-	ImVec2 getScreenMinRegion();
-	ImVec2 getScreenMaxRegion();
+	ImVec2 GetScreenMinRegion();
+	ImVec2 GetScreenMaxRegion();
 
-	void setScreenRegion(ImVec2 ScreenRegionMin, ImVec2 ScreenRegionMax);
+	void SetScreenRegion(ImVec2 ScreenRegionMin, ImVec2 ScreenRegionMax);
 
-	int getXShiftFromFound();
-	void setXShiftFromFound(int newValue);
+	int GetXShiftFromFound();
+	void SetXShiftFromFound(int newValue);
 
-	int getYShiftFromFound();
-	void setYShiftFromFound(int newValue);
+	int GetYShiftFromFound();
+	void SetYShiftFromFound(int newValue);
 };
 
-struct compareImageInfo
+struct CompareImageInfo
 {
 public:
 	FETPImage* image = nullptr;
@@ -85,9 +86,9 @@ public:
 	int severalAttemptsTimeout = 10000;
 
 	// Search for image on screen
-	screenSearchInfo* screenSearch = nullptr;
+	ScreenSearchInfo* screenSearch = nullptr;
 
-	compareImageInfo()
+	CompareImageInfo()
 	{
 		image = nullptr;
 		partialImage = nullptr;
@@ -96,14 +97,14 @@ public:
 		partialImageTop = 0;
 	}
 
-	compareImageInfo(compareImageInfo& src)
+	CompareImageInfo(CompareImageInfo& src)
 	{
 		image = new FETPImage(*src.image);
 		if (src.partialImage != nullptr)
 			partialImage = new FETPImage(*src.partialImage);
 
 		if (src.screenSearch != nullptr)
-			screenSearch = new screenSearchInfo(*src.screenSearch);
+			screenSearch = new ScreenSearchInfo(*src.screenSearch);
 
 		lastRunResult = src.lastRunResult;
 		correctnessThreshold = src.correctnessThreshold;
@@ -116,7 +117,7 @@ public:
 		severalAttemptsTimeout = src.severalAttemptsTimeout;
 	}
 
-	compareImageInfo(FETPImage* image)
+	CompareImageInfo(FETPImage* image)
 	{
 		this->image = image;
 
@@ -124,7 +125,7 @@ public:
 		partialImageTop = 0;
 	}
 
-	~compareImageInfo()
+	~CompareImageInfo()
 	{
 		delete image;
 		delete partialImage;
@@ -142,7 +143,7 @@ private:
 		if (json["compareImageInfos"][std::to_string(index)].isMember("screenshot_fullPath"))
 			fileName = json["compareImageInfos"][std::to_string(index)]["screenshot_fullPath"].asCString();
 
-		imagesInfo.push_back(new compareImageInfo(new FETPImage(fileName)));
+		imagesInfo.push_back(new CompareImageInfo(new FETPImage(fileName)));
 
 		imagesInfo.back()->correctnessThreshold = json["compareImageInfos"][std::to_string(index)]["correctnessThreshold"].asInt();
 		if (json["compareImageInfos"][std::to_string(index)].isMember("maxColorShift"))
@@ -165,41 +166,41 @@ private:
 			if (json["compareImageInfos"][std::to_string(index)].isMember("screenSearch"))
 			{
 				if (json["compareImageInfos"][std::to_string(index)]["screenSearch"]["isActive"].asBool())
-					imagesInfo.back()->screenSearch = new screenSearchInfo();
+					imagesInfo.back()->screenSearch = new ScreenSearchInfo();
 
 				if (json["compareImageInfos"][std::to_string(index)]["screenSearch"].isMember("xShiftFromFound"))
-					imagesInfo.back()->screenSearch->setXShiftFromFound(json["compareImageInfos"][std::to_string(index)]["screenSearch"]["xShiftFromFound"].asInt());
+					imagesInfo.back()->screenSearch->SetXShiftFromFound(json["compareImageInfos"][std::to_string(index)]["screenSearch"]["xShiftFromFound"].asInt());
 
 				if (json["compareImageInfos"][std::to_string(index)]["screenSearch"].isMember("yShiftFromFound"))
-					imagesInfo.back()->screenSearch->setYShiftFromFound(json["compareImageInfos"][std::to_string(index)]["screenSearch"]["yShiftFromFound"].asInt());
+					imagesInfo.back()->screenSearch->SetYShiftFromFound(json["compareImageInfos"][std::to_string(index)]["screenSearch"]["yShiftFromFound"].asInt());
 			}
 		}
 	}
 
 public:
-	std::vector<compareImageInfo*> imagesInfo;
+	std::vector<CompareImageInfo*> imagesInfo;
 	static bool bUseGPU;
 
 	ScreenshootCompareAction() : FETPAction(FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		time = 0;
+		Time = 0;
 	}
 
 	//ScreenshootCompareAction(const ScreenshootCompareAction& src);
 	ScreenshootCompareAction(const ScreenshootCompareAction& src) : FETPAction(src)
 	{
-		time = src.time;
+		Time = src.Time;
 
 		for (size_t i = 0; i < src.imagesInfo.size(); i++)
 		{
-			compareImageInfo* newImageInfo = new compareImageInfo(*src.imagesInfo[i]);
+			CompareImageInfo* newImageInfo = new CompareImageInfo(*src.imagesInfo[i]);
 			imagesInfo.push_back(newImageInfo);
 		}
 	}
 
 	ScreenshootCompareAction(unsigned char* Screenshoot, DWORD actionTime, int width = -1, int height = -1) : FETPAction(FETP_SCREENSHOOT_COMPARE_ACTION)
 	{
-		time = actionTime;
+		Time = actionTime;
 
 		if (width == -1 || height == -1)
 		{
@@ -207,7 +208,7 @@ public:
 			height = static_cast<int>(SCREEN_SYSTEM.GetScreenHeight());
 		}
 
-		compareImageInfo* newImageInfo = new compareImageInfo(new FETPImage(Screenshoot, width, height));
+		CompareImageInfo* newImageInfo = new CompareImageInfo(new FETPImage(Screenshoot, width, height));
 		imagesInfo.push_back(newImageInfo);
 	}
 
@@ -217,10 +218,10 @@ public:
 			delete imagesInfo[i];
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
 		std::string DirectoryPath = "";
-		Json::Value Result = FETPAction::toJson();
+		Json::Value Result = FETPAction::ToJson();
 
 		Json::Value CompareImageInfos;
 		for (size_t i = 0; i < imagesInfo.size(); i++)
@@ -255,8 +256,8 @@ public:
 				CompareImageInfos[Index]["screenSearch"]["isActive"] = imagesInfo[i]->screenSearch != nullptr;
 				if (imagesInfo[i]->screenSearch != nullptr)
 				{
-					CompareImageInfos[Index]["screenSearch"]["xShiftFromFound"] = imagesInfo[i]->screenSearch->getXShiftFromFound();
-					CompareImageInfos[Index]["screenSearch"]["yShiftFromFound"] = imagesInfo[i]->screenSearch->getYShiftFromFound();
+					CompareImageInfos[Index]["screenSearch"]["xShiftFromFound"] = imagesInfo[i]->screenSearch->GetXShiftFromFound();
+					CompareImageInfos[Index]["screenSearch"]["yShiftFromFound"] = imagesInfo[i]->screenSearch->GetYShiftFromFound();
 				}
 			}
 		}
@@ -265,10 +266,10 @@ public:
 		return Result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value json)
 	{
 		std::string directoryPath = "";
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(json);
 
 		// New version
 		if (json.isMember("compareImageInfos"))
@@ -289,7 +290,7 @@ public:
 
 			unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
 			memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-			imagesInfo.push_back(new compareImageInfo(new FETPImage(tempData, uWidth, uHeight)));
+			imagesInfo.push_back(new CompareImageInfo(new FETPImage(tempData, uWidth, uHeight)));
 			delete[] tempData;
 
 			imagesInfo.back()->partialImageLeft = json["partialImageLeft"].asInt();
@@ -330,7 +331,7 @@ public:
 					// So we need to save it to temp location.
 					std::string tempDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FocalEngine::FILE_SYSTEM.GetCurrentWorkingPath().c_str());
 					std::string fileName = tempDirectory + "screenshot_";
-					fileName += getID();
+					fileName += GetID();
 					fileName += "_" + std::to_string(i) + "_";
 					fileName += ".png";
 					imagesInfo[i]->image->SetFullPath(fileName);
@@ -348,7 +349,7 @@ public:
 					// So we need to save it to temp location.
 					std::string tempDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FocalEngine::FILE_SYSTEM.GetCurrentWorkingPath().c_str());
 					std::string fileName = tempDirectory + "partial_";
-					fileName += getID();
+					fileName += GetID();
 					fileName += "_" + std::to_string(i) + "_";
 					fileName += ".png";
 					imagesInfo[i]->partialImage->SetFullPath(fileName);

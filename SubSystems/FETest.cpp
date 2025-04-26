@@ -223,11 +223,11 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 	{
 		globalActionNode* CurrentNode = reinterpret_cast<globalActionNode*>(List[i]);
 
-		if (ActionSeenIDs.find(CurrentNode->GetData()->getID()) != ActionSeenIDs.end())
-			CurrentNode->GetData()->setID(FocalEngine::APPLICATION.GetUniqueHexID());
-		ActionSeenIDs[CurrentNode->GetData()->getID()] = true;
+		if (ActionSeenIDs.find(CurrentNode->GetData()->GetID()) != ActionSeenIDs.end())
+			CurrentNode->GetData()->SetID(FocalEngine::APPLICATION.GetUniqueHexID());
+		ActionSeenIDs[CurrentNode->GetData()->GetID()] = true;
 
-		if (CurrentNode->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		if (CurrentNode->GetData()->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 		{
 			ScreenshootCompareAction* CurrentAction = reinterpret_cast<ScreenshootCompareAction*>(CurrentNode->GetData());
 			for (size_t j = 0; j < CurrentAction->imagesInfo.size(); j++)
@@ -235,7 +235,7 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 				if (CurrentAction->imagesInfo[j]->image != nullptr)
 				{
 					std::string FileName = DirectoryPath + "screenshot_";
-					FileName += CurrentAction->getID();
+					FileName += CurrentAction->GetID();
 					FileName += "_" + std::to_string(j) + "_";
 					FileName += ".png";
 
@@ -245,7 +245,7 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 				if (CurrentAction->imagesInfo[j]->partialImage != nullptr)
 				{
 					std::string FileName = DirectoryPath + "partial_";
-					FileName += CurrentAction->getID();
+					FileName += CurrentAction->GetID();
 					FileName += "_" + std::to_string(j) + "_";
 					FileName += ".png";
 
@@ -278,11 +278,11 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 			{
 				globalActionNode* CurrentNode = reinterpret_cast<globalActionNode*>(List[j]);
 
-				if (ActionSeenIDs.find(CurrentNode->GetData()->getID()) != ActionSeenIDs.end())
-					CurrentNode->GetData()->setID(FocalEngine::APPLICATION.GetUniqueHexID());
-				ActionSeenIDs[CurrentNode->GetData()->getID()] = true;
+				if (ActionSeenIDs.find(CurrentNode->GetData()->GetID()) != ActionSeenIDs.end())
+					CurrentNode->GetData()->SetID(FocalEngine::APPLICATION.GetUniqueHexID());
+				ActionSeenIDs[CurrentNode->GetData()->GetID()] = true;
 
-				if (CurrentNode->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+				if (CurrentNode->GetData()->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
 				{
 					ScreenshootCompareAction* CurrentAction = reinterpret_cast<ScreenshootCompareAction*>(CurrentNode->GetData());
 					for (size_t k = 0; k < CurrentAction->imagesInfo.size(); k++)
@@ -290,7 +290,7 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 						if (CurrentAction->imagesInfo[k]->image != nullptr)
 						{
 							std::string FileName = DirectoryPath + "screenshot_";
-							FileName += CurrentAction->getID();
+							FileName += CurrentAction->GetID();
 							FileName += "_" + std::to_string(k) + "_";
 							FileName += ".png";
 
@@ -300,7 +300,7 @@ void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string Fil
 						if (CurrentAction->imagesInfo[k]->partialImage != nullptr)
 						{
 							std::string FileName = DirectoryPath + "partial_";
-							FileName += CurrentAction->getID();
+							FileName += CurrentAction->GetID();
 							FileName += "_" + std::to_string(k) + "_";
 							FileName += ".png";
 
