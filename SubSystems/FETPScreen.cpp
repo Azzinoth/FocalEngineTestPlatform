@@ -1,7 +1,5 @@
 #include "FETPScreen.h"
 
-bool ScreenshootCompareAction::bUseGPU = true;
-
 FETPScreen::FETPScreen()
 {
 	ScreenData = new unsigned char[TEST_PLATFORM.GetScreenWidth() * TEST_PLATFORM.GetScreenHeight() * 4];
@@ -15,38 +13,14 @@ unsigned char* FETPScreen::GetScreenData()
 
 void FETPScreen::UpdateScreenData()
 {
-	//if (screenData == nullptr)
-	//	screenData = new unsigned char[TEST_PLATFORM.getScreenWidth() * TEST_PLATFORM.getScreenHeight() * 4];
-
-
-	//LARGE_INTEGER StartingTime;
-	//LARGE_INTEGER EndingTime;
-	//LARGE_INTEGER ElapsedMicroseconds;
-	//LARGE_INTEGER Frequency;
-	//QueryPerformanceFrequency(&Frequency);
-	//QueryPerformanceCounter(&StartingTime);
-
 	static HDC hScreen = GetDC(GetDesktopWindow());
 	static HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, static_cast<int>(TEST_PLATFORM.GetScreenWidth()), static_cast<int>(TEST_PLATFORM.GetScreenHeight()));
 	static HDC hdcMem = CreateCompatibleDC(hScreen);
 
-	/*HDC hScreen = GetDC(GetDesktopWindow());
-	HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, TEST_PLATFORM.getScreenWidth(), TEST_PLATFORM.getScreenHeight());
-	HDC hdcMem = CreateCompatibleDC(hScreen);*/
-
-
-	
-
 	HGDIOBJ hOld = SelectObject(hdcMem, hBitmap);
 	BitBlt(hdcMem, 0, 0, static_cast<int>(TEST_PLATFORM.GetScreenWidth()), static_cast<int>(TEST_PLATFORM.GetScreenWidth()), hScreen, 0, 0, SRCCOPY);
 	SelectObject(hdcMem, hOld);
-
 	
-
-
-
-	
-
 	BITMAPINFOHEADER bmi = { 0 };
 	bmi.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.biPlanes = 1;
@@ -61,32 +35,11 @@ void FETPScreen::UpdateScreenData()
 	{
 		std::swap(ScreenData[i], ScreenData[i + 2]);
 	}
-
-
-	/*ReleaseDC(GetDesktopWindow(), hScreen);
-	DeleteDC(hdcMem);
-	DeleteObject(hBitmap);*/
-
-
-
-	//QueryPerformanceCounter(&EndingTime);
-	//ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
-	//ElapsedMicroseconds.QuadPart *= 1000000;
-	//ElapsedMicroseconds.QuadPart /= Frequency.QuadPart;
-
-	//float time = ElapsedMicroseconds.QuadPart / 1000.0f;
-
-	
-
-
-	//TEST_PLATFORM.setWindowTitle(std::to_string(time).c_str());
-
-	//int error = lodepng::encode("test.png", ScreenData, screenW, screenH);
 }
 
-void FETPScreen::GetScreenRegion(unsigned char* Data, int Left, int Top, int Width, int Height, bool UpdateScreenDataFlag)
+void FETPScreen::GetScreenRegion(unsigned char* Data, int Left, int Top, int Width, int Height, bool bUpdateScreenDataFlag)
 {
-	if (UpdateScreenDataFlag)
+	if (bUpdateScreenDataFlag)
 		UpdateScreenData();
 
 	if (Width <= 0 || Height <= 0 || Top < 0 || Left < 0)
@@ -371,7 +324,7 @@ long long getSubIntegralImage(int x, int y, int subImageW, int subImageH, int to
 	return result;
 }
 
-bool FETPScreen::bSearchOnScreen(size_t Width, size_t Height, unsigned char* Data, size_t& X, size_t& Y, float CorrectnessThreshold, int MaxColorShift, int* MaxSimilarity)
+bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data, size_t& X, size_t& Y, float CorrectnessThreshold, int MaxColorShift, int* MaxSimilarity)
 {
 	UpdateScreenData();
 
@@ -560,56 +513,4 @@ bool FETPScreen::bSearchOnScreen(size_t Width, size_t Height, unsigned char* Dat
 		*MaxSimilarity = localMaxSimilarity;
 
 	return false;
-}
-
-bool ScreenSearchInfo::GetSearchOnScreenMode()
-{
-	return bSearchOnScreen;
-}
-
-void ScreenSearchInfo::SetSearchOnScreenMode(bool NewValue)
-{
-	bSearchOnScreen = NewValue;
-
-	ScreenRegionMin = ImVec2(0, 0);
-	ScreenRegionMax = ImVec2(float(TEST_PLATFORM.GetScreenWidth()), float(TEST_PLATFORM.GetScreenHeight()));
-}
-
-void ScreenSearchInfo::SetScreenRegion(ImVec2 ScreenRegionMin, ImVec2 ScreenRegionMax)
-{
-	if (ScreenRegionMin.x > ScreenRegionMax.x || ScreenRegionMin.y > ScreenRegionMax.y)
-		return;
-
-	ScreenRegionMin = ScreenRegionMin;
-	ScreenRegionMax = ScreenRegionMax;
-}
-
-ImVec2 ScreenSearchInfo::GetScreenMinRegion()
-{
-	return ScreenRegionMin;
-}
-
-ImVec2 ScreenSearchInfo::GetScreenMaxRegion()
-{
-	return ScreenRegionMax;
-}
-
-int ScreenSearchInfo::GetXShiftFromFound()
-{
-	return XShiftFromFound;
-}
-
-void ScreenSearchInfo::SetXShiftFromFound(int NewValue)
-{
-	XShiftFromFound = NewValue;
-}
-
-int ScreenSearchInfo::GetYShiftFromFound()
-{
-	return YShiftFromFound;
-}
-
-void ScreenSearchInfo::SetYShiftFromFound(int NewValue)
-{
-	YShiftFromFound = NewValue;
 }

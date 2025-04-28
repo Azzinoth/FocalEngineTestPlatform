@@ -1,25 +1,25 @@
-#include "mouseLeftButtonUp.h"
+#include "MouseLeftButtonUp.h"
 using namespace VisNodeSys;
 
-bool mouseLeftButtonUp::isRegistered = []()
+bool MouseLeftButtonUp::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("mouseLeftButtonUp",
+	NODE_FACTORY.RegisterNodeType("MouseLeftButtonUp",
 		[]() -> Node* {
-			return new mouseLeftButtonUp();
+			return new MouseLeftButtonUp();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const mouseLeftButtonUp& NodeToCopy = static_cast<const mouseLeftButtonUp&>(CurrentNode);
-			return new mouseLeftButtonUp(NodeToCopy);
+			const MouseLeftButtonUp& NodeToCopy = static_cast<const MouseLeftButtonUp&>(CurrentNode);
+			return new MouseLeftButtonUp(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-mouseLeftButtonUp::mouseLeftButtonUp() : basicLogicNode()
+MouseLeftButtonUp::MouseLeftButtonUp() : BasicLogicNode()
 {
-	Type = "mouseLeftButtonUp";
+	Type = "MouseLeftButtonUp";
 
 	SetStyle(DEFAULT);
 
@@ -33,17 +33,17 @@ mouseLeftButtonUp::mouseLeftButtonUp() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-mouseLeftButtonUp::mouseLeftButtonUp(const mouseLeftButtonUp& Src) : basicLogicNode(Src)
+MouseLeftButtonUp::MouseLeftButtonUp(const MouseLeftButtonUp& Src) : BasicLogicNode(Src)
 {
 	SetStyle(DEFAULT);
 }
 
-void mouseLeftButtonUp::Draw()
+void MouseLeftButtonUp::Draw()
 {	
 	Node::Draw();
 }
 
-void mouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void MouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -56,7 +56,7 @@ void mouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connected
 	}
 }
 
-bool mouseLeftButtonUp::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool MouseLeftButtonUp::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -64,7 +64,7 @@ bool mouseLeftButtonUp::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateS
 	return true;
 }
 
-basicLogicNode* mouseLeftButtonUp::GetNextNode()
+BasicLogicNode* MouseLeftButtonUp::GetNextNode()
 {
 	return nullptr;
 }

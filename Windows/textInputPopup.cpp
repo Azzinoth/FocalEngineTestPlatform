@@ -1,52 +1,52 @@
-#include "textInputPopup.h"
+#include "TextInputPopup.h"
 
-textInputPopup::textInputPopup()
+TextInputPopup::TextInputPopup()
 {
-	popupCaption = "Input text";
-	strcpy_s(text, "");
+	PopupCaption = "Input text";
+	strcpy_s(Text, "");
 }
 
-textInputPopup::~textInputPopup()
+TextInputPopup::~TextInputPopup()
 {
 }
 
-void textInputPopup::show(std::function<void(std::string inputFromUser)> func, std::string startText)
+void TextInputPopup::Show(std::function<void(std::string InputFromUser)> Function, std::string StartText)
 {
-	if (func == nullptr)
+	if (Function == nullptr)
 		return;
 
-	strcpy_s(text, startText.c_str());
-	shouldOpen = true;
-	callback = func;
+	strcpy_s(Text, StartText.c_str());
+	bShouldOpen = true;
+	Callback = Function;
 
-	ImGuiModalPopup::show();
+	ImGuiModalPopup::Show();
 }
 
-void textInputPopup::render()
+void TextInputPopup::Render()
 {
-	ImGuiModalPopup::render();
+	ImGuiModalPopup::Render();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 15));
-	ImGui::SetNextWindowSize(popupSize);
+	ImGui::SetNextWindowSize(PopupSize);
 	int Width, Height;
 	FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
-	ImGui::SetNextWindowPos(ImVec2(Width / 2 - popupSize.x / 2.0f, Height / 2 - popupSize.y / 2.0f));
-	if (ImGui::BeginPopupModal(popupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	ImGui::SetNextWindowPos(ImVec2(Width / 2 - PopupSize.x / 2.0f, Height / 2 - PopupSize.y / 2.0f));
+	if (ImGui::BeginPopupModal(PopupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
 	{
-		if (callback == nullptr)
+		if (Callback == nullptr)
 			return;
 
 		ImGui::Text("Text :");
-		ImGui::InputText("", text, IM_ARRAYSIZE(text));
+		ImGui::InputText("", Text, IM_ARRAYSIZE(Text));
 
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 4.0f - 120.0f / 2.0f);
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 		if (ImGui::Button("Apply", ImVec2(120, 0)))
 		{
-			if (strlen(text) > 0)
-				callback(text);
+			if (strlen(Text) > 0)
+				Callback(Text);
 
-			exit();
+			Exit();
 		}
 
 		ImGui::SetItemDefaultFocus();
@@ -54,7 +54,7 @@ void textInputPopup::render()
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f + ImGui::GetWindowWidth() / 4.0f - 120.0f / 2.0f);
 		if (ImGui::Button("Cancel", ImVec2(120, 0)))
 		{
-			exit();
+			Exit();
 		}
 
 		ImGui::PopStyleVar();
@@ -66,9 +66,9 @@ void textInputPopup::render()
 	}
 }
 
-void textInputPopup::exit()
+void TextInputPopup::Exit()
 {
-	callback = nullptr;
-	strcpy_s(text, "");
-	ImGuiModalPopup::close();
+	Callback = nullptr;
+	strcpy_s(Text, "");
+	ImGuiModalPopup::Close();
 }

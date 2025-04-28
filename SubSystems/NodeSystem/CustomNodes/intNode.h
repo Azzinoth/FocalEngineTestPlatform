@@ -1,11 +1,11 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class intNode : public basicLogicNode
+class IntNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
@@ -17,13 +17,13 @@ class intNode : public basicLogicNode
 	};
 
 public:
-	intNode();
-	intNode(const intNode& Src);
+	IntNode();
+	IntNode(const IntNode& Other);
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

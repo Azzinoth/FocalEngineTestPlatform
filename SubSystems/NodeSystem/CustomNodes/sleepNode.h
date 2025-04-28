@@ -1,24 +1,24 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class sleepNode : public basicLogicNode
+class SleepNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	int SleepFor = 0;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 public:
-	sleepNode();
-	sleepNode(const sleepNode& Src);
+	SleepNode();
+	SleepNode(const SleepNode& Other);
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

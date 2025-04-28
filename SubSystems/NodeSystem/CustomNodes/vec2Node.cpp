@@ -1,25 +1,25 @@
-#include "vec2Node.h"
+#include "Vec2Node.h"
 using namespace VisNodeSys;
 
-bool vec2Node::isRegistered = []()
+bool Vec2Node::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("vec2Node",
+	NODE_FACTORY.RegisterNodeType("Vec2Node",
 		[]() -> Node* {
-			return new vec2Node();
+			return new Vec2Node();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const vec2Node& NodeToCopy = static_cast<const vec2Node&>(CurrentNode);
-			return new vec2Node(NodeToCopy);
+			const Vec2Node& NodeToCopy = static_cast<const Vec2Node&>(CurrentNode);
+			return new Vec2Node(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-vec2Node::vec2Node() : basicLogicNode()
+Vec2Node::Vec2Node() : BasicLogicNode()
 {
-	Type = "vec2Node";
+	Type = "Vec2Node";
 
 	SetStyle(DEFAULT);
 
@@ -33,36 +33,47 @@ vec2Node::vec2Node() : basicLogicNode()
 	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
-vec2Node::vec2Node(const vec2Node& Src) : basicLogicNode(Src)
+Vec2Node::Vec2Node(const Vec2Node& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	Data = Src.Data;
+	Data = Other.Data;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
 }
 
-Json::Value vec2Node::ToJson()
+Json::Value Vec2Node::ToJson()
 {
 	Json::Value Result = Node::ToJson();
-	Result["vec2Node_Data_x"] = Data.x;
-	Result["vec2Node_Data_y"] = Data.y;
+	Result["Vec2Node_Data_X"] = Data.x;
+	Result["Vec2Node_Data_Y"] = Data.y;
 	return Result;
 }
 
-void vec2Node::FromJson(Json::Value Json)
+bool Vec2Node::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
-	Data.x = Json["vec2Node_Data_x"].asFloat();
-	Data.y = Json["vec2Node_Data_y"].asFloat();
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("Vec2Node_Data_X") || !Json.isMember("Vec2Node_Data_Y"))
+		return false;
+
+	Data.x = Json["Vec2Node_Data_X"].asFloat();
+	Data.y = Json["Vec2Node_Data_Y"].asFloat();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
+	if (Output.size() < 1 || Output[0] == nullptr)
+		return false;
+
 	Output[0]->SetFunctionToOutputData(Vec2DataGetter);
+
+	return true;
 }
 
-void vec2Node::Draw()
+void Vec2Node::Draw()
 {	
 	Node::Draw();
 
@@ -84,12 +95,12 @@ void vec2Node::Draw()
 	}
 }
 
-void vec2Node::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void Vec2Node::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-bool vec2Node::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool Vec2Node::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -97,7 +108,7 @@ bool vec2Node::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, ch
 	return true;
 }
 
-basicLogicNode* vec2Node::GetNextNode()
+BasicLogicNode* Vec2Node::GetNextNode()
 {
 	return nullptr;
 }

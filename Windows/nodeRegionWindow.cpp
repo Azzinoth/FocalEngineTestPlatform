@@ -1,235 +1,86 @@
-#include "nodeRegionWindow.h"
+#include "NodeRegionWindow.h"
 
-ImVec2 nodeRegionWindow::mousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
-regionNode* nodeRegionWindow::currentRegion = nullptr;
+ImVec2 NodeRegionWindow::MousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
+RegionNode* NodeRegionWindow::CurrentRegion = nullptr;
 
-nodeRegionWindow::nodeRegionWindow()
+NodeRegionWindow::NodeRegionWindow()
 {
-	std::string tempCaption = "node region area";
-	strcpy_s(caption, tempCaption.size() + 1, tempCaption.c_str());
+	std::string TemporaryCaption = "node region area";
+	strcpy_s(Caption, TemporaryCaption.size() + 1, TemporaryCaption.c_str());
 
-	size = ImVec2(1200, 800);
+	Size = ImVec2(1200, 800);
 }
 
-nodeRegionWindow::~nodeRegionWindow()
+NodeRegionWindow::~NodeRegionWindow()
 {
-	if (cancelButton != nullptr)
-		delete cancelButton;
+	if (CancelButton != nullptr)
+		delete CancelButton;
 }
 
-void nodeRegionWindow::show(regionNode* region)
+void NodeRegionWindow::Show(RegionNode* Region)
 {
-	if (region == nullptr)
+	if (Region == nullptr)
 		return;
 
-	currentRegion = region;
-	FEImGuiWindow::show();
+	CurrentRegion = Region;
+	FEImGuiWindow::Show();
 
-	flags |= ImGuiWindowFlags_NoScrollbar;
+	Flags |= ImGuiWindowFlags_NoScrollbar;
 
-	if (cancelButton == nullptr)
+	if (CancelButton == nullptr)
 	{
-		cancelButton = new ImGuiButton("Cancel");
-		cancelButton->setPosition(ImVec2(size.x / 2.0f - cancelButton->getSize().x / 2, size.y - 30));
-		cancelButton->setSize(ImVec2(80.0f, 25.0f));
-		cancelButton->setDefaultColor(ImVec4(0.7f, 0.5f, 0.5f, 1.0f));
-		cancelButton->setHoveredColor(ImVec4(0.95f, 0.5f, 0.0f, 1.0f));
-		cancelButton->setActiveColor(ImVec4(0.1f, 1.0f, 0.1f, 1.0f));
+		CancelButton = new ImGuiButton("Cancel");
+		CancelButton->SetPosition(ImVec2(Size.x / 2.0f - CancelButton->GetSize().x / 2, Size.y - 30));
+		CancelButton->SetSize(ImVec2(80.0f, 25.0f));
+		CancelButton->SetDefaultColor(ImVec4(0.7f, 0.5f, 0.5f, 1.0f));
+		CancelButton->SetHoveredColor(ImVec4(0.95f, 0.5f, 0.0f, 1.0f));
+		CancelButton->SetActiveColor(ImVec4(0.1f, 1.0f, 0.1f, 1.0f));
 	}
 }
 
-void nodeRegionWindow::render()
+void NodeRegionWindow::Render()
 {
-	FEImGuiWindow::render();
+	FEImGuiWindow::Render();
 
-	if (!isVisible())
+	if (!IsVisible())
 		return;
 
-	if (currentRegion->GetData() != nullptr)
+	if (CurrentRegion->GetData() != nullptr)
 	{
-		currentRegion->GetData()->SetMainContextMenuFunc(mainContextMenu);
-		currentRegion->GetData()->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
-		currentRegion->GetData()->Update();
+		CurrentRegion->GetData()->SetMainContextMenuFunc(RenderMainContextMenu);
+		CurrentRegion->GetData()->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
+		CurrentRegion->GetData()->Update();
 	}
 
 	ImGui::SetItemDefaultFocus();
-	cancelButton->setPosition(ImVec2(size.x / 2.0f - cancelButton->getSize().x / 2, size.y - 30));
-	cancelButton->render();
-	if (cancelButton->getWasClicked())
-		FEImGuiWindow::close();
+	CancelButton->SetPosition(ImVec2(Size.x / 2.0f - CancelButton->GetSize().x / 2, Size.y - 30));
+	CancelButton->Render();
+	if (CancelButton->IsClicked())
+		FEImGuiWindow::Close();
 
 	if (ImGui::GetIO().MouseReleased[1])
-		mousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - currentRegion->GetData()->GetRenderOffset();
+		MousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - CurrentRegion->GetData()->GetRenderOffset();
 
-	FEImGuiWindow::onRenderEnd();
+	FEImGuiWindow::OnRenderEnd();
 }
 
-void nodeRegionWindow::mainContextMenu()
+void NodeRegionWindow::RenderMainContextMenu()
 {
-	if (currentRegion == nullptr)
+	if (CurrentRegion == nullptr)
 		return;
 
-	if (currentRegion->GetData()->GetHovered() == nullptr && currentRegion->GetData()->GetSelected().size() == 0)
+	if (CurrentRegion->GetData()->GetHovered() == nullptr && CurrentRegion->GetData()->GetSelected().size() == 0)
 	{
 		if (ImGui::BeginMenu("Add"))
 		{
-			globalActionNode* newNode = nullptr;
-
-			if (ImGui::MenuItem("Sleep node"))
-			{
-				SleepAction* NewAction = new SleepAction(10);
-				newNode = new globalActionNode(NewAction);
-			}
-
-			if (ImGui::MenuItem("Screen compare node..."))
-			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
-
-				if (Path != "")
-				{
-					std::vector<unsigned char> rawData;
-					unsigned uWidth, uHeight;
-					int error = lodepng::decode(rawData, uWidth, uHeight, Path);
-
-					if (error == 0)
-					{
-						unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-						memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-						ScreenshootCompareAction* NewAction = new ScreenshootCompareAction(tempData, 0, uWidth, uHeight);
-						delete[] tempData;
-
-						newNode = new globalActionNode(NewAction);
-					}
-				}
-			}
-
-			if (ImGui::MenuItem("Application lunch node..."))
-			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
-
-				if (Path != "")
-				{
-					LunchApplicationAction* NewAction = new LunchApplicationAction(Path);
-					newNode = new globalActionNode(NewAction);
-				}
-			}
-
-			if (ImGui::BeginMenu("Mouse"))
-			{
-				if (ImGui::MenuItem("Move"))
-				{
-					MouseAction* NewAction = new MouseAction();
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("LeftButtonDown"))
-				{
-					MouseAction* NewAction = new MouseAction();
-					NewAction->EventType = WM_LBUTTONDOWN;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("LeftButtonUp"))
-				{
-					MouseAction* NewAction = new MouseAction();
-					NewAction->EventType = WM_LBUTTONUP;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("RightButtonDown"))
-				{
-					MouseAction* NewAction = new MouseAction();
-					NewAction->EventType = WM_RBUTTONDOWN;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("RightButtonUp"))
-				{
-					MouseAction* NewAction = new MouseAction();
-					NewAction->EventType = WM_RBUTTONUP;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("WheelRotation"))
-				{
-					MouseAction* NewAction = new MouseAction();
-					NewAction->EventType = WM_MOUSEWHEEL;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Keyboard"))
-			{
-				if (ImGui::MenuItem("KeyDown"))
-				{
-					KeyboardAction* NewAction = new KeyboardAction();
-					NewAction->EventType = WM_KEYDOWN;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("KeyUp"))
-				{
-					KeyboardAction* NewAction = new KeyboardAction();
-					NewAction->EventType = WM_KEYUP;
-					newNode = new globalActionNode(NewAction);
-				}
-
-				if (ImGui::MenuItem("Combined text input..."))
-				{
-					textInputPopup::GetInstance().show(textInputCallback);
-				}
-
-				ImGui::EndMenu();
-			}
-
-			if (newNode != nullptr)
-			{
-				newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
-				currentRegion->GetData()->AddNode(newNode);
-			}
-
 			ImGui::EndMenu();
-		}
-	}
-	else if (currentRegion->GetData()->GetSelected().size() == 1 &&
-			 currentRegion->GetData()->GetSelected()[0]->GetType() == "combinedActionNode")
-	{
-		combinedActionNode* currentNode = reinterpret_cast<combinedActionNode*>(currentRegion->GetData()->GetSelected()[0]);
-		if (currentNode->GetCombinedActionType() == FETP_COMBINED_TEXT_INPUT_ACTION)
-		{
-			if (ImGui::MenuItem(std::string("Change input text").c_str()))
-			{
-				combinedActionNode::NodeForCallback = currentNode;
-				textInputPopup::GetInstance().show(combinedActionNode::ChangeTextCallback, currentNode->Text);
-			}
-		}
-
-		if (ImGui::MenuItem(std::string("Remove").c_str()))
-		{
-			currentNode->Remove();
-		}
-
-		if (ImGui::MenuItem(std::string("Look inside").c_str()))
-		{
-			previewWindow::GetInstance().show(true);
-			previewWindow::GetInstance().currentNodeArea->Clear();
-			ACTION_SYSTEM.PlaceStructuredNodes(currentNode->Data, previewWindow::GetInstance().currentNodeArea, true);
 		}
 	}
 }
 
-void nodeRegionWindow::textInputCallback(std::string text)
+void NodeRegionWindow::TextInputCallback(std::string Text)
 {
-	if (text != "")
+	if (Text != "")
 	{
-		combinedActionNode* newNode = new combinedActionNode(std::vector<FETPAction*>(), FETP_COMBINED_TEXT_INPUT_ACTION);
-		newNode->ChangeText(text);
-
-		newNode->SetPosition(mousePositionWhenContextMenuWasOpened);
-		currentRegion->GetData()->AddNode(newNode);
 	}
 }

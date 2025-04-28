@@ -1,25 +1,25 @@
-#include "intNode.h"
+#include "IntNode.h"
 using namespace VisNodeSys;
 
-bool intNode::isRegistered = []()
+bool IntNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("intNode",
+	NODE_FACTORY.RegisterNodeType("IntNode",
 		[]() -> Node* {
-			return new intNode();
+			return new IntNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const intNode& NodeToCopy = static_cast<const intNode&>(CurrentNode);
-			return new intNode(NodeToCopy);
+			const IntNode& NodeToCopy = static_cast<const IntNode&>(CurrentNode);
+			return new IntNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-intNode::intNode() : basicLogicNode()
+IntNode::IntNode() : BasicLogicNode()
 {
-	Type = "intNode";
+	Type = "IntNode";
 
 	SetStyle(DEFAULT);
 
@@ -33,34 +33,48 @@ intNode::intNode() : basicLogicNode()
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
-intNode::intNode(const intNode& Src) : basicLogicNode(Src)
+IntNode::IntNode(const IntNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	Data = Src.Data;
+	Data = Other.Data;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
-Json::Value intNode::ToJson()
+Json::Value IntNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
 	Result["intNode_Data"] = Data;
 	return Result;
 }
 
-void intNode::FromJson(Json::Value Json)
+bool IntNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("intNode_Data"))
+		return false;
+
 	Data = Json["intNode_Data"].asInt();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
+	if (Output.size() < 1)
+		return false;
+
+	if (Output[0] == nullptr)
+		return false;
+
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
+
+	return true;
 }
 
-void intNode::Draw()
+void IntNode::Draw()
 {	
 	Node::Draw();
 
@@ -68,10 +82,10 @@ void intNode::Draw()
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
 
-	float xPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
-	float yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
+	float XPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
+	float YPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
 
-	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(100 * Zoom);
 	if (ImGui::InputInt("##value", &Data))
 	{
@@ -80,12 +94,12 @@ void intNode::Draw()
 	}
 }
 
-void intNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void IntNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-bool intNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool IntNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -93,7 +107,7 @@ bool intNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, cha
 	return true;
 }
 
-basicLogicNode* intNode::GetNextNode()
+BasicLogicNode* IntNode::GetNextNode()
 {
 	return nullptr;
 }

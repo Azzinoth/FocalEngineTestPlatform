@@ -1,19 +1,19 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class mouseLeftButtonDown : public basicLogicNode
+class MouseLeftButtonDown : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 public:
-	mouseLeftButtonDown();
-	mouseLeftButtonDown(const mouseLeftButtonDown& Src);
+	MouseLeftButtonDown();
+	MouseLeftButtonDown(const MouseLeftButtonDown& Other);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

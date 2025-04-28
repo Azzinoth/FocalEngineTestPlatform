@@ -1,11 +1,11 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class beginNode : public basicLogicNode
+class BeginNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	float Data = 0.0f;
 
@@ -14,11 +14,11 @@ class beginNode : public basicLogicNode
 
 	FETPImage* Icon = nullptr;
 public:
-	beginNode();
-	beginNode(const beginNode& Src);
+	BeginNode();
+	BeginNode(const BeginNode& Other);
 
 	void Draw();
 	float GetData();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

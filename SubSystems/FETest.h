@@ -3,23 +3,22 @@
 #include "FEFileSystem.h"
 
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
-#include "NodeSystem/CustomNodes/intNode.h"
-#include "NodeSystem/CustomNodes/floatNode.h"
-#include "NodeSystem/CustomNodes/vec2Node.h"
-#include "NodeSystem/CustomNodes/vec2AddNode.h"
-#include "NodeSystem/CustomNodes/boolNode.h"
-#include "NodeSystem/CustomNodes/branchNode.h"
-#include "NodeSystem/CustomNodes/sequenceNode.h"
-#include "NodeSystem/CustomNodes/timerNode.h"
-#include "NodeSystem/CustomNodes/sleepNode.h"
-#include "NodeSystem/CustomNodes/beginNode.h"
-#include "NodeSystem/CustomNodes/mouseMoveNode.h"
-#include "NodeSystem/CustomNodes/mouseLeftButtonDown.h"
-#include "NodeSystem/CustomNodes/mouseLeftButtonUp.h"
-#include "NodeSystem/CustomNodes/imageNode.h"
-#include "NodeSystem/CustomNodes/imageSearchNode.h"
-#include "NodeSystem/CustomNodes/combinedActionNode.h"
-#include "NodeSystem/CustomNodes/regionNode.h"
+#include "NodeSystem/CustomNodes/IntNode.h"
+#include "NodeSystem/CustomNodes/FloatNode.h"
+#include "NodeSystem/CustomNodes/Vec2Node.h"
+#include "NodeSystem/CustomNodes/Vec2AddNode.h"
+#include "NodeSystem/CustomNodes/BoolNode.h"
+#include "NodeSystem/CustomNodes/BranchNode.h"
+#include "NodeSystem/CustomNodes/SequenceNode.h"
+#include "NodeSystem/CustomNodes/TimerNode.h"
+#include "NodeSystem/CustomNodes/SleepNode.h"
+#include "NodeSystem/CustomNodes/BeginNode.h"
+#include "NodeSystem/CustomNodes/MouseMoveNode.h"
+#include "NodeSystem/CustomNodes/MouseLeftButtonDown.h"
+#include "NodeSystem/CustomNodes/MouseLeftButtonUp.h"
+#include "NodeSystem/CustomNodes/ImageNode.h"
+#include "NodeSystem/CustomNodes/ImageSearchNode.h"
+#include "NodeSystem/CustomNodes/RegionNode.h"
 
 enum FE_TEST_FAIL_REASON
 {
@@ -29,24 +28,24 @@ enum FE_TEST_FAIL_REASON
 	FE_TEST_FAIL_CANT_FIND_FILE = 3
 };
 
-struct FETestScreenshootCompareResult
+struct FETestScreenshotCompareResult
 {
 	FETPImage* Expected = nullptr;
-	FETPImage* Screenshoot = nullptr;
+	FETPImage* Screenshot = nullptr;
 	FETPImage* Difference = nullptr;
 	int Similarity = 0;
 
-	FETestScreenshootCompareResult(FETPImage* Expected, FETPImage* Screenshoot, FETPImage* Difference, int Similarity)
+	FETestScreenshotCompareResult(FETPImage* Expected, FETPImage* Screenshot, FETPImage* Difference, int Similarity)
 	{
 		this->Expected = Expected;
-		this->Screenshoot = Screenshoot;
+		this->Screenshot = Screenshot;
 		this->Difference = Difference;
 		this->Similarity = Similarity;
 	}
 
-	~FETestScreenshootCompareResult()
+	~FETestScreenshotCompareResult()
 	{
-		delete Screenshoot;
+		delete Screenshot;
 		delete Difference;
 	}
 };
@@ -74,11 +73,11 @@ class FETest;
 struct FETestResult
 {
 private:
-	FETestScreenshootCompareResult* ScreenshootCompare = nullptr;
+	FETestScreenshotCompareResult* ScreenshotCompare = nullptr;
 public:
 	~FETestResult()
 	{
-		delete ScreenshootCompare;
+		delete ScreenshotCompare;
 	}
 
 	FETest* Parent = nullptr;
@@ -89,15 +88,15 @@ public:
 	FETPAction* FailedAction = nullptr;
 	FE_TEST_FAIL_REASON FailReason = FE_TEST_NO_FAIL;
 
-	FETestScreenshootCompareResult* getScreenshootCompareResult()
+	FETestScreenshotCompareResult* getScreenshotCompareResult()
 	{
-		return ScreenshootCompare;
+		return ScreenshotCompare;
 	}
 
-	void setScreenshootCompareResult(FETestScreenshootCompareResult* NewValue)
+	void setScreenshotCompareResult(FETestScreenshotCompareResult* NewValue)
 	{
-		delete ScreenshootCompare;
-		ScreenshootCompare = NewValue;
+		delete ScreenshotCompare;
+		ScreenshotCompare = NewValue;
 	}
 
 	static std::string FETestFailReasonToString(FE_TEST_FAIL_REASON ReasonType)
@@ -136,25 +135,21 @@ public:
 	}
 };
 
-class testEditorWinow;
-class testsOverviewWindow;
-class testPropertiesWindow;
+class TestEditorWindow;
+class TestsOverviewWindow;
+class TestPropertiesWindow;
 class FETest
 {
-	friend testEditorWinow;
-	friend testsOverviewWindow;
-	friend testPropertiesWindow;
+	friend TestEditorWindow;
+	friend TestsOverviewWindow;
+	friend TestPropertiesWindow;
 
 	std::string Name;
 	int LoopCount = 1;
 	float SpeedFactor = 1.0f;
 
-	beginNode* Begin = nullptr;
+	BeginNode* Begin = nullptr;
 	std::vector<FETestResult*> Results;
-
-	void ValidateImagePathesInFile(std::string FilePath);
-	Json::Value ValidateImagePathesInNodeArea(std::string nodeAreaText);
-	void ValidateImagePathes(VisNodeSys::NodeArea* NodeArea = nullptr, std::string FilePath = "");
 
 	std::unordered_map<std::string, std::string> MacrosToReplace;
 public:
@@ -169,7 +164,7 @@ public:
 	std::string FilePath;
 	VisNodeSys::NodeArea* NodeArea;
 
-	beginNode* GetBeginNode();
+	BeginNode* GetBeginNode();
 	void ReColorMainTestPath();
 
 	void Save(const char* FilePath);

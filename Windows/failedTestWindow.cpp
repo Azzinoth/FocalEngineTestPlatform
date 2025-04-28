@@ -1,59 +1,59 @@
-#include "failedTestWindow.h"
+#include "FailedTestWindow.h"
 
-failedTestWindow::failedTestWindow()
+FailedTestWindow::FailedTestWindow()
 {
-	std::string tempCaption = "Test failed!";
-	strcpy_s(caption, tempCaption.size() + 1, tempCaption.c_str());
+	std::string TempCaption = "Test failed!";
+	strcpy_s(Caption, TempCaption.size() + 1, TempCaption.c_str());
 }
 
-failedTestWindow::~failedTestWindow()
+FailedTestWindow::~FailedTestWindow()
 {
-	if (okButton != nullptr)
-		delete okButton;
+	if (OKButton != nullptr)
+		delete OKButton;
 }
 
-void failedTestWindow::show(FETestResult* result)
+void FailedTestWindow::Show(FETestResult* Result)
 {
-	if (result == nullptr || result->bIsSuccessful)
+	if (Result == nullptr || Result->bIsSuccessful)
 		return;
 
-	this->result = result;
+	this->Result = Result;
 
-	size = ImVec2(1024, 900);
-	position = ImVec2(0.0, 0.0);
+	Size = ImVec2(1024, 900);
+	Position = ImVec2(0.0, 0.0);
 
-	std::string tempCaption = std::string("Test ") + "\"" + result->Parent->GetName() +"\"" + " failed information";
-	strcpy_s(caption, tempCaption.size() + 1, tempCaption.c_str());
+	std::string tempCaption = std::string("Test ") + "\"" + Result->Parent->GetName() +"\"" + " failed information";
+	strcpy_s(Caption, tempCaption.size() + 1, tempCaption.c_str());
 
-	flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
+	Flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
 			ImGuiWindowFlags_NoCollapse;
 
-	okButton = new ImGuiButton("OK");
-	okButton->setSize(ImVec2(100, 0));
+	OKButton = new ImGuiButton("OK");
+	OKButton->SetSize(ImVec2(100, 0));
 
-	FEImGuiWindow::show();
+	FEImGuiWindow::Show();
 }
 
-void failedTestWindow::render()
+void FailedTestWindow::Render()
 {
-	FEImGuiWindow::render();
+	FEImGuiWindow::Render();
 
-	if (!isVisible())
+	if (!IsVisible())
 		return;
 
-	ImGui::Text(("Fail action ID: " + result->FailedAction->GetID()).c_str());
-	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(result->FailReason)).c_str());
+	ImGui::Text(("Fail action ID: " + Result->FailedAction->GetID()).c_str());
+	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(Result->FailReason)).c_str());
 
-	if (result->FailReason == FE_TEST_FAIL_SCREENSHOOT_COMPARE)
+	if (Result->FailReason == FE_TEST_FAIL_SCREENSHOOT_COMPARE)
 	{
-		if (result->getScreenshootCompareResult() == nullptr)
+		if (Result->getScreenshotCompareResult() == nullptr)
 		{
-			ImGui::Text("Screenshoot compare result is nullptr !");
+			ImGui::Text("Screenshot compare result is nullptr !");
 		}
 		else
 		{
-			ImGui::Text(("simularity: " + std::to_string(result->getScreenshootCompareResult()->Similarity)).c_str());
-			glm::vec2 imageSize = SCREEN_SYSTEM.ImageSizeInRegion(result->getScreenshootCompareResult()->Difference->GetWidth(), result->getScreenshootCompareResult()->Difference->GetHeight(),
+			ImGui::Text(("Similarity: " + std::to_string(Result->getScreenshotCompareResult()->Similarity)).c_str());
+			glm::vec2 imageSize = SCREEN_SYSTEM.ImageSizeInRegion(Result->getScreenshotCompareResult()->Difference->GetWidth(), Result->getScreenshotCompareResult()->Difference->GetHeight(),
 				size_t((ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x) * 0.925f),
 				size_t((ImGui::GetWindowContentRegionMax().y - ImGui::GetWindowContentRegionMin().y) - 90.0f));
 
@@ -63,18 +63,18 @@ void failedTestWindow::render()
 			ImVec2 imagePosition = ImVec2(ImGui::GetWindowContentRegionMin().x + 20, ImGui::GetWindowContentRegionMin().y + 60);
 
 			ImGui::SetCursorPos(imagePosition);
-			ImGui::Image((void*)(intptr_t)result->getScreenshootCompareResult()->Difference->GetTextureID(),
+			ImGui::Image((void*)(intptr_t)Result->getScreenshotCompareResult()->Difference->GetTextureID(),
 				ImVec2(imageSize.x, imageSize.y),
 				ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 		}
 	}
 
-	okButton->render();
-	if (okButton->getWasClicked())
+	OKButton->Render();
+	if (OKButton->IsClicked())
 	{
-		FEImGuiWindow::close();
+		FEImGuiWindow::Close();
 		return;
 	}
 
-	FEImGuiWindow::onRenderEnd();
+	FEImGuiWindow::OnRenderEnd();
 }

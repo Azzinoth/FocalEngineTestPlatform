@@ -1,25 +1,25 @@
-#include "vec2AddNode.h"
+#include "Vec2AddNode.h"
 using namespace VisNodeSys;
 
-bool vec2AddNode::isRegistered = []()
+bool Vec2AddNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("vec2AddNode",
+	NODE_FACTORY.RegisterNodeType("Vec2AddNode",
 		[]() -> Node* {
-			return new vec2AddNode();
+			return new Vec2AddNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const vec2AddNode& NodeToCopy = static_cast<const vec2AddNode&>(CurrentNode);
-			return new vec2AddNode(NodeToCopy);
+			const Vec2AddNode& NodeToCopy = static_cast<const Vec2AddNode&>(CurrentNode);
+			return new Vec2AddNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-vec2AddNode::vec2AddNode() : basicLogicNode()
+Vec2AddNode::Vec2AddNode() : BasicLogicNode()
 {
-	Type = "vec2AddNode";
+	Type = "Vec2AddNode";
 
 	SetStyle(DEFAULT);
 
@@ -36,7 +36,7 @@ vec2AddNode::vec2AddNode() : basicLogicNode()
 	Output[0]->SetFunctionToOutputData(Vec2AddDataGetter);
 }
 
-vec2AddNode::vec2AddNode(const vec2AddNode& Src) : basicLogicNode(Src)
+Vec2AddNode::Vec2AddNode(const Vec2AddNode& Src) : BasicLogicNode(Src)
 {
 	SetStyle(DEFAULT);
 
@@ -45,17 +45,17 @@ vec2AddNode::vec2AddNode(const vec2AddNode& Src) : basicLogicNode(Src)
 	Output[0]->SetFunctionToOutputData(Vec2AddDataGetter);
 }
 
-void vec2AddNode::Draw()
+void Vec2AddNode::Draw()
 {	
 	Node::Draw();
 }
 
-void vec2AddNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void Vec2AddNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-bool vec2AddNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool Vec2AddNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -63,7 +63,7 @@ bool vec2AddNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket,
 	return true;
 }
 
-basicLogicNode* vec2AddNode::GetNextNode()
+BasicLogicNode* Vec2AddNode::GetNextNode()
 {
 	return nullptr;
 }

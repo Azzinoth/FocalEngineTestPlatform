@@ -165,21 +165,21 @@ struct MouseAction : public FETPAction
 	}
 };
 
-struct LunchApplicationAction : public FETPAction
+struct LaunchApplicationAction : public FETPAction
 {
 	std::string ApplicationPath;
 
-	LunchApplicationAction() : FETPAction(FETP_LUNCH_APPLICATION_ACTION)
+	LaunchApplicationAction() : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
 	{
 		ApplicationPath = "";
 	}
 
-	LunchApplicationAction(const LunchApplicationAction& Other) : FETPAction(Other)
+	LaunchApplicationAction(const LaunchApplicationAction& Other) : FETPAction(Other)
 	{
 		ApplicationPath = Other.ApplicationPath;
 	}
 
-	LunchApplicationAction(std::string ApplicationPath) : FETPAction(FETP_LUNCH_APPLICATION_ACTION)
+	LaunchApplicationAction(std::string ApplicationPath) : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
 	{
 		this->ApplicationPath = ApplicationPath;
 	}
@@ -233,7 +233,7 @@ public:
 
 	void Initialize();
 
-	void SimulateMouseMoveTo(int X, int Y);
+	void SimulateMouseMoveTo(int X, int Y, int MonitorIndex = -1);
 	void SimulateMouseDown(bool bLeftButton = true);
 	void SimulateMouseUp(bool bLeftButton = true);
 

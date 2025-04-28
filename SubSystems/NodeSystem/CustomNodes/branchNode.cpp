@@ -1,25 +1,25 @@
-#include "branchNode.h"
+#include "BranchNode.h"
 using namespace VisNodeSys;
 
-bool branchNode::isRegistered = []()
+bool BranchNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("branchNode",
+	NODE_FACTORY.RegisterNodeType("BranchNode",
 		[]() -> Node* {
-			return new branchNode();
+			return new BranchNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const branchNode& NodeToCopy = static_cast<const branchNode&>(CurrentNode);
-			return new branchNode(NodeToCopy);
+			const BranchNode& NodeToCopy = static_cast<const BranchNode&>(CurrentNode);
+			return new BranchNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-branchNode::branchNode() : basicLogicNode()
+BranchNode::BranchNode() : BasicLogicNode()
 {
-	Type = "branchNode";
+	Type = "BranchNode";
 
 	SetStyle(DEFAULT);
 
@@ -36,32 +36,32 @@ branchNode::branchNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "False", true));
 }
 
-branchNode::branchNode(const branchNode& Src) : basicLogicNode(Src)
+BranchNode::BranchNode(const BranchNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
 }
 
-void branchNode::Draw()
+void BranchNode::Draw()
 {	
 	Node::Draw();
 }
 
-void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void BranchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
 	if (EventType == EXECUTE)
 	{
-		bool Condition = false;
+		bool bConditionState = false;
 
 		if (Input[1]->GetConnectedSockets().size() > 0)
 		{
 			void* TempData = Input[1]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
-				Condition = *reinterpret_cast<bool*>(TempData);
+				bConditionState = *reinterpret_cast<bool*>(TempData);
 		}
 
-		if (Condition)
+		if (bConditionState)
 		{
 			if (Output[0]->GetConnectedSockets().size() > 0)
 				ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
@@ -74,7 +74,7 @@ void branchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket,
 	}
 }
 
-bool branchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool BranchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -82,10 +82,10 @@ bool branchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, 
 	return true;
 }
 
-basicLogicNode* branchNode::GetNextNode()
+BasicLogicNode* BranchNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
-		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
+		return reinterpret_cast<BasicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return nullptr;
 }

@@ -1,25 +1,25 @@
-#include "sequenceNode.h"
+#include "SequenceNode.h"
 using namespace VisNodeSys;
 
-bool sequenceNode::isRegistered = []()
+bool SequenceNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("sequenceNode",
+	NODE_FACTORY.RegisterNodeType("SequenceNode",
 		[]() -> Node* {
-			return new sequenceNode();
+			return new SequenceNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const sequenceNode& NodeToCopy = static_cast<const sequenceNode&>(CurrentNode);
-			return new sequenceNode(NodeToCopy);
+			const SequenceNode& NodeToCopy = static_cast<const SequenceNode&>(CurrentNode);
+			return new SequenceNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-sequenceNode::sequenceNode() : basicLogicNode()
+SequenceNode::SequenceNode() : BasicLogicNode()
 {
-	Type = "sequenceNode";
+	Type = "SequenceNode";
 
 	SetStyle(DEFAULT);
 
@@ -32,31 +32,39 @@ sequenceNode::sequenceNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 }
 
-sequenceNode::sequenceNode(const sequenceNode& Src) : basicLogicNode(Src)
+SequenceNode::SequenceNode(const SequenceNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	Data = Src.Data;
+	Data = Other.Data;
 }
 
-void sequenceNode::AddSequenceOutput()
+void SequenceNode::AddSequenceOutput()
 {
 	AddSocket(new NodeSocket(this, "EXECUTE", "Then " + std::to_string(Output.size()), true));
 }
 
-Json::Value sequenceNode::ToJson()
+Json::Value SequenceNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
 	Result["sequenceNode_Data"] = Data;
 	return Result;
 }
 
-void sequenceNode::FromJson(Json::Value Json)
+bool SequenceNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("sequenceNode_Data"))
+		return false;
+
 	Data = Json["sequenceNode_Data"].asInt();
+
+	return true;
 }
 
-void sequenceNode::Draw()
+void SequenceNode::Draw()
 {	
 	Node::Draw();
 
@@ -72,7 +80,7 @@ void sequenceNode::Draw()
 	SetSize(ImVec2(Size.x, 100 + Output.size() * 30.0f));
 }
 
-void sequenceNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void SequenceNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -86,7 +94,7 @@ void sequenceNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocke
 	}
 }
 
-bool sequenceNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool SequenceNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -94,7 +102,7 @@ bool sequenceNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket
 	return true;
 }
 
-basicLogicNode* sequenceNode::GetNextNode()
+BasicLogicNode* SequenceNode::GetNextNode()
 {
 	return nullptr;
 }

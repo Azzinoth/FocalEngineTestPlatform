@@ -1,11 +1,11 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class timerNode : public basicLogicNode
+class TimerNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
@@ -17,16 +17,16 @@ class timerNode : public basicLogicNode
 	};
 
 public:
-	timerNode();
-	timerNode(const timerNode& Src);
+	TimerNode();
+	TimerNode(const TimerNode& Other);
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 
 	void Draw();
 
 	int GetTimeLeft();
 	void SetTimeLeft(int TimeInMS);
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

@@ -9,19 +9,9 @@ FEPTActionSystem::~FEPTActionSystem() {}
 
 VisNodeSys::Node* FEPTActionSystem::GetNextNode(VisNodeSys::Node* CurrentNode)
 {
-	if (CurrentNode->GetType() == "beginNode")
+	if (CurrentNode->GetType() == "BeginNode")
 	{
-		beginNode* Node = reinterpret_cast<beginNode*>(CurrentNode);
-		return Node->GetNextNode();
-	}
-	else if (CurrentNode->GetType() == "globalActionNode")
-	{
-		globalActionNode* Node = reinterpret_cast<globalActionNode*>(CurrentNode);
-		return Node->GetNextNode();
-	}
-	else if (CurrentNode->GetType() == "combinedActionNode")
-	{
-		combinedActionNode* Node = reinterpret_cast<combinedActionNode*>(CurrentNode);
+		BeginNode* Node = reinterpret_cast<BeginNode*>(CurrentNode);
 		return Node->GetNextNode();
 	}
 
@@ -32,19 +22,9 @@ std::vector<FETPAction*> FEPTActionSystem::GetActionsFromNode(VisNodeSys::Node* 
 {
 	std::vector<FETPAction*> Result;
 
-	if (CurrentNode->GetType() == "beginNode")
+	if (CurrentNode->GetType() == "BeginNode")
 	{
 		return Result;
-	}
-	else if (CurrentNode->GetType() == "globalActionNode")
-	{
-		globalActionNode* Node = reinterpret_cast<globalActionNode*>(CurrentNode);
-		Result.push_back(Node->GetData());
-	}
-	else if (CurrentNode->GetType() == "combinedActionNode")
-	{
-		combinedActionNode* Node = reinterpret_cast<combinedActionNode*>(CurrentNode);
-		return Node->GetData();
 	}
 
 	return Result;
@@ -67,7 +47,7 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 
 	CurrentlyRunning->BeforeBegin();
 
-	basicLogicNode* CurrentNode = CurrentlyRunning->GetBeginNode();
+	BasicLogicNode* CurrentNode = CurrentlyRunning->GetBeginNode();
 	CurrentlyRunning->NodeArea->TriggerOrphanSocketEvent(CurrentNode, EXECUTE);
 	CurrentTestResult->bIsSuccessful = true;
 	CurrentTestResult->EndTime = GetTickCount();
@@ -82,71 +62,71 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 	return true;
 }
 
-void FEPTActionSystem::PlaceStructuredNodes(std::vector<FETPAction*> actions, NodeArea* NodeArea, bool copyActions)
-{
-	static int LeftPadding = 15;
-	static int MaxNodesPerWidth = 4;
-	static int MaxNodesPerHeight = 4;
-	static int DistanceBetweenNodesHorizontally = 40;
-	static int DistanceBetweenNodesVertically = 150;
-
-	FETPAction* TestAction = new FETPAction();
-	globalActionNode* TestNode = new globalActionNode(TestAction);
-
-	if (TestNode->GetStyle() == CIRCLE)
-	{
-		MaxNodesPerWidth = 6;
-		MaxNodesPerHeight = 6;
-		DistanceBetweenNodesHorizontally = 15;
-		DistanceBetweenNodesVertically = int(NODE_DIAMETER + 15.0f);
-	}
-	else
-	{
-		MaxNodesPerWidth = 4;
-		DistanceBetweenNodesHorizontally = 40;
-		DistanceBetweenNodesVertically = 150;
-	}
-
-	delete TestNode;
-
-	int ShowedIndex = 0;
-	VisNodeSys::Node* PreviousNode = nullptr;
-	for (size_t i = 0; i < actions.size(); i++)
-	{
-		VisNodeSys::Node* NewNode = nullptr;
-
-		if (!copyActions)
-		{
-			if (actions[i]->GetType() != FETP_SLEEP_ACTION)
-				NewNode = TryToPackActions(i);
-
-			if (NewNode == nullptr)
-				NewNode = new globalActionNode(actions[i]);
-		}
-		else
-		{
-			NewNode = new globalActionNode(CopyAction(actions[i]));
-		}
-
-		int Width, Height;
-		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
-
-		int XPosition = LeftPadding;
-		XPosition += (ShowedIndex % MaxNodesPerWidth * int(NewNode->GetSize().x + DistanceBetweenNodesHorizontally));
-		XPosition %= Width;
-
-		int YPosition = ShowedIndex / MaxNodesPerHeight;
-		YPosition *= DistanceBetweenNodesVertically;
-
-		NewNode->SetPosition(ImVec2(float(XPosition), float(YPosition)));
-		NodeArea->AddNode(NewNode);
-
-		if (PreviousNode != nullptr)
-			NodeArea->TryToConnect(PreviousNode, 0, NewNode, 0);
-		PreviousNode = NewNode;
-		ShowedIndex++;
-	}
-}
+//void FEPTActionSystem::PlaceStructuredNodes(std::vector<FETPAction*> actions, NodeArea* NodeArea, bool copyActions)
+//{
+//	static int LeftPadding = 15;
+//	static int MaxNodesPerWidth = 4;
+//	static int MaxNodesPerHeight = 4;
+//	static int DistanceBetweenNodesHorizontally = 40;
+//	static int DistanceBetweenNodesVertically = 150;
+//
+//	/*FETPAction* TestAction = new FETPAction();
+//	GlobalActionNode* TestNode = new GlobalActionNode(TestAction);
+//
+//	if (TestNode->GetStyle() == CIRCLE)
+//	{
+//		MaxNodesPerWidth = 6;
+//		MaxNodesPerHeight = 6;
+//		DistanceBetweenNodesHorizontally = 15;
+//		DistanceBetweenNodesVertically = int(NODE_DIAMETER + 15.0f);
+//	}
+//	else
+//	{
+//		MaxNodesPerWidth = 4;
+//		DistanceBetweenNodesHorizontally = 40;
+//		DistanceBetweenNodesVertically = 150;
+//	}
+//
+//	delete TestNode;
+//
+//	int ShowedIndex = 0;
+//	VisNodeSys::Node* PreviousNode = nullptr;
+//	for (size_t i = 0; i < actions.size(); i++)
+//	{
+//		VisNodeSys::Node* NewNode = nullptr;
+//
+//		if (!copyActions)
+//		{
+//			if (actions[i]->GetType() != FETP_SLEEP_ACTION)
+//				NewNode = TryToPackActions(i);
+//
+//			if (NewNode == nullptr)
+//				NewNode = new GlobalActionNode(actions[i]);
+//		}
+//		else
+//		{
+//			NewNode = new GlobalActionNode(CopyAction(actions[i]));
+//		}
+//
+//		int Width, Height;
+//		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
+//
+//		int XPosition = LeftPadding;
+//		XPosition += (ShowedIndex % MaxNodesPerWidth * int(NewNode->GetSize().x + DistanceBetweenNodesHorizontally));
+//		XPosition %= Width;
+//
+//		int YPosition = ShowedIndex / MaxNodesPerHeight;
+//		YPosition *= DistanceBetweenNodesVertically;
+//
+//		NewNode->SetPosition(ImVec2(float(XPosition), float(YPosition)));
+//		NodeArea->AddNode(NewNode);
+//
+//		if (PreviousNode != nullptr)
+//			NodeArea->TryToConnect(PreviousNode, 0, NewNode, 0);
+//		PreviousNode = NewNode;
+//		ShowedIndex++;
+//	}*/
+//}
 
 void FEPTActionSystem::SwitchRecordMode()
 {
@@ -298,7 +278,7 @@ void FEPTActionSystem::AddAction(FETPAction* NewAction)
 	}
 }
 
-void FEPTActionSystem::FilterActions(size_t StartIndex, std::function<bool(FETPAction*, int)> FilerFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch)
+void FEPTActionSystem::FilterActions(size_t StartIndex, std::function<bool(FETPAction*, int)> FilterFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch)
 {
 	if (StartIndex >= RecordedActions.size())
 		return;
@@ -310,7 +290,7 @@ void FEPTActionSystem::FilterActions(size_t StartIndex, std::function<bool(FETPA
 		if (StartIndex >= RecordedActions.size())
 			break;
 
-		if (FilerFunction(RecordedActions[StartIndex], static_cast<int>(Output.size())))
+		if (FilterFunction(RecordedActions[StartIndex], static_cast<int>(Output.size())))
 		{
 			Output.push_back(RecordedActions[StartIndex]);
 		}
@@ -444,55 +424,6 @@ bool FEPTActionSystem::KeyboardPressActionFilter(FETPAction* Action, int OutputC
 	return false;
 }
 
-VisNodeSys::Node* FEPTActionSystem::TryToPackActions(size_t& Index)
-{
-	std::vector<FETPAction*> ActionsToCombine;
-
-	FilterActions(Index, MouseMoveActionFilter, ActionsToCombine);
-	if (ActionsToCombine.size() > 1)
-	{
-		Index += ActionsToCombine.size() - 1;
-		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_MOUSE_MOVE_ACTION);
-	}
-
-	FilterActions(Index, MouseLeftButtonActionFilter, ActionsToCombine);
-	if (ActionsToCombine.size() > 1)
-	{
-		Index += ActionsToCombine.size() - 1;
-		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_LEFT_MOUSE_ACTION);
-	}
-
-	FilterActions(Index, MouseRightButtonActionFilter, ActionsToCombine);
-	if (ActionsToCombine.size() > 1)
-	{
-		Index += ActionsToCombine.size() - 1;
-		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_RIGHT_MOUSE_ACTION);
-	}
-
-	FilterActions(Index, MouseWheelActionFilter, ActionsToCombine);
-	if (ActionsToCombine.size() > 1)
-	{
-		Index += ActionsToCombine.size() - 1;
-		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_WHEEL_MOUSE_ACTION);
-	}
-
-	FilterActions(Index, KeyboardPressActionFilter, ActionsToCombine);
-	if (ActionsToCombine.size() > 1)
-	{
-		Index += ActionsToCombine.size() - 1;
-		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_KEY_PRESS_ACTION);
-	}
-
-	FilterActions(Index, KeyboardTextActionFilter, ActionsToCombine);
-	if (ActionsToCombine.size() > 1)
-	{
-		Index += ActionsToCombine.size() - 1;
-		return new combinedActionNode(ActionsToCombine, FETP_COMBINED_TEXT_INPUT_ACTION);
-	}
-
-	return nullptr;
-}
-
 void FEPTActionSystem::NewAction(FETPAction* NewAction)
 {
 	if (NewAction != nullptr)
@@ -514,17 +445,13 @@ FETPAction* FEPTActionSystem::CopyAction(FETPAction* Other)
 	{
 		return new MouseAction(*reinterpret_cast<MouseAction*>(Other));
 	}
-	else if (Other->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
-	{
-		return new ScreenshootCompareAction(*reinterpret_cast<ScreenshootCompareAction*>(Other));
-	}
 	else if (Other->GetType() == FETP_SLEEP_ACTION)
 	{
 		return new SleepAction(*reinterpret_cast<SleepAction*>(Other));
 	}
-	else if (Other->GetType() == FETP_LUNCH_APPLICATION_ACTION)
+	else if (Other->GetType() == FETP_LAUNCH_APPLICATION_ACTION)
 	{
-		return new LunchApplicationAction(*reinterpret_cast<LunchApplicationAction*>(Other));
+		return new LaunchApplicationAction(*reinterpret_cast<LaunchApplicationAction*>(Other));
 	}
 	else
 	{

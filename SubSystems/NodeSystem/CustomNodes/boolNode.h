@@ -1,29 +1,29 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class boolNode : public basicLogicNode
+class BoolNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
-	bool Data = false;
+	bool bData = false;
 
 	std::function<void* ()> BoolDataGetter = [this]() -> void* {
-		return &Data;
+		return &bData;
 	};
 
 public:
-	boolNode();
-	boolNode(const boolNode& Src);
+	BoolNode();
+	BoolNode(const BoolNode& Other);
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

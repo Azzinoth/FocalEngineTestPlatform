@@ -1,14 +1,14 @@
 #pragma once
 
-#include "beginNode.h"
-#include "endNode.h"
-#include "../Windows/textInputPopup.h"
-#include "../Windows/actionEditPopup.h"
+#include "BeginNode.h"
+#include "EndNode.h"
+#include "../Windows/TextInputPopup.h"
+#include "../Windows/ActionEditPopup.h"
 
-class regionNode : public basicLogicNode
+class RegionNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	VisNodeSys::NodeArea* Data;
 
@@ -21,17 +21,17 @@ class regionNode : public basicLogicNode
 	void CheckIcons();
 	void RenderIcon();
 
-	beginNode* Begin;
-	endNode* End;
+	BeginNode* Begin;
+	EndNode* End;
 public:
-	regionNode();
-	regionNode(const regionNode& Src);
+	RegionNode();
+	RegionNode(const RegionNode& Other);
 
 	void Draw();
 	VisNodeSys::NodeArea* GetData();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 };

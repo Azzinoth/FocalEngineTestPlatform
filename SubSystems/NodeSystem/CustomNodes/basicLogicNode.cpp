@@ -1,31 +1,31 @@
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 using namespace VisNodeSys;
 
-bool basicLogicNode::isRegistered = []()
+bool BasicLogicNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("basicLogicNode",
+	NODE_FACTORY.RegisterNodeType("BasicLogicNode",
 		[]() -> Node* {
-			return new basicLogicNode();
+			return new BasicLogicNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const basicLogicNode& NodeToCopy = static_cast<const basicLogicNode&>(CurrentNode);
-			return new basicLogicNode(NodeToCopy);
+			const BasicLogicNode& NodeToCopy = static_cast<const BasicLogicNode&>(CurrentNode);
+			return new BasicLogicNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-basicLogicNode::basicLogicNode() : Node()
+BasicLogicNode::BasicLogicNode() : Node()
 {
-	Type = "basicLogicNode";
+	Type = "BasicLogicNode";
 }
 
-basicLogicNode* basicLogicNode::GetNextNode()
+BasicLogicNode* BasicLogicNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
-		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
+		return reinterpret_cast<BasicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 
 	return nullptr;
 }

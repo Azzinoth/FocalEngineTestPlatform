@@ -27,7 +27,7 @@ class FEPTActionSystem
 {
 	SINGLETON_PRIVATE_PART(FEPTActionSystem)
 
-	friend class testEditorWinow;
+	friend class TestEditorWindow;
 	friend class FETest;
 
 	bool bIsRecording = false;
@@ -68,21 +68,19 @@ public:
 	void NewMouseAction(MouseAction NewMouseAction);
 	void NewAction(FETPAction* NewAction);
 
-	void PlaceStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* NodeArea, bool copyActions = false);
+	//void PlaceStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* NodeArea, bool copyActions = false);
 
 	void Update();
 
 	FETPAction* GetAction(size_t Index);
 
-	void FilterActions(size_t StartIndex, std::function<bool (FETPAction*, int)> FilerFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch = true);
+	void FilterActions(size_t StartIndex, std::function<bool (FETPAction*, int)> FilterFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch = true);
 	static bool MouseMoveActionFilter(FETPAction* Action, int OutputCount);
 	static bool MouseLeftButtonActionFilter(FETPAction* Action, int OutputCount);
 	static bool MouseRightButtonActionFilter(FETPAction* Action, int OutputCount);
 	static bool MouseWheelActionFilter(FETPAction* Action, int OutputCount);
 	static bool KeyboardTextActionFilter(FETPAction* Action, int OutputCount);
 	static bool KeyboardPressActionFilter(FETPAction* Action, int OutputCount);
-
-	VisNodeSys::Node* TryToPackActions(size_t& Index);
 
 	void SetOnFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> Callback);
 

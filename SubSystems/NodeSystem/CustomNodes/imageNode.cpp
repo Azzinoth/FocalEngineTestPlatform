@@ -1,25 +1,25 @@
-#include "imageNode.h"
+#include "ImageNode.h"
 using namespace VisNodeSys;
 
-bool imageNode::isRegistered = []()
+bool ImageNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("imageNode",
+	NODE_FACTORY.RegisterNodeType("ImageNode",
 		[]() -> Node* {
-			return new imageNode();
+			return new ImageNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const imageNode& NodeToCopy = static_cast<const imageNode&>(CurrentNode);
-			return new imageNode(NodeToCopy);
+			const ImageNode& NodeToCopy = static_cast<const ImageNode&>(CurrentNode);
+			return new ImageNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-imageNode::imageNode() : basicLogicNode()
+ImageNode::ImageNode() : BasicLogicNode()
 {
-	Type = "imageNode";
+	Type = "ImageNode";
 
 	SetStyle(DEFAULT);
 
@@ -33,17 +33,17 @@ imageNode::imageNode() : basicLogicNode()
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
-imageNode::imageNode(const imageNode& Src) : basicLogicNode(Src)
+ImageNode::ImageNode(const ImageNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	Data = Src.Data;
+	Data = Other.Data;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
-Json::Value imageNode::ToJson()
+Json::Value ImageNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
 
@@ -62,9 +62,14 @@ Json::Value imageNode::ToJson()
 	return Result;
 }
 
-void imageNode::FromJson(Json::Value Json)
+bool ImageNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("ImageWidth") || !Json.isMember("ImageHeight") || !Json.isMember("ImageData"))
+		return false;
 
 	int ImageWidth = Json["ImageWidth"].asInt();
 	int ImageHeight = Json["ImageHeight"].asInt();
@@ -79,10 +84,15 @@ void imageNode::FromJson(Json::Value Json)
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
+	if (Output.size() < 1 || Output[0] == nullptr)
+		return false;
+
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
+
+	return true;
 }
 
-bool imageNode::SetImage(FETPImage* Image)
+bool ImageNode::SetImage(FETPImage* Image)
 {
 	if (Image == nullptr)
 		return false;
@@ -94,27 +104,27 @@ bool imageNode::SetImage(FETPImage* Image)
 	return true;
 }
 
-void imageNode::Draw()
+void ImageNode::Draw()
 {	
 	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
-	float xPosition = ImGui::GetCursorScreenPos().x + 75.0f * Zoom;
-	float yPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
+	float XPosition = ImGui::GetCursorScreenPos().x + 75.0f * Zoom;
+	float YPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
 	
 	if (Data == nullptr)
 	{
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 		ImGui::Text("NO IMAGE");
 
-		xPosition -= 8.0f * Zoom;
-		yPosition += 75.0f * Zoom;
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+		XPosition -= 8.0f * Zoom;
+		YPosition += 75.0f * Zoom;
+		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 		if (ImGui::Button("Load Image"))
 		{
 			std::string Path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, PNGLoadFilter, 1);
 
 			if (Path != "")
 			{
@@ -134,18 +144,18 @@ void imageNode::Draw()
 	}
 	else
 	{
-		xPosition -= 25.0f * Zoom;
-		yPosition -= 60.0f * Zoom;
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+		XPosition -= 25.0f * Zoom;
+		YPosition -= 60.0f * Zoom;
+		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 		ImGui::Image((void*)(intptr_t)Data->GetTextureID(), ImVec2(128.0f, 128.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
-		xPosition -= 20.0f * Zoom;
-		yPosition += 136.0f * Zoom;
-		ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+		XPosition -= 20.0f * Zoom;
+		YPosition += 136.0f * Zoom;
+		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 		if (ImGui::Button("Load different image"))
 		{
 			std::string Path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, pngLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, PNGLoadFilter, 1);
 
 			if (Path != "")
 			{
@@ -167,12 +177,12 @@ void imageNode::Draw()
 	}
 }
 
-void imageNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void ImageNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-bool imageNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool ImageNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -180,7 +190,7 @@ bool imageNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 	return true;
 }
 
-basicLogicNode* imageNode::GetNextNode()
+BasicLogicNode* ImageNode::GetNextNode()
 {
 	return nullptr;
 }

@@ -1,31 +1,31 @@
-#include "beginNode.h"
+#include "BeginNode.h"
 using namespace VisNodeSys;
 
-bool beginNode::isRegistered = []()
+bool BeginNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("beginNode",
+	NODE_FACTORY.RegisterNodeType("BeginNode",
 		[]() -> Node* {
-			return new beginNode();
+			return new BeginNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const beginNode& NodeToCopy = static_cast<const beginNode&>(CurrentNode);
-			return new beginNode(NodeToCopy);
+			const BeginNode& NodeToCopy = static_cast<const BeginNode&>(CurrentNode);
+			return new BeginNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-beginNode::beginNode() : basicLogicNode()
+BeginNode::BeginNode() : BasicLogicNode()
 {
-	Type = "beginNode";
+	Type = "BeginNode";
 	bCouldBeDestroyed = false;
 
 	SetStyle(CIRCLE);
 
 	SetSize(ImVec2(220, 78));
-	SetName("beginNode");
+	SetName("BeginNode");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
@@ -36,9 +36,9 @@ beginNode::beginNode() : basicLogicNode()
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-beginNode::beginNode(const beginNode& Src) : basicLogicNode(Src)
+BeginNode::BeginNode(const BeginNode& Other) : BasicLogicNode(Other)
 {
-	Data = Src.Data;
+	Data = Other.Data;
 	bCouldBeDestroyed = false;
 
 	SetStyle(CIRCLE);
@@ -47,7 +47,7 @@ beginNode::beginNode(const beginNode& Src) : basicLogicNode(Src)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-void beginNode::Draw()
+void BeginNode::Draw()
 {	
 	Node::Draw();
 
@@ -57,7 +57,7 @@ void beginNode::Draw()
 	ImGui::Image((void*)(intptr_t)Icon->GetTextureID(), ImVec2(116.0f, 116.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void beginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void BeginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -68,12 +68,12 @@ void beginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 	}
 }
 
-float beginNode::GetData()
+float BeginNode::GetData()
 {
 	return Data;
 }
 
-bool beginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool BeginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -81,10 +81,10 @@ bool beginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 	return false;
 }
 
-basicLogicNode* beginNode::GetNextNode()
+BasicLogicNode* BeginNode::GetNextNode()
 {
 	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
-		return reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
+		return reinterpret_cast<BasicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return nullptr;
 }

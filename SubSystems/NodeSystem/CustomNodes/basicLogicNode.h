@@ -4,11 +4,11 @@
 #include "../../FETPImage.h"
 #include "../SubSystems/FETPInput.h"
 
-class basicLogicNode : public VisNodeSys::Node
+class BasicLogicNode : public VisNodeSys::Node
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 public:
-	basicLogicNode();
-	virtual basicLogicNode* GetNextNode();
+	BasicLogicNode();
+	virtual BasicLogicNode* GetNextNode();
 };

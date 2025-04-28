@@ -1,4 +1,4 @@
-#include "Windows/testsOverviewWindow.h"
+#include "Windows/TestsOverviewWindow.h"
 using namespace FocalEngine;
 
 GLFWcursor* MouseCursor = nullptr;
@@ -8,21 +8,20 @@ void MainWindowRender()
 	
 	INPUT_SYSTEM.Update();
 	
-	testsOverviewWindow::GetInstance().render();
-	testEditorWinow::GetInstance().render();
-	testPropertiesWindow::GetInstance().render();
-	testStartPreparationsWindow::GetInstance().render();
-	nodeRegionWindow::GetInstance().render();
+	TestsOverviewWindow::GetInstance().Render();
+	TestEditorWindow::GetInstance().Render();
+	TestPropertiesWindow::GetInstance().Render();
+	TestStartPreparationsWindow::GetInstance().Render();
+	NodeRegionWindow::GetInstance().Render();
 	
-	previewWindow::GetInstance().render();
-	failedTestWindow::GetInstance().render();
-	screenshootEditor::GetInstance().render();
+	PreviewWindow::GetInstance().Render();
+	FailedTestWindow::GetInstance().Render();
 	
-	textInputPopup::GetInstance().render();
-	actionEditPopup::GetInstance().render();
+	TextInputPopup::GetInstance().Render();
+	ActionEditPopup::GetInstance().Render();
 	ACTION_SYSTEM.Update();
 
-	if (TEST_MANAGER.getSelectedTest() != nullptr)
+	if (TEST_MANAGER.GetSelectedTest() != nullptr)
 	{
 		if (FILE_SYSTEM.DoesFileExist("Temporary.png"))
 		{
@@ -30,17 +29,17 @@ void MainWindowRender()
 			unsigned ImageWidth, ImageHeight;
 			int Error = lodepng::decode(RawData, ImageWidth, ImageHeight, "Temporary.png");
 
-			imageNode* NewNode = nullptr;
+			ImageNode* NewNode = nullptr;
 			if (Error == 0)
 			{
-				NewNode = new imageNode();
+				NewNode = new ImageNode();
 				unsigned char* tempData = new unsigned char[ImageWidth * ImageHeight * 4];
 				memcpy_s(tempData, ImageWidth * ImageHeight * 4, RawData.data(), ImageWidth * ImageHeight * 4);
 				NewNode->SetImage(new FETPImage(tempData, ImageWidth, ImageHeight));
 				delete[] tempData;
 
 				NewNode->SetPosition(ImVec2(200, 200));
-				TEST_MANAGER.getSelectedTest()->NodeArea->AddNode(NewNode);
+				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 			}
 
 			FILE_SYSTEM.DeleteFile("Temporary.png");
@@ -69,17 +68,17 @@ void MainWindowRender()
 bool bNeedToCreateWindow = false;
 void KeyButtonCallback(int key, int scancode, int action, int mods)
 {
-	if (key == 84 && action == GLFW_RELEASE && TEST_MANAGER.getSelectedTest() != nullptr)
+	if (key == 84 && action == GLFW_RELEASE && TEST_MANAGER.GetSelectedTest() != nullptr)
 	{
-		if (textInputPopup::GetInstance().isOpened())
+		if (TextInputPopup::GetInstance().IsOpened())
 			return;
 
-		ACTION_SYSTEM.Run(TEST_MANAGER.getSelectedTest());
+		ACTION_SYSTEM.Run(TEST_MANAGER.GetSelectedTest());
 
-		while (TEST_MANAGER.getSelectedTest()->GetLoopCount() > 1)
+		while (TEST_MANAGER.GetSelectedTest()->GetLoopCount() > 1)
 		{
-			TEST_MANAGER.getSelectedTest()->SetLoopCount(TEST_MANAGER.getSelectedTest()->GetLoopCount() - 1);
-			ACTION_SYSTEM.Run(TEST_MANAGER.getSelectedTest());
+			TEST_MANAGER.GetSelectedTest()->SetLoopCount(TEST_MANAGER.GetSelectedTest()->GetLoopCount() - 1);
+			ACTION_SYSTEM.Run(TEST_MANAGER.GetSelectedTest());
 		}
 	}
 
@@ -105,7 +104,7 @@ FEWindow* FirstFullScreenWindow = nullptr;
 int MonitorIndex = 0;
 FETPImage* CapturedScreenshot = nullptr;
 FETPImage* DarkenedCapturedScreenshot = nullptr;
-void FirstMonitorScreenShotWindowRender()
+void FirstMonitorScreenshotWindowRender()
 {
 	if (FirstFullScreenWindow == nullptr)
 		return;
@@ -164,7 +163,7 @@ void FirstMonitorScreenShotWindowRender()
 
 }
 
-void FirstMonitorScreenShotWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
+void FirstMonitorScreenshotWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
 {
 	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
 	{
@@ -195,9 +194,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	INPUT_SYSTEM.SetGlobalKeyboardCallback(globalKeyButtonsCallback);
 	INPUT_SYSTEM.SetGlobalMouseCallback(globalMouseCallback);
 
-	testsOverviewWindow::GetInstance().show();
-	testEditorWinow::GetInstance().show();
-	testPropertiesWindow::GetInstance().show();
+	TestsOverviewWindow::GetInstance().Show();
+	TestEditorWindow::GetInstance().Show();
+	TestPropertiesWindow::GetInstance().Show();
 
 	NODE_SYSTEM.Initialize();
 	NODE_SYSTEM.AssociateSocketTypeToColor("BOOL", ImColor(25, 25, 255));
@@ -215,8 +214,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MonitorIndex = APPLICATION.MonitorInfoToMonitorIndex(&Monitor);
 
 			FirstFullScreenWindow = APPLICATION.AddFullScreenWindow(&Monitor);
-			FirstFullScreenWindow->SetRenderFunction(FirstMonitorScreenShotWindowRender);
-			FirstFullScreenWindow->AddOnKeyCallback(FirstMonitorScreenShotWindowKeyCallback);
+			FirstFullScreenWindow->SetRenderFunction(FirstMonitorScreenshotWindowRender);
+			FirstFullScreenWindow->AddOnKeyCallback(FirstMonitorScreenshotWindowKeyCallback);
 
 			FirstFullScreenWindow->AddOnMouseMoveCallback([&](double X, double Y) {
 				MouseX = X;
@@ -232,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 				else if (Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_RELEASE)
 				{
-					if (TEST_MANAGER.getSelectedTest() != nullptr)
+					if (TEST_MANAGER.GetSelectedTest() != nullptr)
 					{
 						double MouseUpX = MouseX;
 						double MouseUpY = MouseY;

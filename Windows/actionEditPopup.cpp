@@ -1,55 +1,55 @@
-#include "actionEditPopup.h"
+#include "ActionEditPopup.h"
 
-actionEditPopup::actionEditPopup()
+ActionEditPopup::ActionEditPopup()
 {
-	popupCaption = "Edit action";
+	PopupCaption = "Edit action";
 }
 
-actionEditPopup::~actionEditPopup()
+ActionEditPopup::~ActionEditPopup()
 {
 }
 
-void actionEditPopup::show(FETPAction* action)
+void ActionEditPopup::Show(FETPAction* action)
 {
 	if (action == nullptr)
 		return;
 
 	if (action->GetType() == FETP_BASE_ACTION ||
-		action->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION || 
-		action->GetType() == FETP_LUNCH_APPLICATION_ACTION)
+		action->GetType() == FETP_SCREENSHOT_COMPARE_ACTION || 
+		action->GetType() == FETP_LAUNCH_APPLICATION_ACTION)
 		return;
 
-	currentAction = action;
-	shouldOpen = true;
-	ImGuiModalPopup::show();
+	CurrentAction = action;
+	bShouldOpen = true;
+	ImGuiModalPopup::Show();
 }
 
-void actionEditPopup::render()
+void ActionEditPopup::Render()
 {
-	ImGuiModalPopup::render();
+	ImGuiModalPopup::Render();
 
-	if (currentAction == nullptr)
+	if (CurrentAction == nullptr)
 		return;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15, 15));
-	ImGui::SetNextWindowSize(popupSize);
+	ImGui::SetNextWindowSize(PopupSize);
 	int Width, Height;
 	FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
-	ImGui::SetNextWindowPos(ImVec2(Width / 2 - popupSize.x / 2.0f, Height / 2 - popupSize.y / 2.0f));
-	if (ImGui::BeginPopupModal(popupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+	ImGui::SetNextWindowPos(ImVec2(Width / 2 - PopupSize.x / 2.0f, Height / 2 - PopupSize.y / 2.0f));
+	if (ImGui::BeginPopupModal(PopupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		if (currentAction->GetType() == FETP_SLEEP_ACTION)
+		if (CurrentAction->GetType() == FETP_SLEEP_ACTION)
 		{
-			SleepAction* action = reinterpret_cast<SleepAction*>(currentAction);
+			SleepAction* action = reinterpret_cast<SleepAction*>(CurrentAction);
 			ImGui::SetNextItemWidth(150);
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - (150.0f + 80.0f) / 2.0f);
 			int SleepDurationMS = action->SleepDurationMS;
 			if (ImGui::InputInt("sleep for", &SleepDurationMS))
 				action->SleepDurationMS = SleepDurationMS;
 		}
-		else if (currentAction->GetType() == FETP_MOUSE_ACTION)
+		else if (CurrentAction->GetType() == FETP_MOUSE_ACTION)
 		{
-			MouseAction* action = reinterpret_cast<MouseAction*>(currentAction);
+			MouseAction* action = reinterpret_cast<MouseAction*>(CurrentAction);
 
 			if (action->EventType == WM_MOUSEMOVE)
 			{
@@ -77,9 +77,9 @@ void actionEditPopup::render()
 				ImGui::InputInt("wheel movement", &value);
 			}
 		}
-		else if (currentAction->GetType() == FETP_KEYBOARD_ACTION)
+		else if (CurrentAction->GetType() == FETP_KEYBOARD_ACTION)
 		{
-			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(currentAction);
+			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(CurrentAction);
 			ImGui::SetNextItemWidth(80);
 			int keyCode = action->HookInfo.vkCode;
 			ImGui::InputInt("key code", &keyCode);
@@ -88,9 +88,9 @@ void actionEditPopup::render()
 
 		ImGui::SetItemDefaultFocus();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - 120.0f / 2.0f);
-		ImGui::SetCursorPosY(popupSize.y - 35.0f);
+		ImGui::SetCursorPosY(PopupSize.y - 35.0f);
 		if (ImGui::Button("Ok", ImVec2(120, 0)))
-			exit();
+			Exit();
 
 		ImGui::PopStyleVar();
 		ImGui::EndPopup();
@@ -101,8 +101,8 @@ void actionEditPopup::render()
 	}
 }
 
-void actionEditPopup::exit()
+void ActionEditPopup::Exit()
 {
-	currentAction = nullptr;
-	ImGuiModalPopup::close();
+	CurrentAction = nullptr;
+	ImGuiModalPopup::Close();
 }

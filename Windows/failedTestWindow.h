@@ -3,15 +3,15 @@
 #include "../SubSystems/FEPTActionSystem.h"
 
 struct FETestResult;
-class failedTestWindow : public FEImGuiWindow
+class FailedTestWindow : public FEImGuiWindow
 {
-	SINGLETON_PRIVATE_PART(failedTestWindow)
+	SINGLETON_PRIVATE_PART(FailedTestWindow)
 
-	ImGuiButton* okButton;
-	FETestResult* result = nullptr;
+	ImGuiButton* OKButton;
+	FETestResult* Result = nullptr;
 public:
-	SINGLETON_PUBLIC_PART(failedTestWindow)
+	SINGLETON_PUBLIC_PART(FailedTestWindow)
 
-	void show(FETestResult* result);
-	void render() override;
+	void Show(FETestResult* Result);
+	void Render() override;
 };

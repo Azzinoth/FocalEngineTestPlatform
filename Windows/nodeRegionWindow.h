@@ -1,22 +1,22 @@
 #pragma once
 
 #include "../SubSystems/FEPTActionSystem.h"
-#include "previewWindow.h"
+#include "PreviewWindow.h"
 
-class nodeRegionWindow : public FEImGuiWindow
+class NodeRegionWindow : public FEImGuiWindow
 {
-	SINGLETON_PRIVATE_PART(nodeRegionWindow)
+	SINGLETON_PRIVATE_PART(NodeRegionWindow)
 
-	static regionNode* currentRegion;
-	ImGuiButton* cancelButton;
+	static RegionNode* CurrentRegion;
+	ImGuiButton* CancelButton = nullptr;
 
-	static ImVec2 mousePositionWhenContextMenuWasOpened;
+	static ImVec2 MousePositionWhenContextMenuWasOpened;
 
-	static void mainContextMenu();
-	static void textInputCallback(std::string text);
+	static void RenderMainContextMenu();
+	static void TextInputCallback(std::string Text);
 public:
-	SINGLETON_PUBLIC_PART(nodeRegionWindow)
+	SINGLETON_PUBLIC_PART(NodeRegionWindow)
 
-	void show(regionNode* region);
-	void render() override;
+	void Show(RegionNode* Region);
+	void Render() override;
 };

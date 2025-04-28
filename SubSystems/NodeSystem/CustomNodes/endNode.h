@@ -1,14 +1,14 @@
 #pragma once
 
-#include "beginNode.h"
+#include "BeginNode.h"
 
-class regionNode;
-class endNode : public basicLogicNode
+class RegionNode;
+class EndNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
-	friend class regionNode;
+	friend class RegionNode;
 
 	float Data = 0.0f;
 	
@@ -16,13 +16,13 @@ class endNode : public basicLogicNode
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	FETPImage* Icon = nullptr;
-	basicLogicNode* NextNode = nullptr;
+	BasicLogicNode* NextNode = nullptr;
 public:
-	endNode();
-	endNode(const endNode& Src);
+	EndNode();
+	EndNode(const EndNode& Other);
 
 	void Draw();
 	float GetData();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

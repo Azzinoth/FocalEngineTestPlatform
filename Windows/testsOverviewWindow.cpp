@@ -1,80 +1,80 @@
-#include "testsOverviewWindow.h"
+#include "TestsOverviewWindow.h"
 
-int testsOverviewWindow::hoveredTestIndex = -1;
+int TestsOverviewWindow::HoveredTestIndex = -1;
 
-testsOverviewWindow::testsOverviewWindow()
+TestsOverviewWindow::TestsOverviewWindow()
 {
-	std::string tempCaption = "main area";
-	strcpy_s(caption, tempCaption.size() + 1, tempCaption.c_str());
+	std::string TemporaryCaption = "main area";
+	strcpy_s(Caption, TemporaryCaption.size() + 1, TemporaryCaption.c_str());
 
-	testSuccess = new FETPImage("Resources//testSuccess.png");
-	testFailed = new FETPImage("Resources//testFailed.png");
-	testUnKnown = new FETPImage("Resources//testUnKnown.png");
+	TestSuccess = new FETPImage("Resources//testSuccess.png");
+	TestFailed = new FETPImage("Resources//testFailed.png");
+	TestUnknown = new FETPImage("Resources//testUnKnown.png");
 }
 
-testsOverviewWindow::~testsOverviewWindow()
+TestsOverviewWindow::~TestsOverviewWindow()
 {
 }
 
-void testsOverviewWindow::show()
+void TestsOverviewWindow::Show()
 {
 
 }
 
-void testsOverviewWindow::render()
+void TestsOverviewWindow::Render()
 {
 	ImGui::Begin("Tests overview", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
-	FETPImage* testResultIndicator = testUnKnown;
+	FETPImage* TestResultIndicator = TestUnknown;
 	if (ImGui::BeginListBox("##Tests ListBox", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowContentRegionMax().y - 30.0f)))
 	{
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 
-		ImVec2 postionBeforeDraw = ImGui::GetCursorPos();
-		size_t selectedTest = TEST_MANAGER.getSelectedTestIndex();
-		for (size_t i = 0; i < TEST_MANAGER.list.size(); i++)
+		ImVec2 PostionBeforeDraw = ImGui::GetCursorPos();
+		size_t SelectedTest = TEST_MANAGER.GetSelectedTestIndex();
+		for (size_t i = 0; i < TEST_MANAGER.Tests.size(); i++)
 		{
-			ImGui::SetCursorPos(postionBeforeDraw);
+			ImGui::SetCursorPos(PostionBeforeDraw);
 
-			FETestResult* lastTestResult = nullptr;
-			lastTestResult = TEST_MANAGER.list[i]->GetLastTestResult();
-			if (lastTestResult != nullptr)
+			FETestResult* LastTestResult = nullptr;
+			LastTestResult = TEST_MANAGER.Tests[i]->GetLastTestResult();
+			if (LastTestResult != nullptr)
 			{
-				testResultIndicator = lastTestResult->bIsSuccessful ? testSuccess : testFailed;
+				TestResultIndicator = LastTestResult->bIsSuccessful ? TestSuccess : TestFailed;
 			}
 			else
 			{
-				testResultIndicator = testUnKnown;
+				TestResultIndicator = TestUnknown;
 			}
 
-			ImGui::Image((void*)(intptr_t)testResultIndicator->GetTextureID(), ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image((void*)(intptr_t)TestResultIndicator->GetTextureID(), ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 			ImGui::SameLine();
-			ImGui::Text(TEST_MANAGER.list[i]->GetName().c_str());
+			ImGui::Text(TEST_MANAGER.Tests[i]->GetName().c_str());
 
-			ImGui::SetCursorPos(postionBeforeDraw);
+			ImGui::SetCursorPos(PostionBeforeDraw);
 			ImGui::PushID(static_cast<int>(i));
-			if (ImGui::Selectable("##item", selectedTest == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
+			if (ImGui::Selectable("##item", SelectedTest == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
 			{
-				selectedTest = i;
-				TEST_MANAGER.setSelelectedTestIndex(selectedTest);
+				SelectedTest = i;
+				TEST_MANAGER.SetSelectedTestIndex(SelectedTest);
 			}
 			ImGui::PopID();
 
 			if (ImGui::IsItemHovered())
-				hoveredTestIndex = static_cast<int>(i);
+				HoveredTestIndex = static_cast<int>(i);
 
-			postionBeforeDraw.y += 34.0f;
+			PostionBeforeDraw.y += 34.0f;
 		}
 
-		if (ImGui::IsMouseDoubleClicked(0) && selectedTest != -1)
+		if (ImGui::IsMouseDoubleClicked(0) && SelectedTest != -1)
 		{
 			//testList[selectedTest].window->show();
 			//ACTION_SYSTEM.setNodeAreaToUse(TEST_MANAGER.testList[selectedTest].nodeArea);
 			//ACTION_SYSTEM.load(TEST_MANAGER.testList[selectedTest].filePath.c_str());
 
-			/*testEditorWinow::GetInstance().show();
-			ACTION_SYSTEM.setNodeAreaToUse(testEditorWinow::GetInstance().currentNodeArea);
+			/*testEditorWindow::GetInstance().show();
+			ACTION_SYSTEM.setNodeAreaToUse(testEditorWindow::GetInstance().currentNodeArea);
 			ACTION_SYSTEM.load(testList[selectedTest].filePath.c_str());*/
 		}
 
@@ -90,44 +90,44 @@ void testsOverviewWindow::render()
 	ImGui::End();
 }
 
-void testsOverviewWindow::renderContextMenu()
+void TestsOverviewWindow::renderContextMenu()
 {
-	bool isListBoxHovered = false;
+	bool bIsListBoxHovered = false;
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows))
-		isListBoxHovered = true;
+		bIsListBoxHovered = true;
 
 	if (ImGui::IsMouseClicked(1))
 	{
-		if (isListBoxHovered || hoveredTestIndex != -1)
-			openContextMenu = true;
+		if (bIsListBoxHovered || HoveredTestIndex != -1)
+			bShouldOpenContextMenu = true;
 	}
 
-	if (openContextMenu)
+	if (bShouldOpenContextMenu)
 	{
-		openContextMenu = false;
+		bShouldOpenContextMenu = false;
 		ImGui::OpenPopup("##tests_listBox_context_menu");
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	if (ImGui::BeginPopup("##tests_listBox_context_menu"))
 	{
-		contextMenuOpened = true;
+		bContextMenuOpened = true;
 
-		if (hoveredTestIndex != -1)
+		if (HoveredTestIndex != -1)
 		{
 			if (ImGui::MenuItem("Rename"))
 			{
-				textInputPopup::GetInstance().show(textInputCallback, TEST_MANAGER.getSelectedTest()->GetName());
+				TextInputPopup::GetInstance().Show(TextInputCallback, TEST_MANAGER.GetSelectedTest()->GetName());
 			}
 
 			if (ImGui::MenuItem("Remove"))
 			{
-				TEST_MANAGER.removeTest(hoveredTestIndex);
+				TEST_MANAGER.RemoveTest(HoveredTestIndex);
 			}
 
 			if (ImGui::MenuItem("Run"))
 			{
-				ACTION_SYSTEM.Run(TEST_MANAGER.list[hoveredTestIndex]);
+				ACTION_SYSTEM.Run(TEST_MANAGER.Tests[HoveredTestIndex]);
 			}
 		}
 		else
@@ -135,25 +135,25 @@ void testsOverviewWindow::renderContextMenu()
 			if (ImGui::MenuItem("Add new test"))
 			{
 				TEST_MANAGER.AddTest();
-				TEST_MANAGER.setSelelectedTestIndex(TEST_MANAGER.list.size() - 1);
+				TEST_MANAGER.SetSelectedTestIndex(TEST_MANAGER.Tests.size() - 1);
 			}
 
-			if (TEST_MANAGER.list.size() > 0)
+			if (TEST_MANAGER.Tests.size() > 0)
 			{
 				if (ImGui::MenuItem("Run all"))
 				{
-					for (size_t i = 0; i < TEST_MANAGER.list.size(); i++)
+					for (size_t i = 0; i < TEST_MANAGER.Tests.size(); i++)
 					{
-						for (size_t j = 0; j < TEST_MANAGER.list[i]->Results.size(); j++)
+						for (size_t j = 0; j < TEST_MANAGER.Tests[i]->Results.size(); j++)
 						{
-							delete TEST_MANAGER.list[i]->Results[j];
+							delete TEST_MANAGER.Tests[i]->Results[j];
 						}
-						TEST_MANAGER.list[i]->Results.clear();
+						TEST_MANAGER.Tests[i]->Results.clear();
 					}
 
-					for (size_t i = 0; i < TEST_MANAGER.list.size(); i++)
+					for (size_t i = 0; i < TEST_MANAGER.Tests.size(); i++)
 					{
-						bool result = ACTION_SYSTEM.Run(TEST_MANAGER.list[i]);
+						bool result = ACTION_SYSTEM.Run(TEST_MANAGER.Tests[i]);
 						Sleep(250);
 					}
 				}
@@ -163,15 +163,15 @@ void testsOverviewWindow::renderContextMenu()
 		ImGui::EndPopup();
 	}
 
-	if (!contextMenuOpened && !textInputPopup::GetInstance().isOpened())
-		hoveredTestIndex = -1;
+	if (!bContextMenuOpened && !TextInputPopup::GetInstance().IsOpened())
+		HoveredTestIndex = -1;
 
-	contextMenuOpened = false;
+	bContextMenuOpened = false;
 
 	ImGui::PopStyleVar();
 }
 
-void testsOverviewWindow::renderMainMenu()
+void TestsOverviewWindow::renderMainMenu()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	if (ImGui::BeginMainMenuBar())
@@ -183,27 +183,23 @@ void testsOverviewWindow::renderMainMenu()
 				std::string Path;
 				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, FETestsFileFilter, 1);
 
-				if (Path != "")
-				{
-					TEST_MANAGER.openTestSet(Path);
-				}
+				if (!Path.empty())
+					TEST_MANAGER.OpenTestSet(Path);
 			}
 
-			if (TEST_MANAGER.list.size() == 0)
+			if (TEST_MANAGER.Tests.size() == 0)
 				ImGui::BeginDisabled();
 
-			if (ImGui::MenuItem("Save test set...") && TEST_MANAGER.list.size() > 0)
+			if (ImGui::MenuItem("Save test set...") && TEST_MANAGER.Tests.size() > 0)
 			{
 				std::string Path;
 				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, FETestsFileFilter, 1);
 
-				if (Path != "")
-				{
-					TEST_MANAGER.saveAsTestSet(Path);
-				}
+				if (!Path.empty())
+					TEST_MANAGER.SaveAsTestSet(Path);
 			}
 
-			if (TEST_MANAGER.list.size() == 0)
+			if (TEST_MANAGER.Tests.size() == 0)
 				ImGui::EndDisabled();
 
 			ImGui::Separator();
@@ -215,8 +211,8 @@ void testsOverviewWindow::renderMainMenu()
 	ImGui::PopStyleVar();
 }
 
-void testsOverviewWindow::textInputCallback(std::string text)
+void TestsOverviewWindow::TextInputCallback(std::string Text)
 {
-	if (text != "")
-		TEST_MANAGER.renameTest(hoveredTestIndex, text);
+	if (!Text.empty())
+		TEST_MANAGER.RenameTest(HoveredTestIndex, Text);
 }

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class vec2AddNode : public basicLogicNode
+class Vec2AddNode : public BasicLogicNode
 {
 	friend class VisNodeSys::NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
@@ -33,10 +33,10 @@ class vec2AddNode : public basicLogicNode
 	};
 
 public:
-	vec2AddNode();
-	vec2AddNode(const vec2AddNode& Src);
+	Vec2AddNode();
+	Vec2AddNode(const Vec2AddNode& Other);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

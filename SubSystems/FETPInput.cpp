@@ -31,10 +31,19 @@ void FETPInput::Initialize()
 	}).detach();*/
 }
 
-void FETPInput::SimulateMouseMoveTo(int X, int Y)
+void FETPInput::SimulateMouseMoveTo(int X, int Y, int MonitorIndex)
 {
-	// FIX ME! Here we should add the offset of the monitor
-	SetCursorPos(/*3840 +*/ X, Y);
+	std::vector<FocalEngine::MonitorInfo> Monitors = FocalEngine::APPLICATION.GetMonitors();
+	if (Monitors.size() == 0)
+		return;
+
+	if (MonitorIndex < 0)
+		MonitorIndex = 0;
+
+	if (MonitorIndex >= Monitors.size())
+		MonitorIndex = 0;
+
+	SetCursorPos(Monitors[MonitorIndex].VirtualX + X, Monitors[MonitorIndex].VirtualY + Y);
 }
 
 void FETPInput::SimulateMouseDown(bool bLeftButton)

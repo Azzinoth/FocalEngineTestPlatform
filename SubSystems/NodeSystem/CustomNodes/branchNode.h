@@ -1,18 +1,18 @@
 #pragma once
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class branchNode : public basicLogicNode
+class BranchNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 public:
-	branchNode();
-	branchNode(const branchNode& Src);
+	BranchNode();
+	BranchNode(const BranchNode& Other);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

@@ -8,7 +8,7 @@ FETest::FETest()
 {
 	NodeArea = NODE_SYSTEM.CreateNodeArea();
 
-	Begin = new beginNode();
+	Begin = new BeginNode();
 	Begin->SetName("Begin node");
 	Begin->SetPosition(ImVec2(300.0f, 430.0f));
 
@@ -22,8 +22,6 @@ FETest::~FETest()
 
 void FETest::Save(const char* FilePath)
 {
-	// Before saving node area we should check if all images in nodes have correct file path.
-	ValidateImagePathes();
 	NodeArea->SaveToFile(FilePath);
 
 	Json::Value Root;
@@ -66,14 +64,12 @@ void FETest::Load()
 	if (FilePath == "")
 		return;
 
-	ValidateImagePathesInFile(FilePath);
-	
 	NodeArea->Clear();
 	NodeArea->LoadFromFile(FilePath.c_str());
 
-	auto Result = NodeArea->GetNodesByType("beginNode");
+	auto Result = NodeArea->GetNodesByType("BeginNode");
 	if (Result.size() == 1)
-		Begin = reinterpret_cast<beginNode*>(Result[0]);
+		Begin = reinterpret_cast<BeginNode*>(Result[0]);
 
 	ReColorMainTestPath();
 
@@ -116,7 +112,7 @@ void FETest::Load()
 	}
 }
 
-beginNode* FETest::GetBeginNode()
+BeginNode* FETest::GetBeginNode()
 {
 	return Begin;
 }
@@ -206,186 +202,6 @@ void FETest::BeforeBegin()
 			FocalEngine::FILE_SYSTEM.DeleteDirectory(BeforeStart[i]->Path.c_str());
 		}
 	}
-}
-
-void FETest::ValidateImagePathes(VisNodeSys::NodeArea* NodeArea, std::string FilePath)
-{
-	if (NodeArea == nullptr)
-		NodeArea = this->NodeArea;
-
-	if (FilePath == "")
-		FilePath = this->FilePath;
-
-	std::string DirectoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
-	std::vector<VisNodeSys::Node*> List = NodeArea->GetNodesByType("globalActionNode");
-	std::unordered_map<std::string, bool> ActionSeenIDs;
-	for (size_t i = 0; i < List.size(); i++)
-	{
-		globalActionNode* CurrentNode = reinterpret_cast<globalActionNode*>(List[i]);
-
-		if (ActionSeenIDs.find(CurrentNode->GetData()->GetID()) != ActionSeenIDs.end())
-			CurrentNode->GetData()->SetID(FocalEngine::APPLICATION.GetUniqueHexID());
-		ActionSeenIDs[CurrentNode->GetData()->GetID()] = true;
-
-		if (CurrentNode->GetData()->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
-		{
-			ScreenshootCompareAction* CurrentAction = reinterpret_cast<ScreenshootCompareAction*>(CurrentNode->GetData());
-			for (size_t j = 0; j < CurrentAction->imagesInfo.size(); j++)
-			{
-				if (CurrentAction->imagesInfo[j]->Image != nullptr)
-				{
-					std::string FileName = DirectoryPath + "screenshot_";
-					FileName += CurrentAction->GetID();
-					FileName += "_" + std::to_string(j) + "_";
-					FileName += ".png";
-
-					CurrentAction->imagesInfo[j]->Image->SetFullPath(FileName);
-				}
-
-				if (CurrentAction->imagesInfo[j]->partialImage != nullptr)
-				{
-					std::string FileName = DirectoryPath + "partial_";
-					FileName += CurrentAction->GetID();
-					FileName += "_" + std::to_string(j) + "_";
-					FileName += ".png";
-
-					CurrentAction->imagesInfo[j]->partialImage->SetFullPath(FileName);
-				}
-			}
-		}
-	}
-
-	// Validate nodes in node regions.
-	/*std::vector<FEVisualNode*> regionList = nodeArea->getNodesByType("regionNode");
-	for (size_t i = 0; i < regionList.size(); i++)
-	{
-		regionNode* node = reinterpret_cast<regionNode*>(regionList[i]);
-		
-		if (node->getData() != nullptr)
-			validateImagePathes(node->getData(), filePath);
-	}*/
-
-	// Validate nodes IDs in node regions with IDs in main node area.
-	std::vector<VisNodeSys::Node*> RegionList = NodeArea->GetNodesByType("regionNode");
-	for (size_t i = 0; i < RegionList.size(); i++)
-	{
-		regionNode* CurrentRegionNode = reinterpret_cast<regionNode*>(RegionList[i]);
-
-		if (CurrentRegionNode->GetData() != nullptr)
-		{
-			std::vector<VisNodeSys::Node*> List = CurrentRegionNode->GetData()->GetNodesByType("globalActionNode");
-			for (size_t j = 0; j < List.size(); j++)
-			{
-				globalActionNode* CurrentNode = reinterpret_cast<globalActionNode*>(List[j]);
-
-				if (ActionSeenIDs.find(CurrentNode->GetData()->GetID()) != ActionSeenIDs.end())
-					CurrentNode->GetData()->SetID(FocalEngine::APPLICATION.GetUniqueHexID());
-				ActionSeenIDs[CurrentNode->GetData()->GetID()] = true;
-
-				if (CurrentNode->GetData()->GetType() == FETP_SCREENSHOOT_COMPARE_ACTION)
-				{
-					ScreenshootCompareAction* CurrentAction = reinterpret_cast<ScreenshootCompareAction*>(CurrentNode->GetData());
-					for (size_t k = 0; k < CurrentAction->imagesInfo.size(); k++)
-					{
-						if (CurrentAction->imagesInfo[k]->Image != nullptr)
-						{
-							std::string FileName = DirectoryPath + "screenshot_";
-							FileName += CurrentAction->GetID();
-							FileName += "_" + std::to_string(k) + "_";
-							FileName += ".png";
-
-							CurrentAction->imagesInfo[k]->Image->SetFullPath(FileName);
-						}
-
-						if (CurrentAction->imagesInfo[k]->partialImage != nullptr)
-						{
-							std::string FileName = DirectoryPath + "partial_";
-							FileName += CurrentAction->GetID();
-							FileName += "_" + std::to_string(k) + "_";
-							FileName += ".png";
-
-							CurrentAction->imagesInfo[k]->partialImage->SetFullPath(FileName);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-Json::Value FETest::ValidateImagePathesInNodeArea(std::string nodeAreaText)
-{
-	Json::Value Root;
-	JSONCPP_STRING Error;
-	Json::CharReaderBuilder Builder;
-
-	const std::unique_ptr<Json::CharReader> Reader(Builder.newCharReader());
-	if (!Reader->parse(nodeAreaText.c_str(), nodeAreaText.c_str() + nodeAreaText.size(), &Root, &Error))
-		return Root;
-
-	std::string NewPath = std::string(FocalEngine::FILE_SYSTEM.GetDirectoryPath(this->FilePath.c_str()));
-
-	std::vector<Json::String> NodesList = Root["nodes"].getMemberNames();
-	for (size_t i = 0; i < NodesList.size(); i++)
-	{
-		std::string NodeType = Root["nodes"][std::to_string(i)]["nodeType"].asCString();
-		if (NodeType == "globalActionNode")
-		{
-			if (Root["nodes"][std::to_string(i)]["action"]["internalType"].asInt() == FETP_SCREENSHOOT_COMPARE_ACTION)
-			{
-				std::vector<Json::String> CompareImageInfosList = Root["nodes"][std::to_string(i)]["action"]["compareImageInfos"].getMemberNames();
-				for (size_t j = 0; j < CompareImageInfosList.size(); j++)
-				{
-					std::string FileName = NewPath + "screenshot_";
-					FileName += Root["nodes"][std::to_string(i)]["action"]["ID"].asCString();
-					FileName += "_" + std::to_string(j) + "_";
-					FileName += ".png";
-
-					Root["nodes"][std::to_string(i)]["action"]["compareImageInfos"][std::to_string(j)]["screenshot_fullPath"] = FileName;
-
-					if (Root["nodes"][std::to_string(i)]["action"]["compareImageInfos"][std::to_string(j)].isMember("partial_fileName"))
-					{
-						std::string FileName = NewPath + "partial_";
-						FileName += Root["nodes"][std::to_string(i)]["action"]["ID"].asCString();
-						FileName += "_" + std::to_string(j) + "_";
-						FileName += ".png";
-
-						Root["nodes"][std::to_string(i)]["action"]["compareImageInfos"][std::to_string(j)]["partial_fullPath"] = FileName;
-					}
-				}
-			}
-		}
-		else if (NodeType == "regionNode")
-		{
-			Json::StreamWriterBuilder SaveBuilder;
-			Root["nodes"][std::to_string(i)]["nodeArea"] = Json::writeString(SaveBuilder, ValidateImagePathesInNodeArea(Root["nodes"][std::to_string(i)]["nodeArea"].asCString()));
-		}
-	}
-
-	return Root;
-}
-
-void FETest::ValidateImagePathesInFile(std::string FilePath)
-{
-	if (FilePath == "")
-		return;
-
-	std::ifstream NodesFile;
-	NodesFile.open(FilePath);
-
-	std::string FileData((std::istreambuf_iterator<char>(NodesFile)), std::istreambuf_iterator<char>());
-	NodesFile.close();
-
-	Json::Value Result = ValidateImagePathesInNodeArea(FileData);
-
-	std::ofstream ReSaveNodes;
-	ReSaveNodes.open(FilePath);
-
-	Json::StreamWriterBuilder SaveBuilder;
-	const std::string JsonFile = Json::writeString(SaveBuilder, Result);
-
-	ReSaveNodes << JsonFile;
-	ReSaveNodes.close();
 }
 
 void FETest::AddMacro(std::string Macro, std::string ReplaceWith)

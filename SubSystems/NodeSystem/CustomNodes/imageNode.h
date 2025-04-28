@@ -1,16 +1,16 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-const COMDLG_FILTERSPEC pngLoadFilter[] =
+const COMDLG_FILTERSPEC PNGLoadFilter[] =
 {
 	{ L"png files (*.png)", L"*.png" }
 };
 
-class imageNode : public basicLogicNode
+class ImageNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	friend class FETest;
 
@@ -24,15 +24,15 @@ class imageNode : public basicLogicNode
 	};
 
 public:
-	imageNode();
-	imageNode(const imageNode& Src);
+	ImageNode();
+	ImageNode(const ImageNode& Other);
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 
 	void Draw();
 
 	bool SetImage(FETPImage* Image);
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

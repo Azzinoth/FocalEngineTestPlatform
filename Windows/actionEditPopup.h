@@ -2,17 +2,17 @@
 
 #include "../SubSystems/FEPTActionSystem.h"
 
-class actionEditPopup : public ImGuiModalPopup
+class ActionEditPopup : public ImGuiModalPopup
 {
-	SINGLETON_PRIVATE_PART(actionEditPopup)
+	SINGLETON_PRIVATE_PART(ActionEditPopup)
 
-	FETPAction* currentAction = nullptr;
-	ImVec2 popupSize = ImVec2(300, 150);
+	FETPAction* CurrentAction = nullptr;
+	ImVec2 PopupSize = ImVec2(300, 150);
 
-	void exit();
+	void Exit();
 public:
-	SINGLETON_PUBLIC_PART(actionEditPopup)
+	SINGLETON_PUBLIC_PART(ActionEditPopup)
 
-	void show(FETPAction* action);
-	void render() override;
+	void Show(FETPAction* Action);
+	void Render() override;
 };

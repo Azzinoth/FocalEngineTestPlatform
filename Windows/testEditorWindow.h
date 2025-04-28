@@ -1,25 +1,25 @@
 #pragma once
 
-#include "testPropertiesWindow.h"
-#include "nodeRegionWindow.h"
+#include "TestPropertiesWindow.h"
+#include "NodeRegionWindow.h"
 
-class testEditorWinow : public FEImGuiWindow
+class TestEditorWindow : public FEImGuiWindow
 {
-	SINGLETON_PRIVATE_PART(testEditorWinow)
-	static void mainContextMenu();
+	SINGLETON_PRIVATE_PART(TestEditorWindow)
+	static void RenderMainContextMenu();
 
-	static ImVec2 mousePositionWhenContextMenuWasOpened;
+	static ImVec2 MousePositionWhenContextMenuWasOpened;
 
-	static void nodeCallback(VisNodeSys::Node* node, VisNodeSys::NODE_EVENT eventWithNode);
+	static void NodeCallback(VisNodeSys::Node* Node, VisNodeSys::NODE_EVENT CurrentNodeEvent);
 	static void OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions);
 
-	void renderMainMenu();
+	void RenderMainMenu();
 
-	static void textInputChangeNameCallback(std::string text);
-	static void textInputCallback(std::string text);
+	static void TextInputChangeNameCallback(std::string Text);
+	static void TextInputCallback(std::string Text);
 public:
-	SINGLETON_PUBLIC_PART(testEditorWinow)
+	SINGLETON_PUBLIC_PART(TestEditorWindow)
 
-	void show();
-	void render() override;
+	void Show();
+	void Render() override;
 };

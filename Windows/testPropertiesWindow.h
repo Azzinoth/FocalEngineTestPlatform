@@ -1,15 +1,15 @@
 #pragma once
 
-#include "previewWindow.h"
-#include "testStartPreparationsWindow.h"
+#include "PreviewWindow.h"
+#include "TestStartPreparationsWindow.h"
 
-class testPropertiesWindow : public FEImGuiWindow
+class TestPropertiesWindow : public FEImGuiWindow
 {
-	SINGLETON_PRIVATE_PART(testPropertiesWindow)
+	SINGLETON_PRIVATE_PART(TestPropertiesWindow)
 
 public:
-	SINGLETON_PUBLIC_PART(testPropertiesWindow)
+	SINGLETON_PUBLIC_PART(TestPropertiesWindow)
 
-	void show();
-	void render() override;
+	void Show();
+	void Render() override;
 };

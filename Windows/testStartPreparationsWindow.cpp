@@ -1,23 +1,25 @@
-#include "testStartPreparationsWindow.h"
+#include "TestStartPreparationsWindow.h"
 
-testStartPreparationsWindow::testStartPreparationsWindow()
+TestStartPreparationsWindow::TestStartPreparationsWindow()
 {
 }
 
-testStartPreparationsWindow::~testStartPreparationsWindow()
+TestStartPreparationsWindow::~TestStartPreparationsWindow()
 {
 }
 
-void testStartPreparationsWindow::show()
+void TestStartPreparationsWindow::Show()
 {
-	if (TEST_MANAGER.getSelectedTest() != nullptr)
-		FEImGuiWindow::show();
+	if (TEST_MANAGER.GetSelectedTest() != nullptr)
+		FEImGuiWindow::Show();
 }
 
-void testStartPreparationsWindow::render()
+void TestStartPreparationsWindow::Render()
 {
-	if (!isVisible() || TEST_MANAGER.getSelectedTest() == nullptr)
+	if (!IsVisible() || TEST_MANAGER.GetSelectedTest() == nullptr)
 		return;
+
+	FEImGuiWindow::Render();
 
 	ImGui::SetNextWindowSize(ImVec2(800, 800));
 	ImGui::Begin("Actions taken before start of test.", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
@@ -28,43 +30,43 @@ void testStartPreparationsWindow::render()
 	{
 		FETestBeforeAction* NewAction = new FETestBeforeAction();
 		NewAction->Type = FE_BEFORE_TEST_ACTION_DELETE_FILE;
-		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(NewAction);
+		TEST_MANAGER.GetSelectedTest()->AddBeforeStartAction(NewAction);
 	}
 
 	if (ImGui::Button("Add delete folder action"))
 	{
 		FETestBeforeAction* NewAction = new FETestBeforeAction();
 		NewAction->Type = FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
-		TEST_MANAGER.getSelectedTest()->AddBeforeStartAction(NewAction);
+		TEST_MANAGER.GetSelectedTest()->AddBeforeStartAction(NewAction);
 	}
 
 	if (ImGui::BeginListBox("##Actions ListBox", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetWindowContentRegionMax().y - 250.0f)))
 	{
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 
-		ImVec2 postionBeforeDraw = ImGui::GetCursorPos();
-		for (size_t i = 0; i < TEST_MANAGER.getSelectedTest()->BeforeStart.size(); i++)
+		ImVec2 PostionBeforeDraw = ImGui::GetCursorPos();
+		for (size_t i = 0; i < TEST_MANAGER.GetSelectedTest()->BeforeStart.size(); i++)
 		{
-			ImGui::SetCursorPos(postionBeforeDraw);
-			ImGui::Text(FETest::FEBeforeTestActionTypeToString(TEST_MANAGER.getSelectedTest()->BeforeStart[i]->Type).c_str());
+			ImGui::SetCursorPos(PostionBeforeDraw);
+			ImGui::Text(FETest::FEBeforeTestActionTypeToString(TEST_MANAGER.GetSelectedTest()->BeforeStart[i]->Type).c_str());
 
-			ImGui::SetCursorPos(postionBeforeDraw);
+			ImGui::SetCursorPos(PostionBeforeDraw);
 			ImGui::PushID(static_cast<int>(i));
-			if (ImGui::Selectable("##item", selectedAction == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
+			if (ImGui::Selectable("##item", SelectedAction == i ? true : false, ImGuiSelectableFlags_None, ImVec2(ImGui::GetContentRegionAvail().x, 32.0f)))
 			{
-				selectedAction = static_cast<int>(i);
-				strcpy_s(pathInput, TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path.size() + 1, TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path.c_str());
-				TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path = pathInput;
+				SelectedAction = static_cast<int>(i);
+				strcpy_s(PathInputBuffer, TEST_MANAGER.GetSelectedTest()->BeforeStart[SelectedAction]->Path.size() + 1, TEST_MANAGER.GetSelectedTest()->BeforeStart[SelectedAction]->Path.c_str());
+				TEST_MANAGER.GetSelectedTest()->BeforeStart[SelectedAction]->Path = PathInputBuffer;
 			}
 			ImGui::PopID();
 
 			if (ImGui::IsItemHovered())
-				hoveredAction = static_cast<int>(i);
+				HoveredAction = static_cast<int>(i);
 
-			postionBeforeDraw.y += 34.0f;
+			PostionBeforeDraw.y += 34.0f;
 		}
 
-		if (ImGui::IsMouseDoubleClicked(0) && selectedAction != -1)
+		if (ImGui::IsMouseDoubleClicked(0) && SelectedAction != -1)
 		{
 		}
 
@@ -72,25 +74,25 @@ void testStartPreparationsWindow::render()
 		ImGui::EndListBox();
 	}
 
-	ImVec2 postionBeforeDraw = ImGui::GetCursorPos();
+	ImVec2 PostionBeforeDraw = ImGui::GetCursorPos();
 	ImGui::Text("Path: ");
 	ImGui::SetNextItemWidth(600.0f);
-	ImGui::InputText("##PathInput", pathInput, IM_ARRAYSIZE(pathInput));
+	ImGui::InputText("##PathInput", PathInputBuffer, IM_ARRAYSIZE(PathInputBuffer));
 
-	postionBeforeDraw.x += 610.0f;
-	postionBeforeDraw.y += 19.0f;
-	ImGui::SetCursorPos(postionBeforeDraw);
+	PostionBeforeDraw.x += 610.0f;
+	PostionBeforeDraw.y += 19.0f;
+	ImGui::SetCursorPos(PostionBeforeDraw);
 	if (ImGui::Button("Update"))
 	{
-		if (selectedAction >= 0 && selectedAction < int(TEST_MANAGER.getSelectedTest()->BeforeStart.size()))
+		if (SelectedAction >= 0 && SelectedAction < int(TEST_MANAGER.GetSelectedTest()->BeforeStart.size()))
 		{
-			TEST_MANAGER.getSelectedTest()->BeforeStart[selectedAction]->Path = pathInput;
+			TEST_MANAGER.GetSelectedTest()->BeforeStart[SelectedAction]->Path = PathInputBuffer;
 		}
 	}
 
 	if (ImGui::Button("Close"))
 	{
-		visible = false;
+		FEImGuiWindow::Close();
 	}
 
 	ImGui::PopStyleVar();

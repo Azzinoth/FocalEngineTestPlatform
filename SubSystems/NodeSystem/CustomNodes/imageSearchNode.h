@@ -1,20 +1,25 @@
 #pragma once
 
-#include "basicLogicNode.h"
+#include "BasicLogicNode.h"
 
-class imageSearchNode : public basicLogicNode
+class ImageSearchNode : public BasicLogicNode
 {
 	friend class NodeFactory;
-	static bool isRegistered;
+	static bool bIsRegistered;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
-	float Simularity = 95.0f;
+	float Similarity = 95.0f;
 	int MaxColorShift = 4;
 	glm::vec2 FoundPosition = glm::vec2(-1.0f);
 	bool bFound = false;
-	unsigned int MonitorIndex = 0;
+	int MonitorIndex = -1;
+	int FoundMonitorIndex = -1;
+
+	std::function<void* ()> MonitorIndexDataGetter = [this]() -> void* {
+		return &FoundMonitorIndex;
+	};
 
 	std::function<void* ()> Vec2DataGetter = [this]() -> void* {
 		return &FoundPosition;
@@ -25,13 +30,13 @@ class imageSearchNode : public basicLogicNode
 	};
 
 public:
-	imageSearchNode();
-	imageSearchNode(const imageSearchNode& Src);
+	ImageSearchNode();
+	ImageSearchNode(const ImageSearchNode& Other);
 
 	Json::Value ToJson();
-	void FromJson(Json::Value Json);
+	bool FromJson(Json::Value Json);
 
 	void Draw();
 
-	basicLogicNode* GetNextNode();
+	BasicLogicNode* GetNextNode();
 };

@@ -1,25 +1,25 @@
 #pragma once
 
-#include "testEditorWindow.h"
+#include "TestEditorWindow.h"
 
-class testsOverviewWindow : public FEImGuiWindow
+class TestsOverviewWindow : public FEImGuiWindow
 {
-	SINGLETON_PRIVATE_PART(testsOverviewWindow)
+	SINGLETON_PRIVATE_PART(TestsOverviewWindow)
 
 	void renderMainMenu();
 	void renderContextMenu();
-	bool openContextMenu = false;
-	bool contextMenuOpened = false;
-	static int hoveredTestIndex;
+	bool bShouldOpenContextMenu = false;
+	bool bContextMenuOpened = false;
+	static int HoveredTestIndex;
 
-	FETPImage* testSuccess = nullptr;
-	FETPImage* testFailed = nullptr;
-	FETPImage* testUnKnown = nullptr;
+	FETPImage* TestSuccess = nullptr;
+	FETPImage* TestFailed = nullptr;
+	FETPImage* TestUnknown = nullptr;
 
-	static void textInputCallback(std::string text);
+	static void TextInputCallback(std::string Text);
 public:
-	SINGLETON_PUBLIC_PART(testsOverviewWindow)
+	SINGLETON_PUBLIC_PART(TestsOverviewWindow)
 
-	void show();
-	void render() override;
+	void Show();
+	void Render() override;
 };

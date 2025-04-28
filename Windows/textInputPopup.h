@@ -2,18 +2,18 @@
 
 #include "../SubSystems/FEPTActionSystem.h"
 
-class textInputPopup : public ImGuiModalPopup
+class TextInputPopup : public ImGuiModalPopup
 {
-	SINGLETON_PRIVATE_PART(textInputPopup)
+	SINGLETON_PRIVATE_PART(TextInputPopup)
 
-	std::function<void(std::string inputFromUser)> callback;
-	char text[512];
-	ImVec2 popupSize = ImVec2(300, 150);
+	std::function<void(std::string InputFromUser)> Callback;
+	char Text[512];
+	ImVec2 PopupSize = ImVec2(300, 150);
 
-	void exit();
+	void Exit();
 public:
-	SINGLETON_PUBLIC_PART(textInputPopup)
+	SINGLETON_PUBLIC_PART(TextInputPopup)
 
-	void show(std::function<void(std::string inputFromUser)> func, std::string startText = "");
-	void render() override;
+	void Show(std::function<void(std::string InputFromUser)> Function, std::string StartText = "");
+	void Render() override;
 };

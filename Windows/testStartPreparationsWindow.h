@@ -1,18 +1,18 @@
 #pragma once
 
-#include "previewWindow.h"
+#include "PreviewWindow.h"
 
-class testStartPreparationsWindow : public FEImGuiWindow
+class TestStartPreparationsWindow : public FEImGuiWindow
 {
-	SINGLETON_PRIVATE_PART(testStartPreparationsWindow)
+	SINGLETON_PRIVATE_PART(TestStartPreparationsWindow)
 	
-	int selectedAction = -1;
-	int hoveredAction = -1;
+	int SelectedAction = -1;
+	int HoveredAction = -1;
 
-	char pathInput[1024];
+	char PathInputBuffer[1024];
 public:
-	SINGLETON_PUBLIC_PART(testStartPreparationsWindow)
+	SINGLETON_PUBLIC_PART(TestStartPreparationsWindow)
 
-	void show();
-	void render() override;
+	void Show();
+	void Render() override;
 };

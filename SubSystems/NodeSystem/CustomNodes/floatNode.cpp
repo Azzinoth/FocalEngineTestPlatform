@@ -1,30 +1,30 @@
-#include "floatNode.h"
+#include "FloatNode.h"
 using namespace VisNodeSys;
 
-bool floatNode::isRegistered = []()
+bool FloatNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("floatNode",
+	NODE_FACTORY.RegisterNodeType("FloatNode",
 		[]() -> Node* {
-			return new floatNode();
+			return new FloatNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const floatNode& NodeToCopy = static_cast<const floatNode&>(CurrentNode);
-			return new floatNode(NodeToCopy);
+			const FloatNode& NodeToCopy = static_cast<const FloatNode&>(CurrentNode);
+			return new FloatNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-floatNode::floatNode() : basicLogicNode()
+FloatNode::FloatNode() : BasicLogicNode()
 {
-	Type = "floatNode";
+	Type = "FloatNode";
 
 	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(170, 78));
-	SetName("float node");
+	SetName("Float node");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
@@ -33,34 +33,45 @@ floatNode::floatNode() : basicLogicNode()
 	Output[0]->SetFunctionToOutputData(FloatDataGetter);
 }
 
-floatNode::floatNode(const floatNode& Src) : basicLogicNode(Src)
+FloatNode::FloatNode(const FloatNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	Data = Src.Data;
+	Data = Other.Data;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[0]->SetFunctionToOutputData(FloatDataGetter);
 }
 
-Json::Value floatNode::ToJson()
+Json::Value FloatNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
 	Result["floatNode_Data"] = Data;
 	return Result;
 }
 
-void floatNode::FromJson(Json::Value Json)
+bool FloatNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("floatNode_Data"))
+		return false;
+
 	Data = Json["floatNode_Data"].asFloat();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
+	if (Output.size() < 1 || Output[0] == nullptr)
+		return false;
+
 	Output[0]->SetFunctionToOutputData(FloatDataGetter);
+
+	return true;
 }
 
-void floatNode::Draw()
+void FloatNode::Draw()
 {	
 	Node::Draw();
 
@@ -68,10 +79,10 @@ void floatNode::Draw()
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
 
-	float xPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
-	float yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
+	float XPosition = ImGui::GetCursorScreenPos().x - 17.0f * Zoom;
+	float YPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
 
-	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(100.0f * Zoom);
 	if (ImGui::InputFloat("##value", &Data))
 	{
@@ -80,12 +91,12 @@ void floatNode::Draw()
 	}
 }
 
-void floatNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void FloatNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-bool floatNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool FloatNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -93,7 +104,7 @@ bool floatNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 	return true;
 }
 
-basicLogicNode* floatNode::GetNextNode()
+BasicLogicNode* FloatNode::GetNextNode()
 {
 	return nullptr;
 }

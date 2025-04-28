@@ -1,31 +1,31 @@
-#include "endNode.h"
+#include "EndNode.h"
 using namespace VisNodeSys;
 
-bool endNode::isRegistered = []()
+bool EndNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("endNode",
+	NODE_FACTORY.RegisterNodeType("EndNode",
 		[]() -> Node* {
-			return new endNode();
+			return new EndNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const endNode& NodeToCopy = static_cast<const endNode&>(CurrentNode);
-			return new endNode(NodeToCopy);
+			const EndNode& NodeToCopy = static_cast<const EndNode&>(CurrentNode);
+			return new EndNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-endNode::endNode() : basicLogicNode()
+EndNode::EndNode() : BasicLogicNode()
 {
-	Type = "endNode";
+	Type = "EndNode";
 	bCouldBeDestroyed = false;
 
 	SetStyle(CIRCLE);
 
 	SetSize(ImVec2(220, 78));
-	SetName("endNode");
+	SetName("EndNode");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
@@ -36,9 +36,9 @@ endNode::endNode() : basicLogicNode()
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-endNode::endNode(const endNode& Src) : basicLogicNode(Src)
+EndNode::EndNode(const EndNode& Other) : BasicLogicNode(Other)
 {
-	Data = Src.Data;
+	Data = Other.Data;
 	bCouldBeDestroyed = false;
 
 	SetStyle(CIRCLE);
@@ -47,7 +47,7 @@ endNode::endNode(const endNode& Src) : basicLogicNode(Src)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-void endNode::Draw()
+void EndNode::Draw()
 {	
 	Node::Draw();
 
@@ -55,17 +55,17 @@ void endNode::Draw()
 	ImGui::Image((void*)(intptr_t)Icon->GetTextureID(), ImVec2(116.0f, 116.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void endNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void EndNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-float endNode::GetData()
+float EndNode::GetData()
 {
 	return Data;
 }
 
-bool endNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool EndNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -73,7 +73,7 @@ bool endNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, cha
 	return true;
 }
 
-basicLogicNode* endNode::GetNextNode()
+BasicLogicNode* EndNode::GetNextNode()
 {
 	return NextNode;
 }

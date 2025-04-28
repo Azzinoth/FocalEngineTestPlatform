@@ -1,25 +1,25 @@
-#include "imageSearchNode.h"
+#include "ImageSearchNode.h"
 using namespace VisNodeSys;
 
-bool imageSearchNode::isRegistered = []()
+bool ImageSearchNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("imageSearchNode",
+	NODE_FACTORY.RegisterNodeType("ImageSearchNode",
 		[]() -> Node* {
-			return new imageSearchNode();
+			return new ImageSearchNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const imageSearchNode& NodeToCopy = static_cast<const imageSearchNode&>(CurrentNode);
-			return new imageSearchNode(NodeToCopy);
+			const ImageSearchNode& NodeToCopy = static_cast<const ImageSearchNode&>(CurrentNode);
+			return new ImageSearchNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-imageSearchNode::imageSearchNode() : basicLogicNode()
+ImageSearchNode::ImageSearchNode() : BasicLogicNode()
 {
-	Type = "imageSearchNode";
+	Type = "ImageSearchNode";
 
 	SetStyle(DEFAULT);
 
@@ -31,7 +31,7 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
-	AddSocket(new NodeSocket(this, "FLOAT", "Simularity", false));
+	AddSocket(new NodeSocket(this, "FLOAT", "Similarity", false));
 	AddSocket(new NodeSocket(this, "INT", "Color shift", false));
 	AddSocket(new NodeSocket(this, "INT", "Monitor", false));
 
@@ -40,28 +40,31 @@ imageSearchNode::imageSearchNode() : basicLogicNode()
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
 	AddSocket(new NodeSocket(this, "VEC2", "Position", true));
 	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
+	AddSocket(new NodeSocket(this, "INT", "Monitor", true));
+	Output[3]->SetFunctionToOutputData(MonitorIndexDataGetter);
 }
 
-imageSearchNode::imageSearchNode(const imageSearchNode& Src) : basicLogicNode(Src)
+ImageSearchNode::ImageSearchNode(const ImageSearchNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
 
-	Simularity = Src.Simularity;
-	MaxColorShift = Src.MaxColorShift;
-	MonitorIndex = Src.MonitorIndex;
+	Similarity = Other.Similarity;
+	MaxColorShift = Other.MaxColorShift;
+	MonitorIndex = Other.MonitorIndex;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
 	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
+	Output[3]->SetFunctionToOutputData(MonitorIndexDataGetter);
 }
 
-Json::Value imageSearchNode::ToJson()
+Json::Value ImageSearchNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
 
 	if (Input[2]->GetConnectedSockets().empty())
-		Result["Simularity"] = Simularity;
+		Result["Similarity"] = Similarity;
 	
 	if (Input[3]->GetConnectedSockets().empty())
 		Result["MaxColorShift"] = MaxColorShift;
@@ -72,63 +75,67 @@ Json::Value imageSearchNode::ToJson()
 	return Result;
 }
 
-void imageSearchNode::FromJson(Json::Value Json)
+bool ImageSearchNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
 
-	if (Json.isMember("Simularity"))
-		Simularity = Json["Simularity"].asFloat();
+	if (!Json.isMember("Similarity") || !Json.isMember("MaxColorShift") || !Json.isMember("MonitorIndex"))
+		return false;
 
-	if (Json.isMember("MaxColorShift"))
-		MaxColorShift = Json["MaxColorShift"].asInt();
-
-	if (Json.isMember("MonitorIndex"))
-		MonitorIndex = Json["MonitorIndex"].asInt();
+	Similarity = Json["Similarity"].asFloat();
+	MaxColorShift = Json["MaxColorShift"].asInt();
+	MonitorIndex = Json["MonitorIndex"].asInt();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
+	if (Output.size() < 4 || Output[0] == nullptr || Output[1] == nullptr || Output[2] == nullptr || Output[3] == nullptr)
+		return false;
+
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
 	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
+	Output[3]->SetFunctionToOutputData(MonitorIndexDataGetter);
+
+	return true;
 }
 
-void imageSearchNode::Draw()
+void ImageSearchNode::Draw()
 {	
 	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
 
-	float xPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
-	float yPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
+	float XPosition = ImGui::GetCursorScreenPos().x + 115.0f * Zoom;
+	float YPosition = ImGui::GetCursorScreenPos().y + 115.0f * Zoom;
 
 	ImGui::BeginDisabled(Input[2]->GetConnectedSockets().size() != 0);
-	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
-	ImGui::DragFloat("##Simularity", &Simularity, 0.1f, 0.0f, 100.0f);
-	if (Simularity > 100.0f)
-		Simularity = 100.0f;
+	ImGui::DragFloat("##Similarity", &Similarity, 0.1f, 0.0f, 100.0f);
+	if (Similarity > 100.0f)
+		Similarity = 100.0f;
 
-	if (Simularity < 0.0f)
-		Simularity = 0.0f;
+	if (Similarity < 0.0f)
+		Similarity = 0.0f;
 
 	ImGui::EndDisabled();
 
-	xPosition += 7 * Zoom;
-	yPosition += 38 * Zoom;
-	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	XPosition += 7 * Zoom;
+	YPosition += 38 * Zoom;
+	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
 	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 1, 0, 100);
 	if (MaxColorShift < 0)
 		MaxColorShift = 0;
 
-	xPosition -= 30 * Zoom;
-	yPosition += 38 * Zoom;
-	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	XPosition -= 30 * Zoom;
+	YPosition += 38 * Zoom;
+	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
 	int MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
 	int TemporaryMonitorIndex = MonitorIndex;
-	ImGui::DragInt("##MonitorIndex", &TemporaryMonitorIndex, 1, 0, 100);
-	if (MonitorIndex < 0)
-		MonitorIndex = 0;
+	ImGui::DragInt("##MonitorIndex", &TemporaryMonitorIndex, 1, -1, 100);
 
 	if (MonitorIndex >= MonitorCount)
 		MonitorIndex = MonitorCount - 1;
@@ -140,7 +147,7 @@ void imageSearchNode::Draw()
 	}
 }
 
-void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -150,7 +157,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 		{
 			void* TempData = Input[2]->GetConnectedSockets()[0]->GetData();
 			if (TempData != nullptr)
-				Simularity = *reinterpret_cast<float*>(TempData);
+				Similarity = *reinterpret_cast<float*>(TempData);
 		}
 
 		if (Input[3]->GetConnectedSockets().size() > 0)
@@ -182,22 +189,52 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 		if (Input[1]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[1]->GetConnectedSockets()[0]->GetData();
-			if (TempData != nullptr)
+			void* TemporaryData = Input[1]->GetConnectedSockets()[0]->GetData();
+			if (TemporaryData != nullptr)
 			{
-				ImageToLookFor = reinterpret_cast<FETPImage*>(TempData);
+				ImageToLookFor = reinterpret_cast<FETPImage*>(TemporaryData);
 
-				FETPImage* CurrentScreenshot = nullptr;
-				CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(MonitorIndex);
+				if (ImageToLookFor == nullptr)
+					return;
 
-				glm::vec2 Position = glm::vec2(-1.0f);
-				if (CurrentScreenshot != nullptr)
-					Position = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Simularity, MaxColorShift);
+				if (MonitorIndex == -1)
+				{
+					std::vector<FocalEngine::MonitorInfo> Monitors = FocalEngine::APPLICATION.GetMonitors();
+					for (size_t i = 0; i < Monitors.size(); i++)
+					{
+						FETPImage* CurrentScreenshot = nullptr;
+						CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(i);
 
-				bFound = Position.x != -1 && Position.y != -1;
-				FoundPosition = Position;
+						glm::vec2 Position = glm::vec2(-1.0f);
+						if (CurrentScreenshot != nullptr)
+							Position = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
 
-				delete CurrentScreenshot;
+						bFound = Position.x != -1 && Position.y != -1;
+						FoundPosition = Position;
+
+						delete CurrentScreenshot;
+
+						if (bFound)
+						{
+							FoundMonitorIndex = i;
+							break;
+						}
+					}
+				}
+				else
+				{
+					FETPImage* CurrentScreenshot = nullptr;
+					CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(MonitorIndex);
+
+					glm::vec2 Position = glm::vec2(-1.0f);
+					if (CurrentScreenshot != nullptr)
+						Position = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
+
+					bFound = Position.x != -1 && Position.y != -1;
+					FoundPosition = Position;
+
+					delete CurrentScreenshot;
+				}
 
 				if (Output[0]->GetConnectedSockets().size() > 0)
 					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
@@ -206,7 +243,7 @@ void imageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 	}
 }
 
-bool imageSearchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool ImageSearchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -214,7 +251,7 @@ bool imageSearchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSoc
 	return true;
 }
 
-basicLogicNode* imageSearchNode::GetNextNode()
+BasicLogicNode* ImageSearchNode::GetNextNode()
 {
 	return nullptr;
 }

@@ -1,30 +1,30 @@
-#include "sleepNode.h"
+#include "SleepNode.h"
 using namespace VisNodeSys;
 
-bool sleepNode::isRegistered = []()
+bool SleepNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("sleepNode",
+	NODE_FACTORY.RegisterNodeType("SleepNode",
 		[]() -> Node* {
-			return new sleepNode();
+			return new SleepNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const sleepNode& NodeToCopy = static_cast<const sleepNode&>(CurrentNode);
-			return new sleepNode(NodeToCopy);
+			const SleepNode& NodeToCopy = static_cast<const SleepNode&>(CurrentNode);
+			return new SleepNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-sleepNode::sleepNode() : basicLogicNode()
+SleepNode::SleepNode() : BasicLogicNode()
 {
-	Type = "sleepNode";
+	Type = "SleepNode";
 
 	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(220, 78));
-	SetName("sleep node");
+	SetName("Sleep node");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
@@ -33,26 +33,34 @@ sleepNode::sleepNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-sleepNode::sleepNode(const sleepNode& Src) : basicLogicNode(Src)
+SleepNode::SleepNode(const SleepNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	SleepFor = Src.SleepFor;
+	SleepFor = Other.SleepFor;
 }
 
-Json::Value sleepNode::ToJson()
+Json::Value SleepNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
 	Result["sleepNode_Data"] = SleepFor;
 	return Result;
 }
 
-void sleepNode::FromJson(Json::Value Json)
+bool SleepNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("sleepNode_Data"))
+		return false;
+	
 	SleepFor = Json["sleepNode_Data"].asInt();
+
+	return true;
 }
 
-void sleepNode::Draw()
+void SleepNode::Draw()
 {	
 	Node::Draw();
 
@@ -60,15 +68,15 @@ void sleepNode::Draw()
 
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 30.0f * Zoom, ImGui::GetCursorScreenPos().y + 45.0f * Zoom));
 
-	float xPosition = ImGui::GetCursorScreenPos().x + 20.0f * Zoom;
-	float yPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
+	float XPosition = ImGui::GetCursorScreenPos().x + 20.0f * Zoom;
+	float YPosition = ImGui::GetCursorScreenPos().y + 0.0f * Zoom;
 
-	ImGui::SetCursorScreenPos(ImVec2(xPosition, yPosition));
+	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(100 * Zoom);
 	ImGui::InputInt("##value", &SleepFor);
 }
 
-void sleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void SleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -81,7 +89,7 @@ void sleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 	}
 }
 
-bool sleepNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool SleepNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -89,7 +97,7 @@ bool sleepNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 	return true;
 }
 
-basicLogicNode* sleepNode::GetNextNode()
+BasicLogicNode* SleepNode::GetNextNode()
 {
 	return nullptr;
 }

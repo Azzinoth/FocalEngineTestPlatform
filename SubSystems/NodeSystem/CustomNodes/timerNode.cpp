@@ -1,26 +1,26 @@
-#include "timerNode.h"
+#include "TimerNode.h"
 using namespace VisNodeSys;
 using namespace FocalEngine;
 
-bool timerNode::isRegistered = []()
+bool TimerNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("timerNode",
+	NODE_FACTORY.RegisterNodeType("TimerNode",
 		[]() -> Node* {
-			return new timerNode();
+			return new TimerNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const timerNode& NodeToCopy = static_cast<const timerNode&>(CurrentNode);
-			return new timerNode(NodeToCopy);
+			const TimerNode& NodeToCopy = static_cast<const TimerNode&>(CurrentNode);
+			return new TimerNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-timerNode::timerNode() : basicLogicNode()
+TimerNode::TimerNode() : BasicLogicNode()
 {
-	Type = "timerNode";
+	Type = "TimerNode";
 
 	SetStyle(DEFAULT);
 
@@ -40,34 +40,45 @@ timerNode::timerNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
 }
 
-timerNode::timerNode(const timerNode& Src) : basicLogicNode(Src)
+TimerNode::TimerNode(const TimerNode& Other) : BasicLogicNode(Other)
 {
 	SetStyle(DEFAULT);
-	Data = Src.Data;
+	Data = Other.Data;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
 }
 
-Json::Value timerNode::ToJson()
+Json::Value TimerNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
-	Result["timerNode_Data"] = Data;
+	Result["TimerNode_Data"] = Data;
 	return Result;
 }
 
-void timerNode::FromJson(Json::Value Json)
+bool TimerNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
-	Data = Json["timerNode_Data"].asInt();
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("TimerNode_Data"))
+		return false;
+
+	Data = Json["TimerNode_Data"].asInt();
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
+	if (Output.size() < 1 || Output[0] == nullptr)
+		return false;
+
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
+
+	return true;
 }
 
-int timerNode::GetTimeLeft()
+int TimerNode::GetTimeLeft()
 {
 	Data -= static_cast<int>(TIME.EndTimeStamp(GetID()));
 	if (Data < 0)
@@ -82,7 +93,7 @@ int timerNode::GetTimeLeft()
 	return Data;
 }
 
-void timerNode::SetTimeLeft(int TimeInMS)
+void TimerNode::SetTimeLeft(int TimeInMS)
 {
 	if (TimeInMS < 1)
 		TimeInMS = 1;
@@ -92,12 +103,12 @@ void timerNode::SetTimeLeft(int TimeInMS)
 	TIME.BeginTimeStamp(GetID());
 }
 
-void timerNode::Draw()
+void TimerNode::Draw()
 {	
 	Node::Draw();
 }
 
-void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void TimerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -133,7 +144,7 @@ void timerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 	}
 }
 
-bool timerNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool TimerNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -141,7 +152,7 @@ bool timerNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 	return true;
 }
 
-basicLogicNode* timerNode::GetNextNode()
+BasicLogicNode* TimerNode::GetNextNode()
 {
 	return nullptr;
 }

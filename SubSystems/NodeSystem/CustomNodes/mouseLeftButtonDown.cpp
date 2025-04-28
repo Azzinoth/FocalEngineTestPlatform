@@ -1,25 +1,25 @@
-#include "mouseLeftButtonDown.h"
+#include "MouseLeftButtonDown.h"
 using namespace VisNodeSys;
 
-bool mouseLeftButtonDown::isRegistered = []()
+bool MouseLeftButtonDown::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("mouseLeftButtonDown",
+	NODE_FACTORY.RegisterNodeType("MouseLeftButtonDown",
 		[]() -> Node* {
-			return new mouseLeftButtonDown();
+			return new MouseLeftButtonDown();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const mouseLeftButtonDown& NodeToCopy = static_cast<const mouseLeftButtonDown&>(CurrentNode);
-			return new mouseLeftButtonDown(NodeToCopy);
+			const MouseLeftButtonDown& NodeToCopy = static_cast<const MouseLeftButtonDown&>(CurrentNode);
+			return new MouseLeftButtonDown(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-mouseLeftButtonDown::mouseLeftButtonDown() : basicLogicNode()
+MouseLeftButtonDown::MouseLeftButtonDown() : BasicLogicNode()
 {
-	Type = "mouseLeftButtonDown";
+	Type = "MouseLeftButtonDown";
 
 	SetStyle(DEFAULT);
 
@@ -33,17 +33,17 @@ mouseLeftButtonDown::mouseLeftButtonDown() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-mouseLeftButtonDown::mouseLeftButtonDown(const mouseLeftButtonDown& Src) : basicLogicNode(Src)
+MouseLeftButtonDown::MouseLeftButtonDown(const MouseLeftButtonDown& Src) : BasicLogicNode(Src)
 {
 	SetStyle(DEFAULT);
 }
 
-void mouseLeftButtonDown::Draw()
+void MouseLeftButtonDown::Draw()
 {	
 	Node::Draw();
 }
 
-void mouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void MouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -56,7 +56,7 @@ void mouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connect
 	}
 }
 
-bool mouseLeftButtonDown::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool MouseLeftButtonDown::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
@@ -64,7 +64,7 @@ bool mouseLeftButtonDown::CanConnect(NodeSocket* OwnSocket, NodeSocket* Candidat
 	return true;
 }
 
-basicLogicNode* mouseLeftButtonDown::GetNextNode()
+BasicLogicNode* MouseLeftButtonDown::GetNextNode()
 {
 	return nullptr;
 }

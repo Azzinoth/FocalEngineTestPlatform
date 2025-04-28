@@ -1,38 +1,38 @@
 #pragma once
 
 #include "../SubSystems/TestManager.h"
-#include "failedTestWindow.h"
+#include "FailedTestWindow.h"
 
-class previewWindow : public ImGuiModalPopup
+class PreviewWindow : public ImGuiModalPopup
 {
-	SINGLETON_PRIVATE_PART(previewWindow)
+	SINGLETON_PRIVATE_PART(PreviewWindow)
 
-	ImVec2 popupSize = ImVec2(1200, 800);
-	ImGuiButton* cancelButton;
-	ImGuiButton* newTestButton;
-	ImGuiButton* addButton;
-	static bool readOnly;
+	ImVec2 PopupSize = ImVec2(1200, 800);
+	ImGuiButton* CancelButton;
+	ImGuiButton* NewTestButton;
+	ImGuiButton* AddButton;
+	static bool bIsReadOnly;
 
 	// ************** Node area **************
-	static void mainContextMenu();
+	static void RenderMainContextMenu();
 
-	static ImVec2 windowPosition;
-	static ImVec2 nodeGridRelativePosition;
-	static ImVec2 mousePositionWhenContextMenuWasOpened;
+	static ImVec2 WindowPosition;
+	static ImVec2 NodeGridRelativePosition;
+	static ImVec2 MousePositionWhenContextMenuWasOpened;
 
-	static void nodeCallback(VisNodeSys::Node* node, VisNodeSys::NODE_EVENT eventWithNode);
-	bool firstFrame = false;
-	static ImVec2 neededShift;
-	void positionNodesInCenter();
-	void positionNodesInTargetCenter();
+	static void NodeCallback(VisNodeSys::Node* Node, VisNodeSys::NODE_EVENT CurrentNodeEvent);
+	bool bIsFirstFrame = false;
+	static ImVec2 NeededShift;
+	void PositionNodesInCenter();
+	void PositionNodesInTargetCenter();
 	// ************** Node area END **************
 
-	void close();
+	void Close();
 public:
-	SINGLETON_PUBLIC_PART(previewWindow)
+	SINGLETON_PUBLIC_PART(PreviewWindow)
 
-	static VisNodeSys::NodeArea* currentNodeArea;
+	static VisNodeSys::NodeArea* CurrentNodeArea;
 
-	void show(bool isReadOnly = false);
-	void render() override;
+	void Show(bool bIsReadOnlyIn = false);
+	void Render() override;
 };

@@ -1,35 +1,35 @@
-#include "regionNode.h"
+#include "RegionNode.h"
 using namespace VisNodeSys;
 
-FETPImage* regionNode::RegionIcon = nullptr;
+FETPImage* RegionNode::RegionIcon = nullptr;
 
-bool regionNode::isRegistered = []()
+bool RegionNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("regionNode",
+	NODE_FACTORY.RegisterNodeType("RegionNode",
 		[]() -> Node* {
-			return new regionNode();
+			return new RegionNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const regionNode& NodeToCopy = static_cast<const regionNode&>(CurrentNode);
-			return new regionNode(NodeToCopy);
+			const RegionNode& NodeToCopy = static_cast<const RegionNode&>(CurrentNode);
+			return new RegionNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-regionNode::regionNode() : basicLogicNode()
+RegionNode::RegionNode() : BasicLogicNode()
 {
 	SetStyle(CIRCLE);
-	Type = "regionNode";
+	Type = "RegionNode";
 	Data = NODE_SYSTEM.CreateNodeArea();
 
-	Begin = new beginNode();
+	Begin = new BeginNode();
 	Begin->SetPosition(ImVec2(300.0f, 350.0f));
 	Data->AddNode(Begin);
 
-	End = new endNode();
+	End = new EndNode();
 	End->SetPosition(Begin->GetPosition() + ImVec2(600.0f, 0.0f));
 	Data->AddNode(End);
 
@@ -37,15 +37,15 @@ regionNode::regionNode() : basicLogicNode()
 	AddSocket(new NodeSocket(this, "FLOAT", "", true));
 }
 
-regionNode::regionNode(const regionNode& Src) : basicLogicNode(Src)
+RegionNode::RegionNode(const RegionNode& Other) : BasicLogicNode(Other)
 {
-	Data = Src.Data;
-	Begin = reinterpret_cast<beginNode*>(Data->GetNodesByType("beginNode")[0]);
-	End = reinterpret_cast<endNode*>(Data->GetNodesByType("endNode")[0]);
+	Data = Other.Data;
+	Begin = reinterpret_cast<BeginNode*>(Data->GetNodesByType("BeginNode")[0]);
+	End = reinterpret_cast<EndNode*>(Data->GetNodesByType("EndNode")[0]);
 	SetStyle(CIRCLE);
 }
 
-void regionNode::Draw()
+void RegionNode::Draw()
 {	
 	Node::Draw();
 
@@ -63,22 +63,22 @@ void regionNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x - 4.0f, ImGui::GetCursorScreenPos().y - 4.0f));
 		RenderIcon();
 
-		if (ParentArea->IsMouseHovered() && IsHovered() && !actionEditPopup::GetInstance().isOpened() && !textInputPopup::GetInstance().isOpened())
+		if (ParentArea->IsMouseHovered() && IsHovered() && !ActionEditPopup::GetInstance().IsOpened() && !TextInputPopup::GetInstance().IsOpened())
 			ShowTooltip();
 	}
 }
 
-void regionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void RegionNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 }
 
-NodeArea* regionNode::GetData()
+NodeArea* RegionNode::GetData()
 {
 	return Data;
 }
 
-bool regionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool RegionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return true;
@@ -86,28 +86,28 @@ bool regionNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, 
 	return true;
 }
 
-basicLogicNode* regionNode::GetNextNode()
+BasicLogicNode* RegionNode::GetNextNode()
 {
 	End->NextNode = nullptr;
 	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
-		End->NextNode = reinterpret_cast<basicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
+		End->NextNode = reinterpret_cast<BasicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
 	
 	return Begin;
 }
 
-void regionNode::CheckIcons()
+void RegionNode::CheckIcons()
 {
 	if (RegionIcon == nullptr)
 		RegionIcon = new FETPImage("Resources//regionIcon.png");
 }
 
-void regionNode::RenderIcon()
+void RegionNode::RenderIcon()
 {
 	ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x + 8.0f, ImGui::GetCursorScreenPos().y + 8.0f));
 	ImGui::Image((void*)(intptr_t)RegionIcon->GetTextureID(), ImVec2(100.0f, 100.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 }
 
-void regionNode::ShowTooltip()
+void RegionNode::ShowTooltip()
 {
 	std::string textToShow = "Region : " + GetName();
 	textToShow += "\nNode count : " + std::to_string(Data->GetNodeCount());
@@ -121,7 +121,7 @@ void regionNode::ShowTooltip()
 	ImGui::PopFont();
 }
 
-Json::Value regionNode::ToJson()
+Json::Value RegionNode::ToJson()
 {
 	Json::Value result = Node::ToJson();
 	result["nodeArea"] = Data->ToJson();
@@ -129,10 +129,18 @@ Json::Value regionNode::ToJson()
 	return result;
 }
 
-void regionNode::FromJson(Json::Value Json)
+bool RegionNode::FromJson(Json::Value Json)
 {
-	Node::FromJson(Json);
+	bool bResult = Node::FromJson(Json);
+	if (!bResult)
+		return false;
+
+	if (!Json.isMember("nodeArea"))
+		return false;
+
 	NODE_SYSTEM.DeleteNodeArea(Data);
 	Data = new NodeArea();
 	Data->LoadFromJson(Json["nodeArea"].asCString());
+
+	return true;
 }
