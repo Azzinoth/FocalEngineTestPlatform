@@ -1,5 +1,6 @@
 #include "TestsOverviewWindow.h"
-
+#include "TextInputPopup.h"
+#include "ActionEditPopup.h"
 int TestsOverviewWindow::HoveredTestIndex = -1;
 
 TestsOverviewWindow::TestsOverviewWindow()

@@ -1,13 +1,14 @@
 #pragma once
 
-#include "BasicLogicNode.h"
+#include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
+#include "../FETPInput.h"
 
 const COMDLG_FILTERSPEC PNGLoadFilter[] =
 {
 	{ L"png files (*.png)", L"*.png" }
 };
 
-class ImageNode : public BasicLogicNode
+class ImageNode : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
@@ -33,6 +34,4 @@ public:
 	void Draw();
 
 	bool SetImage(FETPImage* Image);
-
-	BasicLogicNode* GetNextNode();
 };

@@ -17,7 +17,7 @@ bool MouseMoveNode::bIsRegistered = []()
 	return true;
 }();
 
-MouseMoveNode::MouseMoveNode() : BasicLogicNode()
+MouseMoveNode::MouseMoveNode() : BaseExecutionFlowNode()
 {
 	Type = "MouseMoveNode";
 
@@ -29,14 +29,13 @@ MouseMoveNode::MouseMoveNode() : BasicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "VEC2", "Position", false));
 	AddSocket(new NodeSocket(this, "INT", "Monitor", false));
 
 	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
 }
 
-MouseMoveNode::MouseMoveNode(const MouseMoveNode& Other) : BasicLogicNode(Other)
+MouseMoveNode::MouseMoveNode(const MouseMoveNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
 	Data = Other.Data;
@@ -134,9 +133,4 @@ bool MouseMoveNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocke
 		return false;
 
 	return true;
-}
-
-BasicLogicNode* MouseMoveNode::GetNextNode()
-{
-	return nullptr;
 }

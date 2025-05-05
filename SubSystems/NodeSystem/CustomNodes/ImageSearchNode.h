@@ -1,8 +1,9 @@
 #pragma once
 
-#include "BasicLogicNode.h"
+#include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
+#include "../FETPInput.h"
 
-class ImageSearchNode : public BasicLogicNode
+class ImageSearchNode : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
@@ -37,6 +38,4 @@ public:
 	bool FromJson(Json::Value Json);
 
 	void Draw();
-
-	BasicLogicNode* GetNextNode();
 };

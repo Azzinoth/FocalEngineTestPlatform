@@ -3,22 +3,14 @@
 #include "FEFileSystem.h"
 
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
-#include "NodeSystem/CustomNodes/IntNode.h"
-#include "NodeSystem/CustomNodes/FloatNode.h"
-#include "NodeSystem/CustomNodes/Vec2Node.h"
-#include "NodeSystem/CustomNodes/Vec2AddNode.h"
-#include "NodeSystem/CustomNodes/BoolNode.h"
-#include "NodeSystem/CustomNodes/BranchNode.h"
-#include "NodeSystem/CustomNodes/SequenceNode.h"
+#include "NodeSystem/CustomNodes/BeginNode.h"
 #include "NodeSystem/CustomNodes/TimerNode.h"
 #include "NodeSystem/CustomNodes/SleepNode.h"
-#include "NodeSystem/CustomNodes/BeginNode.h"
 #include "NodeSystem/CustomNodes/MouseMoveNode.h"
 #include "NodeSystem/CustomNodes/MouseLeftButtonDown.h"
 #include "NodeSystem/CustomNodes/MouseLeftButtonUp.h"
 #include "NodeSystem/CustomNodes/ImageNode.h"
 #include "NodeSystem/CustomNodes/ImageSearchNode.h"
-#include "NodeSystem/CustomNodes/RegionNode.h"
 
 enum FE_TEST_FAIL_REASON
 {

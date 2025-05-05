@@ -1,13 +1,12 @@
 #pragma once
 
-#include "BasicLogicNode.h"
+#include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
+#include "../FETPInput.h"
 
-class BeginNode : public BasicLogicNode
+class BeginNode : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
-
-	float Data = 0.0f;
 
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
@@ -18,7 +17,4 @@ public:
 	BeginNode(const BeginNode& Other);
 
 	void Draw();
-	float GetData();
-
-	BasicLogicNode* GetNextNode();
 };

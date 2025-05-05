@@ -1,4 +1,6 @@
 #include "TestEditorWindow.h"
+#include "TextInputPopup.h"
+#include "ActionEditPopup.h"
 using namespace VisNodeSys;
 
 ImVec2 TestEditorWindow::MousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
@@ -30,8 +32,9 @@ void TestEditorWindow::Render()
 	{
 		NodeArea* CurrentNodeArea = TEST_MANAGER.GetSelectedTest()->NodeArea;
 
-		CurrentNodeArea->SetMainContextMenuFunc(RenderMainContextMenu);
-		CurrentNodeArea->AddNodeEventCallback(NodeCallback);
+		CurrentNodeArea->SetMainContextMenuFunction(RenderMainContextMenu);
+		// That callback is painfuly slow, so need to find a better solution.
+		//CurrentNodeArea->AddNodeEventCallback(NodeCallback);
 
 		CurrentNodeArea->SetPosition(ImVec2(0.0f, 0.0f));
 		CurrentNodeArea->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
@@ -55,105 +58,31 @@ void TestEditorWindow::RenderMainContextMenu()
 
 	if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetHovered() == nullptr && TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected().size() == 0)
 	{
-		if (ImGui::BeginMenu("Add"))
+		if (ImGui::BeginMenu("Add Node"))
 		{
-			if (ImGui::MenuItem("Int"))
+			VisNodeSys::Node* NewNode = nullptr;
+
+			if (ImGui::MenuItem("Sleep"))
 			{
-				IntNode* NewNode = new IntNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+				NewNode = new SleepNode();
 			}
 
-			if (ImGui::MenuItem("Float"))
+			if (ImGui::MenuItem("Timer"))
 			{
-				FloatNode* NewNode = new FloatNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+				NewNode = new TimerNode();
 			}
 
-			if (ImGui::MenuItem("Vec2"))
+			if (ImGui::MenuItem("Image"))
 			{
-				Vec2Node* NewNode = new Vec2Node();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+				NewNode = new ImageNode();
 			}
 
-			if (ImGui::MenuItem("Vec2 add"))
+			if (ImGui::MenuItem("Image Search"))
 			{
-				Vec2AddNode* NewNode = new Vec2AddNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-			}
-
-			if (ImGui::BeginMenu("Flow control nodes"))
-			{
-				if (ImGui::MenuItem("Bool"))
-				{
-					BoolNode* NewNode = new BoolNode();
-					NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-				}
-
-				if (ImGui::MenuItem("Branch"))
-				{
-					BranchNode* NewNode = new BranchNode();
-					NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-				}
-
-				if (ImGui::MenuItem("Sequence"))
-				{
-					SequenceNode* NewNode = new SequenceNode();
-					NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-				}
-
-				if (ImGui::MenuItem("ForLoop"))
-				{
-					//BranchNode* newBranchNode = new BranchNode();
-					//newBranchNode->SetPosition(mousePositionWhenContextMenuWasOpened);
-					//TEST_MANAGER.getSelectedTest()->nodeArea->AddNode(newBranchNode);
-				}
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::MenuItem("Region node"))
-			{
-				RegionNode* NewRegionNode = new RegionNode();
-				NewRegionNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewRegionNode);
-			}
-
-			if (ImGui::MenuItem("Sleep node"))
-			{
-				SleepNode* NewNode = new SleepNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-			}
-
-			if (ImGui::MenuItem("Timer node"))
-			{
-				TimerNode* NewNode = new TimerNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-			}
-
-			if (ImGui::MenuItem("Image node"))
-			{
-				ImageNode* NewNode = new ImageNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-			}
-
-			if (ImGui::MenuItem("Image search node"))
-			{
-				ImageSearchNode* NewNode = new ImageSearchNode();
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+				NewNode = new ImageSearchNode();
 			}
 			
-			if (ImGui::MenuItem("Application launch node..."))
+			if (ImGui::MenuItem("Application Launch..."))
 			{
 				std::string Path;
 				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
@@ -165,92 +94,110 @@ void TestEditorWindow::RenderMainContextMenu()
 				}
 			}
 
-			if (ImGui::BeginMenu("Mouse"))
+			if (ImGui::BeginMenu("Input Simulation"))
 			{
-				if (ImGui::MenuItem("Move"))
+				if (ImGui::BeginMenu("Mouse"))
 				{
-					MouseMoveNode* NewNode = new MouseMoveNode();
-					NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+					if (ImGui::MenuItem("Move"))
+					{
+						MouseMoveNode* NewNode = new MouseMoveNode();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+					}
+
+					if (ImGui::MenuItem("LeftButtonDown"))
+					{
+						MouseLeftButtonDown* NewNode = new MouseLeftButtonDown();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+					}
+
+					if (ImGui::MenuItem("LeftButtonUp"))
+					{
+						MouseLeftButtonUp* NewNode = new MouseLeftButtonUp();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+					}
+
+					if (ImGui::MenuItem("RightButtonDown"))
+					{
+
+					}
+
+					if (ImGui::MenuItem("RightButtonUp"))
+					{
+
+					}
+
+					if (ImGui::MenuItem("WheelRotation"))
+					{
+
+					}
+
+					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem("LeftButtonDown"))
+				if (ImGui::BeginMenu("Keyboard"))
 				{
-					MouseLeftButtonDown* NewNode = new MouseLeftButtonDown();
-					NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-				}
+					if (ImGui::MenuItem("KeyDown"))
+					{
 
-				if (ImGui::MenuItem("LeftButtonUp"))
-				{
-					MouseLeftButtonUp* NewNode = new MouseLeftButtonUp();
-					NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-					TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
-				}
+					}
 
-				if (ImGui::MenuItem("RightButtonDown"))
-				{
-					
-				}
+					if (ImGui::MenuItem("KeyUp"))
+					{
 
-				if (ImGui::MenuItem("RightButtonUp"))
-				{
-					
-				}
+					}
 
-				if (ImGui::MenuItem("WheelRotation"))
-				{
-					
+					if (ImGui::MenuItem("Combined Text Input..."))
+					{
+						TextInputPopup::GetInstance().Show(TextInputCallback);
+					}
+
+					ImGui::EndMenu();
 				}
 
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Keyboard"))
+			if (NewNode != nullptr)
 			{
-				if (ImGui::MenuItem("KeyDown"))
-				{
-					
-				}
-
-				if (ImGui::MenuItem("KeyUp"))
-				{
-					
-				}
-
-				if (ImGui::MenuItem("Combined text input..."))
-				{
-					TextInputPopup::GetInstance().Show(TextInputCallback);
-				}
-
-				ImGui::EndMenu();
+				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 			}
 
 			ImGui::EndMenu();
 		}
 	}
-	else if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected().size() == 1 &&
-			 TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]->GetType() == "RegionNode")
+	//else if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected().size() == 1 &&
+	//		 TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]->GetType() == "RegionNode")
+	//{
+	//	if (ImGui::MenuItem("Open region"))
+	//	{
+	//		NodeRegionWindow::GetInstance().Show(/*reinterpret_cast<RegionNode*>(TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0])*/);
+	//	}
+
+	//	if (ImGui::MenuItem("Rename"))
+	//	{
+	//		TextInputPopup::GetInstance().Show(TextInputChangeNameCallback, TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]->GetName());
+	//	}
+
+	//	if (ImGui::MenuItem("Remove"))
+	//	{
+	//		TEST_MANAGER.GetSelectedTest()->NodeArea->DeleteNode(TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]);
+	//	}
+	//}
+	else if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetHovered() != nullptr)
 	{
-		if (ImGui::MenuItem("Open region"))
+		if (ImGui::MenuItem("Copy NodeID to clipboard"))
 		{
-			NodeRegionWindow::GetInstance().Show(reinterpret_cast<RegionNode*>(TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]));
-		}
-
-		if (ImGui::MenuItem("Rename"))
-		{
-			TextInputPopup::GetInstance().Show(TextInputChangeNameCallback, TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]->GetName());
-		}
-
-		if (ImGui::MenuItem("Remove"))
-		{
-			TEST_MANAGER.GetSelectedTest()->NodeArea->DeleteNode(TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]);
+			ImGui::SetClipboardText(TEST_MANAGER.GetSelectedTest()->NodeArea->GetHovered()->GetID().c_str());
 		}
 	}
 	else if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected().size() > 1)
 	{
 		auto SelectedList = TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected();
-		if (ImGui::MenuItem("Delete selected nodes"))
+		if (ImGui::MenuItem("Delete Selected Nodes"))
 		{
 			for (size_t i = 0; i < SelectedList.size(); i++)
 			{
@@ -260,7 +207,7 @@ void TestEditorWindow::RenderMainContextMenu()
 			TEST_MANAGER.GetSelectedTest()->NodeArea->UnSelectAll();
 		}
 
-		if (ImGui::MenuItem("Save selected nodes..."))
+		if (ImGui::MenuItem("Save Selected Nodes..."))
 		{
 			std::string Path;
 			FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, NULL, 0);
@@ -314,22 +261,8 @@ void TestEditorWindow::NodeCallback(VisNodeSys::Node* Node, NODE_EVENT CurrentNo
 		}
 	});
 
-	// Start at begin node at change each connection color from it.
-	if (TEST_MANAGER.GetSelectedTest()->GetBeginNode() == nullptr)
+	if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetExecutionEntryNode() == nullptr)
 		return;
-
-	TEST_MANAGER.GetSelectedTest()->NodeArea->RunOnEachConnectedNode(TEST_MANAGER.GetSelectedTest()->GetBeginNode(),
-		[](VisNodeSys::Node* Node) {
-			size_t OutSocketCount = Node->GetOutputSocketCount();
-			for (size_t i = 0; i < OutSocketCount; i++)
-			{
-				ConnectionStyle TempStyle;
-				Node->GetParentArea()->GetConnectionStyle(Node, true, i, TempStyle);
-				TempStyle.bMarchingAntsEffect = true;
-				Node->GetParentArea()->SetConnectionStyle(Node, true, i, TempStyle);
-			}
-		}
-	);
 }
 
 void TestEditorWindow::OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions)

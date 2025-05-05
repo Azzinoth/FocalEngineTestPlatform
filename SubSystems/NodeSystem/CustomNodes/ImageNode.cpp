@@ -17,7 +17,7 @@ bool ImageNode::bIsRegistered = []()
 	return true;
 }();
 
-ImageNode::ImageNode() : BasicLogicNode()
+ImageNode::ImageNode() : BaseExecutionFlowNode()
 {
 	Type = "ImageNode";
 
@@ -33,7 +33,7 @@ ImageNode::ImageNode() : BasicLogicNode()
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 }
 
-ImageNode::ImageNode(const ImageNode& Other) : BasicLogicNode(Other)
+ImageNode::ImageNode(const ImageNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
 	Data = Other.Data;
@@ -188,9 +188,4 @@ bool ImageNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 		return false;
 
 	return true;
-}
-
-BasicLogicNode* ImageNode::GetNextNode()
-{
-	return nullptr;
 }

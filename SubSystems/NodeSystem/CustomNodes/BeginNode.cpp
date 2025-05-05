@@ -17,7 +17,7 @@ bool BeginNode::bIsRegistered = []()
 	return true;
 }();
 
-BeginNode::BeginNode() : BasicLogicNode()
+BeginNode::BeginNode() : BaseExecutionFlowNode(false)
 {
 	Type = "BeginNode";
 	bCouldBeDestroyed = false;
@@ -36,9 +36,8 @@ BeginNode::BeginNode() : BasicLogicNode()
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
 }
 
-BeginNode::BeginNode(const BeginNode& Other) : BasicLogicNode(Other)
+BeginNode::BeginNode(const BeginNode& Other) : BaseExecutionFlowNode(Other)
 {
-	Data = Other.Data;
 	bCouldBeDestroyed = false;
 
 	SetStyle(CIRCLE);
@@ -68,23 +67,10 @@ void BeginNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 	}
 }
 
-float BeginNode::GetData()
-{
-	return Data;
-}
-
 bool BeginNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;
 
 	return false;
-}
-
-BasicLogicNode* BeginNode::GetNextNode()
-{
-	if (Output.size() > 0 && Output[0]->GetConnectedSockets().size() > 0)
-		return reinterpret_cast<BasicLogicNode*>(Output[0]->GetConnectedSockets()[0]->GetParent());
-	
-	return nullptr;
 }

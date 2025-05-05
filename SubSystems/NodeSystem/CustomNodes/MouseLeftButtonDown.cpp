@@ -17,7 +17,7 @@ bool MouseLeftButtonDown::bIsRegistered = []()
 	return true;
 }();
 
-MouseLeftButtonDown::MouseLeftButtonDown() : BasicLogicNode()
+MouseLeftButtonDown::MouseLeftButtonDown() : BaseExecutionFlowNode()
 {
 	Type = "MouseLeftButtonDown";
 
@@ -29,11 +29,10 @@ MouseLeftButtonDown::MouseLeftButtonDown() : BasicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-MouseLeftButtonDown::MouseLeftButtonDown(const MouseLeftButtonDown& Src) : BasicLogicNode(Src)
+MouseLeftButtonDown::MouseLeftButtonDown(const MouseLeftButtonDown& Src) : BaseExecutionFlowNode(Src)
 {
 	SetStyle(DEFAULT);
 }
@@ -62,9 +61,4 @@ bool MouseLeftButtonDown::CanConnect(NodeSocket* OwnSocket, NodeSocket* Candidat
 		return false;
 
 	return true;
-}
-
-BasicLogicNode* MouseLeftButtonDown::GetNextNode()
-{
-	return nullptr;
 }

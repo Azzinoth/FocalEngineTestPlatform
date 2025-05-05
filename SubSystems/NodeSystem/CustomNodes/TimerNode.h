@@ -1,8 +1,8 @@
 #pragma once
+#include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
+#include "../FETPInput.h"
 
-#include "BasicLogicNode.h"
-
-class TimerNode : public BasicLogicNode
+class TimerNode : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
@@ -27,6 +27,4 @@ public:
 
 	int GetTimeLeft();
 	void SetTimeLeft(int TimeInMS);
-
-	BasicLogicNode* GetNextNode();
 };

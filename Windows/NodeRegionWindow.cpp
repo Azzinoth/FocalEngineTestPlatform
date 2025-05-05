@@ -1,7 +1,7 @@
 #include "NodeRegionWindow.h"
 
 ImVec2 NodeRegionWindow::MousePositionWhenContextMenuWasOpened = ImVec2(0, 0);
-RegionNode* NodeRegionWindow::CurrentRegion = nullptr;
+//RegionNode* NodeRegionWindow::CurrentRegion = nullptr;
 
 NodeRegionWindow::NodeRegionWindow()
 {
@@ -17,12 +17,12 @@ NodeRegionWindow::~NodeRegionWindow()
 		delete CancelButton;
 }
 
-void NodeRegionWindow::Show(RegionNode* Region)
+void NodeRegionWindow::Show(/*RegionNode* Region*/)
 {
-	if (Region == nullptr)
-		return;
+	//if (Region == nullptr)
+	//	return;
 
-	CurrentRegion = Region;
+	//CurrentRegion = Region;
 	FEImGuiWindow::Show();
 
 	Flags |= ImGuiWindowFlags_NoScrollbar;
@@ -45,12 +45,12 @@ void NodeRegionWindow::Render()
 	if (!IsVisible())
 		return;
 
-	if (CurrentRegion->GetData() != nullptr)
+	/*if (CurrentRegion->GetData() != nullptr)
 	{
 		CurrentRegion->GetData()->SetMainContextMenuFunc(RenderMainContextMenu);
 		CurrentRegion->GetData()->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 35.0f));
 		CurrentRegion->GetData()->Update();
-	}
+	}*/
 
 	ImGui::SetItemDefaultFocus();
 	CancelButton->SetPosition(ImVec2(Size.x / 2.0f - CancelButton->GetSize().x / 2, Size.y - 30));
@@ -58,15 +58,15 @@ void NodeRegionWindow::Render()
 	if (CancelButton->IsClicked())
 		FEImGuiWindow::Close();
 
-	if (ImGui::GetIO().MouseReleased[1])
-		MousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - CurrentRegion->GetData()->GetRenderOffset();
+	//if (ImGui::GetIO().MouseReleased[1])
+	//	MousePositionWhenContextMenuWasOpened = ImVec2(ImGui::GetMousePos().x - ImGui::GetWindowPos().x, ImGui::GetMousePos().y - ImGui::GetWindowPos().y) - CurrentRegion->GetData()->GetRenderOffset();
 
 	FEImGuiWindow::OnRenderEnd();
 }
 
 void NodeRegionWindow::RenderMainContextMenu()
 {
-	if (CurrentRegion == nullptr)
+	/*if (CurrentRegion == nullptr)
 		return;
 
 	if (CurrentRegion->GetData()->GetHovered() == nullptr && CurrentRegion->GetData()->GetSelected().size() == 0)
@@ -75,7 +75,7 @@ void NodeRegionWindow::RenderMainContextMenu()
 		{
 			ImGui::EndMenu();
 		}
-	}
+	}*/
 }
 
 void NodeRegionWindow::TextInputCallback(std::string Text)

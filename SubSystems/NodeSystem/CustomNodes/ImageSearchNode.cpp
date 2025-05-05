@@ -17,7 +17,7 @@ bool ImageSearchNode::bIsRegistered = []()
 	return true;
 }();
 
-ImageSearchNode::ImageSearchNode() : BasicLogicNode()
+ImageSearchNode::ImageSearchNode() : BaseExecutionFlowNode()
 {
 	Type = "ImageSearchNode";
 
@@ -29,7 +29,6 @@ ImageSearchNode::ImageSearchNode() : BasicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
 	AddSocket(new NodeSocket(this, "FLOAT", "Similarity", false));
 	AddSocket(new NodeSocket(this, "INT", "Color shift", false));
@@ -44,7 +43,7 @@ ImageSearchNode::ImageSearchNode() : BasicLogicNode()
 	Output[3]->SetFunctionToOutputData(MonitorIndexDataGetter);
 }
 
-ImageSearchNode::ImageSearchNode(const ImageSearchNode& Other) : BasicLogicNode(Other)
+ImageSearchNode::ImageSearchNode(const ImageSearchNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
 
@@ -249,9 +248,4 @@ bool ImageSearchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSoc
 		return false;
 
 	return true;
-}
-
-BasicLogicNode* ImageSearchNode::GetNextNode()
-{
-	return nullptr;
 }

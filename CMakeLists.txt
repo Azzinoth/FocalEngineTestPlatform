@@ -22,8 +22,12 @@ if(NOT TARGET FEBasicApplication)
   add_subdirectory(SubSystems/FEBasicApplication)
 endif()
 
-# Force your path to Dear ImGui
+# Force your path to Dear ImGui.
 set(DEAR_IMGUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui CACHE PATH "Path to Dear ImGui directory." FORCE)
+
+# Force to build standard nodes.
+set(VISUAL_NODE_SYSTEM_BUILD_STANDARD_NODES ON CACHE BOOL "Build the Visual Node System with standard nodes module" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DVISUAL_NODE_SYSTEM_BUILD_STANDARD_NODES")
 
 if(NOT TARGET VisualNodeSystem)
 	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
@@ -57,28 +61,14 @@ file(GLOB SubWindows_SRC
 )
 
 file(GLOB VisualNodeSystem_CustomNodes_SRC
-	"SubSystems/NodeSystem/CustomNodes/BasicLogicNode.h"
-	"SubSystems/NodeSystem/CustomNodes/BasicLogicNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/BoolNode.h"
-	"SubSystems/NodeSystem/CustomNodes/BoolNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/IntNode.h"
-	"SubSystems/NodeSystem/CustomNodes/IntNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/FloatNode.h"
-	"SubSystems/NodeSystem/CustomNodes/FloatNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/Vec2Node.h"
-	"SubSystems/NodeSystem/CustomNodes/Vec2Node.cpp"
-	"SubSystems/NodeSystem/CustomNodes/Vec2AddNode.h"
-	"SubSystems/NodeSystem/CustomNodes/Vec2AddNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/BranchNode.h"
-	"SubSystems/NodeSystem/CustomNodes/BranchNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/SequenceNode.h"
-	"SubSystems/NodeSystem/CustomNodes/SequenceNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/BeginNode.h"
+	"SubSystems/NodeSystem/CustomNodes/BeginNode.cpp"
+
 	"SubSystems/NodeSystem/CustomNodes/TimerNode.h"
 	"SubSystems/NodeSystem/CustomNodes/TimerNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/SleepNode.h"
 	"SubSystems/NodeSystem/CustomNodes/SleepNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/BeginNode.h"
-	"SubSystems/NodeSystem/CustomNodes/BeginNode.cpp"
+
 	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.h"
 	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDown.h"
@@ -89,10 +79,6 @@ file(GLOB VisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/ImageNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.h"
 	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/EndNode.h"
-	"SubSystems/NodeSystem/CustomNodes/EndNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/RegionNode.h"
-	"SubSystems/NodeSystem/CustomNodes/RegionNode.cpp"
 )
 
 # *************** SUB_SYSTEM ***************

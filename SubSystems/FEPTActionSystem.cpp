@@ -7,17 +7,6 @@ FEPTActionSystem::FEPTActionSystem()
 
 FEPTActionSystem::~FEPTActionSystem() {}
 
-VisNodeSys::Node* FEPTActionSystem::GetNextNode(VisNodeSys::Node* CurrentNode)
-{
-	if (CurrentNode->GetType() == "BeginNode")
-	{
-		BeginNode* Node = reinterpret_cast<BeginNode*>(CurrentNode);
-		return Node->GetNextNode();
-	}
-
-	return nullptr;
-}
-
 std::vector<FETPAction*> FEPTActionSystem::GetActionsFromNode(VisNodeSys::Node* CurrentNode)
 {
 	std::vector<FETPAction*> Result;
@@ -47,8 +36,8 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 
 	CurrentlyRunning->BeforeBegin();
 
-	BasicLogicNode* CurrentNode = CurrentlyRunning->GetBeginNode();
-	CurrentlyRunning->NodeArea->TriggerOrphanSocketEvent(CurrentNode, EXECUTE);
+	CurrentlyRunning->NodeArea->SetExecutionEntryNode(CurrentlyRunning->GetBeginNode());
+	CurrentlyRunning->NodeArea->ExecuteNodeNetwork();
 	CurrentTestResult->bIsSuccessful = true;
 	CurrentTestResult->EndTime = GetTickCount();
 	CurrentlyRunning->AddResult(CurrentTestResult);

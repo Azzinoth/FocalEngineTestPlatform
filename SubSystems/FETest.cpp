@@ -7,6 +7,7 @@ ImColor* FETest::MainPathConnectionColor = new ImColor(150, 255, 150);
 FETest::FETest()
 {
 	NodeArea = NODE_SYSTEM.CreateNodeArea();
+	NodeArea->SetSaveExecutedNodes(true);
 
 	Begin = new BeginNode();
 	Begin->SetName("Begin node");

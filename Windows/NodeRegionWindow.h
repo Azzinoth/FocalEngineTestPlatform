@@ -7,7 +7,7 @@ class NodeRegionWindow : public FEImGuiWindow
 {
 	SINGLETON_PRIVATE_PART(NodeRegionWindow)
 
-	static RegionNode* CurrentRegion;
+	//static RegionNode* CurrentRegion;
 	ImGuiButton* CancelButton = nullptr;
 
 	static ImVec2 MousePositionWhenContextMenuWasOpened;
@@ -17,6 +17,6 @@ class NodeRegionWindow : public FEImGuiWindow
 public:
 	SINGLETON_PUBLIC_PART(NodeRegionWindow)
 
-	void Show(RegionNode* Region);
+	void Show(/*RegionNode* Region*/);
 	void Render() override;
 };

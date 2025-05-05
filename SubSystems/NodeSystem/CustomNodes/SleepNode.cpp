@@ -17,7 +17,7 @@ bool SleepNode::bIsRegistered = []()
 	return true;
 }();
 
-SleepNode::SleepNode() : BasicLogicNode()
+SleepNode::SleepNode() : BaseExecutionFlowNode()
 {
 	Type = "SleepNode";
 
@@ -29,11 +29,10 @@ SleepNode::SleepNode() : BasicLogicNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "", false));
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-SleepNode::SleepNode(const SleepNode& Other) : BasicLogicNode(Other)
+SleepNode::SleepNode(const SleepNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
 	SleepFor = Other.SleepFor;
@@ -95,9 +94,4 @@ bool SleepNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 		return false;
 
 	return true;
-}
-
-BasicLogicNode* SleepNode::GetNextNode()
-{
-	return nullptr;
 }

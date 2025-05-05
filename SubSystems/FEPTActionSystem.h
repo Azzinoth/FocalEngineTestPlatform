@@ -49,7 +49,6 @@ class FEPTActionSystem
 	void FindAndDeleteKeys();
 	void AddAction(FETPAction* NewAction);
 
-	VisNodeSys::Node* GetNextNode(VisNodeSys::Node* CurrentNode);
 	std::vector<FETPAction*> GetActionsFromNode(VisNodeSys::Node* currentNode);
 
 	std::function<void(std::vector<FETPAction*>&)> OnFinishRecordingCallback = nullptr;

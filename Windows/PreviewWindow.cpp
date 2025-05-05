@@ -34,7 +34,7 @@ void PreviewWindow::Show(bool bIsReadOnlyIn)
 	if (CurrentNodeArea == nullptr)
 	{
 		CurrentNodeArea = NODE_SYSTEM.CreateNodeArea();
-		CurrentNodeArea->SetMainContextMenuFunc(RenderMainContextMenu);
+		CurrentNodeArea->SetMainContextMenuFunction(RenderMainContextMenu);
 		CurrentNodeArea->AddNodeEventCallback(NodeCallback);
 
 		CancelButton = new ImGuiButton("Cancel");

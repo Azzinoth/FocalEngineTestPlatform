@@ -1,8 +1,8 @@
 #pragma once
+#include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
+#include "../FETPInput.h"
 
-#include "BasicLogicNode.h"
-
-class MouseLeftButtonUp : public BasicLogicNode
+class MouseLeftButtonUp : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
@@ -14,6 +14,4 @@ public:
 	MouseLeftButtonUp(const MouseLeftButtonUp& Other);
 
 	void Draw();
-
-	BasicLogicNode* GetNextNode();
 };

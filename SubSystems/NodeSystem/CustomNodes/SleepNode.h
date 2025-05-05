@@ -1,8 +1,7 @@
 #pragma once
+#include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
 
-#include "BasicLogicNode.h"
-
-class SleepNode : public BasicLogicNode
+class SleepNode : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
@@ -19,6 +18,4 @@ public:
 	bool FromJson(Json::Value Json);
 
 	void Draw();
-
-	BasicLogicNode* GetNextNode();
 };

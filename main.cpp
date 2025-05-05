@@ -1,4 +1,6 @@
 #include "Windows/TestsOverviewWindow.h"
+#include "Windows/TextInputPopup.h"
+#include "Windows/ActionEditPopup.h"
 using namespace FocalEngine;
 
 GLFWcursor* MouseCursor = nullptr;
@@ -58,10 +60,31 @@ void MainWindowRender()
 			
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::BeginMenu("Dubug"))
+		{
+			if (ImGui::MenuItem("Select Nodes executed during last run"))
+			{
+				if (TEST_MANAGER.GetSelectedTest() != nullptr)
+				{
+					std::vector<VisNodeSys::Node*> SelectedNodes = TEST_MANAGER.GetSelectedTest()->NodeArea->GetLastExecutedNodes();
+					TEST_MANAGER.GetSelectedTest()->NodeArea->UnSelectAll();
+					for (size_t i = 0; i < SelectedNodes.size(); i++)
+					{
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddSelected(SelectedNodes[i]);
+					}
+
+					//TEST_MANAGER.GetSelectedTest()->NodeArea->Select(TEST_MANAGER.GetSelectedTest()->GetLastExecutedNodes());
+					//TEST_MANAGER.GetSelectedTest()->NodeArea->SetRenderOffset(ImVec2(0, 0));
+				}
+			}
+
+			ImGui::EndMenu();
+		}
 		
 		ImGui::EndMainMenuBar();
 	}
-	
+
 	ImGui::PopStyleVar();
 }
 
@@ -199,7 +222,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	TestPropertiesWindow::GetInstance().Show();
 
 	NODE_SYSTEM.Initialize();
-	NODE_SYSTEM.AssociateSocketTypeToColor("BOOL", ImColor(25, 25, 255));
 
 	auto SecondWindow = APPLICATION.AddWindow(800, 600, "Test Window");
 	SecondWindow->AddOnKeyCallback(SpecialWindowKeyCallback);

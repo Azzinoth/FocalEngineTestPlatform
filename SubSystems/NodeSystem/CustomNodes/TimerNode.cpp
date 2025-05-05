@@ -18,7 +18,7 @@ bool TimerNode::bIsRegistered = []()
 	return true;
 }();
 
-TimerNode::TimerNode() : BasicLogicNode()
+TimerNode::TimerNode() : BaseExecutionFlowNode()
 {
 	Type = "TimerNode";
 
@@ -40,7 +40,7 @@ TimerNode::TimerNode() : BasicLogicNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
 }
 
-TimerNode::TimerNode(const TimerNode& Other) : BasicLogicNode(Other)
+TimerNode::TimerNode(const TimerNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
 	Data = Other.Data;
@@ -150,9 +150,4 @@ bool TimerNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 		return false;
 
 	return true;
-}
-
-BasicLogicNode* TimerNode::GetNextNode()
-{
-	return nullptr;
 }
