@@ -23,8 +23,8 @@ MouseMoveNode::MouseMoveNode() : BaseExecutionFlowNode()
 
 	SetStyle(DEFAULT);
 
-	SetSize(ImVec2(250, 90));
-	SetName("Mouse move node");
+	SetSize(ImVec2(250, 120));
+	SetName("Mouse Move");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);

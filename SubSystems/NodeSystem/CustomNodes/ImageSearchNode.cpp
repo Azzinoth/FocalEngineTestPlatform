@@ -24,7 +24,7 @@ ImageSearchNode::ImageSearchNode() : BaseExecutionFlowNode()
 	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(290, 220));
-	SetName("image search node");
+	SetName("Image Search");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);

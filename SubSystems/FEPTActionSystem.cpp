@@ -262,8 +262,9 @@ void FEPTActionSystem::AddAction(FETPAction* NewAction)
 		if (DelayBetweenActions < 0)
 			DelayBetweenActions = 0;
 
-		if (DelayBetweenActions != 0)
-			RecordedActions.insert(RecordedActions.end() - 1, new SleepAction(DelayBetweenActions));
+		// FIX ME! Need to add sleep node instead.
+		/*if (DelayBetweenActions != 0)
+			RecordedActions.insert(RecordedActions.end() - 1, new SleepAction(DelayBetweenActions));*/
 	}
 }
 
@@ -434,14 +435,14 @@ FETPAction* FEPTActionSystem::CopyAction(FETPAction* Other)
 	{
 		return new MouseAction(*reinterpret_cast<MouseAction*>(Other));
 	}
-	else if (Other->GetType() == FETP_SLEEP_ACTION)
-	{
-		return new SleepAction(*reinterpret_cast<SleepAction*>(Other));
-	}
-	else if (Other->GetType() == FETP_LAUNCH_APPLICATION_ACTION)
+	//else if (Other->GetType() == FETP_SLEEP_ACTION)
+	//{
+	//	return new SleepAction(*reinterpret_cast<SleepAction*>(Other));
+	//}
+	/*else if (Other->GetType() == FETP_LAUNCH_APPLICATION_ACTION)
 	{
 		return new LaunchApplicationAction(*reinterpret_cast<LaunchApplicationAction*>(Other));
-	}
+	}*/
 	else
 	{
 		return new FETPAction(*Other);
@@ -468,52 +469,119 @@ std::string FEPTActionSystem::ExtractText(std::vector<FETPAction*> Actions)
 	return Result;
 }
 
-std::vector<FETPAction*> FEPTActionSystem::GenerateInputTextActions(std::string Text, int AverageDelay)
-{
-	std::vector<FETPAction*> Result;
-	for (size_t i = 0; i < Text.size(); i++)
-	{
-		int ConvertedKey = VkKeyScanExA(char(Text[i]), GetKeyboardLayout(0));
-		int VirtualKeyCode = ConvertedKey & 0xff;
-		int KeysState = (ConvertedKey & 0xff00) >> 8;
+//std::vector<FETPAction*> FEPTActionSystem::GenerateInputTextActions(std::string Text, int AverageDelay)
+//{
+//	std::vector<FETPAction*> Result;
+//	for (size_t i = 0; i < Text.size(); i++)
+//	{
+//		int ConvertedKey = VkKeyScanExA(char(Text[i]), GetKeyboardLayout(0));
+//		int VirtualKeyCode = ConvertedKey & 0xff;
+//		int KeysState = (ConvertedKey & 0xff00) >> 8;
+//
+//		// Can't find appropriate key for that char.
+//		if (VirtualKeyCode == -1)
+//			continue;
+//
+//		if (KeysState & 1)
+//		{
+//			KeyboardAction* NewAction = new KeyboardAction();
+//			NewAction->HookInfo.vkCode = 0x10;
+//			NewAction->EventType = WM_KEYDOWN;
+//			NewAction->bShiftPressed = false;
+//			Result.push_back(NewAction);
+//		}
+//
+//		KeyboardAction* NewAction = new KeyboardAction();
+//		NewAction->HookInfo.vkCode = VirtualKeyCode;
+//		NewAction->EventType = WM_KEYDOWN;
+//		NewAction->bShiftPressed = KeysState & 1;
+//		Result.push_back(NewAction);
+//
+//		SleepAction* NewSleepAction = new SleepAction(AverageDelay);
+//		Result.push_back(NewSleepAction);
+//
+//		NewAction = new KeyboardAction();
+//		NewAction->HookInfo.vkCode = VirtualKeyCode;
+//		NewAction->EventType = WM_KEYUP;
+//		NewAction->bShiftPressed = KeysState & 1;
+//		Result.push_back(NewAction);
+//
+//		if (KeysState & 1)
+//		{
+//			KeyboardAction* NewAction = new KeyboardAction();
+//			NewAction->HookInfo.vkCode = 0x10;
+//			NewAction->EventType = WM_KEYUP;
+//			NewAction->bShiftPressed = false;
+//			Result.push_back(NewAction);
+//		}
+//	}
+//
+//	return Result;
+//}
 
-		// Can't find appropriate key for that char.
-		if (VirtualKeyCode == -1)
-			continue;
-
-		if (KeysState & 1)
-		{
-			KeyboardAction* NewAction = new KeyboardAction();
-			NewAction->HookInfo.vkCode = 0x10;
-			NewAction->EventType = WM_KEYDOWN;
-			NewAction->bShiftPressed = false;
-			Result.push_back(NewAction);
-		}
-
-		KeyboardAction* NewAction = new KeyboardAction();
-		NewAction->HookInfo.vkCode = VirtualKeyCode;
-		NewAction->EventType = WM_KEYDOWN;
-		NewAction->bShiftPressed = KeysState & 1;
-		Result.push_back(NewAction);
-
-		SleepAction* NewSleepAction = new SleepAction(AverageDelay);
-		Result.push_back(NewSleepAction);
-
-		NewAction = new KeyboardAction();
-		NewAction->HookInfo.vkCode = VirtualKeyCode;
-		NewAction->EventType = WM_KEYUP;
-		NewAction->bShiftPressed = KeysState & 1;
-		Result.push_back(NewAction);
-
-		if (KeysState & 1)
-		{
-			KeyboardAction* NewAction = new KeyboardAction();
-			NewAction->HookInfo.vkCode = 0x10;
-			NewAction->EventType = WM_KEYUP;
-			NewAction->bShiftPressed = false;
-			Result.push_back(NewAction);
-		}
-	}
-
-	return Result;
-}
+//bool FEPTActionSystem::Execute(std::vector<FETPAction*> Actions)
+//{
+//	for (size_t i = 0; i < Actions.size(); i++)
+//	{
+//		if (Actions[i]->GetType() == FETP_KEYBOARD_ACTION)
+//		{
+//			KeyboardAction* CurrentAction = reinterpret_cast<KeyboardAction*>(Actions[i]);
+//			if (CurrentAction->wParam == WM_KEYDOWN || CurrentAction->wParam == WM_SYSKEYDOWN)
+//			{
+//				INPUT_SYSTEM.keyEvent(WM_KEYDOWN, CurrentAction->additionalInfo.vkCode);
+//			}
+//			else if (CurrentAction->wParam == WM_KEYUP || CurrentAction->wParam == WM_SYSKEYUP)
+//			{
+//				INPUT_SYSTEM.keyEvent(WM_KEYUP, CurrentAction->additionalInfo.vkCode);
+//			}
+//		}
+//		else if (Actions[i]->GetType() == FETP_MOUSE_ACTION)
+//		{
+//			MouseAction* CurrentAction = reinterpret_cast<MouseAction*>(Actions[i]);
+//
+//			if (CurrentAction->wParam == WM_MOUSEMOVE)
+//			{
+//				//INPUT_SYSTEM.mouseMoveTo(action->additionalInfo.pt.x, action->additionalInfo.pt.y);
+//			}
+//			else if (CurrentAction->wParam == WM_LBUTTONUP)
+//			{
+//				//INPUT_SYSTEM.mouseUp();
+//			}
+//			else if (CurrentAction->wParam == WM_RBUTTONUP)
+//			{
+//				INPUT_SYSTEM.mouseUp(false);
+//			}
+//			else if (CurrentAction->wParam == WM_LBUTTONDOWN)
+//			{
+//				//INPUT_SYSTEM.mouseDown();
+//			}
+//			else if (CurrentAction->wParam == WM_RBUTTONDOWN)
+//			{
+//				INPUT_SYSTEM.mouseDown(false);
+//			}
+//			else if (CurrentAction->wParam == WM_MOUSEWHEEL)
+//			{
+//				INPUT_SYSTEM.mouseWheel((short)HIWORD(CurrentAction->additionalInfo.mouseData));
+//			}
+//		}
+//		/*else if (Actions[i]->GetType() == FETP_LUNCH_APPLICATION_ACTION)
+//		{
+//			LunchApplicationAction* CurrentAction = reinterpret_cast<LunchApplicationAction*>(Actions[i]);
+//			if (!FocalEngine::FILE_SYSTEM.checkFile(CurrentAction->applicationPath.c_str()))
+//			{
+//				currentTestResult->failReason = FE_TEST_FAIL_CANT_FIND_FILE;
+//				currentTestResult->failedAction = CurrentAction;
+//				return false;
+//			}
+//
+//			ShellExecuteA(NULL, NULL, CurrentAction->applicationPath.c_str(), NULL, FocalEngine::FILE_SYSTEM.getDirectoryPath(CurrentAction->applicationPath.c_str()), SW_NORMAL);
+//		}*/
+//		/*else if (actions[i]->GetType() == FETP_SLEEP_ACTION)
+//		{
+//			SleepAction* action = reinterpret_cast<SleepAction*>(actions[i]);
+//			Sleep(DWORD(action->sleepFor * currentlyRunning->getSpeedFactor()));
+//		}*/
+//	}
+//
+//	return true;
+//}

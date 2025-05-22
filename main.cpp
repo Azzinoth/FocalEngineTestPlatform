@@ -111,14 +111,14 @@ void KeyButtonCallback(int key, int scancode, int action, int mods)
 	}
 }
 
-void globalKeyButtonsCallback(KeyboardAction keyAction)
+void OnGlobalKeyboardAction(KeyboardAction KeyAction)
 {
-	ACTION_SYSTEM.NewKeyboardAction(keyAction);
+	ACTION_SYSTEM.NewKeyboardAction(KeyAction);
 }
 
-void globalMouseCallback(MouseAction mouseAction)
+void OnGlobalMouseAction(MouseAction MouseAction)
 {
-	ACTION_SYSTEM.NewMouseAction(mouseAction);
+	ACTION_SYSTEM.NewMouseAction(MouseAction);
 }
 
 double MouseX, MouseY;
@@ -179,11 +179,7 @@ void FirstMonitorScreenshotWindowRender()
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar();
 
-	
-
 	//ImGui::ShowDemoWindow();
-
-
 }
 
 void FirstMonitorScreenshotWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
@@ -196,7 +192,6 @@ void FirstMonitorScreenshotWindowKeyCallback(int Key, int Scancode, int Action, 
 		CapturedScreenshot = nullptr;
 	}
 }
-
 
 void SpecialWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
 {
@@ -214,8 +209,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	APPLICATION.GetMainWindow()->SetRenderFunction(MainWindowRender);
 
 	INPUT_SYSTEM.Initialize();
-	INPUT_SYSTEM.SetGlobalKeyboardCallback(globalKeyButtonsCallback);
-	INPUT_SYSTEM.SetGlobalMouseCallback(globalMouseCallback);
+	INPUT_SYSTEM.SetGlobalKeyboardCallback(OnGlobalKeyboardAction);
+	INPUT_SYSTEM.SetGlobalMouseCallback(OnGlobalMouseAction);
 
 	TestsOverviewWindow::GetInstance().Show();
 	TestEditorWindow::GetInstance().Show();

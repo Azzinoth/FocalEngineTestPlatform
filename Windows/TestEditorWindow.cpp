@@ -89,8 +89,9 @@ void TestEditorWindow::RenderMainContextMenu()
 
 				if (!Path.empty())
 				{
-					LaunchApplicationAction* NewAction = new LaunchApplicationAction(Path);
-					//NewNode = new GlobalActionNode(NewAction);
+					LunchApplicationNode* TemporaryNewNode = new LunchApplicationNode();
+					TemporaryNewNode->SetPath(Path);
+					NewNode = TemporaryNewNode;
 				}
 			}
 
@@ -149,9 +150,16 @@ void TestEditorWindow::RenderMainContextMenu()
 
 					}
 
-					if (ImGui::MenuItem("Combined Text Input..."))
+					if (ImGui::MenuItem("KeyPress"))
 					{
-						TextInputPopup::GetInstance().Show(TextInputCallback);
+					}
+
+					if (ImGui::MenuItem("Text Input"))
+					{
+						TextInputNode* NewNode = new TextInputNode();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						NewNode->SetText("Text Input");
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					ImGui::EndMenu();
@@ -339,28 +347,4 @@ void TestEditorWindow::RenderMainMenu()
 	}
 
 	ImGui::PopStyleVar();
-}
-
-void TestEditorWindow::TextInputCallback(std::string Text)
-{
-	if (Text != "")
-	{
-		/*CombinedActionNode* NewNode = new CombinedActionNode(std::vector<FETPAction*>(), FETP_COMBINED_TEXT_INPUT_ACTION);
-		NewNode->ChangeText(Text);
-
-		NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-		TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);*/
-	}
-}
-
-void TestEditorWindow::TextInputChangeNameCallback(std::string Text)
-{
-	if (Text != "")
-	{
-		if (TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected().size() == 1 &&
-			TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]->GetType() == "RegionNode")
-		{
-			TEST_MANAGER.GetSelectedTest()->NodeArea->GetSelected()[0]->SetName(Text);
-		}
-	}
 }

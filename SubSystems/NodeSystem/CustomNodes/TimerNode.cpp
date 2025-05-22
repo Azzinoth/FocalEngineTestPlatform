@@ -25,7 +25,7 @@ TimerNode::TimerNode() : BaseExecutionFlowNode()
 	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(300, 120));
-	SetName("Timer node");
+	SetName("Timer");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);

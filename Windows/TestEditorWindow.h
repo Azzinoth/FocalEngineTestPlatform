@@ -14,9 +14,6 @@ class TestEditorWindow : public FEImGuiWindow
 	static void OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions);
 
 	void RenderMainMenu();
-
-	static void TextInputChangeNameCallback(std::string Text);
-	static void TextInputCallback(std::string Text);
 public:
 	SINGLETON_PUBLIC_PART(TestEditorWindow)
 

@@ -17,20 +17,23 @@ bool ImageNode::bIsRegistered = []()
 	return true;
 }();
 
-ImageNode::ImageNode() : BaseExecutionFlowNode()
+ImageNode::ImageNode() : BaseExecutionFlowNode(false)
 {
 	Type = "ImageNode";
 
 	SetStyle(DEFAULT);
 
-	SetSize(ImVec2(220, 220));
-	SetName("image node");
+	SetSize(ImVec2(250, 220));
+	SetName("Image");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "IMAGE", "Out", true));
+	AddSocket(new NodeSocket(this, "IMAGE", "Image", true));
+	AddSocket(new NodeSocket(this, "VEC2", "Size", true));
+
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
+	Output[1]->SetFunctionToOutputData(ImageSizeGetter);
 }
 
 ImageNode::ImageNode(const ImageNode& Other) : BaseExecutionFlowNode(Other)
@@ -41,6 +44,7 @@ ImageNode::ImageNode(const ImageNode& Other) : BaseExecutionFlowNode(Other)
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
+	Output[1]->SetFunctionToOutputData(ImageSizeGetter);
 }
 
 Json::Value ImageNode::ToJson()
@@ -74,20 +78,22 @@ bool ImageNode::FromJson(Json::Value Json)
 	int ImageWidth = Json["ImageWidth"].asInt();
 	int ImageHeight = Json["ImageHeight"].asInt();
 
-	std::string base64String = Json["ImageData"].asString();
+	std::string Base64String = Json["ImageData"].asString();
 
 	if (Data != nullptr)
 		delete Data;
 
 	Data = new FETPImage();
-	Data->DecodeBase64ToRawData(base64String, ImageWidth, ImageHeight);
+	Data->DecodeBase64ToRawData(Base64String, ImageWidth, ImageHeight);
+	Size = glm::vec2((float)ImageWidth, (float)ImageHeight);
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
-	if (Output.size() < 1 || Output[0] == nullptr)
+	if (Output.size() < 2 || Output[0] == nullptr || Output[1] == nullptr)
 		return false;
 
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
+	Output[1]->SetFunctionToOutputData(ImageSizeGetter);
 
 	return true;
 }
@@ -101,6 +107,8 @@ bool ImageNode::SetImage(FETPImage* Image)
 		delete Data;
 
 	Data = Image;
+	Size = glm::vec2((float)Image->GetWidth(), (float)Image->GetHeight());
+
 	return true;
 }
 

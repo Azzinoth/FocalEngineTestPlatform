@@ -24,7 +24,7 @@ MouseLeftButtonUp::MouseLeftButtonUp() : BaseExecutionFlowNode()
 	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(250, 90));
-	SetName("Mouse left button up");
+	SetName("Mouse Left Button Up");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);

@@ -24,7 +24,7 @@ SleepNode::SleepNode() : BaseExecutionFlowNode()
 	SetStyle(DEFAULT);
 
 	SetSize(ImVec2(220, 78));
-	SetName("Sleep node");
+	SetName("Sleep");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);

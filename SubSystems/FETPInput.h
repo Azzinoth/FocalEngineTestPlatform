@@ -165,66 +165,66 @@ struct MouseAction : public FETPAction
 	}
 };
 
-struct LaunchApplicationAction : public FETPAction
-{
-	std::string ApplicationPath;
+//struct LaunchApplicationAction : public FETPAction
+//{
+//	std::string ApplicationPath;
+//
+//	LaunchApplicationAction() : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
+//	{
+//		ApplicationPath = "";
+//	}
+//
+//	LaunchApplicationAction(const LaunchApplicationAction& Other) : FETPAction(Other)
+//	{
+//		ApplicationPath = Other.ApplicationPath;
+//	}
+//
+//	LaunchApplicationAction(std::string ApplicationPath) : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
+//	{
+//		this->ApplicationPath = ApplicationPath;
+//	}
+//
+//	Json::Value ToJson()
+//	{
+//		Json::Value Result = FETPAction::ToJson();
+//		Result["applicationPath"] = ApplicationPath;
+//		return Result;
+//	}
+//
+//	void FromJson(Json::Value Json)
+//	{
+//		FETPAction::FromJson(Json);
+//		ApplicationPath = Json["applicationPath"].asCString();
+//	}
+//};
 
-	LaunchApplicationAction() : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
-	{
-		ApplicationPath = "";
-	}
-
-	LaunchApplicationAction(const LaunchApplicationAction& Other) : FETPAction(Other)
-	{
-		ApplicationPath = Other.ApplicationPath;
-	}
-
-	LaunchApplicationAction(std::string ApplicationPath) : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
-	{
-		this->ApplicationPath = ApplicationPath;
-	}
-
-	Json::Value ToJson()
-	{
-		Json::Value Result = FETPAction::ToJson();
-		Result["applicationPath"] = ApplicationPath;
-		return Result;
-	}
-
-	void FromJson(Json::Value Json)
-	{
-		FETPAction::FromJson(Json);
-		ApplicationPath = Json["applicationPath"].asCString();
-	}
-};
-
-struct SleepAction : public FETPAction
-{
-	int SleepDurationMS;
-
-	SleepAction() : FETPAction(FETP_SLEEP_ACTION)
-	{
-		SleepDurationMS = 10;
-	}
-
-	SleepAction(int TimeToSleep) : FETPAction(FETP_SLEEP_ACTION)
-	{
-		this->SleepDurationMS = TimeToSleep;
-	}
-
-	Json::Value ToJson()
-	{
-		Json::Value Result = FETPAction::ToJson();
-		Result["sleepFor"] = SleepDurationMS;
-		return Result;
-	}
-
-	void FromJson(Json::Value Json)
-	{
-		FETPAction::FromJson(Json);
-		SleepDurationMS = Json["sleepFor"].asInt();
-	}
-};
+//struct SleepAction : public FETPAction
+//{
+//	int SleepDurationMS;
+//
+//	SleepAction() : FETPAction(FETP_SLEEP_ACTION)
+//	{
+//		SleepDurationMS = 10;
+//	}
+//
+//	SleepAction(int TimeToSleep) : FETPAction(FETP_SLEEP_ACTION)
+//	{
+//		this->SleepDurationMS = TimeToSleep;
+//	}
+//
+//	Json::Value ToJson()
+//	{
+//		Json::Value Result = FETPAction::ToJson();
+//		Result["sleepFor"] = SleepDurationMS;
+//		return Result;
+//	}
+//
+//	void FromJson(Json::Value Json)
+//	{
+//		FETPAction::FromJson(Json);
+//		SleepDurationMS = Json["sleepFor"].asInt();
+//	}
+//};
 
 class FETPInput
 {
@@ -240,6 +240,7 @@ public:
 	void SimulateMouseWheel(short WheelRotationDelta);
 
 	void SimulateKeyEvent(WPARAM Type, DWORD VirtualKeyCode);
+	void SimulateTextInput(std::string Text, int AverageDelay = 10);
 
 	void SetGlobalKeyboardCallback(std::function<void(KeyboardAction keyAction)> Function);
 	void SetGlobalMouseCallback(std::function<void(MouseAction mouseAction)> Function);
@@ -258,8 +259,8 @@ private:
 	static std::vector<MouseAction> MouseActionBuffer;
 	static std::mutex MouseBufferMutex;
 
-	static LRESULT CALLBACK keyboardHook(int HookCode, WPARAM EventType, LPARAM EventDataPointer);
-	static LRESULT CALLBACK mouseHook(int HookCode, WPARAM EventType, LPARAM EventDataPointer);
+	static LRESULT CALLBACK ProcessKeyboardHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer);
+	static LRESULT CALLBACK ProcessMouseHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer);
 
 	void ProcessBufferedActions();
 

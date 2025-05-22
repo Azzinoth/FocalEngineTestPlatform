@@ -83,7 +83,7 @@ void FETPInput::SimulateMouseWheel(short WheelRotationDelta)
 	SendInput(1, Inputs, sizeof(INPUT));
 }
 
-LRESULT CALLBACK FETPInput::keyboardHook(int HookCode, WPARAM EventType, LPARAM EventDataPointer)
+LRESULT CALLBACK FETPInput::ProcessKeyboardHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer)
 {
 	if (HookCode != HC_ACTION)
 		return CallNextHookEx(KeyboardHookHandle, HookCode, EventType, EventDataPointer);
@@ -100,7 +100,7 @@ LRESULT CALLBACK FETPInput::keyboardHook(int HookCode, WPARAM EventType, LPARAM 
 }
 
 
-LRESULT CALLBACK FETPInput::mouseHook(int HookCode, WPARAM EventType, LPARAM EventDataPointer)
+LRESULT CALLBACK FETPInput::ProcessMouseHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer)
 {
 	if (HookCode != HC_ACTION)
 		return CallNextHookEx(MouseHookHandle, HookCode, EventType, EventDataPointer);
@@ -197,4 +197,58 @@ char FETPInput::GetCharFromAction(KeyboardAction* Action)
 	}
 
 	return 0;
+}
+
+void FETPInput::SimulateTextInput(std::string Text, int AverageDelay)
+{
+	for (size_t i = 0; i < Text.size(); i++)
+	{
+		int ConvertedKey = VkKeyScanExA(char(Text[i]), GetKeyboardLayout(0));
+		int VirtualKeyCode = ConvertedKey & 0xff;
+		int KeysState = (ConvertedKey & 0xff00) >> 8;
+
+		// Can't find appropriate key for that char.
+		if (VirtualKeyCode == -1)
+			continue;
+
+		if (KeysState & 1)
+		{
+			//KeyboardAction* NewAction = new KeyboardAction();
+			//NewAction->HookInfo.vkCode = 0x10;
+			//NewAction->EventType = WM_KEYDOWN;
+			//NewAction->bShiftPressed = false;
+			//Result.push_back(NewAction);
+
+			SimulateKeyEvent(WM_KEYDOWN, 0x10);
+		}
+
+		/*KeyboardAction* NewAction = new KeyboardAction();
+		NewAction->HookInfo.vkCode = VirtualKeyCode;
+		NewAction->EventType = WM_KEYDOWN;
+		NewAction->bShiftPressed = KeysState & 1;
+		Result.push_back(NewAction);*/
+
+		SimulateKeyEvent(WM_KEYDOWN, VirtualKeyCode);
+
+		/*SleepAction* NewSleepAction = new SleepAction(AverageDelay);
+		Result.push_back(NewSleepAction);*/
+		Sleep(AverageDelay);
+
+		/*NewAction = new KeyboardAction();
+		NewAction->HookInfo.vkCode = VirtualKeyCode;
+		NewAction->EventType = WM_KEYUP;
+		NewAction->bShiftPressed = KeysState & 1;
+		Result.push_back(NewAction);*/
+		SimulateKeyEvent(WM_KEYUP, VirtualKeyCode);
+
+		if (KeysState & 1)
+		{
+			/*KeyboardAction* NewAction = new KeyboardAction();
+			NewAction->HookInfo.vkCode = 0x10;
+			NewAction->EventType = WM_KEYUP;
+			NewAction->bShiftPressed = false;
+			Result.push_back(NewAction);*/
+			SimulateKeyEvent(WM_KEYUP, 0x10);
+		}
+	}
 }

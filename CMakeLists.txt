@@ -69,16 +69,23 @@ file(GLOB VisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/SleepNode.h"
 	"SubSystems/NodeSystem/CustomNodes/SleepNode.cpp"
 
+	"SubSystems/NodeSystem/CustomNodes/ImageNode.h"
+	"SubSystems/NodeSystem/CustomNodes/ImageNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.h"
+	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.cpp"
+
 	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.h"
 	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDown.h"
 	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDown.cpp"
 	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUp.h"
 	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUp.cpp"
-	"SubSystems/NodeSystem/CustomNodes/ImageNode.h"
-	"SubSystems/NodeSystem/CustomNodes/ImageNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.h"
-	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/TextInputNode.h"
+	"SubSystems/NodeSystem/CustomNodes/TextInputNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/LunchApplicationNode.h"
+	"SubSystems/NodeSystem/CustomNodes/LunchApplicationNode.cpp"
 )
 
 # *************** SUB_SYSTEM ***************

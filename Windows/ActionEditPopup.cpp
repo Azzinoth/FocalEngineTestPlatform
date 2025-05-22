@@ -38,7 +38,7 @@ void ActionEditPopup::Render()
 	ImGui::SetNextWindowPos(ImVec2(Width / 2 - PopupSize.x / 2.0f, Height / 2 - PopupSize.y / 2.0f));
 	if (ImGui::BeginPopupModal(PopupCaption.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		if (CurrentAction->GetType() == FETP_SLEEP_ACTION)
+		/*if (CurrentAction->GetType() == FETP_SLEEP_ACTION)
 		{
 			SleepAction* action = reinterpret_cast<SleepAction*>(CurrentAction);
 			ImGui::SetNextItemWidth(150);
@@ -47,7 +47,7 @@ void ActionEditPopup::Render()
 			if (ImGui::InputInt("sleep for", &SleepDurationMS))
 				action->SleepDurationMS = SleepDurationMS;
 		}
-		else if (CurrentAction->GetType() == FETP_MOUSE_ACTION)
+		else*/ if (CurrentAction->GetType() == FETP_MOUSE_ACTION)
 		{
 			MouseAction* action = reinterpret_cast<MouseAction*>(CurrentAction);
 

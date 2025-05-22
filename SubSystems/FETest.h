@@ -11,6 +11,8 @@
 #include "NodeSystem/CustomNodes/MouseLeftButtonUp.h"
 #include "NodeSystem/CustomNodes/ImageNode.h"
 #include "NodeSystem/CustomNodes/ImageSearchNode.h"
+#include "NodeSystem/CustomNodes/TextInputNode.h"
+#include "NodeSystem/CustomNodes/LunchApplicationNode.h"
 
 enum FE_TEST_FAIL_REASON
 {
