@@ -7,10 +7,15 @@
 #include "NodeSystem/CustomNodes/TimerNode.h"
 #include "NodeSystem/CustomNodes/SleepNode.h"
 #include "NodeSystem/CustomNodes/MouseMoveNode.h"
-#include "NodeSystem/CustomNodes/MouseLeftButtonDown.h"
-#include "NodeSystem/CustomNodes/MouseLeftButtonUp.h"
+#include "NodeSystem/CustomNodes/MouseLeftButtonDownNode.h"
+#include "NodeSystem/CustomNodes/MouseLeftButtonUpNode.h"
+
+#include "NodeSystem/CustomNodes/MouseRightButtonDownNode.h"
+#include "NodeSystem/CustomNodes/MouseRightButtonUpNode.h"
 #include "NodeSystem/CustomNodes/ImageNode.h"
 #include "NodeSystem/CustomNodes/ImageSearchNode.h"
+#include "NodeSystem/CustomNodes/KeyboardKeyDownNode.h"
+#include "NodeSystem/CustomNodes/KeyboardKeyUpNode.h"
 #include "NodeSystem/CustomNodes/TextInputNode.h"
 #include "NodeSystem/CustomNodes/LunchApplicationNode.h"
 

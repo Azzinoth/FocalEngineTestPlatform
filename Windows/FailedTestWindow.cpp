@@ -63,9 +63,9 @@ void FailedTestWindow::Render()
 			ImVec2 imagePosition = ImVec2(ImGui::GetWindowContentRegionMin().x + 20, ImGui::GetWindowContentRegionMin().y + 60);
 
 			ImGui::SetCursorPos(imagePosition);
-			ImGui::Image((void*)(intptr_t)Result->getScreenshotCompareResult()->Difference->GetTextureID(),
-				ImVec2(imageSize.x, imageSize.y),
-				ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+			ImGui::Image(Result->getScreenshotCompareResult()->Difference->GetTextureID(),
+						 ImVec2(imageSize.x, imageSize.y),
+						 ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
 		}
 	}
 

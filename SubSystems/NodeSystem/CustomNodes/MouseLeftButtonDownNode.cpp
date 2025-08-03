@@ -1,25 +1,25 @@
-#include "MouseLeftButtonDown.h"
+#include "MouseLeftButtonDownNode.h"
 using namespace VisNodeSys;
 
-bool MouseLeftButtonDown::bIsRegistered = []()
+bool MouseLeftButtonDownNode::bIsRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("MouseLeftButtonDown",
 		[]() -> Node* {
-			return new MouseLeftButtonDown();
+			return new MouseLeftButtonDownNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const MouseLeftButtonDown& NodeToCopy = static_cast<const MouseLeftButtonDown&>(CurrentNode);
-			return new MouseLeftButtonDown(NodeToCopy);
+			const MouseLeftButtonDownNode& NodeToCopy = static_cast<const MouseLeftButtonDownNode&>(CurrentNode);
+			return new MouseLeftButtonDownNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-MouseLeftButtonDown::MouseLeftButtonDown() : BaseExecutionFlowNode()
+MouseLeftButtonDownNode::MouseLeftButtonDownNode() : BaseExecutionFlowNode()
 {
-	Type = "MouseLeftButtonDown";
+	Type = "MouseLeftButtonDownNode";
 
 	SetStyle(DEFAULT);
 
@@ -32,17 +32,17 @@ MouseLeftButtonDown::MouseLeftButtonDown() : BaseExecutionFlowNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-MouseLeftButtonDown::MouseLeftButtonDown(const MouseLeftButtonDown& Src) : BaseExecutionFlowNode(Src)
+MouseLeftButtonDownNode::MouseLeftButtonDownNode(const MouseLeftButtonDownNode& Src) : BaseExecutionFlowNode(Src)
 {
 	SetStyle(DEFAULT);
 }
 
-void MouseLeftButtonDown::Draw()
+void MouseLeftButtonDownNode::Draw()
 {	
 	Node::Draw();
 }
 
-void MouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void MouseLeftButtonDownNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -55,7 +55,7 @@ void MouseLeftButtonDown::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connect
 	}
 }
 
-bool MouseLeftButtonDown::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool MouseLeftButtonDownNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;

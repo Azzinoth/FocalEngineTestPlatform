@@ -108,26 +108,30 @@ void TestEditorWindow::RenderMainContextMenu()
 
 					if (ImGui::MenuItem("LeftButtonDown"))
 					{
-						MouseLeftButtonDown* NewNode = new MouseLeftButtonDown();
+						MouseLeftButtonDownNode* NewNode = new MouseLeftButtonDownNode();
 						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
 						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					if (ImGui::MenuItem("LeftButtonUp"))
 					{
-						MouseLeftButtonUp* NewNode = new MouseLeftButtonUp();
+						MouseLeftButtonUpNode* NewNode = new MouseLeftButtonUpNode();
 						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
 						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					if (ImGui::MenuItem("RightButtonDown"))
 					{
-
+						MouseRightButtonDownNode* NewNode = new MouseRightButtonDownNode();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					if (ImGui::MenuItem("RightButtonUp"))
 					{
-
+						MouseRightButtonUpNode* NewNode = new MouseRightButtonUpNode();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					if (ImGui::MenuItem("WheelRotation"))
@@ -142,12 +146,17 @@ void TestEditorWindow::RenderMainContextMenu()
 				{
 					if (ImGui::MenuItem("KeyDown"))
 					{
-
+						KeyboardKeyDownNode* NewNode = new KeyboardKeyDownNode();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					if (ImGui::MenuItem("KeyUp"))
 					{
 
+						KeyboardKeyUpNode* NewNode = new KeyboardKeyUpNode();
+						NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+						TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 					}
 
 					if (ImGui::MenuItem("KeyPress"))

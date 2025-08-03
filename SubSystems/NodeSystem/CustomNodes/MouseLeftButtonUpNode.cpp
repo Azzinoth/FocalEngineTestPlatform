@@ -1,25 +1,25 @@
-#include "MouseLeftButtonUp.h"
+#include "MouseLeftButtonUpNode.h"
 using namespace VisNodeSys;
 
-bool MouseLeftButtonUp::bIsRegistered = []()
+bool MouseLeftButtonUpNode::bIsRegistered = []()
 {
 	NODE_FACTORY.RegisterNodeType("MouseLeftButtonUp",
 		[]() -> Node* {
-			return new MouseLeftButtonUp();
+			return new MouseLeftButtonUpNode();
 		},
 
 		[](const Node& CurrentNode) -> Node* {
-			const MouseLeftButtonUp& NodeToCopy = static_cast<const MouseLeftButtonUp&>(CurrentNode);
-			return new MouseLeftButtonUp(NodeToCopy);
+			const MouseLeftButtonUpNode& NodeToCopy = static_cast<const MouseLeftButtonUpNode&>(CurrentNode);
+			return new MouseLeftButtonUpNode(NodeToCopy);
 		}
 	);
 
 	return true;
 }();
 
-MouseLeftButtonUp::MouseLeftButtonUp() : BaseExecutionFlowNode()
+MouseLeftButtonUpNode::MouseLeftButtonUpNode() : BaseExecutionFlowNode()
 {
-	Type = "MouseLeftButtonUp";
+	Type = "MouseLeftButtonUpNode";
 
 	SetStyle(DEFAULT);
 
@@ -32,17 +32,17 @@ MouseLeftButtonUp::MouseLeftButtonUp() : BaseExecutionFlowNode()
 	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
 }
 
-MouseLeftButtonUp::MouseLeftButtonUp(const MouseLeftButtonUp& Src) : BaseExecutionFlowNode(Src)
+MouseLeftButtonUpNode::MouseLeftButtonUpNode(const MouseLeftButtonUpNode& Src) : BaseExecutionFlowNode(Src)
 {
 	SetStyle(DEFAULT);
 }
 
-void MouseLeftButtonUp::Draw()
+void MouseLeftButtonUpNode::Draw()
 {	
 	Node::Draw();
 }
 
-void MouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
+void MouseLeftButtonUpNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
 {
 	Node::SocketEvent(OwnSocket,  ConnectedSocket, EventType);
 
@@ -55,7 +55,7 @@ void MouseLeftButtonUp::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connected
 	}
 }
 
-bool MouseLeftButtonUp::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
+bool MouseLeftButtonUpNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, char** MsgToUser)
 {
 	if (!Node::CanConnect(OwnSocket, CandidateSocket, nullptr))
 		return false;

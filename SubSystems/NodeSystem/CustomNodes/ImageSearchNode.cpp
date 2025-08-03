@@ -132,12 +132,12 @@ void ImageSearchNode::Draw()
 	YPosition += 38 * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
-	int MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
+	size_t MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
 	int TemporaryMonitorIndex = MonitorIndex;
 	ImGui::DragInt("##MonitorIndex", &TemporaryMonitorIndex, 1, -1, 100);
 
 	if (MonitorIndex >= MonitorCount)
-		MonitorIndex = MonitorCount - 1;
+		MonitorIndex = int(MonitorCount - 1);
 
 	if (TemporaryMonitorIndex != MonitorIndex)
 	{
@@ -154,28 +154,28 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 	{
 		if (Input[2]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[2]->GetConnectedSockets()[0]->GetData();
-			if (TempData != nullptr)
-				Similarity = *reinterpret_cast<float*>(TempData);
+			void* TemporaryData = Input[2]->GetConnectedSockets()[0]->GetData();
+			if (TemporaryData != nullptr)
+				Similarity = *reinterpret_cast<float*>(TemporaryData);
 		}
 
 		if (Input[3]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[3]->GetConnectedSockets()[0]->GetData();
-			if (TempData != nullptr)
-				MaxColorShift = *reinterpret_cast<int*>(TempData);
+			void* TemporaryData = Input[3]->GetConnectedSockets()[0]->GetData();
+			if (TemporaryData != nullptr)
+				MaxColorShift = *reinterpret_cast<int*>(TemporaryData);
 		}
 
 		if (Input[4]->GetConnectedSockets().size() > 0)
 		{
-			void* TempData = Input[4]->GetConnectedSockets()[0]->GetData();
-			if (TempData != nullptr)
+			void* TemporaryData = Input[4]->GetConnectedSockets()[0]->GetData();
+			if (TemporaryData != nullptr)
 			{
-				int MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
-				unsigned int TemporaryMonitorIndex = *reinterpret_cast<unsigned int*>(TempData);
+				int MonitorCount = int(FocalEngine::APPLICATION.GetMonitors().size());
+				unsigned int TemporaryMonitorIndex = *reinterpret_cast<unsigned int*>(TemporaryData);
 
-				if (TemporaryMonitorIndex >= MonitorCount)
-					TemporaryMonitorIndex = MonitorCount - 1;
+				if (TemporaryMonitorIndex >= unsigned int(MonitorCount))
+					TemporaryMonitorIndex = unsigned int(MonitorCount - 1);
 
 				MonitorIndex = TemporaryMonitorIndex;
 			}
@@ -202,7 +202,7 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 					for (size_t i = 0; i < Monitors.size(); i++)
 					{
 						FETPImage* CurrentScreenshot = nullptr;
-						CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(i);
+						CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(unsigned int(i));
 
 						glm::vec2 Position = glm::vec2(-1.0f);
 						if (CurrentScreenshot != nullptr)
@@ -215,7 +215,7 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 						if (bFound)
 						{
-							FoundMonitorIndex = i;
+							FoundMonitorIndex = int(i);
 							break;
 						}
 					}

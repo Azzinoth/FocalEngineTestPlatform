@@ -6,7 +6,7 @@ using namespace FocalEngine;
 GLFWcursor* MouseCursor = nullptr;
 void MainWindowRender()
  {
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	ImGui::DockSpaceOverViewport(0U, ImGui::GetMainViewport());
 	
 	INPUT_SYSTEM.Update();
 	
@@ -89,9 +89,9 @@ void MainWindowRender()
 }
 
 bool bNeedToCreateWindow = false;
-void KeyButtonCallback(int key, int scancode, int action, int mods)
+void KeyButtonCallback(int Key, int ScanCode, int Action, int Mods)
 {
-	if (key == 84 && action == GLFW_RELEASE && TEST_MANAGER.GetSelectedTest() != nullptr)
+	if (Key == 84 && Action == GLFW_RELEASE && TEST_MANAGER.GetSelectedTest() != nullptr)
 	{
 		if (TextInputPopup::GetInstance().IsOpened())
 			return;
@@ -105,7 +105,7 @@ void KeyButtonCallback(int key, int scancode, int action, int mods)
 		}
 	}
 
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
 	{
 		bNeedToCreateWindow = true;
 	}
@@ -124,7 +124,7 @@ void OnGlobalMouseAction(MouseAction MouseAction)
 double MouseX, MouseY;
 double MouseDownX, MouseDownY;
 FEWindow* FirstFullScreenWindow = nullptr;
-int MonitorIndex = 0;
+size_t MonitorIndex = 0;
 FETPImage* CapturedScreenshot = nullptr;
 FETPImage* DarkenedCapturedScreenshot = nullptr;
 void FirstMonitorScreenshotWindowRender()
@@ -134,13 +134,13 @@ void FirstMonitorScreenshotWindowRender()
 
 	if (CapturedScreenshot == nullptr)
 	{
-		CapturedScreenshot = FETPScreenCapture::GetInstance().GetScreenImage(MonitorIndex);
+		CapturedScreenshot = FETPScreenCapture::GetInstance().GetScreenImage(unsigned int(MonitorIndex));
 		DarkenedCapturedScreenshot = new FETPImage(*CapturedScreenshot);
 
 		DarkenedCapturedScreenshot->ModifyPixels([](unsigned char& R, unsigned char& G, unsigned char& B) {
-			R /= 2.5;
-			G /= 2.5;
-			B /= 2.5;
+			R /= 2;
+			G /= 2;
+			B /= 2;
 		});
 	}
 
@@ -156,15 +156,14 @@ void FirstMonitorScreenshotWindowRender()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::SetNextWindowSize(ImVec2(Width, Height));
+	ImGui::SetNextWindowSize(ImVec2(float(Width), float(Height)));
 	ImGui::Begin("FullScreenWindow", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar /*| ImGuiWindowFlags_NoInputs*/ | ImGuiWindowFlags_NoDecoration);
 
-	ImVec2 uv0 = ImVec2(0, 0);
-	ImVec2 uv1 = ImVec2(1, 1);
-	ImVec2 size = ImVec2(Width, Height);
+	ImVec2 UV0 = ImVec2(0, 0);
+	ImVec2 UV1 = ImVec2(1, 1);
+	ImVec2 Size = ImVec2(float(Width), float(Height));
 	if (DarkenedCapturedScreenshot != nullptr)
-		ImGui::Image((void*)(intptr_t)DarkenedCapturedScreenshot->GetTextureID(), size, uv0, uv1);
-
+		ImGui::Image(DarkenedCapturedScreenshot->GetTextureID(), Size, UV0, UV1);
 
 	/*if (ImGui::Button("Cancel"))
 	{
@@ -253,7 +252,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						double MouseUpX = MouseX;
 						double MouseUpY = MouseY;
 
-						FETPImage* Image = CapturedScreenshot->GetRegion(MouseDownX, MouseDownY, abs(MouseDownX - MouseUpX), abs(MouseDownY - MouseUpY));
+						FETPImage* Image = CapturedScreenshot->GetRegion(int(MouseDownX), int(MouseDownY), int(abs(MouseDownX - MouseUpX)), int(abs(MouseDownY - MouseUpY)));
 						if (Image != nullptr)
 							lodepng::encode("Temporary.png", Image->GetRawData(), Image->GetWidth(), Image->GetHeight());
 					}

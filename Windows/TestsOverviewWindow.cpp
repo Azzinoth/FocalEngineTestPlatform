@@ -49,7 +49,7 @@ void TestsOverviewWindow::Render()
 				TestResultIndicator = TestUnknown;
 			}
 
-			ImGui::Image((void*)(intptr_t)TestResultIndicator->GetTextureID(), ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+			ImGui::Image(TestResultIndicator->GetTextureID(), ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 			ImGui::SameLine();
 			ImGui::Text(TEST_MANAGER.Tests[i]->GetName().c_str());
 

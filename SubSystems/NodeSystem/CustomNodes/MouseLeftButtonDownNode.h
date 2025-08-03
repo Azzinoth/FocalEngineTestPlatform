@@ -2,7 +2,7 @@
 #include "../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
 #include "../FETPInput.h"
 
-class MouseLeftButtonUp : public BaseExecutionFlowNode
+class MouseLeftButtonDownNode : public BaseExecutionFlowNode
 {
 	friend class NodeFactory;
 	static bool bIsRegistered;
@@ -10,8 +10,8 @@ class MouseLeftButtonUp : public BaseExecutionFlowNode
 	bool CanConnect(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* CandidateSocket, char** MsgToUser);
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 public:
-	MouseLeftButtonUp();
-	MouseLeftButtonUp(const MouseLeftButtonUp& Other);
+	MouseLeftButtonDownNode();
+	MouseLeftButtonDownNode(const MouseLeftButtonDownNode& Other);
 
 	void Draw();
 };

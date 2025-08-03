@@ -136,16 +136,16 @@ void ImageNode::Draw()
 
 			if (Path != "")
 			{
-				std::vector<unsigned char> rawData;
-				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, Path);
+				std::vector<unsigned char> ImageRawData;
+				unsigned ImageWidth, ImageHeight;
+				int ErrorCode = lodepng::decode(ImageRawData, ImageWidth, ImageHeight, Path);
 
-				if (error == 0)
+				if (ErrorCode == 0)
 				{
-					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					SetImage(new FETPImage(tempData, uWidth, uHeight));
-					delete[] tempData;
+					unsigned char* TemporaryData = new unsigned char[ImageWidth * ImageHeight * 4];
+					memcpy_s(TemporaryData, ImageWidth * ImageHeight * 4, ImageRawData.data(), ImageWidth * ImageHeight * 4);
+					SetImage(new FETPImage(TemporaryData, ImageWidth, ImageHeight));
+					delete[] TemporaryData;
 				}
 			}
 		}
@@ -155,7 +155,7 @@ void ImageNode::Draw()
 		XPosition -= 25.0f * Zoom;
 		YPosition -= 60.0f * Zoom;
 		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
-		ImGui::Image((void*)(intptr_t)Data->GetTextureID(), ImVec2(128.0f, 128.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		ImGui::Image(Data->GetTextureID(), ImVec2(128.0f, 128.0f) * Zoom, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
 		XPosition -= 20.0f * Zoom;
 		YPosition += 136.0f * Zoom;
@@ -167,18 +167,16 @@ void ImageNode::Draw()
 
 			if (Path != "")
 			{
-				std::vector<unsigned char> rawData;
-				unsigned uWidth, uHeight;
-				int error = lodepng::decode(rawData, uWidth, uHeight, Path);
+				std::vector<unsigned char> ImageRawData;
+				unsigned ImageWidth, ImageHeight;
+				int ErrorCode = lodepng::decode(ImageRawData, ImageWidth, ImageHeight, Path);
 
-				if (error == 0)
+				if (ErrorCode == 0)
 				{
-					delete Data;
-
-					unsigned char* tempData = new unsigned char[uWidth * uHeight * 4];
-					memcpy_s(tempData, uWidth * uHeight * 4, rawData.data(), uWidth * uHeight * 4);
-					SetImage(new FETPImage(tempData, uWidth, uHeight));
-					delete[] tempData;
+					unsigned char* TemporaryData = new unsigned char[ImageWidth * ImageHeight * 4];
+					memcpy_s(TemporaryData, ImageWidth * ImageHeight * 4, ImageRawData.data(), ImageWidth * ImageHeight * 4);
+					SetImage(new FETPImage(TemporaryData, ImageWidth, ImageHeight));
+					delete[] TemporaryData;
 				}
 			}
 		}

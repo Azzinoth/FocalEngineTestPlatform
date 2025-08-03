@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set different compiler flags depending on build type
-set(CMAKE_CXX_FLAGS_DEBUG "/MP /Zi /MTd /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF /Od")
+set(CMAKE_CXX_FLAGS_DEBUG "/MP /Zi /MTd /INCREMENTAL:NO /DEBUG /Od")
 set(CMAKE_CXX_FLAGS_RELEASE "/MP /MT")
 
 # Turn on the ability to create folders to organize projects (.vcproj)
@@ -76,11 +76,19 @@ file(GLOB VisualNodeSystem_CustomNodes_SRC
 
 	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.h"
 	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDown.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDown.cpp"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUp.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUp.cpp"
+	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUpNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonUpNode.cpp"
 
+	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyUpNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/TextInputNode.h"
 	"SubSystems/NodeSystem/CustomNodes/TextInputNode.cpp"
 
