@@ -15,7 +15,7 @@ public:
 	size_t GetScreenWidth();
 	size_t GetScreenHeight();
 
-	void SetWindowTitle(std::string newTitle);
+	void SetWindowTitle(std::string NewTitle);
 private:
 	SINGLETON_PRIVATE_PART(FETestPlatform)
 

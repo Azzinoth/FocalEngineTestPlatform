@@ -18,6 +18,7 @@
 #include "NodeSystem/CustomNodes/KeyboardKeyUpNode.h"
 #include "NodeSystem/CustomNodes/TextInputNode.h"
 #include "NodeSystem/CustomNodes/LunchApplicationNode.h"
+#include "../Windows/NodeAreaEditorWindow.h"
 
 enum FE_TEST_FAIL_REASON
 {
@@ -162,6 +163,7 @@ public:
 	
 	std::string FilePath;
 	VisNodeSys::NodeArea* NodeArea;
+	NodeAreaEditorWindow* DebugNodeAreaWindow = nullptr;
 
 	BeginNode* GetBeginNode();
 	void ReColorMainTestPath();

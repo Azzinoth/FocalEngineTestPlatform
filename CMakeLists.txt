@@ -25,9 +25,9 @@ endif()
 # Force your path to Dear ImGui.
 set(DEAR_IMGUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui CACHE PATH "Path to Dear ImGui directory." FORCE)
 
-# Force to build standard nodes.
-set(VISUAL_NODE_SYSTEM_BUILD_STANDARD_NODES ON CACHE BOOL "Build the Visual Node System with standard nodes module" FORCE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DVISUAL_NODE_SYSTEM_BUILD_STANDARD_NODES")
+# Force to build execution flow nodes.
+set(VISUAL_NODE_SYSTEM_BUILD_EXECUTION_FLOW_NODES ON CACHE BOOL "Build the Visual Node System with execution flow nodes module" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DVISUAL_NODE_SYSTEM_BUILD_EXECUTION_FLOW_NODES")
 
 if(NOT TARGET VisualNodeSystem)
 	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
@@ -50,6 +50,8 @@ file(GLOB SubWindows_SRC
 	"Windows/PreviewWindow.cpp"
 	"Windows/TestEditorWindow.h"
 	"Windows/TestEditorWindow.cpp"
+	"Windows/NodeAreaEditorWindow.h"
+	"Windows/NodeAreaEditorWindow.cpp"
 	"Windows/TestPropertiesWindow.h"
 	"Windows/TestPropertiesWindow.cpp"
 	"Windows/TestsOverviewWindow.h"

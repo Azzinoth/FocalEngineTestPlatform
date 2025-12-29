@@ -81,17 +81,17 @@ void TestsOverviewWindow::Render()
 
 		ImGui::PopFont();
 
-		renderContextMenu();
+		RenderContextMenu();
 		ImGui::EndListBox();
 	}
 
-	renderMainMenu();
+	RenderMainMenu();
 
 	ImGui::PopStyleVar();
 	ImGui::End();
 }
 
-void TestsOverviewWindow::renderContextMenu()
+void TestsOverviewWindow::RenderContextMenu()
 {
 	bool bIsListBoxHovered = false;
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows))
@@ -172,7 +172,7 @@ void TestsOverviewWindow::renderContextMenu()
 	ImGui::PopStyleVar();
 }
 
-void TestsOverviewWindow::renderMainMenu()
+void TestsOverviewWindow::RenderMainMenu()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	if (ImGui::BeginMainMenuBar())

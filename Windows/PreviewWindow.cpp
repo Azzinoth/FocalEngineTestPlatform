@@ -36,22 +36,22 @@ void PreviewWindow::Show(bool bIsReadOnlyIn)
 		CurrentNodeArea = NODE_SYSTEM.CreateNodeArea();
 		CurrentNodeArea->SetMainContextMenuFunction(RenderMainContextMenu);
 		CurrentNodeArea->AddNodeEventCallback(NodeCallback);
-
-		CancelButton = new ImGuiButton("Cancel");
-		CancelButton->SetPosition(ImVec2(PopupSize.x - PopupSize.x / 6.0f - CancelButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));
-		CancelButton->SetSize(ImVec2(80.0f, 25.0f));
-		CancelButton->SetDefaultColor(ImVec4(0.7f, 0.5f, 0.5f, 1.0f));
-		CancelButton->SetHoveredColor(ImVec4(0.95f, 0.5f, 0.0f, 1.0f));
-		CancelButton->SetActiveColor(ImVec4(0.1f, 1.0f, 0.1f, 1.0f));
-
-		AddButton = new ImGuiButton("Add to current test");
-		AddButton->SetPosition(ImVec2(PopupSize.x * 0.33f - PopupSize.x / 6.0f - AddButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));
-		AddButton->SetSize(ImVec2(180.0f, 25.0f));
-
-		NewTestButton = new ImGuiButton("Add as new test");
-		NewTestButton->SetPosition(ImVec2(PopupSize.x * 0.66f - PopupSize.x / 6.0f - NewTestButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));
-		NewTestButton->SetSize(ImVec2(150.0f, 25.0f));
 	}
+
+	CancelButton = new ImGuiButton("Cancel");
+	CancelButton->SetPosition(ImVec2(PopupSize.x - PopupSize.x / 6.0f - CancelButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));
+	CancelButton->SetSize(ImVec2(80.0f, 25.0f));
+	CancelButton->SetDefaultColor(ImVec4(0.7f, 0.5f, 0.5f, 1.0f));
+	CancelButton->SetHoveredColor(ImVec4(0.95f, 0.5f, 0.0f, 1.0f));
+	CancelButton->SetActiveColor(ImVec4(0.1f, 1.0f, 0.1f, 1.0f));
+
+	AddButton = new ImGuiButton("Add to current test");
+	AddButton->SetPosition(ImVec2(PopupSize.x * 0.33f - PopupSize.x / 6.0f - AddButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));
+	AddButton->SetSize(ImVec2(180.0f, 25.0f));
+
+	NewTestButton = new ImGuiButton("Add as new test");
+	NewTestButton->SetPosition(ImVec2(PopupSize.x * 0.66f - PopupSize.x / 6.0f - NewTestButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));
+	NewTestButton->SetSize(ImVec2(150.0f, 25.0f));
 
 	if (bIsReadOnly)
 		CancelButton->SetPosition(ImVec2(PopupSize.x / 2.0f - CancelButton->GetSize().x / 2.0f, PopupSize.y - 30.0f));

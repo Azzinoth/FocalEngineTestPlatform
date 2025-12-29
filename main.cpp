@@ -17,6 +17,8 @@ void MainWindowRender()
 	NodeRegionWindow::GetInstance().Render();
 	
 	PreviewWindow::GetInstance().Render();
+	if (TEST_MANAGER.GetSelectedTest() != nullptr && TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow != nullptr)
+		TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow->Render();
 	FailedTestWindow::GetInstance().Render();
 	
 	TextInputPopup::GetInstance().Render();
@@ -61,7 +63,7 @@ void MainWindowRender()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Dubug"))
+		if (ImGui::BeginMenu("Debug"))
 		{
 			if (ImGui::MenuItem("Select Nodes executed during last run"))
 			{

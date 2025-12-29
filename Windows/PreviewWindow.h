@@ -8,9 +8,9 @@ class PreviewWindow : public ImGuiModalPopup
 	SINGLETON_PRIVATE_PART(PreviewWindow)
 
 	ImVec2 PopupSize = ImVec2(1200, 800);
-	ImGuiButton* CancelButton;
-	ImGuiButton* NewTestButton;
-	ImGuiButton* AddButton;
+	ImGuiButton* CancelButton = nullptr;
+	ImGuiButton* NewTestButton = nullptr;
+	ImGuiButton* AddButton = nullptr;
 	static bool bIsReadOnly;
 
 	// ************** Node area **************

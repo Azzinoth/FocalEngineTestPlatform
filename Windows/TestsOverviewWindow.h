@@ -6,8 +6,8 @@ class TestsOverviewWindow : public FEImGuiWindow
 {
 	SINGLETON_PRIVATE_PART(TestsOverviewWindow)
 
-	void renderMainMenu();
-	void renderContextMenu();
+	void RenderMainMenu();
+	void RenderContextMenu();
 	bool bShouldOpenContextMenu = false;
 	bool bContextMenuOpened = false;
 	static int HoveredTestIndex;

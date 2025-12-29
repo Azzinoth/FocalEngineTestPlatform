@@ -116,7 +116,7 @@ size_t FETestPlatform::GetScreenHeight()
 	return ScreenHeight;
 }
 
-void FETestPlatform::SetWindowTitle(std::string newTitle)
+void FETestPlatform::SetWindowTitle(std::string NewTitle)
 {
-	APPLICATION.GetMainWindow()->SetTitle(newTitle);
+	APPLICATION.GetMainWindow()->SetTitle(NewTitle);
 }
