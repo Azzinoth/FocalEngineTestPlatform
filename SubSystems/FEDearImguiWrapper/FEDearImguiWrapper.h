@@ -11,7 +11,7 @@ class WindowsManager
 public:
 	SINGLETON_PUBLIC_PART(WindowsManager)
 
-		void RegisterWindow(FEImGuiWindow* Window);
+	void RegisterWindow(FEImGuiWindow* Window);
 	void RegisterPopup(ImGuiModalPopup* Popup);
 
 	bool IsRegisteredWindowWithCaption(std::string Caption) const;
@@ -29,7 +29,7 @@ public:
 private:
 	SINGLETON_PRIVATE_PART(WindowsManager)
 
-		std::vector<ImGuiModalPopup*> PopUps;
+	std::vector<ImGuiModalPopup*> PopUps;
 	std::vector<FEImGuiWindow*> Windows;
 };
 

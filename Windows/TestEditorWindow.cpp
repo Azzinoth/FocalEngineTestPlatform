@@ -95,9 +95,9 @@ void TestEditorWindow::RenderMainContextMenu()
 				}
 			}
 
-			if (ImGui::MenuItem("Sub Area..."))
+			if (ImGui::MenuItem("Reference Area..."))
 			{
-				VisualSubAreaNode* NewNode = new VisualSubAreaNode(true);
+				VisualReferenceNode* NewNode = new VisualReferenceNode(true);
 				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
 				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
 			}
@@ -219,20 +219,20 @@ void TestEditorWindow::RenderMainContextMenu()
 			ImGui::SetClipboardText(HoveredNode->GetID().c_str());
 		}
 
-		if (HoveredNode->GetType() == "VisualSubAreaNode")
+		if (HoveredNode->GetType() == "VisualReferenceNode")
 		{
-			VisualSubAreaNode* SubAreaNode = static_cast<VisualSubAreaNode*>(HoveredNode);
-			if (SubAreaNode->GetSubArea() != nullptr)
+			VisualReferenceNode* ReferenceNode = static_cast<VisualReferenceNode*>(HoveredNode);
+			if (ReferenceNode->GetReferencedArea() != nullptr)
 			{
-				if (ImGui::MenuItem("Open Sub Area"))
+				if (ImGui::MenuItem("Open Reference Area"))
 				{
-					//PreviewWindow::GetInstance().CurrentNodeArea = SubAreaNode->GetSubArea();
-					//PreviewWindow::GetInstance().Show();
+					/*PreviewWindow::GetInstance().CurrentNodeArea = ReferenceNode->GetReferencedArea();
+					PreviewWindow::GetInstance().Show();*/
 
 					if (TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow == nullptr)
 					{
 						TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow = new NodeAreaEditorWindow();
-						TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow->CurrentNodeArea = SubAreaNode->GetSubArea();
+						TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow->CurrentNodeArea = ReferenceNode->GetReferencedArea();
 						TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow->Show();
 					}
 				}
