@@ -3,26 +3,154 @@
 #include "Windows/ActionEditPopup.h"
 using namespace FocalEngine;
 
+void OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions)
+{
+	if (RecordedActions.size() != 0)
+	{
+		PreviewWindow::GetInstance().Show();
+		//ACTION_SYSTEM.PlaceStructuredNodes(RecordedActions, PreviewWindow::GetInstance().CurrentNodeArea);
+		RecordedActions.clear();
+	}
+}
+
+// That callback is painfuly slow, so need to find a better solution.
+//CurrentNodeArea->AddNodeEventCallback(NodeCallback);
+void NodeCallback(VisNodeSys::Node* Node, VisNodeSys::NODE_EVENT CurrentNodeEvent)
+{
+	if (Node == nullptr || Node->GetParentArea() == nullptr)
+		return;
+
+	if (CurrentNodeEvent == VisNodeSys::BEFORE_CONNECTED || CurrentNodeEvent == VisNodeSys::BEFORE_DISCONNECTED)
+		return;
+
+	// Change style of all connections to default.
+	Node->GetParentArea()->RunOnEachNode([](VisNodeSys::Node* Node) {
+		size_t OutSocketCount = Node->GetOutputSocketCount();
+		for (size_t i = 0; i < OutSocketCount; i++)
+		{
+			VisNodeSys::ConnectionStyle TempStyle;
+			Node->GetParentArea()->GetConnectionStyle(Node, true, i, TempStyle);
+			TempStyle.bMarchingAntsEffect = false;
+			Node->GetParentArea()->SetConnectionStyle(Node, true, i, TempStyle);
+		}
+	});
+
+	if (Node->GetParentArea()->GetExecutionEntryNode() == nullptr)
+		return;
+}
+
+void RenderMainMenu()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("New test"))
+			{
+				TEST_MANAGER.AddTest();
+				TEST_MANAGER.SetSelectedTestIndex(TEST_MANAGER.Tests.size() - 1);
+			}
+
+			if (TEST_MANAGER.GetSelectedTest() == nullptr)
+				ImGui::BeginDisabled();
+
+			if (ImGui::MenuItem("Save test...") && TEST_MANAGER.GetSelectedTest() != nullptr)
+			{
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, SaveFileFilter, 1);
+
+				if (Path != "")
+				{
+					if (Path.find(".fetp") == std::string::npos)
+						Path += ".fetp";
+
+					TEST_MANAGER.GetSelectedTest()->Save(Path.c_str());
+				}
+			}
+
+			if (TEST_MANAGER.GetSelectedTest() == nullptr)
+				ImGui::EndDisabled();
+
+			if (ImGui::MenuItem("Load test..."))
+			{
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, OpenFETPFileFilter, 1);
+
+				if (Path != "")
+				{
+					TEST_MANAGER.AddTest(Path);
+					TEST_MANAGER.SetSelectedTestIndex(TEST_MANAGER.Tests.size() - 1);
+				}
+			}
+
+			if (ImGui::MenuItem("Load nodes..."))
+			{
+				std::string Path;
+				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, NULL, 0);
+
+				if (Path != "")
+				{
+					PreviewWindow::GetInstance().Show();
+					PreviewWindow::GetInstance().CurrentNodeArea->LoadFromFile(Path.c_str());
+				}
+			}
+
+			if (ImGui::MenuItem("Exit"))
+			{
+				APPLICATION.Close();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Debug"))
+		{
+			if (ImGui::MenuItem("Select Nodes executed during last run"))
+			{
+				NodeAreaWindow* FocusedNodeAreaWindow = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
+				if (TEST_MANAGER.GetSelectedTest() != nullptr && FocusedNodeAreaWindow != nullptr && FocusedNodeAreaWindow->GetNodeArea() != nullptr)
+				{
+					std::vector<VisNodeSys::Node*> SelectedNodes = FocusedNodeAreaWindow->GetNodeArea()->GetLastExecutedNodes();
+					FocusedNodeAreaWindow->GetNodeArea()->UnSelectAll();
+					for (size_t i = 0; i < SelectedNodes.size(); i++)
+					{
+						FocusedNodeAreaWindow->GetNodeArea()->AddSelected(SelectedNodes[i]);
+					}
+
+					//TEST_MANAGER.GetSelectedTest()->NodeArea->Select(TEST_MANAGER.GetSelectedTest()->GetLastExecutedNodes());
+					//TEST_MANAGER.GetSelectedTest()->NodeArea->SetRenderOffset(ImVec2(0, 0));
+				}
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+
+	ImGui::PopStyleVar();
+}
+
 GLFWcursor* MouseCursor = nullptr;
 void MainWindowRender()
  {
 	ImGui::DockSpaceOverViewport(0U, ImGui::GetMainViewport());
 	
 	INPUT_SYSTEM.Update();
-	
+
 	TestsOverviewWindow::GetInstance().Render();
-	TestEditorWindow::GetInstance().Render();
 	TestPropertiesWindow::GetInstance().Render();
 	TestStartPreparationsWindow::GetInstance().Render();
-	NodeRegionWindow::GetInstance().Render();
 	
 	PreviewWindow::GetInstance().Render();
-	if (TEST_MANAGER.GetSelectedTest() != nullptr && TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow != nullptr)
-		TEST_MANAGER.GetSelectedTest()->DebugNodeAreaWindow->Render();
 	FailedTestWindow::GetInstance().Render();
 	
 	TextInputPopup::GetInstance().Render();
 	ActionEditPopup::GetInstance().Render();
+
+	NODE_AREA_WINDOW_MANAGER.Render();
+
 	ACTION_SYSTEM.Update();
 
 	if (TEST_MANAGER.GetSelectedTest() != nullptr)
@@ -43,51 +171,16 @@ void MainWindowRender()
 				delete[] tempData;
 
 				NewNode->SetPosition(ImVec2(200, 200));
-				TEST_MANAGER.GetSelectedTest()->NodeArea->AddNode(NewNode);
+				NodeAreaWindow* FocusedNodeAreaWindow = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
+				if (FocusedNodeAreaWindow != nullptr && FocusedNodeAreaWindow->GetNodeArea() != nullptr)
+					FocusedNodeAreaWindow->GetNodeArea()->AddNode(NewNode);
 			}
 
 			FILE_SYSTEM.DeleteFile("Temporary.png");
 		}
 	}
 	
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("Exit"))
-			{
-				//return 0;
-			}
-			
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Debug"))
-		{
-			if (ImGui::MenuItem("Select Nodes executed during last run"))
-			{
-				if (TEST_MANAGER.GetSelectedTest() != nullptr)
-				{
-					std::vector<VisNodeSys::Node*> SelectedNodes = TEST_MANAGER.GetSelectedTest()->NodeArea->GetLastExecutedNodes();
-					TEST_MANAGER.GetSelectedTest()->NodeArea->UnSelectAll();
-					for (size_t i = 0; i < SelectedNodes.size(); i++)
-					{
-						TEST_MANAGER.GetSelectedTest()->NodeArea->AddSelected(SelectedNodes[i]);
-					}
-
-					//TEST_MANAGER.GetSelectedTest()->NodeArea->Select(TEST_MANAGER.GetSelectedTest()->GetLastExecutedNodes());
-					//TEST_MANAGER.GetSelectedTest()->NodeArea->SetRenderOffset(ImVec2(0, 0));
-				}
-			}
-
-			ImGui::EndMenu();
-		}
-		
-		ImGui::EndMainMenuBar();
-	}
-
-	ImGui::PopStyleVar();
+	RenderMainMenu();
 }
 
 bool bNeedToCreateWindow = false;
@@ -214,7 +307,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	INPUT_SYSTEM.SetGlobalMouseCallback(OnGlobalMouseAction);
 
 	TestsOverviewWindow::GetInstance().Show();
-	TestEditorWindow::GetInstance().Show();
 	TestPropertiesWindow::GetInstance().Show();
 
 	NODE_SYSTEM.Initialize();

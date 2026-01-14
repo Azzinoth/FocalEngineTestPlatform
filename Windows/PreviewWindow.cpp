@@ -96,7 +96,8 @@ void PreviewWindow::Render()
 
 		if (!bIsReadOnly)
 		{
-			if (TEST_MANAGER.GetSelectedTest() == nullptr)
+			NodeAreaWindow* FocusedNodeAreaWindow = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
+			if (TEST_MANAGER.GetSelectedTest() == nullptr || FocusedNodeAreaWindow == nullptr || FocusedNodeAreaWindow->GetNodeArea() == nullptr)
 				ImGui::BeginDisabled();
 
 			AddButton->Render();
@@ -105,7 +106,7 @@ void PreviewWindow::Render()
 				// Shift all nodes in order to place them in view center of selected test node area.
 				PositionNodesInTargetCenter();
 
-				NODE_SYSTEM.MoveNodesTo(CurrentNodeArea, TEST_MANAGER.GetSelectedTest()->NodeArea, true);
+				NODE_SYSTEM.MoveNodesTo(CurrentNodeArea, FocusedNodeAreaWindow->GetNodeArea(), true);
 				Close();
 			}
 
@@ -117,7 +118,7 @@ void PreviewWindow::Render()
 			{
 				TEST_MANAGER.AddTest();
 
-				NODE_SYSTEM.MoveNodesTo(CurrentNodeArea, TEST_MANAGER.Tests.back()->NodeArea);
+				NODE_SYSTEM.MoveNodesTo(CurrentNodeArea, FocusedNodeAreaWindow->GetNodeArea());
 				Close();
 			}
 		}
@@ -172,10 +173,11 @@ void PreviewWindow::PositionNodesInCenter()
 
 void PreviewWindow::PositionNodesInTargetCenter()
 {
-	if (TEST_MANAGER.GetSelectedTest() == nullptr)
+	NodeAreaWindow* FocusedNodeAreaWindow = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
+	if (TEST_MANAGER.GetSelectedTest() == nullptr || FocusedNodeAreaWindow == nullptr || FocusedNodeAreaWindow->GetNodeArea() == nullptr)
 		return;
 
-	ImVec2 ViewCenter = TEST_MANAGER.GetSelectedTest()->NodeArea->GetRenderedViewCenter();
+	ImVec2 ViewCenter = FocusedNodeAreaWindow->GetNodeArea()->GetRenderedViewCenter();
 	ImVec2 NodesAABBCenter = CurrentNodeArea->GetAllElementsAABBCenter();
 	NodesAABBCenter -= CurrentNodeArea->GetRenderOffset();
 

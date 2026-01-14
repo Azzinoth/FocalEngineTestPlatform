@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TestEditorWindow.h"
+#include "TestPropertiesWindow.h"
 
 class TestsOverviewWindow : public FEImGuiWindow
 {

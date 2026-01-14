@@ -350,6 +350,26 @@ ImGuiWindow* WindowsManager::GetCurrentWindowImpl()
 	return Context->CurrentWindow;
 }
 
+ImVec2 FEImGuiWindow::GetPosition() const
+{
+	return Position;
+}
+
+void FEImGuiWindow::SetPosition(ImVec2 NewPosition)
+{
+	Position = NewPosition;
+}
+
+ImVec2 FEImGuiWindow::GetSize() const
+{
+	return Size;
+}
+
+void FEImGuiWindow::SetSize(ImVec2 NewSize)
+{
+	Size = NewSize;
+}
+
 void FEImGuiWindow::Render()
 {
 	if (bVisible)

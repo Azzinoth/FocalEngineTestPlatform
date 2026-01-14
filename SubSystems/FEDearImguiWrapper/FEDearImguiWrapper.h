@@ -175,6 +175,12 @@ public:
 	virtual void Render();
 	virtual void OnRenderEnd();
 
+	ImVec2 GetPosition() const;
+	void SetPosition(ImVec2 NewPosition);
+
+	ImVec2 GetSize() const;
+	void SetSize(ImVec2 NewSize);
+
 	bool IsVisible() const;
 	void SetVisible(bool NewValue);
 

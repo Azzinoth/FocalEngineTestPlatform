@@ -21,7 +21,7 @@ std::vector<FETPAction*> FEPTActionSystem::GetActionsFromNode(VisNodeSys::Node* 
 
 bool FEPTActionSystem::Run(FETest* TestToRun)
 {
-	if (TestToRun == nullptr || TestToRun->GetBeginNode() == nullptr)
+	if (TestToRun == nullptr || TestToRun->GetBeginNode() == nullptr || TestToRun->EntryPointNodeArea == nullptr)
 	{
 		CurrentlyRunning = nullptr;
 		return false;
@@ -36,8 +36,8 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 
 	CurrentlyRunning->BeforeBegin();
 
-	CurrentlyRunning->NodeArea->SetExecutionEntryNode(CurrentlyRunning->GetBeginNode());
-	CurrentlyRunning->NodeArea->ExecuteNodeNetwork();
+	CurrentlyRunning->EntryPointNodeArea->SetExecutionEntryNode(CurrentlyRunning->GetBeginNode());
+	CurrentlyRunning->EntryPointNodeArea->ExecuteNodeNetwork();
 	CurrentTestResult->bIsSuccessful = true;
 	CurrentTestResult->EndTime = GetTickCount();
 	CurrentlyRunning->AddResult(CurrentTestResult);

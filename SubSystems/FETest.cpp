@@ -6,14 +6,17 @@ ImColor* FETest::MainPathConnectionColor = new ImColor(150, 255, 150);
 
 FETest::FETest()
 {
-	NodeArea = NODE_SYSTEM.CreateNodeArea();
-	NodeArea->SetSaveExecutedNodes(true);
+	EntryPointNodeArea = NODE_SYSTEM.CreateNodeArea();
+	EntryPointNodeArea->SetName("Main Node Area");
+	EntryPointNodeArea->SetSaveExecutedNodes(true);
 
 	Begin = new BeginNode();
 	Begin->SetName("Begin node");
 	Begin->SetPosition(ImVec2(300.0f, 430.0f));
 
-	NodeArea->AddNode(Begin);
+	EntryPointNodeArea->AddNode(Begin);
+
+	NODE_AREA_WINDOW_MANAGER.CreateNodeAreaWindow(EntryPointNodeArea);
 }
 
 FETest::~FETest()
@@ -23,7 +26,8 @@ FETest::~FETest()
 
 void FETest::Save(const char* FilePath)
 {
-	NodeArea->SaveToFile(FilePath);
+	// FIX_ME: It should be saved in connected way.
+	EntryPointNodeArea->SaveToFile(FilePath);
 
 	Json::Value Root;
 	std::ofstream SaveFile;
@@ -65,10 +69,11 @@ void FETest::Load()
 	if (FilePath == "")
 		return;
 
-	NodeArea->Clear();
-	NodeArea->LoadFromFile(FilePath.c_str());
+	// FIX_ME: It should be loaded in connected way. And also I should delete previous areas.
+	EntryPointNodeArea->Clear();
+	EntryPointNodeArea->LoadFromFile(FilePath.c_str());
 
-	auto Result = NodeArea->GetNodesByType("BeginNode");
+	auto Result = EntryPointNodeArea->GetNodesByType("BeginNode");
 	if (Result.size() == 1)
 		Begin = reinterpret_cast<BeginNode*>(Result[0]);
 
@@ -121,7 +126,7 @@ BeginNode* FETest::GetBeginNode()
 void FETest::ReColorMainTestPath()
 {
 	// Change style of all connections to default.
-	NodeArea->RunOnEachNode([](VisNodeSys::Node* Node) {
+	EntryPointNodeArea->RunOnEachNode([](VisNodeSys::Node* Node) {
 		size_t outSocketCount = Node->GetOutputSocketCount();
 		for (size_t i = 0; i < outSocketCount; i++)
 		{
@@ -136,7 +141,7 @@ void FETest::ReColorMainTestPath()
 	if (GetBeginNode() == nullptr)
 		return;
 
-	NodeArea->RunOnEachConnectedNode(GetBeginNode(),
+	EntryPointNodeArea->RunOnEachConnectedNode(GetBeginNode(),
 		[](VisNodeSys::Node* Node) {
 			size_t outSocketCount = Node->GetOutputSocketCount();
 			for (size_t i = 0; i < outSocketCount; i++)
