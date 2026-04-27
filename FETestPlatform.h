@@ -16,6 +16,8 @@ public:
 	size_t GetScreenHeight();
 
 	void SetWindowTitle(std::string NewTitle);
+
+	std::string GetFullVersion();
 private:
 	SINGLETON_PRIVATE_PART(FETestPlatform)
 
@@ -23,6 +25,11 @@ private:
 	size_t ScreenHeight = 0;
 	void SetImguiStyle();
 	void ScreenDataInitialization();
+
+	std::string GetVersion();
+	int GetBuildNumber();
+	std::string GetBuildTimestamp();
+	std::string GetBuildInfo();
 };
 
 #define TEST_PLATFORM FETestPlatform::GetInstance()

@@ -157,8 +157,25 @@ set_target_properties(FETestPlatform PROPERTIES
                       /MANIFEST:embed
                       /MANIFESTINPUT:\"${CMAKE_SOURCE_DIR}/FETestPlatform.manifest\"")
 
-target_link_libraries(FETestPlatform FEBasicApplication)
-target_link_libraries(FETestPlatform VisualNodeSystem)
+set(Tesseract_Debug   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/lib/Debug/tesseract55d.lib)
+set(Tesseract_Release ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/lib/Release/tesseract55.lib)
+
+set(Leptonica_Debug   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/leptonica/lib/Debug/leptonica-1.87.0d.lib)
+set(Leptonica_Release ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/leptonica/lib/Release/leptonica-1.87.0.lib)
+
+target_link_libraries(FETestPlatform 
+	PRIVATE 
+		FEBasicApplication
+		VisualNodeSystem
+	PUBLIC 
+		debug	  ${Tesseract_Debug}
+		optimized ${Tesseract_Release}
+		debug	  ${Leptonica_Debug}
+		optimized ${Leptonica_Release}
+)
+
+#target_link_libraries(FETestPlatform FEBasicApplication)
+#target_link_libraries(FETestPlatform VisualNodeSystem)
 
 if(USE_STATIC_RUNTIME)
     add_definitions(-DGLEW_STATIC)
@@ -184,4 +201,27 @@ include_directories(
 	${VISUAL_NODE_SYSTEM_THIRDPARTY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui
 	"ThirdParty/"
+)
+
+add_custom_command(TARGET FETestPlatform POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/lib/$<CONFIG>/tesseract55$<$<CONFIG:Debug>:d>.dll"
+		"$<TARGET_FILE_DIR:FETestPlatform>"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/leptonica/lib/$<CONFIG>/leptonica-1.87.0$<$<CONFIG:Debug>:d>.dll"
+		"$<TARGET_FILE_DIR:FETestPlatform>"
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/dependency_dlls/$<CONFIG>/"
+		"$<TARGET_FILE_DIR:FETestPlatform>"
+		COMMENT "Copying all other Tesseract dependency DLLs to the build directory"
+)
+
+add_custom_command(TARGET FETestPlatform PRE_BUILD
+    COMMAND ${CMAKE_COMMAND}
+        -D PROJECT_VERSION_PREFIX=FETestPlatform_
+        -D PROJECT_VERSION_MAJOR=0
+        -D PROJECT_VERSION_MINOR=0
+        -D PROJECT_VERSION_PATCH=7
+        -D PROJECT_VERSION_DIR=${CMAKE_CURRENT_SOURCE_DIR}/VersionInfo
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/VersionInfo/UpdateProjectVersion.cmake
 )

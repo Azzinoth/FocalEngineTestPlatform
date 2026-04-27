@@ -112,11 +112,21 @@ void NodeAreaWindow::RenderMainContextMenu()
 				}
 			}
 
-			if (ImGui::MenuItem("Reference Area..."))
+			if (ImGui::MenuItem("Create New Link Node..."))
 			{
-				VisualReferenceNode* NewNode = new VisualReferenceNode(true);
-				NewNode->SetPosition(MousePositionWhenContextMenuWasOpened);
-				CurrentlyActiveNodeArea->AddNode(NewNode);
+				VisNodeSys::NodeArea* NewArea = NODE_SYSTEM.CreateNodeArea();
+				
+				std::pair<std::string, std::string> LinkIDs;
+				NODE_SYSTEM.LinkNodeAreas(CurrentlyActiveNodeArea->GetID(), NewArea->GetID(), &LinkIDs);
+
+				VisNodeSys::Node* NewLinkNode = NODE_SYSTEM.GetNodeByID(LinkIDs.first);
+				NewLinkNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+			}
+
+			if (ImGui::MenuItem("Create New SubArea Node..."))
+			{
+				VisNodeSys::Node* NewSubAreaNode = NODE_SYSTEM.CreateSubAreaNode(CurrentlyActiveNodeArea->GetID());
+				NewSubAreaNode->SetPosition(MousePositionWhenContextMenuWasOpened);
 			}
 
 			if (ImGui::BeginMenu("Input Simulation"))
@@ -217,14 +227,48 @@ void NodeAreaWindow::RenderMainContextMenu()
 			ImGui::SetClipboardText(HoveredNode->GetID().c_str());
 		}
 
-		if (HoveredNode->GetType() == "VisualReferenceNode")
+		if (ImGui::MenuItem("Rename"))
 		{
-			VisualReferenceNode* ReferenceNode = static_cast<VisualReferenceNode*>(HoveredNode);
-			if (ReferenceNode->GetReferencedArea() != nullptr)
+			TextInputPopup::GetInstance().Show([HoveredNode](std::string InputFromUser) {
+				HoveredNode->SetName(InputFromUser);
+			}, HoveredNode->GetName());
+
+			//ImGui::SetClipboardText(HoveredNode->GetID().c_str());
+		}
+
+		if (HoveredNode->GetType() == "LinkNode")
+		{
+			LinkNode* CurrentLinkNode = static_cast<LinkNode*>(HoveredNode);
+			if (CurrentLinkNode->GetLinkedArea() != nullptr)
 			{
-				if (ImGui::MenuItem("Open Reference Area"))
+				if (ImGui::MenuItem("Open Linked Area"))
 				{
-					NODE_AREA_WINDOW_MANAGER.OpenNodeAreaWindow(ReferenceNode->GetReferencedArea());
+					NODE_AREA_WINDOW_MANAGER.OpenNodeAreaWindow(CurrentLinkNode->GetLinkedArea());
+				}
+			}
+
+			if (CurrentLinkNode->IsDangling())
+			{
+				if (ImGui::MenuItem("Try to fix dangling link"))
+				{
+					NODE_SYSTEM.TryToFixDanglingLinkNode(CurrentLinkNode, true);
+				}
+			}
+		}
+
+		if (HoveredNode->GetType() == "SubAreaNode")
+		{
+			SubAreaNode* CurrentSubAreaNode = static_cast<SubAreaNode*>(HoveredNode);
+			if (CurrentSubAreaNode->GetOwnedArea() != nullptr)
+			{
+				if (ImGui::MenuItem("Open Area"))
+				{
+					ImVec2 Min, Max;
+					CurrentSubAreaNode->GetOwnedArea()->GetAllElementsAABB(Min, Max);
+					// We want user to see center of the area.
+					// FE_TO_DO: It is not placing it to the exact center, later it should be fixed.
+					CurrentSubAreaNode->GetOwnedArea()->SetRenderOffset((Min + Max) * 0.5f);
+					NODE_AREA_WINDOW_MANAGER.OpenNodeAreaWindow(CurrentSubAreaNode->GetOwnedArea());
 				}
 			}
 		}
@@ -236,7 +280,7 @@ void NodeAreaWindow::RenderMainContextMenu()
 		{
 			for (size_t i = 0; i < SelectedList.size(); i++)
 			{
-				CurrentlyActiveNodeArea->DeleteNode(SelectedList[i]);
+				CurrentlyActiveNodeArea->Delete(SelectedList[i]);
 			}
 
 			CurrentlyActiveNodeArea->UnSelectAll();

@@ -37,7 +37,7 @@ void TextInputPopup::Render()
 			return;
 
 		ImGui::Text("Text :");
-		ImGui::InputText("", Text, IM_ARRAYSIZE(Text));
+		ImGui::InputText("##TextInputPopup_InputText", Text, IM_ARRAYSIZE(Text));
 
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 4.0f - 120.0f / 2.0f);
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);

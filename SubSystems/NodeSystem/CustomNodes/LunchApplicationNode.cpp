@@ -30,7 +30,7 @@ LunchApplicationNode::LunchApplicationNode() : BaseExecutionFlowNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "", NodeSocket::SocketFlow::Output));
 }
 
 LunchApplicationNode::LunchApplicationNode(const LunchApplicationNode& Other) : BaseExecutionFlowNode(Other)

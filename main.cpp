@@ -3,6 +3,9 @@
 #include "Windows/ActionEditPopup.h"
 using namespace FocalEngine;
 
+#include "tesseract/baseapi.h"
+#include "leptonica/allheaders.h"
+
 void OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions)
 {
 	if (RecordedActions.size() != 0)
@@ -39,6 +42,59 @@ void NodeCallback(VisNodeSys::Node* Node, VisNodeSys::NODE_EVENT CurrentNodeEven
 		return;
 }
 
+bool bShouldOpenAboutWindow = false;
+void ShowAboutDialog()
+{
+	bShouldOpenAboutWindow = true;
+}
+
+void RenderAboutWindow()
+{
+	if (bShouldOpenAboutWindow)
+	{
+		ImGui::OpenPopup("About");
+		bShouldOpenAboutWindow = false;
+	}
+
+	ImGui::SetNextWindowSizeConstraints(ImVec2(400.0f, 0.0f), ImVec2(FLT_MAX, FLT_MAX));
+	if (ImGui::BeginPopupModal("About", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	{
+		int WindowW = 0;
+		int WindowH = 0;
+		APPLICATION.GetMainWindow()->GetSize(&WindowW, &WindowH);
+
+		ImGui::SetWindowPos(ImVec2(WindowW / 2.0f - ImGui::GetWindowWidth() / 2.0f, WindowH / 2.0f - ImGui::GetWindowHeight() / 2.0f));
+
+		float ContentW = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
+		auto CenteredText = [ContentW](const std::string& Text) {
+			ImVec2 TextSize = ImGui::CalcTextSize(Text.c_str());
+			ImGui::SetCursorPosX((ContentW - TextSize.x) / 2.0f + ImGui::GetWindowContentRegionMin().x);
+			ImGui::Text("%s", Text.c_str());
+			};
+		CenteredText(TEST_PLATFORM.GetFullVersion());
+
+		ImGui::Separator();
+		ImGui::Text("Modules:");
+
+		CenteredText(APPLICATION.GetFullVersion());
+		CenteredText(NODE_SYSTEM.GetFullVersion());
+
+		ImGui::Separator();
+
+		CenteredText("To submit a bug report or provide feedback,");
+		CenteredText("please email me at ");
+
+		ImGui::Separator();
+
+		float ButtonW = 210.0f;
+		ImGui::SetCursorPosX((ContentW - ButtonW) / 2.0f + ImGui::GetWindowContentRegionMin().x);
+		if (ImGui::Button("Close", ImVec2(ButtonW, 25.0f)))
+			ImGui::CloseCurrentPopup();
+
+		ImGui::EndPopup();
+	}
+}
+
 void RenderMainMenu()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
@@ -65,7 +121,8 @@ void RenderMainMenu()
 					if (Path.find(".fetp") == std::string::npos)
 						Path += ".fetp";
 
-					TEST_MANAGER.GetSelectedTest()->Save(Path.c_str());
+					//TEST_MANAGER.GetSelectedTest()->Save(Path.c_str());
+					NODE_SYSTEM.SaveToFile(Path);
 				}
 			}
 
@@ -79,8 +136,18 @@ void RenderMainMenu()
 
 				if (Path != "")
 				{
-					TEST_MANAGER.AddTest(Path);
-					TEST_MANAGER.SetSelectedTestIndex(TEST_MANAGER.Tests.size() - 1);
+					//TEST_MANAGER.AddTest(Path);
+					//TEST_MANAGER.SetSelectedTestIndex(TEST_MANAGER.Tests.size() - 1);
+
+					NODE_SYSTEM.LoadFromFile(Path);
+
+					std::vector<std::string> NodeAreas = NODE_SYSTEM.GetNodeAreaIDList();
+					for (size_t i = 0; i < NodeAreas.size(); i++)
+					{
+						VisNodeSys::NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreas[i]);
+						if (CurrentNodeArea != nullptr)
+							NODE_AREA_WINDOW_MANAGER.CreateNodeAreaWindow(CurrentNodeArea);
+					}
 				}
 			}
 
@@ -122,6 +189,14 @@ void RenderMainMenu()
 					//TEST_MANAGER.GetSelectedTest()->NodeArea->SetRenderOffset(ImVec2(0, 0));
 				}
 			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Info"))
+		{
+			if (ImGui::MenuItem("About..."))
+				ShowAboutDialog();
 
 			ImGui::EndMenu();
 		}
@@ -181,6 +256,7 @@ void MainWindowRender()
 	}
 	
 	RenderMainMenu();
+	RenderAboutWindow();
 }
 
 bool bNeedToCreateWindow = false;
@@ -295,6 +371,29 @@ void SpecialWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
 	}
 }
 
+std::string FileToBase64(const std::string& FilePath, size_t ChunkSize = 8000)
+{
+	std::ifstream File(FilePath, std::ios::binary);
+	if (!File.is_open())
+		return "";
+
+	std::vector<unsigned char> Bytes(
+		(std::istreambuf_iterator<char>(File)),
+		std::istreambuf_iterator<char>());
+	File.close();
+
+	std::string Base64String = NODE_CORE.Base64Encode(Bytes.data(), static_cast<unsigned int>(Bytes.size()));
+
+	std::string Result = "std::string Data = \n";
+	for (size_t i = 0; i < Base64String.size(); i += ChunkSize)
+	{
+		Result += "    \"" + Base64String.substr(i, ChunkSize) + "\"\n";
+	}
+	Result += "    ;";
+
+	return Result;
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	TEST_PLATFORM.CreateMainWindow();
@@ -309,10 +408,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	TestsOverviewWindow::GetInstance().Show();
 	TestPropertiesWindow::GetInstance().Show();
 
+	//std::string test = FileToBase64("C:/Users/Kindr/Downloads/structure_W_.png");
+
+	NODE_CORE.SetTextureLoader([](const std::string& Path) -> unsigned int {
+		std::vector<unsigned char> RawData;
+		unsigned ImageWidth, ImageHeight;
+		int Error = lodepng::decode(RawData, ImageWidth, ImageHeight, Path.c_str());
+		if (Error != 0)
+			return 0;
+
+		unsigned char* TemporaryData = new unsigned char[ImageWidth * ImageHeight * 4];
+		memcpy_s(TemporaryData, ImageWidth * ImageHeight * 4, RawData.data(), ImageWidth * ImageHeight * 4);
+		FETPImage* ImageHoldingTexture = new FETPImage(TemporaryData, ImageWidth, ImageHeight);
+		delete[] TemporaryData;
+
+		return ImageHoldingTexture->GetTextureID();
+	});
 	NODE_SYSTEM.Initialize();
 
 	auto SecondWindow = APPLICATION.AddWindow(800, 600, "Test Window");
 	SecondWindow->AddOnKeyCallback(SpecialWindowKeyCallback);
+
+	// FE_FIX_ME: Temporary check of tesseract OCR functionality. Remove it later.
+	//tesseract::TessBaseAPI ocr;
+	//int res = ocr.Init("ThirdParty/tesseract/traineddata", "eng"); // path to tessdata folder
+	////ocr.SetPageSegMode(tesseract::PSM_SINGLE_LINE);
+	//ocr.SetPageSegMode(tesseract::PSM_AUTO_OSD);
+
+	//// From screenshot/image file
+	//Pix* image = pixRead("Untitled2.png");
+	//ocr.SetImage(image);
+	//std::string text = ocr.GetUTF8Text();
+	//pixDestroy(&image);
 
 	while (APPLICATION.IsNotTerminated())
 	{

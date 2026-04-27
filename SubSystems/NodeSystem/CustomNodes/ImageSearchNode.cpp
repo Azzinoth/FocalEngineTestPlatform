@@ -29,17 +29,17 @@ ImageSearchNode::ImageSearchNode() : BaseExecutionFlowNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "IMAGE", "Image", false));
-	AddSocket(new NodeSocket(this, "FLOAT", "Similarity", false));
-	AddSocket(new NodeSocket(this, "INT", "Color shift", false));
-	AddSocket(new NodeSocket(this, "INT", "Monitor", false));
+	AddSocket(new NodeSocket(this, "IMAGE", "Image", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "FLOAT", "Similarity", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "INT", "Color shift", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "INT", "Monitor", NodeSocket::SocketFlow::Input));
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
-	AddSocket(new NodeSocket(this, "BOOL", "Found", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Out", NodeSocket::SocketFlow::Output));
+	AddSocket(new NodeSocket(this, "BOOL", "Found", NodeSocket::SocketFlow::Output));
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
-	AddSocket(new NodeSocket(this, "VEC2", "Position", true));
+	AddSocket(new NodeSocket(this, "VEC2", "Position", NodeSocket::SocketFlow::Output));
 	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
-	AddSocket(new NodeSocket(this, "INT", "Monitor", true));
+	AddSocket(new NodeSocket(this, "INT", "Monitor", NodeSocket::SocketFlow::Output));
 	Output[3]->SetFunctionToOutputData(MonitorIndexDataGetter);
 }
 

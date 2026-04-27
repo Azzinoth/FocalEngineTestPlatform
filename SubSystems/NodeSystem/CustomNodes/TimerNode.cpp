@@ -30,14 +30,14 @@ TimerNode::TimerNode() : BaseExecutionFlowNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "Check time", false));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Set time", false));
-	AddSocket(new NodeSocket(this, "INT", "time input", false));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Check time", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Set time", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "INT", "time input", NodeSocket::SocketFlow::Input));
 
-	AddSocket(new NodeSocket(this, "INT", "Time left", true));
+	AddSocket(new NodeSocket(this, "INT", "Time left", NodeSocket::SocketFlow::Output));
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
-	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", true));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", NodeSocket::SocketFlow::Output));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", NodeSocket::SocketFlow::Output));
 }
 
 TimerNode::TimerNode(const TimerNode& Other) : BaseExecutionFlowNode(Other)

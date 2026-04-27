@@ -36,13 +36,4 @@ private:
 
 	std::string FullPath;
 	unsigned char* TempRawData = nullptr;
-
-	std::string Base64Characters =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		"abcdefghijklmnopqrstuvwxyz"
-		"0123456789+/";
-
-	std::string Base64Encode(unsigned char const* BytesToEncode, unsigned int Length);
-	bool IsBase64(unsigned char Character);
-	std::string Base64Decode(std::string const& EncodedString);
 };

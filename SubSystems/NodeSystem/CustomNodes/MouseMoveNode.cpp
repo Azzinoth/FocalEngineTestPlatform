@@ -29,10 +29,10 @@ MouseMoveNode::MouseMoveNode() : BaseExecutionFlowNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "VEC2", "Position", false));
-	AddSocket(new NodeSocket(this, "INT", "Monitor", false));
+	AddSocket(new NodeSocket(this, "VEC2", "Position", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "INT", "Monitor", NodeSocket::SocketFlow::Input));
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "Out", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Out", NodeSocket::SocketFlow::Output));
 }
 
 MouseMoveNode::MouseMoveNode(const MouseMoveNode& Other) : BaseExecutionFlowNode(Other)

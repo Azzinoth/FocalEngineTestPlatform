@@ -29,8 +29,8 @@ ImageNode::ImageNode() : BaseExecutionFlowNode(false)
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "IMAGE", "Image", true));
-	AddSocket(new NodeSocket(this, "VEC2", "Size", true));
+	AddSocket(new NodeSocket(this, "IMAGE", "Image", NodeSocket::SocketFlow::Output));
+	AddSocket(new NodeSocket(this, "VEC2", "Size", NodeSocket::SocketFlow::Output));
 
 	Output[0]->SetFunctionToOutputData(ImageDataGetter);
 	Output[1]->SetFunctionToOutputData(ImageSizeGetter);

@@ -1,7 +1,38 @@
 #include "FETestPlatform.h"
 using namespace FocalEngine;
 
+#include "VersionInfo/FETestPlatform_Version.h"
+#include "VersionInfo/FEVersionInfo.h"
+
+FE_DEFINE_VERSION_INFO(FETestPlatform_)
+
 FETestPlatform::FETestPlatform() {};
+
+
+std::string FETestPlatform::GetVersion()
+{
+	return GetFETestPlatform_VersionInfo().GetVersion();
+}
+
+int FETestPlatform::GetBuildNumber()
+{
+	return GetFETestPlatform_VersionInfo().BuildNumber;
+}
+
+std::string FETestPlatform::GetBuildTimestamp()
+{
+	return GetFETestPlatform_VersionInfo().BuildTimestamp;
+}
+
+std::string FETestPlatform::GetBuildInfo()
+{
+	return GetFETestPlatform_VersionInfo().GetBuildInfo();
+}
+
+std::string FETestPlatform::GetFullVersion()
+{
+	return "Test Platform " + GetFETestPlatform_VersionInfo().GetFullVersionString();
+}
 
 void FETestPlatform::ScreenDataInitialization()
 {

@@ -20,7 +20,7 @@ bool BeginNode::bIsRegistered = []()
 BeginNode::BeginNode() : BaseExecutionFlowNode(false)
 {
 	Type = "BeginNode";
-	bCouldBeDestroyed = false;
+	bCouldBeDestroyedByUser = false;
 
 	SetStyle(CIRCLE);
 
@@ -30,7 +30,7 @@ BeginNode::BeginNode() : BaseExecutionFlowNode(false)
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 	
-	AddSocket(new NodeSocket(this, "EXECUTE", "out", true));
+	AddSocket(new NodeSocket(this, "EXECUTE", "out", NodeSocket::SocketFlow::Output));
 
 	if (Icon == nullptr)
 		Icon = new FETPImage("Resources//beginNodeIcon.png");
@@ -38,7 +38,7 @@ BeginNode::BeginNode() : BaseExecutionFlowNode(false)
 
 BeginNode::BeginNode(const BeginNode& Other) : BaseExecutionFlowNode(Other)
 {
-	bCouldBeDestroyed = false;
+	bCouldBeDestroyedByUser = false;
 
 	SetStyle(CIRCLE);
 

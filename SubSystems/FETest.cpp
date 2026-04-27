@@ -73,7 +73,7 @@ void FETest::Load()
 	EntryPointNodeArea->Clear();
 	EntryPointNodeArea->LoadFromFile(FilePath.c_str());
 
-	auto Result = EntryPointNodeArea->GetNodesByType("BeginNode");
+	auto Result = EntryPointNodeArea->GetNodesByStringType("BeginNode");
 	if (Result.size() == 1)
 		Begin = reinterpret_cast<BeginNode*>(Result[0]);
 
