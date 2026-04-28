@@ -18,7 +18,7 @@
 #include "NodeSystem/CustomNodes/KeyboardKeyUpNode.h"
 #include "NodeSystem/CustomNodes/TextInputNode.h"
 #include "NodeSystem/CustomNodes/LunchApplicationNode.h"
-#include "../Windows/NodeAreaWindowManager.h"
+#include "../Windows/NodeArea/NodeAreaWindowManager.h"
 
 enum FE_TEST_FAIL_REASON
 {

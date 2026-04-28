@@ -33,10 +33,25 @@ if(NOT TARGET VisualNodeSystem)
 	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
 endif()
 
+if(NOT TARGET FESceneGraphUI)
+    add_subdirectory(SubSystems/FESceneGraphUI)
+endif()
+
 # *************** EDITOR ***************
 file(GLOB FEDearImguiWrapper_SRC
 	"SubSystems/FEDearImguiWrapper/FEDearImguiWrapper.cpp"
 	"SubSystems/FEDearImguiWrapper/FEDearImguiWrapper.h"
+)
+
+file(GLOB NodeAreaWindows_SRC
+	"Windows/NodeArea/NodeAreaWindow.h"
+	"Windows/NodeArea/NodeAreaWindow.cpp"
+	"Windows/NodeArea/NodeAreaGraphBackend.h"
+	"Windows/NodeArea/NodeAreaGraphBackend.cpp"
+	"Windows/NodeArea/GraphWindow.h"
+	"Windows/NodeArea/GraphWindow.cpp"
+	"Windows/NodeArea/NodeAreaWindowManager.h"
+	"Windows/NodeArea/NodeAreaWindowManager.cpp"
 )
 
 file(GLOB SubWindows_SRC
@@ -46,10 +61,6 @@ file(GLOB SubWindows_SRC
 	"Windows/FailedTestWindow.h"
 	"Windows/PreviewWindow.h"
 	"Windows/PreviewWindow.cpp"
-	"Windows/NodeAreaWindow.h"
-	"Windows/NodeAreaWindow.cpp"
-	"Windows/NodeAreaWindowManager.h"
-	"Windows/NodeAreaWindowManager.cpp"
 	"Windows/TestPropertiesWindow.h"
 	"Windows/TestPropertiesWindow.cpp"
 	"Windows/TestsOverviewWindow.h"
@@ -144,6 +155,7 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
+							  ${NodeAreaWindows_SRC}
 							  ${VisualNodeSystem_CustomNodes_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
@@ -167,6 +179,7 @@ target_link_libraries(FETestPlatform
 	PRIVATE 
 		FEBasicApplication
 		VisualNodeSystem
+		FESceneGraphUI
 	PUBLIC 
 		debug	  ${Tesseract_Debug}
 		optimized ${Tesseract_Release}
@@ -185,6 +198,7 @@ source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
+source_group("Source Files/Windows/NodeArea" FILES ${NodeAreaWindows_SRC})
 source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${VisualNodeSystem_CustomNodes_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})

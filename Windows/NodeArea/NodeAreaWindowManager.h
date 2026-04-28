@@ -1,6 +1,5 @@
 #pragma once
-
-#include "NodeAreaWindow.h"
+#include "GraphWindow.h"
 
 class NodeAreaWindowManager
 {

@@ -1,6 +1,6 @@
 #include "NodeAreaWindow.h"
-#include "TextInputPopup.h"
-#include "ActionEditPopup.h"
+#include "../TextInputPopup.h"
+#include "../ActionEditPopup.h"
 using namespace VisNodeSys;
 
 NodeAreaWindow::NodeAreaWindow(VisNodeSys::NodeArea* NodeArea)

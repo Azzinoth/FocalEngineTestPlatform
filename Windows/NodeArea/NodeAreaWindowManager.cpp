@@ -61,6 +61,8 @@ NodeAreaWindow* NodeAreaWindowManager::GetInFocusNodeAreaWindow() const
 
 void NodeAreaWindowManager::Render()
 {
+	NODE_AREAS_GRAPH_WINDOW.Render();
+
 	auto WindowIterator = NodeAreaWindows.begin();
 	while (WindowIterator != NodeAreaWindows.end())
 	{

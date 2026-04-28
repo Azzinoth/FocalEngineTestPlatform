@@ -6,8 +6,7 @@ using namespace FocalEngine;
 
 FE_DEFINE_VERSION_INFO(FETestPlatform_)
 
-FETestPlatform::FETestPlatform() {};
-
+FETestPlatform::FETestPlatform() {}
 
 std::string FETestPlatform::GetVersion()
 {

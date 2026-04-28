@@ -76,8 +76,9 @@ void RenderAboutWindow()
 		ImGui::Separator();
 		ImGui::Text("Modules:");
 
-		CenteredText(APPLICATION.GetFullVersion());
+		CenteredText(SceneGraphUI::TreeView::GetFullVersion());
 		CenteredText(NODE_SYSTEM.GetFullVersion());
+		CenteredText(APPLICATION.GetFullVersion());
 
 		ImGui::Separator();
 
