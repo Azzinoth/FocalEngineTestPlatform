@@ -12,6 +12,12 @@ NodeAreaWindow* NodeAreaWindowManager::CreateNodeAreaWindow(NodeArea* NodeArea, 
 		return NodeAreaWindows[NodeArea->GetID()];
 
 	NodeAreaWindow* NewWindow = new NodeAreaWindow(NodeArea);
+	if (SeenNodeAreaID.find(NodeArea->GetID()) == SeenNodeAreaID.end())
+	{
+		SeenNodeAreaID[NodeArea->GetID()] = true;
+		NewWindow->bShouldDockToCentralNode = true;
+		NewWindow->bShouldCenterViewOnOpen = true;
+	}
 	NewWindow->SetPosition(Position);
 	NewWindow->SetSize(Size);
 	NewWindow->SetCaption("Node Area: " + NodeArea->GetName());
@@ -34,6 +40,22 @@ bool NodeAreaWindowManager::OpenNodeAreaWindow(VisNodeSys::NodeArea* NodeArea)
 
 	CreateNodeAreaWindow(NodeArea);
 	return true;
+}
+
+bool NodeAreaWindowManager::DeleteNodeAreaWindow(VisNodeSys::NodeArea* NodeArea)
+{
+	if (NodeArea == nullptr)
+		return false;
+
+	auto WindowIterator = NodeAreaWindows.find(NodeArea->GetID());
+	if (WindowIterator != NodeAreaWindows.end())
+	{
+		delete WindowIterator->second;
+		NodeAreaWindows.erase(WindowIterator);
+		return true;
+	}
+
+	return false;
 }
 
 NodeAreaWindow* NodeAreaWindowManager::GetNodeAreaWindow(VisNodeSys::NodeArea* NodeArea) const
@@ -59,6 +81,23 @@ NodeAreaWindow* NodeAreaWindowManager::GetInFocusNodeAreaWindow() const
 	return GetNodeAreaWindow(FocusedNodeArea);
 }
 
+bool NodeAreaWindowManager::SetInFocusNodeAreaWindow(NodeAreaWindow* NodeAreaWindow)
+{
+	if (NodeAreaWindow == nullptr)
+	{
+		FocusedNodeAreaID = "";
+		return true;
+	}
+
+	NodeArea* NodeArea = NodeAreaWindow->GetNodeArea();
+	if (NodeArea == nullptr)
+		return false;
+
+	FocusedNodeAreaID = NodeArea->GetID();
+	ImGui::SetWindowFocus(NodeAreaWindow->GetCaption().c_str());
+	return true;
+}
+
 void NodeAreaWindowManager::Render()
 {
 	NODE_AREAS_GRAPH_WINDOW.Render();
@@ -66,8 +105,24 @@ void NodeAreaWindowManager::Render()
 	auto WindowIterator = NodeAreaWindows.begin();
 	while (WindowIterator != NodeAreaWindows.end())
 	{
+		// Check if any of the node areas was deleted, if so, close the corresponding window and remove it from the map.
+		if (WindowIterator->second->GetNodeArea() == nullptr)
+		{
+			delete WindowIterator->second;
+			WindowIterator = NodeAreaWindows.erase(WindowIterator);
+			continue;
+		}
+
 		if (WindowIterator->second->IsVisible())
 			WindowIterator->second->Render();
+
+		// Or user might have closed the window.
+		if (WindowIterator->second->GetUserRequestedClose())
+		{
+			delete WindowIterator->second;
+			WindowIterator = NodeAreaWindows.erase(WindowIterator);
+			continue;
+		}
 		
 		WindowIterator++;
 	}

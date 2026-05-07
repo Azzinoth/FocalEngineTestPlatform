@@ -1,5 +1,6 @@
 #include "FEPTActionSystem.h"
 using namespace VisNodeSys;
+#include "../Windows/NodeArea/NodeAreaWindowManager.h"
 
 FEPTActionSystem::FEPTActionSystem()
 {
@@ -27,6 +28,21 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 		return false;
 	}
 
+	NodeAreaIDToHadProblematicAction.clear();
+	std::vector<std::string> NodeAreaIDs = NODE_SYSTEM.GetNodeAreaIDList();
+	for (size_t i = 0; i < NodeAreaIDs.size(); i++)
+	{
+		NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreaIDs[i]);
+		if (CurrentNodeArea == nullptr)
+			continue;
+
+		CurrentNodeArea->SetSaveExecutedNodes(true);
+
+		std::vector<ImageSearchNode*> ImageSearchNodes = CurrentNodeArea->GetNodesByType<ImageSearchNode>();
+		for (size_t j = 0; j < ImageSearchNodes.size(); j++)
+			ImageSearchNodes[j]->ResetToDefaultStatus();
+	}
+
 	FocalEngine::APPLICATION.GetMainWindow()->Minimize();
 	Sleep(10);
 	CurrentlyRunning = TestToRun;
@@ -47,75 +63,187 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 		CurrentlyRunning = nullptr;
 		FocalEngine::APPLICATION.GetMainWindow()->Restore();
 	}
+
+	NodeAreaIDs = NODE_SYSTEM.GetNodeAreaIDList();
+	for (size_t i = 0; i < NodeAreaIDs.size(); i++)
+	{
+		NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreaIDs[i]);
+		if (CurrentNodeArea == nullptr)
+			continue;
+
+		std::vector<ImageSearchNode*> ImageSearchNodes = CurrentNodeArea->GetNodesByType<ImageSearchNode>();
+		for (size_t j = 0; j < ImageSearchNodes.size(); j++)
+		{
+			if (ImageSearchNodes[j]->GetStatus() == ACTION_NODE_STATUS::Failure)
+			{
+				CurrentTestResult->bIsSuccessful = false;
+				CurrentTestResult->FailReason = FE_TEST_FAIL_SCREENSHOOT_COMPARE;
+				NodeAreaIDToHadProblematicAction[CurrentNodeArea->GetID()] = true;
+				break;
+			}
+		}
+	}
 	
 	return true;
 }
 
-//void FEPTActionSystem::PlaceStructuredNodes(std::vector<FETPAction*> actions, NodeArea* NodeArea, bool copyActions)
-//{
-//	static int LeftPadding = 15;
-//	static int MaxNodesPerWidth = 4;
-//	static int MaxNodesPerHeight = 4;
-//	static int DistanceBetweenNodesHorizontally = 40;
-//	static int DistanceBetweenNodesVertically = 150;
-//
-//	/*FETPAction* TestAction = new FETPAction();
-//	GlobalActionNode* TestNode = new GlobalActionNode(TestAction);
-//
-//	if (TestNode->GetStyle() == CIRCLE)
-//	{
-//		MaxNodesPerWidth = 6;
-//		MaxNodesPerHeight = 6;
-//		DistanceBetweenNodesHorizontally = 15;
-//		DistanceBetweenNodesVertically = int(NODE_DIAMETER + 15.0f);
-//	}
-//	else
-//	{
-//		MaxNodesPerWidth = 4;
-//		DistanceBetweenNodesHorizontally = 40;
-//		DistanceBetweenNodesVertically = 150;
-//	}
-//
-//	delete TestNode;
-//
-//	int ShowedIndex = 0;
-//	VisNodeSys::Node* PreviousNode = nullptr;
-//	for (size_t i = 0; i < actions.size(); i++)
-//	{
-//		VisNodeSys::Node* NewNode = nullptr;
-//
-//		if (!copyActions)
-//		{
-//			if (actions[i]->GetType() != FETP_SLEEP_ACTION)
-//				NewNode = TryToPackActions(i);
-//
-//			if (NewNode == nullptr)
-//				NewNode = new GlobalActionNode(actions[i]);
-//		}
-//		else
-//		{
-//			NewNode = new GlobalActionNode(CopyAction(actions[i]));
-//		}
-//
-//		int Width, Height;
-//		FocalEngine::APPLICATION.GetMainWindow()->GetSize(&Width, &Height);
-//
-//		int XPosition = LeftPadding;
-//		XPosition += (ShowedIndex % MaxNodesPerWidth * int(NewNode->GetSize().x + DistanceBetweenNodesHorizontally));
-//		XPosition %= Width;
-//
-//		int YPosition = ShowedIndex / MaxNodesPerHeight;
-//		YPosition *= DistanceBetweenNodesVertically;
-//
-//		NewNode->SetPosition(ImVec2(float(XPosition), float(YPosition)));
-//		NodeArea->AddNode(NewNode);
-//
-//		if (PreviousNode != nullptr)
-//			NodeArea->TryToConnect(PreviousNode, 0, NewNode, 0);
-//		PreviousNode = NewNode;
-//		ShowedIndex++;
-//	}*/
-//}
+static void LayoutNodesInSnakingGrid(const std::vector<VisNodeSys::Node*>& Nodes,
+									 ImVec2 Origin, int MaxColumns, float HorizontalPadding, float VerticalPadding)
+{
+	if (Nodes.empty() || MaxColumns < 1)
+		return;
+
+	float CurrentY = Origin.y;
+	size_t RowStart = 0;
+
+	while (RowStart < Nodes.size())
+	{
+		size_t RowEnd = std::min(RowStart + size_t(MaxColumns), Nodes.size());
+
+		float RowMaxHeight = 0.0f;
+		for (size_t i = RowStart; i < RowEnd; i++)
+			RowMaxHeight = std::max(RowMaxHeight, Nodes[i]->GetSize().y);
+
+		float CurrentX = Origin.x;
+		for (size_t i = RowStart; i < RowEnd; i++)
+		{
+			Nodes[i]->SetPosition(ImVec2(CurrentX, CurrentY));
+			CurrentX += Nodes[i]->GetSize().x + HorizontalPadding;
+		}
+
+		CurrentY += RowMaxHeight + VerticalPadding;
+		RowStart = RowEnd;
+	}
+}
+
+void FEPTActionSystem::ConvertActionsToNodes(std::vector<FETPAction*> Actions, VisNodeSys::NodeArea* TargetNodeArea)
+{
+	if (TargetNodeArea == nullptr)
+		return;
+
+	SubAreaNode* SubArea = NODE_SYSTEM.CreateSubAreaNode(TargetNodeArea->GetID());
+	NodeArea* SubAreaNodeArea = SubArea->GetOwnedArea();
+
+	for (size_t i = 1; i < Actions.size(); i++)
+	{
+		FETPAction* PreviousAction = Actions[i - 1];
+		FETPAction* CurrentAction = Actions[i];
+		if (PreviousAction->GetType() == FETP_MOUSE_ACTION && CurrentAction->GetType() == FETP_MOUSE_ACTION)
+		{
+			MouseAction* PreviousMouseAction = dynamic_cast<MouseAction*>(PreviousAction);
+			MouseAction* CurrentMouseAction = dynamic_cast<MouseAction*>(CurrentAction);
+			if (PreviousMouseAction->EventType == CurrentMouseAction->EventType)
+			{
+				if (PreviousMouseAction->HookInfo.pt.x == CurrentMouseAction->HookInfo.pt.x && PreviousMouseAction->HookInfo.pt.y == CurrentMouseAction->HookInfo.pt.y)
+				{
+					Actions.erase(Actions.begin() + i);
+					i--;
+				}
+			}
+		}
+	}
+
+	SubAreaInputNode* SubAreaInput = SubAreaNodeArea->GetNodesByType<SubAreaInputNode>()[0];
+
+	std::vector<VisNodeSys::Node*> CreatedNodes;
+	CreatedNodes.reserve(Actions.size() * 2);
+
+	VisNodeSys::Node* PreviousNode = SubAreaInput;
+	for (size_t i = 0; i < Actions.size(); i++)
+	{
+		VisNodeSys::Node* NewNode = nullptr;
+		if (Actions[i]->GetType() == FETP_MOUSE_ACTION)
+		{
+			MouseAction* MouseActionPointer = dynamic_cast<MouseAction*>(Actions[i]);
+
+			if (MouseActionPointer->EventType == WM_MOUSEMOVE)
+			{
+				NewNode = new MouseMoveNode();
+				MouseMoveNode* NewMouseMoveNode = dynamic_cast<MouseMoveNode*>(NewNode);
+				NewMouseMoveNode->SetMouseTargetPosition(glm::vec2(float(MouseActionPointer->HookInfo.pt.x), float(MouseActionPointer->HookInfo.pt.y)));
+				SubAreaNodeArea->AddNode(NewMouseMoveNode);
+			}
+
+			if (MouseActionPointer->EventType == WM_LBUTTONDOWN)
+			{
+				NewNode = new MouseLeftButtonDownNode();
+				MouseLeftButtonDownNode* NewMouseLeftButtonDownNode = dynamic_cast<MouseLeftButtonDownNode*>(NewNode);
+				SubAreaNodeArea->AddNode(NewMouseLeftButtonDownNode);
+			}
+
+			if (MouseActionPointer->EventType == WM_LBUTTONUP)
+			{
+				NewNode = new MouseLeftButtonUpNode();
+				MouseLeftButtonUpNode* NewMouseLeftButtonUpNode = dynamic_cast<MouseLeftButtonUpNode*>(NewNode);
+				SubAreaNodeArea->AddNode(NewMouseLeftButtonUpNode);
+			}
+
+			if (MouseActionPointer->EventType == WM_RBUTTONDOWN)
+			{
+				NewNode = new MouseRightButtonDownNode();
+				MouseRightButtonDownNode* NewMouseRightButtonDownNode = dynamic_cast<MouseRightButtonDownNode*>(NewNode);
+				SubAreaNodeArea->AddNode(NewMouseRightButtonDownNode);
+			}
+
+			if (MouseActionPointer->EventType == WM_RBUTTONUP)
+			{
+				NewNode = new MouseRightButtonUpNode();
+				MouseRightButtonUpNode* NewMouseRightButtonUpNode = dynamic_cast<MouseRightButtonUpNode*>(NewNode);
+				SubAreaNodeArea->AddNode(NewMouseRightButtonUpNode);
+			}
+		}
+
+		if (Actions[i]->GetType() == FETP_KEYBOARD_ACTION)
+		{
+			KeyboardAction* KeyboardActionPointer = dynamic_cast<KeyboardAction*>(Actions[i]);
+
+			if (KeyboardActionPointer->EventType == WM_KEYDOWN || KeyboardActionPointer->EventType == WM_SYSKEYDOWN)
+			{
+				NewNode = new KeyboardKeyDownNode();
+				KeyboardKeyDownNode* NewKeyboardKeyDownNode = dynamic_cast<KeyboardKeyDownNode*>(NewNode);
+				NewKeyboardKeyDownNode->SetVirtualKeyCode(KeyboardActionPointer->HookInfo.vkCode);
+				SubAreaNodeArea->AddNode(NewKeyboardKeyDownNode);
+			}
+
+			if (KeyboardActionPointer->EventType == WM_KEYUP || KeyboardActionPointer->EventType == WM_SYSKEYUP)
+			{
+				NewNode = new KeyboardKeyUpNode();
+				KeyboardKeyUpNode* NewKeyboardKeyUpNode = dynamic_cast<KeyboardKeyUpNode*>(NewNode);
+				NewKeyboardKeyUpNode->SetVirtualKeyCode(KeyboardActionPointer->HookInfo.vkCode);
+				SubAreaNodeArea->AddNode(NewKeyboardKeyUpNode);
+			}
+		}
+
+		if (NewNode == nullptr)
+			continue;
+
+		if (PreviousNode != nullptr)
+			SubAreaNodeArea->TryToConnect(PreviousNode, 0, NewNode, 0);
+		PreviousNode = NewNode;
+		CreatedNodes.push_back(NewNode);
+
+		if (i > 0)
+		{
+			int DelayBetweenActions = int(Actions[i]->GetTimeStamp()) - int(Actions[i - 1]->GetTimeStamp());
+			if (DelayBetweenActions > 0)
+			{
+				SleepNode* NewSleepNode = new SleepNode();
+				NewSleepNode->SetSleepDuration(DelayBetweenActions);
+				SubAreaNodeArea->AddNode(NewSleepNode);
+
+				SubAreaNodeArea->TryToConnect(PreviousNode, 0, NewSleepNode, 0);
+				PreviousNode = NewSleepNode;
+				CreatedNodes.push_back(NewSleepNode);
+			}
+		}
+	}
+
+	LayoutNodesInSnakingGrid(CreatedNodes, ImVec2(15.0f, 0.0f), 6, 40.0f, 40.0f);
+
+	SubAreaOutputNode* SubAreaOutput = SubAreaNodeArea->GetNodesByType<SubAreaOutputNode>()[0];
+	if (PreviousNode != nullptr)
+		SubAreaNodeArea->TryToConnect(PreviousNode, 0, SubAreaOutput, 0);
+}
 
 void FEPTActionSystem::SwitchRecordMode()
 {
@@ -132,6 +260,10 @@ void FEPTActionSystem::SwitchRecordMode()
 		}
 		else
 		{
+			NodeAreaWindow* WindowInFocus = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
+			if (WindowInFocus != nullptr)
+				ConvertActionsToNodes(RecordedActions, WindowInFocus->GetNodeArea());
+
 			if (OnFinishRecordingCallback != nullptr)
 				OnFinishRecordingCallback(RecordedActions);
 		}
@@ -149,7 +281,7 @@ void FEPTActionSystem::NewKeyboardAction(KeyboardAction KeyAction)
 
 		if (PressedKeysMap.find(164) != PressedKeysMap.end())
 		{
-			altTempStorage = KeyAction;
+			AltTemporaryStorage = KeyAction;
 			return;
 		}
 	}
@@ -255,17 +387,6 @@ FETPAction* FEPTActionSystem::GetAction(size_t Index)
 void FEPTActionSystem::AddAction(FETPAction* NewAction)
 {
 	RecordedActions.push_back(NewAction);
-	if (RecordedActions.size() > 1)
-	{
-		int DelayBetweenActions = 0;
-		DelayBetweenActions = NewAction->GetTimeStamp() - RecordedActions[RecordedActions.size() - 2]->GetTimeStamp();
-		if (DelayBetweenActions < 0)
-			DelayBetweenActions = 0;
-
-		// FIX ME! Need to add sleep node instead.
-		/*if (DelayBetweenActions != 0)
-			RecordedActions.insert(RecordedActions.end() - 1, new SleepAction(DelayBetweenActions));*/
-	}
 }
 
 void FEPTActionSystem::FilterActions(size_t StartIndex, std::function<bool(FETPAction*, int)> FilterFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch)
@@ -469,56 +590,6 @@ std::string FEPTActionSystem::ExtractText(std::vector<FETPAction*> Actions)
 	return Result;
 }
 
-//std::vector<FETPAction*> FEPTActionSystem::GenerateInputTextActions(std::string Text, int AverageDelay)
-//{
-//	std::vector<FETPAction*> Result;
-//	for (size_t i = 0; i < Text.size(); i++)
-//	{
-//		int ConvertedKey = VkKeyScanExA(char(Text[i]), GetKeyboardLayout(0));
-//		int VirtualKeyCode = ConvertedKey & 0xff;
-//		int KeysState = (ConvertedKey & 0xff00) >> 8;
-//
-//		// Can't find appropriate key for that char.
-//		if (VirtualKeyCode == -1)
-//			continue;
-//
-//		if (KeysState & 1)
-//		{
-//			KeyboardAction* NewAction = new KeyboardAction();
-//			NewAction->HookInfo.vkCode = 0x10;
-//			NewAction->EventType = WM_KEYDOWN;
-//			NewAction->bShiftPressed = false;
-//			Result.push_back(NewAction);
-//		}
-//
-//		KeyboardAction* NewAction = new KeyboardAction();
-//		NewAction->HookInfo.vkCode = VirtualKeyCode;
-//		NewAction->EventType = WM_KEYDOWN;
-//		NewAction->bShiftPressed = KeysState & 1;
-//		Result.push_back(NewAction);
-//
-//		SleepAction* NewSleepAction = new SleepAction(AverageDelay);
-//		Result.push_back(NewSleepAction);
-//
-//		NewAction = new KeyboardAction();
-//		NewAction->HookInfo.vkCode = VirtualKeyCode;
-//		NewAction->EventType = WM_KEYUP;
-//		NewAction->bShiftPressed = KeysState & 1;
-//		Result.push_back(NewAction);
-//
-//		if (KeysState & 1)
-//		{
-//			KeyboardAction* NewAction = new KeyboardAction();
-//			NewAction->HookInfo.vkCode = 0x10;
-//			NewAction->EventType = WM_KEYUP;
-//			NewAction->bShiftPressed = false;
-//			Result.push_back(NewAction);
-//		}
-//	}
-//
-//	return Result;
-//}
-
 //bool FEPTActionSystem::Execute(std::vector<FETPAction*> Actions)
 //{
 //	for (size_t i = 0; i < Actions.size(); i++)
@@ -585,3 +656,11 @@ std::string FEPTActionSystem::ExtractText(std::vector<FETPAction*> Actions)
 //
 //	return true;
 //}
+
+bool FEPTActionSystem::DoesNodeAreaHaveProblematicAction(std::string NodeAreaID)
+{
+	if (NodeAreaIDToHadProblematicAction.find(NodeAreaID) != NodeAreaIDToHadProblematicAction.end())
+		return NodeAreaIDToHadProblematicAction[NodeAreaID];
+
+	return false;
+}

@@ -1,5 +1,6 @@
 #pragma once
 #include "NodeAreaGraphBackend.h"
+#include "../../SubSystems/FETest.h"
 using namespace VisNodeSys;
 
 NodeAreaGraphBackend::NodeAreaGraphBackend() {}
@@ -7,7 +8,17 @@ NodeAreaGraphBackend::NodeAreaGraphBackend() {}
 bool NodeAreaGraphBackend::IsReady() const
 {
 	NodeArea* RootNodeArea = NODE_SYSTEM.GetNodeAreaByID(RootNodeAreaID);
-	return RootNodeArea != nullptr;
+	return RootNodeArea != nullptr && CurrentTest != nullptr;
+}
+
+void NodeAreaGraphBackend::SetCurrentTest(FETest* NewTest)
+{
+	CurrentTest = NewTest;
+}
+
+FETest* NodeAreaGraphBackend::GetCurrentTest() const
+{
+	return CurrentTest;
 }
 
 void NodeAreaGraphBackend::SetRootNodeAreaID(std::string NewRootNodeAreaID)
@@ -30,8 +41,33 @@ std::vector<SceneGraphUI::NodeHandle> NodeAreaGraphBackend::GetChildren(SceneGra
     if (!Node)
         return Result;
 
-	std::vector<NodeArea*> ChildNodeAreas;
     NodeArea* CurrentNodeArea = Node.As<NodeArea>();
+    // Special case for the dummy root node area.
+    // It is not actually part of the node area hierarchy, but should be displayed as the root of the hierarchy.
+    if (CurrentTest->GetDummyRootNodeArea() == CurrentNodeArea)
+    {
+        NodeArea* EntryPointNodeArea = CurrentTest->EntryPointNodeArea;
+        if (EntryPointNodeArea != nullptr)
+            Result.push_back({ EntryPointNodeArea, this });
+
+		std::vector<std::string> NodeAreaIDList = NODE_SYSTEM.GetNodeAreaIDList();
+        for (const std::string& NodeAreaID : NodeAreaIDList)
+        {
+            NodeArea* NodeAreaWithoutParent = NODE_SYSTEM.GetNodeAreaByID(NodeAreaID);
+            if (NodeAreaWithoutParent == nullptr)
+                continue;
+
+			if (NodeAreaWithoutParent == EntryPointNodeArea || NodeAreaWithoutParent == CurrentTest->GetDummyRootNodeArea())
+                continue;
+
+            if (NodeAreaWithoutParent->GetParent() == nullptr)
+                Result.push_back({ NodeAreaWithoutParent, this });
+		}
+
+		return Result;
+    }
+
+	std::vector<NodeArea*> ChildNodeAreas;
     for (NodeArea* Child : CurrentNodeArea->GetImediateChildren())
 		Result.push_back({ Child, this });
     
@@ -44,6 +80,9 @@ SceneGraphUI::NodeHandle NodeAreaGraphBackend::GetParent(SceneGraphUI::NodeHandl
 		return { nullptr, this };
 
     NodeArea* CurrentNodeArea = Node.As<NodeArea>();
+    if (CurrentNodeArea->GetParent() == nullptr && CurrentTest->GetDummyRootNodeArea() != CurrentNodeArea)
+        return { CurrentTest->GetDummyRootNodeArea(), this };
+    
 	return { CurrentNodeArea->GetParent(), this };
 }
 

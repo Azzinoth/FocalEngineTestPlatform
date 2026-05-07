@@ -62,3 +62,8 @@ bool KeyboardKeyUpNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateS
 
 	return true;
 }
+
+void KeyboardKeyUpNode::SetVirtualKeyCode(DWORD NewValue)
+{
+	VirtualKeyCode = NewValue;
+}

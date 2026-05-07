@@ -19,11 +19,11 @@ void TestStartPreparationsWindow::Render()
 	if (!IsVisible() || TEST_MANAGER.GetSelectedTest() == nullptr)
 		return;
 
-	FEImGuiWindow::Render();
+	SetSize(ImVec2(800, 800));
+	SetCaption("Actions taken before start of test.");
+	Flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
-	ImGui::SetNextWindowSize(ImVec2(800, 800));
-	ImGui::Begin("Actions taken before start of test.", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	FEImGuiWindow::Render();
 
 	//ImGui::ImageButton((void*)(intptr_t)texture->getTextureID(), size, uv0, uv1, framePadding, backgroundColor, tintColor);
 	if (ImGui::Button("Add delete file action"))
@@ -95,6 +95,5 @@ void TestStartPreparationsWindow::Render()
 		FEImGuiWindow::Close();
 	}
 
-	ImGui::PopStyleVar();
-	ImGui::End();
+	FEImGuiWindow::OnRenderEnd();
 }

@@ -11,6 +11,8 @@ public:
 	FETPImage(std::string FilePath);
 	~FETPImage();
 
+	static FETPImage* FromClipboard();
+
 	void Initialize(unsigned char* RawData, int Width, int Height);
 
 	GLuint GetTextureID();
@@ -35,5 +37,5 @@ private:
 	int Height = 0;
 
 	std::string FullPath;
-	unsigned char* TempRawData = nullptr;
+	unsigned char* TemporaryRawData = nullptr;
 };

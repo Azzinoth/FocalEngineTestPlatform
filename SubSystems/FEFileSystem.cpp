@@ -530,8 +530,8 @@ std::string FEFileSystem::GetCurrentWorkingPath()
 
 std::string FEFileSystem::GetFileExtension(const std::string& Path)
 {
-	std::filesystem::path FilePath(Path);
-	return FilePath.extension().string();
+	std::filesystem::path filePath(Path);
+	return filePath.extension().string();
 }
 
 std::string FEFileSystem::GetDirectoryPath(const std::string& FullPath)
@@ -540,10 +540,27 @@ std::string FEFileSystem::GetDirectoryPath(const std::string& FullPath)
 	return Path.parent_path().string();
 }
 
-std::string FEFileSystem::GetFileName(const std::string& FullPath)
+std::string FEFileSystem::GetFileName(const std::string& FullPath, bool bWithExtension)
 {
 	std::filesystem::path Path(FullPath);
-	return Path.filename().string();
+	if (bWithExtension)
+		return Path.filename().string();
+	else
+		return Path.stem().string();
+}
+
+std::string FEFileSystem::GetAbsolutePath(const std::string& Path)
+{
+	try
+	{
+		std::filesystem::path AbsolutePath = std::filesystem::absolute(Path);
+		return AbsolutePath.string();
+	}
+	catch (const std::filesystem::filesystem_error& Exception)
+	{
+		LOG.Add("Error in FEFileSystem::GetAbsolutePath: failed to get absolute path " + std::string(Exception.what()), "FE_FILE_SYSTEM", FE_LOG_ERROR);
+		return Path;
+	}
 }
 
 std::string FEFileSystem::ReadFEString(std::fstream& File)

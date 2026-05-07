@@ -40,6 +40,7 @@ ImageNode::ImageNode(const ImageNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
 	Data = Other.Data;
+	ImageSize = Other.ImageSize;
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
@@ -85,7 +86,7 @@ bool ImageNode::FromJson(Json::Value Json)
 
 	Data = new FETPImage();
 	Data->DecodeBase64ToRawData(Base64String, ImageWidth, ImageHeight);
-	Size = glm::vec2((float)ImageWidth, (float)ImageHeight);
+	ImageSize = glm::vec2((float)ImageWidth, (float)ImageHeight);
 
 	// Here I am restoring the output data function.
 	// Because the function is not serializable, I have to set it manually.
@@ -107,7 +108,7 @@ bool ImageNode::SetImage(FETPImage* Image)
 		delete Data;
 
 	Data = Image;
-	Size = glm::vec2((float)Image->GetWidth(), (float)Image->GetHeight());
+	ImageSize = glm::vec2((float)Image->GetWidth(), (float)Image->GetHeight());
 
 	return true;
 }

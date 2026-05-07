@@ -134,3 +134,13 @@ bool MouseMoveNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocke
 
 	return true;
 }
+
+glm::vec2 MouseMoveNode::GetMouseTargetPosition() const
+{
+	return Data;
+}
+
+void MouseMoveNode::SetMouseTargetPosition(glm::vec2 NewValue)
+{
+	Data = NewValue;
+}

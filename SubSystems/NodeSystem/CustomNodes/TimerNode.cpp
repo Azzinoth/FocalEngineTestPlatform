@@ -30,14 +30,13 @@ TimerNode::TimerNode() : BaseExecutionFlowNode()
 	TitleBackgroundColor = ImColor(31, 117, 208);
 	TitleBackgroundColorHovered = ImColor(35, 145, 255);
 
-	AddSocket(new NodeSocket(this, "EXECUTE", "Check time", NodeSocket::SocketFlow::Input));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Set time", NodeSocket::SocketFlow::Input));
-	AddSocket(new NodeSocket(this, "INT", "time input", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Restart", NodeSocket::SocketFlow::Input));
+	AddSocket(new NodeSocket(this, "INT", "Duration", NodeSocket::SocketFlow::Input));
 
 	AddSocket(new NodeSocket(this, "INT", "Time left", NodeSocket::SocketFlow::Output));
 	Output[0]->SetFunctionToOutputData(IntDataGetter);
 	AddSocket(new NodeSocket(this, "EXECUTE", "Finished", NodeSocket::SocketFlow::Output));
-	AddSocket(new NodeSocket(this, "EXECUTE", "Not finished", NodeSocket::SocketFlow::Output));
+	AddSocket(new NodeSocket(this, "EXECUTE", "Running", NodeSocket::SocketFlow::Output));
 }
 
 TimerNode::TimerNode(const TimerNode& Other) : BaseExecutionFlowNode(Other)
@@ -99,6 +98,7 @@ void TimerNode::SetTimeLeft(int TimeInMS)
 		TimeInMS = 1;
 
 	Data = TimeInMS;
+	bHasInitialized = true;
 
 	TIME.BeginTimeStamp(GetID());
 }
@@ -106,6 +106,20 @@ void TimerNode::SetTimeLeft(int TimeInMS)
 void TimerNode::Draw()
 {	
 	Node::Draw();
+}
+
+bool TimerNode::TryReadDurationFromInput()
+{
+	if (Input[2]->GetConnectedSockets().empty())
+		return false;
+	
+	void* TempData = Input[2]->GetConnectedSockets()[0]->GetData();
+	if (TempData == nullptr)
+		return false;
+
+	int Time = reinterpret_cast<int*>(TempData)[0];
+	SetTimeLeft(Time);
+	return true;
 }
 
 void TimerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
@@ -116,8 +130,13 @@ void TimerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 	{
 		if (OwnSocket == Input[0])
 		{
-			int TimeLeft = GetTimeLeft();
+			if (!bHasInitialized)
+			{
+				TryReadDurationFromInput();
+				bHasInitialized = true;
+			}
 
+			int TimeLeft = GetTimeLeft();
 			if (TimeLeft == 0)
 			{
 				if (Output[1]->GetConnectedSockets().size() > 0)
@@ -131,15 +150,7 @@ void TimerNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 		}
 		else if (OwnSocket == Input[1])
 		{
-			if (Input[2]->GetConnectedSockets().size() > 0)
-			{
-				void* TempData = Input[2]->GetConnectedSockets()[0]->GetData();
-				if (TempData != nullptr)
-				{
-					int Time = reinterpret_cast<int*>(TempData)[0];
-					SetTimeLeft(Time);
-				}
-			}
+			TryReadDurationFromInput();
 		}
 	}
 }

@@ -24,7 +24,7 @@ LunchApplicationNode::LunchApplicationNode() : BaseExecutionFlowNode()
 
 	SetStyle(DEFAULT);
 
-	SetSize(ImVec2(250, 200));
+	SetSize(ImVec2(350, 150));
 	SetName("Lunch Application");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
@@ -69,8 +69,32 @@ bool LunchApplicationNode::SetPath(std::string Path)
 }
 
 void LunchApplicationNode::Draw()
-{	
+{
+	ImVec2 NodeLeftTop = ImGui::GetCursorScreenPos();
 	Node::Draw();
+
+	float Zoom = ParentArea->GetZoomFactor();
+	float StartX = NodeLeftTop.x + 8.0f * Zoom;
+	float StartY = NodeLeftTop.y + 48.0f * Zoom;
+
+	ImGui::SetCursorScreenPos(ImVec2(StartX, StartY));
+	std::string PathText = "Path: " + Data;
+	PathText = NODE_CORE.TruncateText(PathText, (GetSize().x - 8.0f) * Zoom);
+	ImGui::Text("%s", PathText.c_str());
+
+	ImGui::SetCursorScreenPos(ImVec2(StartX, StartY + ImGui::GetTextLineHeight() + 4.0f * Zoom));
+	std::string FileName = "File: " + FocalEngine::FILE_SYSTEM.GetFileName(Data.c_str());
+	FileName = NODE_CORE.TruncateText(FileName, (GetSize().x - 8.0f) * Zoom);
+	ImGui::Text("%s", FileName.c_str());
+
+	ImGui::SetCursorScreenPos(ImVec2(StartX, StartY + (ImGui::GetTextLineHeight() + 4.0f * Zoom) * 2.0f + 4.0f * Zoom));
+	if (ImGui::Button("Change Path..."))
+	{
+		std::string NewPath;
+		FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(NewPath, ApplicationLoadFilter, 1);
+		if (!NewPath.empty())
+			SetPath(NewPath);
+	}
 }
 
 void LunchApplicationNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)

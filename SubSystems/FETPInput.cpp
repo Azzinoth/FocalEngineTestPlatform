@@ -19,8 +19,8 @@ void FETPInput::Initialize()
 
 	/*std::thread([=]()
 	{
-		KeyboardHookHandle = SetWindowsHookExA(WH_KEYBOARD_LL, FETPInput::keyboardHook, GetModuleHandle(0), 0);
-		MouseHookHandle = SetWindowsHookExA(WH_MOUSE_LL, FETPInput::mouseHook, GetModuleHandle(0), 0);
+		KeyboardHookHandle = SetWindowsHookExA(WH_KEYBOARD_LL, FETPInput::ProcessKeyboardHookEvent, GetModuleHandle(0), 0);
+		MouseHookHandle = SetWindowsHookExA(WH_MOUSE_LL, FETPInput::ProcessMouseHookEvent, GetModuleHandle(0), 0);
 
 		MSG Message;
 		while (GetMessageA(&Message, NULL, 0, 0))
@@ -98,7 +98,6 @@ LRESULT CALLBACK FETPInput::ProcessKeyboardHookEvent(int HookCode, WPARAM EventT
 
 	return CallNextHookEx(KeyboardHookHandle, HookCode, EventType, EventDataPointer);
 }
-
 
 LRESULT CALLBACK FETPInput::ProcessMouseHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer)
 {

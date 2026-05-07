@@ -4,12 +4,16 @@
 
 class NodeAreaGraphBackend : public SceneGraphUI::BackendInterface
 {
+	FETest* CurrentTest = nullptr;
 	std::string RootNodeAreaID;
 public:
     NodeAreaGraphBackend();
 
     bool IsReady() const override;
     bool IsAlive(SceneGraphUI::NodeHandle Node) override;
+
+	void SetCurrentTest(FETest* NewTest);
+	FETest* GetCurrentTest() const;
 
 	void SetRootNodeAreaID(std::string NewRootNodeAreaID);
     SceneGraphUI::NodeHandle GetRoot() override;

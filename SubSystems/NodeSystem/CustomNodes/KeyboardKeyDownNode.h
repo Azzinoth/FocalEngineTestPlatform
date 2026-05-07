@@ -16,4 +16,6 @@ public:
 	KeyboardKeyDownNode(const KeyboardKeyDownNode& Other);
 
 	void Draw();
+
+	void SetVirtualKeyCode(DWORD NewValue);
 };

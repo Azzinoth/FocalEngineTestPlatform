@@ -147,7 +147,8 @@ class FETest
 	std::string Name;
 	int LoopCount = 1;
 	float SpeedFactor = 1.0f;
-
+	
+	VisNodeSys::NodeArea* DummyRootNodeArea = nullptr;
 	BeginNode* Begin = nullptr;
 	std::vector<FETestResult*> Results;
 
@@ -164,6 +165,7 @@ public:
 	std::string FilePath;
 	VisNodeSys::NodeArea* EntryPointNodeArea = nullptr;
 
+	VisNodeSys::NodeArea* GetDummyRootNodeArea() const;
 	BeginNode* GetBeginNode();
 	void ReColorMainTestPath();
 

@@ -11,6 +11,8 @@ class TimerNode : public BaseExecutionFlowNode
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	int Data = 0;
+	bool bHasInitialized = false;
+	bool TryReadDurationFromInput();
 
 	std::function<void* ()> IntDataGetter = [this]() -> void* {
 		return &Data;

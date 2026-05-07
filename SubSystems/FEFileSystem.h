@@ -15,7 +15,7 @@ namespace FocalEngine
 	public:
 		SINGLETON_PUBLIC_PART(FEFileSystem)
 
-		bool DoesFileExist(const std::string& Path);
+			bool DoesFileExist(const std::string& Path);
 		bool RenameFile(const std::string& Path, const std::string& NewPath);
 		bool CopyFile(const std::string& Path, const std::string& NewPath);
 		bool DeleteFile(const std::string& Path);
@@ -27,7 +27,8 @@ namespace FocalEngine
 
 		std::string GetFileExtension(const std::string& Path);
 		std::string GetDirectoryPath(const std::string& FullPath);
-		std::string GetFileName(const std::string& FullPath);
+		std::string GetFileName(const std::string& FullPath, bool bWithExtension = true);
+		std::string GetAbsolutePath(const std::string& Path);
 
 		bool DoesDirectoryExist(const std::string& Path);
 		bool RenameDirectory(const std::string& Path, const std::string& NewPath);

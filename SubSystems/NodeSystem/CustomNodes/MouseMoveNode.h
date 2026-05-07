@@ -20,4 +20,7 @@ public:
 	bool FromJson(Json::Value Json);
 
 	void Draw();
+
+	glm::vec2 GetMouseTargetPosition() const;
+	void SetMouseTargetPosition(glm::vec2 NewValue);
 };

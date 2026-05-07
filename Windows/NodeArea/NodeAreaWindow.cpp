@@ -3,10 +3,17 @@
 #include "../ActionEditPopup.h"
 using namespace VisNodeSys;
 
-NodeAreaWindow::NodeAreaWindow(VisNodeSys::NodeArea* NodeArea)
+NodeAreaWindow::NodeAreaWindow(VisNodeSys::NodeArea* NodeAreaToWorkWith)
 {
-	CurrentNodeArea = NodeArea;
-	CurrentNodeArea->SetMainContextMenuFunction(RenderMainContextMenu);
+	if (NodeAreaToWorkWith != nullptr)
+	{
+		NodeAreaID = NodeAreaToWorkWith->GetID();
+		NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreaID);
+		CurrentNodeArea->SetMainContextMenuFunction(RenderMainContextMenu);
+		CurrentNodeArea->SetSaveExecutedNodes(true);
+	}
+
+	bHaveCloseButton = true;
 }
 
 NodeAreaWindow::~NodeAreaWindow()
@@ -14,25 +21,36 @@ NodeAreaWindow::~NodeAreaWindow()
 }
 
 VisNodeSys::NodeArea* NodeAreaWindow::GetNodeArea() const
-{ 
+{
+	NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreaID);
 	return CurrentNodeArea;
 }
 
 void NodeAreaWindow::Show()
 {
 	FEImGuiWindow::Show();
+	FrameCountSinceOpen = 0;
 }
 
 void NodeAreaWindow::Render()
 {
-	Flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
-	FEImGuiWindow::Render();
-
 	if (!IsVisible())
 		return;
 
+	NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreaID);
 	if (CurrentNodeArea == nullptr)
 		return;
+
+	ImGuiID DockspaceID = FocalEngine::APPLICATION.GetMainWindow()->GetDefaultDockspaceID();
+	if (DockspaceID != 0 && bShouldDockToCentralNode)
+	{
+		ImGuiDockNode* CentralNode = ImGui::DockBuilderGetCentralNode(DockspaceID);
+		if (CentralNode != nullptr)
+			ImGui::SetNextWindowDockID(CentralNode->ID, ImGuiCond_Appearing);
+	}
+
+	Flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+	FEImGuiWindow::Render();
 
 	if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
 	{
@@ -54,8 +72,16 @@ void NodeAreaWindow::Render()
 	CurrentNodeArea->SetSize(ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
 	CurrentNodeArea->Update();
 
+	if (bShouldCenterViewOnOpen && FrameCountSinceOpen > 1)
+	{
+		CurrentNodeArea->CenterViewOnAllElements();
+		bShouldCenterViewOnOpen = false;
+	}
+
 	ImGui::PopStyleVar();
 	FEImGuiWindow::OnRenderEnd();
+	if (FrameCountSinceOpen < 10)
+		FrameCountSinceOpen++;
 }
 
 void NodeAreaWindow::RenderMainContextMenu()
@@ -225,15 +251,6 @@ void NodeAreaWindow::RenderMainContextMenu()
 		if (ImGui::MenuItem("Copy NodeID to clipboard"))
 		{
 			ImGui::SetClipboardText(HoveredNode->GetID().c_str());
-		}
-
-		if (ImGui::MenuItem("Rename"))
-		{
-			TextInputPopup::GetInstance().Show([HoveredNode](std::string InputFromUser) {
-				HoveredNode->SetName(InputFromUser);
-			}, HoveredNode->GetName());
-
-			//ImGui::SetClipboardText(HoveredNode->GetID().c_str());
 		}
 
 		if (HoveredNode->GetType() == "LinkNode")

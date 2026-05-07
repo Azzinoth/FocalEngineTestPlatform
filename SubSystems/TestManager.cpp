@@ -176,7 +176,10 @@ void TestManager::RemoveTest(FETest* Test)
 	for (size_t i = 0; i < Tests.size(); i++)
 	{
 		if (Tests[i] == Test)
+		{
 			RemoveTest(i);
+			return;
+		}
 	}
 }
 
@@ -188,6 +191,7 @@ void TestManager::RemoveTest(size_t TestIndex)
 	if (SelectedTestIndex == TestIndex)
 		SelectedTestIndex = 0;
 
+	delete Tests[TestIndex];
 	Tests.erase(Tests.begin() + TestIndex);
 }
 
@@ -293,4 +297,14 @@ void TestManager::OpenTestSet(std::string FilePath)
 
 		TEST_MANAGER.AddTest(LocalPath);
 	}
+}
+
+void TestManager::Clear()
+{
+	for (size_t i = 0; i < Tests.size(); i++)
+		delete Tests[i];
+
+	Tests.clear();
+	SelectedTestIndex = 0;
+	NODE_SYSTEM.Clear();
 }

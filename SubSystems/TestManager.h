@@ -19,6 +19,8 @@ public:
 	void AddTest(std::string FilePath = "");
 	std::vector<FETest*> Tests;
 
+	void Clear();
+
 	void RenameTest(FETest* Test, std::string NewName);
 	void RenameTest(size_t TestIndex, std::string NewName);
 

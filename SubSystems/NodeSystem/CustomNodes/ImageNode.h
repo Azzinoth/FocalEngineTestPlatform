@@ -19,14 +19,14 @@ class ImageNode : public BaseExecutionFlowNode
 	void SocketEvent(VisNodeSys::NodeSocket* OwnSocket, VisNodeSys::NodeSocket* ConnectedSocket, VisNodeSys::NODE_SOCKET_EVENT EventType);
 
 	FETPImage* Data = nullptr;
-	glm::vec2 Size = glm::vec2(0.0f, 0.0f);
+	glm::vec2 ImageSize = glm::vec2(0.0f, 0.0f);
 
 	std::function<void* ()> ImageDataGetter = [this]() -> void* {
 		return Data;
 	};
 
 	std::function<void* ()> ImageSizeGetter = [this]() -> void* {
-		return (void*)&Size;
+		return (void*)&ImageSize;
 	};
 
 public:

@@ -7,9 +7,12 @@ class NodeAreaWindow : public FEImGuiWindow
 {
 	friend class NodeAreaWindowManager;
 
-	VisNodeSys::NodeArea* CurrentNodeArea = nullptr;
+	std::string NodeAreaID;
+	int FrameCountSinceOpen = 0;
+	bool bShouldDockToCentralNode = false;
+	bool bShouldCenterViewOnOpen = false;
 
-	NodeAreaWindow(VisNodeSys::NodeArea* NodeArea);
+	NodeAreaWindow(VisNodeSys::NodeArea* NodeAreaToWorkWith);
 	~NodeAreaWindow();
 
 	static void RenderMainContextMenu();

@@ -3,7 +3,7 @@ using namespace VisNodeSys;
 
 bool MouseLeftButtonDownNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("MouseLeftButtonDown",
+	NODE_FACTORY.RegisterNodeType("MouseLeftButtonDownNode",
 		[]() -> Node* {
 			return new MouseLeftButtonDownNode();
 		},

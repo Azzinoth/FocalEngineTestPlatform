@@ -43,7 +43,7 @@ class FEPTActionSystem
 
 	DWORD LastScreenshotTimestamp = 0;
 
-	KeyboardAction altTempStorage;
+	KeyboardAction AltTemporaryStorage;
 	KeyboardAction LastLeftAltUp;
 
 	void FindAndDeleteKeys();
@@ -57,18 +57,17 @@ class FEPTActionSystem
 	FETestResult* CurrentTestResult = nullptr;
 
 	FETPAction* CopyAction(FETPAction* Other);
+
+	std::unordered_map<std::string, bool> NodeAreaIDToHadProblematicAction;
 public:
 	SINGLETON_PUBLIC_PART(FEPTActionSystem)
 
 	void SwitchRecordMode();
 	bool Run(FETest* TestToRun);
-	//bool Execute(std::vector<FETPAction*> Actions);
 
 	void NewKeyboardAction(KeyboardAction KeyAction);
 	void NewMouseAction(MouseAction NewMouseAction);
 	void NewAction(FETPAction* NewAction);
-
-	//void PlaceStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* NodeArea, bool copyActions = false);
 
 	void Update();
 
@@ -85,7 +84,9 @@ public:
 	void SetOnFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> Callback);
 
 	std::string ExtractText(std::vector<FETPAction*> Actions);
-	//std::vector<FETPAction*> GenerateInputTextActions(std::string Text, int AverageDelay);
+	void ConvertActionsToNodes(std::vector<FETPAction*> Actions, VisNodeSys::NodeArea* TargetNodeArea);
+
+	bool DoesNodeAreaHaveProblematicAction(std::string NodeAreaID);
 };
 
 #define ACTION_SYSTEM FEPTActionSystem::GetInstance()

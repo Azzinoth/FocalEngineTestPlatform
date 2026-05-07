@@ -1,5 +1,9 @@
 #include "ImageSearchNode.h"
 using namespace VisNodeSys;
+#include "../../../FETestPlatform.h"
+
+// Define this to also run the CPU implementation on a failed GPU search.
+//#define FETP_DEBUG_CPU_IMAGE_SEARCH
 
 bool ImageSearchNode::bIsRegistered = []()
 {
@@ -23,7 +27,7 @@ ImageSearchNode::ImageSearchNode() : BaseExecutionFlowNode()
 
 	SetStyle(DEFAULT);
 
-	SetSize(ImVec2(290, 220));
+	SetSize(ImVec2(290, 260));
 	SetName("Image Search");
 
 	TitleBackgroundColor = ImColor(31, 117, 208);
@@ -56,6 +60,11 @@ ImageSearchNode::ImageSearchNode(const ImageSearchNode& Other) : BaseExecutionFl
 	Output[1]->SetFunctionToOutputData(BoolDataGetter);
 	Output[2]->SetFunctionToOutputData(Vec2DataGetter);
 	Output[3]->SetFunctionToOutputData(MonitorIndexDataGetter);
+}
+
+ImageSearchNode::~ImageSearchNode()
+{
+	delete LastResult.CroppedRegion;
 }
 
 Json::Value ImageSearchNode::ToJson()
@@ -100,7 +109,9 @@ bool ImageSearchNode::FromJson(Json::Value Json)
 }
 
 void ImageSearchNode::Draw()
-{	
+{
+	ImVec2 PositionBeforeDraw = ImGui::GetCursorScreenPos();
+
 	Node::Draw();
 
 	float Zoom = ParentArea->GetZoomFactor();
@@ -120,16 +131,16 @@ void ImageSearchNode::Draw()
 
 	ImGui::EndDisabled();
 
-	XPosition += 7 * Zoom;
-	YPosition += 38 * Zoom;
+	XPosition += 7.0f * Zoom;
+	YPosition += 38.0f * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
 	ImGui::DragInt("##MaxColorShift", &MaxColorShift, 1, 0, 100);
 	if (MaxColorShift < 0)
 		MaxColorShift = 0;
 
-	XPosition -= 30 * Zoom;
-	YPosition += 38 * Zoom;
+	XPosition -= 30.0f * Zoom;
+	YPosition += 38.0f * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
 	size_t MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
@@ -140,9 +151,70 @@ void ImageSearchNode::Draw()
 		MonitorIndex = int(MonitorCount - 1);
 
 	if (TemporaryMonitorIndex != MonitorIndex)
-	{
 		MonitorIndex = TemporaryMonitorIndex;
-		//ParentArea->TriggerSocketEvent(Input[4], Input[4]->GetConnectedSockets()[0], UPDATE);
+	
+	float IconSize = 24.0f * Zoom;
+	float NodeCenterX = PositionBeforeDraw.x + GetSize().x / 2.0f * Zoom;
+	float InfoButtonX = NodeCenterX - IconSize / 2.0f;
+	float InfoButtonY = PositionBeforeDraw.y + IconSize / 2.0f + 24.0f * Zoom;
+
+	FETPImage* CurrentIcon = nullptr;
+	switch (Status)
+	{
+		case ACTION_NODE_STATUS::WasNotExecuted:
+		{
+			CurrentIcon = TEST_PLATFORM.GetInfoIconWhite();
+			break;
+		}
+		case ACTION_NODE_STATUS::Success:
+		{
+			CurrentIcon = TEST_PLATFORM.GetInfoIconGreen();
+			break;
+		}
+		case ACTION_NODE_STATUS::Failure:
+		{
+			CurrentIcon = TEST_PLATFORM.GetInfoIconRed();
+			break;
+		}
+		case ACTION_NODE_STATUS::Warning:
+		{
+			CurrentIcon = TEST_PLATFORM.GetInfoIconYellow();
+			break;
+		}
+		default:
+			CurrentIcon = TEST_PLATFORM.GetInfoIconWhite();
+			break;
+	}
+
+	ImGui::SetCursorScreenPos(ImVec2(InfoButtonX, InfoButtonY));
+	if (ImGui::ImageButton(("##Show Info " + GetID()).c_str(), CurrentIcon->GetTextureID(), ImVec2(IconSize, IconSize)))
+		ImGui::OpenPopup("##ImageSearchLastResult");
+
+	if (ImGui::BeginPopup("##ImageSearchLastResult"))
+	{
+		if (LastResult.CroppedRegion == nullptr)
+		{
+			ImGui::Text("No search has been performed yet.");
+		}
+		else
+		{
+			ImGui::Text("Status: %s", LastResult.bMatchFound ? "Match found" : "No match (best similarity)");
+			ImGui::Text("Position: (%.0f, %.0f)", LastResult.Position.x, LastResult.Position.y);
+			ImGui::Text("Score: %.2f%%", LastResult.BestMatchScore * 100.0f);
+			ImGui::Text("Monitor: %d", LastResult.MonitorIndex);
+			ImGui::Separator();
+
+			float MaxWidth = 400.0f;
+			float ImageWidth = float(LastResult.CroppedRegion->GetWidth());
+			float ImageHeight = float(LastResult.CroppedRegion->GetHeight());
+			if (ImageWidth > MaxWidth)
+			{
+				ImageHeight *= MaxWidth / ImageWidth;
+				ImageWidth = MaxWidth;
+			}
+			ImGui::Image(LastResult.CroppedRegion->GetTextureID(), ImVec2(ImageWidth, ImageHeight), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+		}
+		ImGui::EndPopup();
 	}
 }
 
@@ -184,61 +256,97 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 	if (EventType == EXECUTE)
 	{
-		FETPImage* ImageToLookFor = nullptr;
+		if (Input[1]->GetConnectedSockets().empty())
+			return;
 
-		if (Input[1]->GetConnectedSockets().size() > 0)
+		void* TemporaryData = Input[1]->GetConnectedSockets()[0]->GetData();
+		if (TemporaryData == nullptr)
+			return;
+
+		FETPImage* ImageToLookFor = reinterpret_cast<FETPImage*>(TemporaryData);
+		if (ImageToLookFor == nullptr)
+			return;
+
+		auto MakeCroppedRegion = [&](FETPImage* Source, GLuint OriginX, GLuint OriginY) -> FETPImage* {
+			if (Source == nullptr)
+				return nullptr;
+			int RegionX = int(OriginX);
+			int RegionY = int(OriginY);
+			int RegionWidth = ImageToLookFor->GetWidth();
+			int RegionHeight = ImageToLookFor->GetHeight();
+			if (RegionX < 0 || RegionY < 0 || RegionX + RegionWidth > Source->GetWidth() || RegionY + RegionHeight > Source->GetHeight())
+				return nullptr;
+			return Source->GetRegion(RegionX, RegionY, RegionWidth, RegionHeight);
+		};
+
+		std::vector<int> MonitorsToTry;
+		if (MonitorIndex == -1)
 		{
-			void* TemporaryData = Input[1]->GetConnectedSockets()[0]->GetData();
-			if (TemporaryData != nullptr)
-			{
-				ImageToLookFor = reinterpret_cast<FETPImage*>(TemporaryData);
-
-				if (ImageToLookFor == nullptr)
-					return;
-
-				if (MonitorIndex == -1)
-				{
-					std::vector<FocalEngine::MonitorInfo> Monitors = FocalEngine::APPLICATION.GetMonitors();
-					for (size_t i = 0; i < Monitors.size(); i++)
-					{
-						FETPImage* CurrentScreenshot = nullptr;
-						CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(unsigned int(i));
-
-						glm::vec2 Position = glm::vec2(-1.0f);
-						if (CurrentScreenshot != nullptr)
-							Position = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
-
-						bFound = Position.x != -1 && Position.y != -1;
-						FoundPosition = Position;
-
-						delete CurrentScreenshot;
-
-						if (bFound)
-						{
-							FoundMonitorIndex = int(i);
-							break;
-						}
-					}
-				}
-				else
-				{
-					FETPImage* CurrentScreenshot = nullptr;
-					CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(MonitorIndex);
-
-					glm::vec2 Position = glm::vec2(-1.0f);
-					if (CurrentScreenshot != nullptr)
-						Position = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
-
-					bFound = Position.x != -1 && Position.y != -1;
-					FoundPosition = Position;
-
-					delete CurrentScreenshot;
-				}
-
-				if (Output[0]->GetConnectedSockets().size() > 0)
-					ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
-			}
+			size_t MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
+			for (size_t i = 0; i < MonitorCount; i++)
+				MonitorsToTry.push_back(int(i));
 		}
+		else
+		{
+			MonitorsToTry.push_back(MonitorIndex);
+		}
+
+		delete LastResult.CroppedRegion;
+		LastResult = LastSearchResult();
+		bFound = false;
+		FoundPosition = glm::vec2(-1.0f);
+
+		for (int i = 0; i < MonitorsToTry.size(); i++)
+		{
+			FETPImage* CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(unsigned int(MonitorsToTry[i]));
+
+			FETPComputeShaderCompare::ComparisonResult ComparisonData = {};
+			if (CurrentScreenshot != nullptr)
+				ComparisonData = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
+
+			FETPImage* TestScreenshotFor = new FETPImage("C:/Users/kberegovyi/Downloads/FocalEngineTestPlatform_DEV_05_05_2026_2/Screen_test.png");
+			FETPComputeShaderCompare::ComparisonResult ComparisonData_TEST = {};
+			ComparisonData_TEST = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenshotFor, ImageToLookFor, Similarity, MaxColorShift);
+
+			bool bMatch = ComparisonData.MatchFound != 0;
+
+#if defined(FETP_DEBUG_CPU_IMAGE_SEARCH)
+			if (!bMatch && CurrentScreenshot != nullptr)
+			{
+				FETPComputeShaderCompare::ComparisonResult CPUComparisonData = COMPUTE_SHADER_COMPARE.FindSubImageOnCPU(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
+			}
+#endif
+			float Score = float(ComparisonData.BestMatchScore) / 1000000.0f;
+			GLuint MatchPositionX = bMatch ? ComparisonData.MatchPosition[0] : ComparisonData.BestMatchPosition[0];
+			GLuint MatchPositionY = bMatch ? ComparisonData.MatchPosition[1] : ComparisonData.BestMatchPosition[1];
+
+			// Keep the best result we have seen across monitors (or just the only one in single-monitor mode).
+			if (bMatch || Score > LastResult.BestMatchScore)
+			{
+				delete LastResult.CroppedRegion;
+				LastResult.bMatchFound = bMatch;
+				LastResult.Position = glm::vec2(float(MatchPositionX), float(MatchPositionY));
+				LastResult.BestMatchScore = Score;
+				LastResult.MonitorIndex = MonitorsToTry[i];
+				LastResult.CroppedRegion = MakeCroppedRegion(CurrentScreenshot, MatchPositionX, MatchPositionY);
+			}
+
+			if (bMatch)
+			{
+				bFound = true;
+				FoundPosition = glm::vec2(float(MatchPositionX), float(MatchPositionY));
+				FoundMonitorIndex = MonitorsToTry[i];
+				delete CurrentScreenshot;
+				break;
+			}
+
+			delete CurrentScreenshot;
+		}
+
+		Status = bFound ? ACTION_NODE_STATUS::Success : ACTION_NODE_STATUS::Failure;
+
+		if (Output[0]->GetConnectedSockets().size() > 0)
+			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
 	}
 }
 
@@ -248,4 +356,14 @@ bool ImageSearchNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSoc
 		return false;
 
 	return true;
+}
+
+ACTION_NODE_STATUS ImageSearchNode::GetStatus() const
+{
+	return Status;
+}
+
+void ImageSearchNode::ResetToDefaultStatus()
+{
+	Status = ACTION_NODE_STATUS::WasNotExecuted;
 }

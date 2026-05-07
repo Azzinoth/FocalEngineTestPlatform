@@ -3,6 +3,9 @@ using namespace FocalEngine;
 
 #include "VersionInfo/FETestPlatform_Version.h"
 #include "VersionInfo/FEVersionInfo.h"
+#include "Windows/NodeArea/NodeAreaWindowManager.h"
+#include "SubSystems/TestManager.h"
+#include "SubSystems/NodeSystem/CustomNodes/ImageNode.h"
 
 FE_DEFINE_VERSION_INFO(FETestPlatform_)
 
@@ -114,6 +117,19 @@ void FETestPlatform::SetImguiStyle()
 	Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
 }
 
+void FETestPlatform::Initialize()
+{
+	CreateMainWindow();
+
+	InfoIconWhite = new FETPImage("Resources//information-button_W.png");
+	InfoIconBlue = new FETPImage("Resources//information-button_B.png");
+	InfoIconGreen = new FETPImage("Resources//information-button_G.png");
+	InfoIconYellow = new FETPImage("Resources//information-button_Y.png");
+	InfoIconRed = new FETPImage("Resources//information-button_R.png");
+
+	NODE_AREAS_GRAPH_WINDOW.InitializeResources();
+}
+
 void FETestPlatform::CreateMainWindow()
 {
 	APPLICATION.AddWindow(1500, 1000, "FETestPlatform");
@@ -126,6 +142,7 @@ void FETestPlatform::CreateMainWindow()
 	char* ImguiIniFile = new char[PathLength];
 	strcpy_s(ImguiIniFile, PathLength, "Resources//imgui.ini");
 	IO.IniFilename = ImguiIniFile;
+	bHadImGuiIniFileAtStartup = FILE_SYSTEM.DoesFileExist(ImguiIniFile);
 	IO.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 16);
 	IO.Fonts->AddFontFromFileTTF("Resources//Cousine-Regular.ttf", 32);
 	IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -134,6 +151,38 @@ void FETestPlatform::CreateMainWindow()
 	ImGui::StyleColorsDark();
 
 	SetImguiStyle();
+}
+
+void FETestPlatform::SetUpDocking()
+{
+	ImGuiID DockspaceID = APPLICATION.GetMainWindow()->GetDefaultDockspaceID();
+	if (!bHadImGuiIniFileAtStartup && DockspaceID != 0)
+	{
+		bHadImGuiIniFileAtStartup = true;
+		ImGui::DockBuilderRemoveNode(DockspaceID);
+		ImGui::DockBuilderAddNode(DockspaceID, ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(DockspaceID, ImGui::GetMainViewport()->Size);
+
+		ImGuiID BottomID;
+		ImGuiID CenterID;
+		ImGuiID LeftID;
+		ImGuiID RightID;
+
+		ImGui::DockBuilderSplitNode(DockspaceID, ImGuiDir_Down, 0.25f, &BottomID, &CenterID);
+		ImGui::DockBuilderSplitNode(CenterID, ImGuiDir_Left, 0.20f, &LeftID, &CenterID);
+		// 0.25f of the post-left-split center (0.80f of full) = 0.20f of full, matching LeftID's width.
+		ImGui::DockBuilderSplitNode(CenterID, ImGuiDir_Right, 0.25f, &RightID, &CenterID);
+		// Split the right column horizontally so "Tests overview" sits on top of "Test Properties".
+		ImGuiID RightTopID;
+		ImGuiID RightBottomID;
+		ImGui::DockBuilderSplitNode(RightID, ImGuiDir_Down, 0.5f, &RightBottomID, &RightTopID);
+
+		ImGui::DockBuilderDockWindow("Scene Graph", LeftID);
+		ImGui::DockBuilderDockWindow("Tests overview", RightTopID);
+		ImGui::DockBuilderDockWindow("Test Properties", RightBottomID);
+
+		ImGui::DockBuilderFinish(DockspaceID);
+	}
 }
 
 size_t FETestPlatform::GetScreenWidth()
@@ -149,4 +198,60 @@ size_t FETestPlatform::GetScreenHeight()
 void FETestPlatform::SetWindowTitle(std::string NewTitle)
 {
 	APPLICATION.GetMainWindow()->SetTitle(NewTitle);
+}
+
+void FETestPlatform::Update()
+{
+	KeyboardInputUpdate();
+}
+
+void FETestPlatform::KeyboardInputUpdate()
+{
+	bool CtrlDown = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+	if (!CtrlDown)
+		return;
+
+	if (!ImGui::IsKeyPressed(ImGuiKey_V, false))
+		return;
+
+	NodeAreaWindow* FocusedWindow = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
+	if (FocusedWindow == nullptr || FocusedWindow->GetNodeArea() == nullptr)
+		return;
+
+	FETPImage* Image = FETPImage::FromClipboard();
+	if (Image == nullptr)
+		return;
+
+	VisNodeSys::NodeArea* TargetArea = FocusedWindow->GetNodeArea();
+	ImVec2 MouseLocalPosition = TargetArea->GetRenderedViewCenter();
+
+	NodeAreaWindow* AreaWindow = NODE_AREA_WINDOW_MANAGER.GetNodeAreaWindow(TargetArea);
+	if (AreaWindow != nullptr && AreaWindow->IsVisible() && AreaWindow->GetWindow() != nullptr)
+	{
+		ImGuiWindow* WindowPointer = AreaWindow->GetWindow();
+		ImVec2 WindowPosition = WindowPointer->Pos;
+		ImVec2 WindowSize = WindowPointer->Size;
+		ImVec2 MousePosition = ImGui::GetMousePos();
+
+		bool bMouseInsideWindow = MousePosition.x >= WindowPosition.x && MousePosition.x <= WindowPosition.x + WindowSize.x &&
+								 MousePosition.y >= WindowPosition.y && MousePosition.y <= WindowPosition.y + WindowSize.y;
+
+		if (bMouseInsideWindow)
+		{
+			float Zoom = TargetArea->GetZoomFactor();
+			if (Zoom <= 0.0f)
+				Zoom = 1.0f;
+
+			ImVec2 Local = (MousePosition - WindowPosition) - TargetArea->GetRenderOffset();
+			Local.x /= Zoom;
+			Local.y /= Zoom;
+			MouseLocalPosition = Local;
+		}
+	}
+
+	ImageNode* NewNode = new ImageNode();
+	NewNode->SetImage(Image);
+	MouseLocalPosition -= NewNode->GetSize() / 2.0f;
+	NewNode->SetPosition(MouseLocalPosition);
+	TargetArea->AddNode(NewNode);
 }

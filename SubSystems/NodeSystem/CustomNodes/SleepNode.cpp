@@ -35,13 +35,13 @@ SleepNode::SleepNode() : BaseExecutionFlowNode()
 SleepNode::SleepNode(const SleepNode& Other) : BaseExecutionFlowNode(Other)
 {
 	SetStyle(DEFAULT);
-	SleepFor = Other.SleepFor;
+	SleepDurationMs = Other.SleepDurationMs;
 }
 
 Json::Value SleepNode::ToJson()
 {
 	Json::Value Result = Node::ToJson();
-	Result["sleepNode_Data"] = SleepFor;
+	Result["sleepNode_Data"] = SleepDurationMs;
 	return Result;
 }
 
@@ -54,7 +54,7 @@ bool SleepNode::FromJson(Json::Value Json)
 	if (!Json.isMember("sleepNode_Data"))
 		return false;
 	
-	SleepFor = Json["sleepNode_Data"].asInt();
+	SleepDurationMs = Json["sleepNode_Data"].asInt();
 
 	return true;
 }
@@ -72,7 +72,7 @@ void SleepNode::Draw()
 
 	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(100 * Zoom);
-	ImGui::InputInt("##value", &SleepFor);
+	ImGui::InputInt(("##SleepNodeDuration" + GetID()).c_str(), &SleepDurationMs);
 }
 
 void SleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)
@@ -81,7 +81,7 @@ void SleepNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, 
 
 	if (EventType == EXECUTE)
 	{
-		Sleep(DWORD(SleepFor /** currentlyRunning->getSpeedFactor()*/));
+		Sleep(DWORD(SleepDurationMs /** currentlyRunning->getSpeedFactor()*/));
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);
@@ -94,4 +94,14 @@ bool SleepNode::CanConnect(NodeSocket* OwnSocket, NodeSocket* CandidateSocket, c
 		return false;
 
 	return true;
+}
+
+int SleepNode::GetSleepDuration() const
+{
+	return SleepDurationMs;
+}
+
+void SleepNode::SetSleepDuration(int NewValue)
+{
+	SleepDurationMs = NewValue;
 }

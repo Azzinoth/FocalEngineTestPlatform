@@ -6,6 +6,8 @@ ImColor* FETest::MainPathConnectionColor = new ImColor(150, 255, 150);
 
 FETest::FETest()
 {
+	DummyRootNodeArea = NODE_SYSTEM.CreateNodeArea();
+
 	EntryPointNodeArea = NODE_SYSTEM.CreateNodeArea();
 	EntryPointNodeArea->SetName("Main Node Area");
 	EntryPointNodeArea->SetSaveExecutedNodes(true);
@@ -15,38 +17,43 @@ FETest::FETest()
 	Begin->SetPosition(ImVec2(300.0f, 430.0f));
 
 	EntryPointNodeArea->AddNode(Begin);
-
-	NODE_AREA_WINDOW_MANAGER.CreateNodeAreaWindow(EntryPointNodeArea);
 }
 
 FETest::~FETest()
 {
-	delete Begin;
+	//delete Begin;
+}
+
+NodeArea* FETest::GetDummyRootNodeArea() const
+{
+	return DummyRootNodeArea;
 }
 
 void FETest::Save(const char* FilePath)
 {
-	// FIX_ME: It should be saved in connected way.
-	EntryPointNodeArea->SaveToFile(FilePath);
+	NODE_SYSTEM.SaveToFile(FilePath);
 
 	Json::Value Root;
 	std::ofstream SaveFile;
 
-	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath);
+	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath, false);
 	std::string DirectoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath);
-	SaveFile.open(DirectoryPath + FileNameWithoutExtension + ".fetpTestInfo");
+	SaveFile.open(DirectoryPath + "/" + FileNameWithoutExtension + ".FETPTestInfo");
 
-	Root["name"] = Name;
-	Root["speedFactor"] = SpeedFactor;
+	Root["Name"] = Name;
+	Root["DummyRootNodeArea"] = DummyRootNodeArea->GetID();
+	Root["EntryPointNodeAreaID"] = EntryPointNodeArea->GetID();
+	Root["BeginNodeID"] = Begin->GetID();
+	Root["SpeedFactor"] = SpeedFactor;
 
 	Json::Value BeforeStartActions;
 	for (size_t i = 0; i < BeforeStart.size(); i++)
 	{
-		BeforeStartActions[std::to_string(i)]["type"] = FETest::FEBeforeTestActionTypeToString(BeforeStart[i]->Type);
-		BeforeStartActions[std::to_string(i)]["path"] = BeforeStart[i]->Path;
-		BeforeStartActions[std::to_string(i)]["newObjectName"] = BeforeStart[i]->NewObjectName;
+		BeforeStartActions[std::to_string(i)]["Type"] = FETest::FEBeforeTestActionTypeToString(BeforeStart[i]->Type);
+		BeforeStartActions[std::to_string(i)]["Path"] = BeforeStart[i]->Path;
+		BeforeStartActions[std::to_string(i)]["NewObjectName"] = BeforeStart[i]->NewObjectName;
 	}
-	Root["beforeStartActions"] = BeforeStartActions;
+	Root["BeforeStartActions"] = BeforeStartActions;
 
 	Json::Value Macros;
 	auto CurrentMacro = MacrosToReplace.begin();
@@ -55,7 +62,7 @@ void FETest::Save(const char* FilePath)
 		Macros[CurrentMacro->first] = CurrentMacro->second;
 		CurrentMacro++;
 	}
-	Root["macros"] = Macros;
+	Root["Macros"] = Macros;
 
 	Json::StreamWriterBuilder Builder;
 	const std::string JsonFile = Json::writeString(Builder, Root);
@@ -66,24 +73,17 @@ void FETest::Save(const char* FilePath)
 
 void FETest::Load()
 {
-	if (FilePath == "")
+	if (FilePath.empty())
 		return;
 
-	// FIX_ME: It should be loaded in connected way. And also I should delete previous areas.
-	EntryPointNodeArea->Clear();
-	EntryPointNodeArea->LoadFromFile(FilePath.c_str());
-
-	auto Result = EntryPointNodeArea->GetNodesByStringType("BeginNode");
-	if (Result.size() == 1)
-		Begin = reinterpret_cast<BeginNode*>(Result[0]);
-
-	ReColorMainTestPath();
+	NODE_SYSTEM.Clear();
+	NODE_SYSTEM.LoadFromFile(FilePath);
 
 	// Load additional test data.
 	std::ifstream FileData;
-	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str());
+	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str(), false);
 	std::string DirectoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
-	FileData.open(DirectoryPath + FileNameWithoutExtension + ".fetpTestInfo");
+	FileData.open(DirectoryPath + "/" + FileNameWithoutExtension + ".fetpTestInfo");
 
 	std::string AdditionalFileData((std::istreambuf_iterator<char>(FileData)), std::istreambuf_iterator<char>());
 	FileData.close();
@@ -96,25 +96,32 @@ void FETest::Load()
 	if (!Reader->parse(AdditionalFileData.c_str(), AdditionalFileData.c_str() + AdditionalFileData.size(), &Root, &Error))
 		return;
 
-	Name = Root["name"].asCString();
-	SpeedFactor = Root["speedFactor"].asFloat();
+	Name = Root["Name"].asCString();
+	std::string DummyRootNodeAreaID = Root["DummyRootNodeArea"].asCString();
+	std::string EntryPointNodeAreaID = Root["EntryPointNodeAreaID"].asCString();
+	std::string BeginNodeID = Root["BeginNodeID"].asCString();
+	DummyRootNodeArea = NODE_SYSTEM.GetNodeAreaByID(DummyRootNodeAreaID);
+	EntryPointNodeArea = NODE_SYSTEM.GetNodeAreaByID(EntryPointNodeAreaID);
+	Begin = reinterpret_cast<BeginNode*>(EntryPointNodeArea->GetNodeByID(BeginNodeID));
+	ReColorMainTestPath();
+	SpeedFactor = Root["SpeedFactor"].asFloat();
 
-	std::vector<Json::String> ActionList = Root["beforeStartActions"].getMemberNames();
+	std::vector<Json::String> ActionList = Root["BeforeStartActions"].getMemberNames();
 	BeforeStart.resize(ActionList.size());
 	for (size_t i = 0; i < ActionList.size(); i++)
 	{
 		FETestBeforeAction* Action = new FETestBeforeAction();
-		Action->Type = FETest::stringToFEBeforeTestActionType(Root["beforeStartActions"][ActionList[i]]["type"].asCString());
-		Action->Path = Root["beforeStartActions"][ActionList[i]]["path"].asCString();
-		Action->NewObjectName = Root["beforeStartActions"][ActionList[i]]["newObjectName"].asCString();
+		Action->Type = FETest::stringToFEBeforeTestActionType(Root["BeforeStartActions"][ActionList[i]]["Type"].asCString());
+		Action->Path = Root["BeforeStartActions"][ActionList[i]]["Path"].asCString();
+		Action->NewObjectName = Root["BeforeStartActions"][ActionList[i]]["NewObjectName"].asCString();
 
 		BeforeStart[atoi(ActionList[i].c_str())] = Action;
 	}
 
-	std::vector<Json::String> MacrosList = Root["macros"].getMemberNames();
+	std::vector<Json::String> MacrosList = Root["Macros"].getMemberNames();
 	for (size_t i = 0; i < MacrosList.size(); i++)
 	{
-		AddMacro(MacrosList[i], Root["macros"][MacrosList[i]].asCString());
+		AddMacro(MacrosList[i], Root["Macros"][MacrosList[i]].asCString());
 	}
 }
 

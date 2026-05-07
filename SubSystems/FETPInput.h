@@ -165,67 +165,6 @@ struct MouseAction : public FETPAction
 	}
 };
 
-//struct LaunchApplicationAction : public FETPAction
-//{
-//	std::string ApplicationPath;
-//
-//	LaunchApplicationAction() : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
-//	{
-//		ApplicationPath = "";
-//	}
-//
-//	LaunchApplicationAction(const LaunchApplicationAction& Other) : FETPAction(Other)
-//	{
-//		ApplicationPath = Other.ApplicationPath;
-//	}
-//
-//	LaunchApplicationAction(std::string ApplicationPath) : FETPAction(FETP_LAUNCH_APPLICATION_ACTION)
-//	{
-//		this->ApplicationPath = ApplicationPath;
-//	}
-//
-//	Json::Value ToJson()
-//	{
-//		Json::Value Result = FETPAction::ToJson();
-//		Result["applicationPath"] = ApplicationPath;
-//		return Result;
-//	}
-//
-//	void FromJson(Json::Value Json)
-//	{
-//		FETPAction::FromJson(Json);
-//		ApplicationPath = Json["applicationPath"].asCString();
-//	}
-//};
-
-//struct SleepAction : public FETPAction
-//{
-//	int SleepDurationMS;
-//
-//	SleepAction() : FETPAction(FETP_SLEEP_ACTION)
-//	{
-//		SleepDurationMS = 10;
-//	}
-//
-//	SleepAction(int TimeToSleep) : FETPAction(FETP_SLEEP_ACTION)
-//	{
-//		this->SleepDurationMS = TimeToSleep;
-//	}
-//
-//	Json::Value ToJson()
-//	{
-//		Json::Value Result = FETPAction::ToJson();
-//		Result["sleepFor"] = SleepDurationMS;
-//		return Result;
-//	}
-//
-//	void FromJson(Json::Value Json)
-//	{
-//		FETPAction::FromJson(Json);
-//		SleepDurationMS = Json["sleepFor"].asInt();
-//	}
-//};
-
 class FETPInput
 {
 public:
