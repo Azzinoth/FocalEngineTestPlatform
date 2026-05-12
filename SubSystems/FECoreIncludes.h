@@ -1,7 +1,6 @@
 #pragma once
 
 #include "FEBasicApplication.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>

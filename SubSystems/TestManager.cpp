@@ -209,13 +209,13 @@ void TestManager::RenameTest(FETest* Test, std::string NewName)
 	}
 }
 
-void TestManager::RenameTest(size_t testIndex, std::string NewName)
+void TestManager::RenameTest(size_t TestIndex, std::string NewName)
 {
-	if (testIndex >= Tests.size())
+	if (TestIndex >= Tests.size())
 		return;
 
 	if (IsTestNameFree(NewName))
-		Tests[testIndex]->SetName(NewName);
+		Tests[TestIndex]->SetName(NewName);
 }
 
 void TestManager::SaveAsTestSet(std::string FilePath)

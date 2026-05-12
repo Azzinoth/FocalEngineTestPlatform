@@ -2,24 +2,24 @@
 
 ActionEditPopup::ActionEditPopup()
 {
-	PopupCaption = "Edit action";
+	PopupCaption = "Edit Action";
 }
 
 ActionEditPopup::~ActionEditPopup()
 {
 }
 
-void ActionEditPopup::Show(FETPAction* action)
+void ActionEditPopup::Show(FETPAction* Action)
 {
-	if (action == nullptr)
+	if (Action == nullptr)
 		return;
 
-	if (action->GetType() == FETP_BASE_ACTION ||
-		action->GetType() == FETP_SCREENSHOT_COMPARE_ACTION || 
-		action->GetType() == FETP_LAUNCH_APPLICATION_ACTION)
+	if (Action->GetType() == FETP_BASE_ACTION ||
+		Action->GetType() == FETP_SCREENSHOT_COMPARE_ACTION || 
+		Action->GetType() == FETP_LAUNCH_APPLICATION_ACTION)
 		return;
 
-	CurrentAction = action;
+	CurrentAction = Action;
 	bShouldOpen = true;
 	ImGuiModalPopup::Show();
 }
@@ -40,50 +40,50 @@ void ActionEditPopup::Render()
 	{
 		/*if (CurrentAction->GetType() == FETP_SLEEP_ACTION)
 		{
-			SleepAction* action = reinterpret_cast<SleepAction*>(CurrentAction);
+			SleepAction* Action = reinterpret_cast<SleepAction*>(CurrentAction);
 			ImGui::SetNextItemWidth(150);
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2.0f - (150.0f + 80.0f) / 2.0f);
-			int SleepDurationMS = action->SleepDurationMS;
+			int SleepDurationMS = Action->SleepDurationMS;
 			if (ImGui::InputInt("sleep for", &SleepDurationMS))
-				action->SleepDurationMS = SleepDurationMS;
+				Action->SleepDurationMS = SleepDurationMS;
 		}
 		else*/ if (CurrentAction->GetType() == FETP_MOUSE_ACTION)
 		{
-			MouseAction* action = reinterpret_cast<MouseAction*>(CurrentAction);
+			MouseAction* Action = reinterpret_cast<MouseAction*>(CurrentAction);
 
-			if (action->EventType == WM_MOUSEMOVE)
+			if (Action->EventType == WM_MOUSEMOVE)
 			{
 				ImGui::SetNextItemWidth(140);
 				static int position[] = { 0, 0 };
-				position[0] = action->HookInfo.pt.x;
-				position[1] = action->HookInfo.pt.y;
+				position[0] = Action->HookInfo.pt.x;
+				position[1] = Action->HookInfo.pt.y;
 
 				ImGui::InputInt2("position", position);
 
-				action->HookInfo.pt.x = position[0];
-				action->HookInfo.pt.y = position[1];
+				Action->HookInfo.pt.x = position[0];
+				Action->HookInfo.pt.y = position[1];
 			}
 
-			if (action->EventType == WM_MOUSEWHEEL)
+			if (Action->EventType == WM_MOUSEWHEEL)
 			{
-				static int value = 0;
+				static int Value = 0;
 
-				float yPosition = ImGui::GetCursorScreenPos().y;
-				yPosition += 20.0f;
-				ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, yPosition));
+				float YPosition = ImGui::GetCursorScreenPos().y;
+				YPosition += 20.0f;
+				ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, YPosition));
 
 				ImGui::SetNextItemWidth(140);
-				value = (short)HIWORD(action->HookInfo.mouseData);
-				ImGui::InputInt("wheel movement", &value);
+				Value = (short)HIWORD(Action->HookInfo.mouseData);
+				ImGui::InputInt("wheel movement", &Value);
 			}
 		}
 		else if (CurrentAction->GetType() == FETP_KEYBOARD_ACTION)
 		{
-			KeyboardAction* action = reinterpret_cast<KeyboardAction*>(CurrentAction);
+			KeyboardAction* Action = reinterpret_cast<KeyboardAction*>(CurrentAction);
 			ImGui::SetNextItemWidth(80);
-			int keyCode = action->HookInfo.vkCode;
-			ImGui::InputInt("key code", &keyCode);
-			action->HookInfo.vkCode = keyCode;
+			int KeyCode = Action->HookInfo.vkCode;
+			ImGui::InputInt("key code", &KeyCode);
+			Action->HookInfo.vkCode = KeyCode;
 		}
 
 		ImGui::SetItemDefaultFocus();

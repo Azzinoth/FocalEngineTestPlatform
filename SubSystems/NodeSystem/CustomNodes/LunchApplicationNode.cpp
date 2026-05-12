@@ -91,7 +91,10 @@ void LunchApplicationNode::Draw()
 	if (ImGui::Button("Change Path..."))
 	{
 		std::string NewPath;
-		FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(NewPath, ApplicationLoadFilter, 1);
+		std::string InitialDirectory;
+		if (!Data.empty() && FocalEngine::FILE_SYSTEM.DoesFileExist(Data))
+			InitialDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(Data);
+		FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(NewPath, ApplicationLoadFilter, 1, InitialDirectory);
 		if (!NewPath.empty())
 			SetPath(NewPath);
 	}

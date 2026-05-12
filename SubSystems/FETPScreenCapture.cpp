@@ -73,11 +73,11 @@ void FETPScreenCapture::InitializeDirectX()
         D3D_FEATURE_LEVEL_9_1
     };
 
-    for (const auto& driverType : DriverTypes)
+    for (const auto& DriverType : DriverTypes)
     {
         const auto OperationResult = D3D11CreateDevice(
             nullptr,
-            driverType,
+            DriverType,
             nullptr,
             0,
             FeatureLevels,

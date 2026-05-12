@@ -31,13 +31,13 @@ DWORD FETPAction::GetTimeStamp()
 
 Json::Value FETPAction::ToJson()
 {
-	Json::Value result;
+	Json::Value Result;
 
-	result["ID"] = ID;
-	result["internalType"] = InternalType;
-	result["time"] = unsigned int(Time);
+	Result["ID"] = ID;
+	Result["internalType"] = InternalType;
+	Result["time"] = unsigned int(Time);
 
-	return result;
+	return Result;
 }
 
 std::string FETPAction::GetID()

@@ -181,8 +181,8 @@ public:
 	void SimulateKeyEvent(WPARAM Type, DWORD VirtualKeyCode);
 	void SimulateTextInput(std::string Text, int AverageDelay = 10);
 
-	void SetGlobalKeyboardCallback(std::function<void(KeyboardAction keyAction)> Function);
-	void SetGlobalMouseCallback(std::function<void(MouseAction mouseAction)> Function);
+	void SetGlobalKeyboardCallback(std::function<void(KeyboardAction Action)> Function);
+	void SetGlobalMouseCallback(std::function<void(MouseAction Action)> Function);
 
 	void Update();
 
@@ -203,8 +203,8 @@ private:
 
 	void ProcessBufferedActions();
 
-	std::function<void(KeyboardAction keyAction)> ClientGlobalKeyboardCallback = nullptr;
-	std::function<void(MouseAction keyAction)> ClientGlobalMouseCallback = nullptr;
+	std::function<void(KeyboardAction Action)> ClientGlobalKeyboardCallback = nullptr;
+	std::function<void(MouseAction Action)> ClientGlobalMouseCallback = nullptr;
 };
 
 #define INPUT_SYSTEM FETPInput::GetInstance()

@@ -111,7 +111,7 @@ void FETest::Load()
 	for (size_t i = 0; i < ActionList.size(); i++)
 	{
 		FETestBeforeAction* Action = new FETestBeforeAction();
-		Action->Type = FETest::stringToFEBeforeTestActionType(Root["BeforeStartActions"][ActionList[i]]["Type"].asCString());
+		Action->Type = FETest::StringToFEBeforeTestActionType(Root["BeforeStartActions"][ActionList[i]]["Type"].asCString());
 		Action->Path = Root["BeforeStartActions"][ActionList[i]]["Path"].asCString();
 		Action->NewObjectName = Root["BeforeStartActions"][ActionList[i]]["NewObjectName"].asCString();
 
@@ -134,13 +134,13 @@ void FETest::ReColorMainTestPath()
 {
 	// Change style of all connections to default.
 	EntryPointNodeArea->RunOnEachNode([](VisNodeSys::Node* Node) {
-		size_t outSocketCount = Node->GetOutputSocketCount();
-		for (size_t i = 0; i < outSocketCount; i++)
+		size_t OutSocketCount = Node->GetOutputSocketCount();
+		for (size_t i = 0; i < OutSocketCount; i++)
 		{
-			ConnectionStyle TempStyle;
-			Node->GetParentArea()->GetConnectionStyle(Node, true, i, TempStyle);
-			TempStyle.bMarchingAntsEffect = false;
-			Node->GetParentArea()->SetConnectionStyle(Node, true, i, TempStyle);
+			ConnectionStyle TemporaryStyle;
+			Node->GetParentArea()->GetConnectionStyle(Node, true, i, TemporaryStyle);
+			TemporaryStyle.bMarchingAntsEffect = false;
+			Node->GetParentArea()->SetConnectionStyle(Node, true, i, TemporaryStyle);
 		}
 	});
 
@@ -150,13 +150,13 @@ void FETest::ReColorMainTestPath()
 
 	EntryPointNodeArea->RunOnEachConnectedNode(GetBeginNode(),
 		[](VisNodeSys::Node* Node) {
-			size_t outSocketCount = Node->GetOutputSocketCount();
-			for (size_t i = 0; i < outSocketCount; i++)
+			size_t OutSocketCount = Node->GetOutputSocketCount();
+			for (size_t i = 0; i < OutSocketCount; i++)
 			{
-				ConnectionStyle TempStyle;
-				Node->GetParentArea()->GetConnectionStyle(Node, true, i, TempStyle);
-				TempStyle.bMarchingAntsEffect = true;
-				Node->GetParentArea()->SetConnectionStyle(Node, true, i, TempStyle);
+				ConnectionStyle TemporaryStyle;
+				Node->GetParentArea()->GetConnectionStyle(Node, true, i, TemporaryStyle);
+				TemporaryStyle.bMarchingAntsEffect = true;
+				Node->GetParentArea()->SetConnectionStyle(Node, true, i, TemporaryStyle);
 			}
 		}
 	);

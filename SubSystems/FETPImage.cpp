@@ -10,9 +10,9 @@ FETPImage::FETPImage(FETPImage& Other)
 {
 	TemporaryRawData = nullptr;
 	FullPath = Other.FullPath;
-	unsigned char* TempData = Other.GetRawData();
-	Initialize(TempData, Other.GetWidth(), Other.GetHeight());
-	delete[] TempData;
+	unsigned char* TemporaryData = Other.GetRawData();
+	Initialize(TemporaryData, Other.GetWidth(), Other.GetHeight());
+	delete[] TemporaryData;
 }
 
 FETPImage::FETPImage(unsigned char* RawData, int Width, int Height)
@@ -246,11 +246,11 @@ void FETPImage::SetFullPath(std::string NewValue)
 
 std::string FETPImage::EncodeRawDataToBase64()
 {
-	unsigned char* TempRawData = GetRawData();
+	unsigned char* TemporaryRawData = GetRawData();
 	std::vector<unsigned char> PNGData;
-	lodepng::encode(PNGData, TempRawData, GetWidth(), GetHeight());
+	lodepng::encode(PNGData, TemporaryRawData, GetWidth(), GetHeight());
 	std::string Result = NODE_CORE.Base64Encode(PNGData.data(), PNGData.size());
-	delete[] TempRawData;
+	delete[] TemporaryRawData;
 
 	return Result;
 }

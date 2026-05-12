@@ -498,11 +498,11 @@ bool FEPTActionSystem::KeyboardTextActionFilter(FETPAction* Action, int OutputCo
 
 	if (Action->GetType() == FETP_KEYBOARD_ACTION)
 	{
-		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(Action);
-		if (keyboardAction->EventType == WM_KEYDOWN || keyboardAction->EventType == WM_SYSKEYDOWN ||
-			keyboardAction->EventType == WM_KEYUP || keyboardAction->EventType == WM_SYSKEYUP)
+		KeyboardAction* TypedAction = reinterpret_cast<KeyboardAction*>(Action);
+		if (TypedAction->EventType == WM_KEYDOWN || TypedAction->EventType == WM_SYSKEYDOWN ||
+			TypedAction->EventType == WM_KEYUP || TypedAction->EventType == WM_SYSKEYUP)
 		{
-			if (INPUT_SYSTEM.GetCharFromAction(keyboardAction) != 0 || keyboardAction->HookInfo.vkCode == VK_RSHIFT || keyboardAction->HookInfo.vkCode == VK_CAPITAL)
+			if (INPUT_SYSTEM.GetCharFromAction(TypedAction) != 0 || TypedAction->HookInfo.vkCode == VK_RSHIFT || TypedAction->HookInfo.vkCode == VK_CAPITAL)
 				return true;
 		}
 	}
@@ -523,11 +523,11 @@ bool FEPTActionSystem::KeyboardPressActionFilter(FETPAction* Action, int OutputC
 
 	if (Action->GetType() == FETP_KEYBOARD_ACTION)
 	{
-		KeyboardAction* keyboardAction = reinterpret_cast<KeyboardAction*>(Action);
-		if (keyboardAction->EventType == WM_KEYDOWN || keyboardAction->EventType == WM_SYSKEYDOWN ||
-			keyboardAction->EventType == WM_KEYUP || keyboardAction->EventType == WM_SYSKEYUP)
+		KeyboardAction* TypedAction = reinterpret_cast<KeyboardAction*>(Action);
+		if (TypedAction->EventType == WM_KEYDOWN || TypedAction->EventType == WM_SYSKEYDOWN ||
+			TypedAction->EventType == WM_KEYUP || TypedAction->EventType == WM_SYSKEYUP)
 		{
-			if (INPUT_SYSTEM.GetCharFromAction(keyboardAction) == 0 && keyboardAction->HookInfo.vkCode != VK_RSHIFT && keyboardAction->HookInfo.vkCode != VK_CAPITAL)
+			if (INPUT_SYSTEM.GetCharFromAction(TypedAction) == 0 && TypedAction->HookInfo.vkCode != VK_RSHIFT && TypedAction->HookInfo.vkCode != VK_CAPITAL)
 				return true;
 		}
 	}

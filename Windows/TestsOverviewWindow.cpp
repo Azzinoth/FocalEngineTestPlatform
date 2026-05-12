@@ -154,7 +154,7 @@ void TestsOverviewWindow::RenderContextMenu()
 
 					for (size_t i = 0; i < TEST_MANAGER.Tests.size(); i++)
 					{
-						bool result = ACTION_SYSTEM.Run(TEST_MANAGER.Tests[i]);
+						bool Result = ACTION_SYSTEM.Run(TEST_MANAGER.Tests[i]);
 						Sleep(250);
 					}
 				}

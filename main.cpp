@@ -31,10 +31,10 @@ void NodeCallback(VisNodeSys::Node* Node, VisNodeSys::NODE_EVENT CurrentNodeEven
 		size_t OutSocketCount = Node->GetOutputSocketCount();
 		for (size_t i = 0; i < OutSocketCount; i++)
 		{
-			VisNodeSys::ConnectionStyle TempStyle;
-			Node->GetParentArea()->GetConnectionStyle(Node, true, i, TempStyle);
-			TempStyle.bMarchingAntsEffect = false;
-			Node->GetParentArea()->SetConnectionStyle(Node, true, i, TempStyle);
+			VisNodeSys::ConnectionStyle TemporaryStyle;
+			Node->GetParentArea()->GetConnectionStyle(Node, true, i, TemporaryStyle);
+			TemporaryStyle.bMarchingAntsEffect = false;
+			Node->GetParentArea()->SetConnectionStyle(Node, true, i, TemporaryStyle);
 		}
 	});
 

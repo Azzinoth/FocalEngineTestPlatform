@@ -88,7 +88,7 @@ public:
 	FETPAction* FailedAction = nullptr;
 	FE_TEST_FAIL_REASON FailReason = FE_TEST_NO_FAIL;
 
-	FETestScreenshotCompareResult* getScreenshotCompareResult()
+	FETestScreenshotCompareResult* GetScreenshotCompareResult()
 	{
 		return ScreenshotCompare;
 	}
@@ -244,7 +244,7 @@ public:
 		return "FE_NULL";
 	}
 
-	static FE_BEFORE_TEST_ACTION_TYPE stringToFEBeforeTestActionType(std::string Text)
+	static FE_BEFORE_TEST_ACTION_TYPE StringToFEBeforeTestActionType(std::string Text)
 	{
 		if (Text == "CREATE_FILE")
 		{

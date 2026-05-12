@@ -141,12 +141,12 @@ void FETPInput::Update()
 	ProcessBufferedActions();
 }
 
-void FETPInput::SetGlobalKeyboardCallback(std::function<void(KeyboardAction keyAction)> Function)
+void FETPInput::SetGlobalKeyboardCallback(std::function<void(KeyboardAction Action)> Function)
 {
 	ClientGlobalKeyboardCallback = Function;
 }
 
-void FETPInput::SetGlobalMouseCallback(std::function<void(MouseAction mouseAction)> Function)
+void FETPInput::SetGlobalMouseCallback(std::function<void(MouseAction Action)> Function)
 {
 	ClientGlobalMouseCallback = Function;
 }

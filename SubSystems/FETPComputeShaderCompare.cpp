@@ -35,11 +35,11 @@ GLuint FETPComputeShaderCompare::LoadShader(const char* ShaderText, const GLuint
 
 	FE_GL_ERROR(glShaderSource(ShaderID, 1, &ShaderText, nullptr));
 	FE_GL_ERROR(glCompileShader(ShaderID));
-	GLint status = 0;
-	FE_GL_ERROR(glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &status));
+	GLint Status = 0;
+	FE_GL_ERROR(glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &Status));
 
 	std::string CompilationErrors;
-	if (status == GL_FALSE) {
+	if (Status == GL_FALSE) {
 		GLint LogSize = 0;
 		FE_GL_ERROR(glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogSize));
 		std::vector<GLchar> ErrorLog(LogSize);
@@ -50,7 +50,7 @@ GLuint FETPComputeShaderCompare::LoadShader(const char* ShaderText, const GLuint
 			CompilationErrors.push_back(ErrorLog[i]);
 		}
 
-		assert(status);
+		assert(Status);
 	}
 
 	FE_GL_ERROR(ProgramID = glCreateProgram());

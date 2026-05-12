@@ -51,16 +51,16 @@ void FETPScreen::GetScreenRegion(unsigned char* Data, int Left, int Top, int Wid
 	if (size_t(Left + Width) > TEST_PLATFORM.GetScreenWidth())
 		return;
 
-	size_t destenationIndex = 0;
+	size_t DestinationIndex = 0;
 	for (size_t i = Top; i < size_t(Top + Height); i++)
 	{
 		for (size_t j = Left; j < size_t(Left + Width); j++)
 		{
-			size_t sourceIndex = (i * TEST_PLATFORM.GetScreenWidth() + j) * 4;
-			Data[destenationIndex++] = ScreenData[sourceIndex];
-			Data[destenationIndex++] = ScreenData[sourceIndex + 1];
-			Data[destenationIndex++] = ScreenData[sourceIndex + 2];
-			Data[destenationIndex++] = ScreenData[sourceIndex + 3];
+			size_t SourceIndex = (i * TEST_PLATFORM.GetScreenWidth() + j) * 4;
+			Data[DestinationIndex++] = ScreenData[SourceIndex];
+			Data[DestinationIndex++] = ScreenData[SourceIndex + 1];
+			Data[DestinationIndex++] = ScreenData[SourceIndex + 2];
+			Data[DestinationIndex++] = ScreenData[SourceIndex + 3];
 		}
 	}
 }
@@ -80,27 +80,27 @@ int FETPScreen::Compare(size_t Width, size_t Height, unsigned char* FirstData, u
 	if (FirstData == nullptr || SecondData == nullptr)
 		return 0;
 
-	int dataLength = static_cast<int>(Width * Height * 4);
-	int count = 0;
-	for (int i = 0; i < dataLength; i+=4)
+	int DataLength = static_cast<int>(Width * Height * 4);
+	int Count = 0;
+	for (int i = 0; i < DataLength; i+=4)
 	{
 		int Difference = abs(FirstData[i] - SecondData[i]);
 		DifferenceData[i] = Difference;
 
 		if (Difference > MaxColorShift)
-			count++;
+			Count++;
 
 		Difference = abs(FirstData[i + 1] - SecondData[i + 1]);
 		DifferenceData[i] += Difference;
 
 		if (Difference > MaxColorShift)
-			count++;
+			Count++;
 
 		Difference = abs(FirstData[i + 2] - SecondData[i + 2]);
 		DifferenceData[i] += Difference;
 
 		if (Difference > MaxColorShift)
-			count++;
+			Count++;
 
 		DifferenceData[i] /= 3;
 		DifferenceData[i + 1] = DifferenceData[i];
@@ -108,7 +108,7 @@ int FETPScreen::Compare(size_t Width, size_t Height, unsigned char* FirstData, u
 		DifferenceData[i + 3] = 255;
 	}
 
-	int Similarity = int(100.0f - float(count) / float(dataLength) * 100.0f);
+	int Similarity = int(100.0f - float(Count) / float(DataLength) * 100.0f);
 	return Similarity;
 }
 
@@ -117,32 +117,32 @@ glm::vec2 FETPScreen::ImageSizeInRegion(size_t ImageWidth, size_t ImageHeight, s
 	if (ImageWidth == 0.0f || ImageHeight == 0.0f)
 		return glm::vec2(1.0f);
 
-	glm::vec2 result;
-	float aspectRatio = float(ImageWidth) / float(ImageHeight);
+	glm::vec2 Result;
+	float AspectRatio = float(ImageWidth) / float(ImageHeight);
 	if (ImageWidth > ImageHeight)
 	{
-		result.x = float(RegionWidth);
-		result.y = result.x / aspectRatio;
+		Result.x = float(RegionWidth);
+		Result.y = Result.x / AspectRatio;
 
-		if (result.y > RegionHeight)
+		if (Result.y > RegionHeight)
 		{
-			result.y = float(RegionHeight);
-			result.x = result.y * aspectRatio;
+			Result.y = float(RegionHeight);
+			Result.x = Result.y * AspectRatio;
 		}
 	}
 	else
 	{
-		result.y = float(RegionHeight);
-		result.x = result.y * aspectRatio;
+		Result.y = float(RegionHeight);
+		Result.x = Result.y * AspectRatio;
 
-		if (result.x > RegionWidth)
+		if (Result.x > RegionWidth)
 		{
-			result.x = float(RegionWidth);
-			result.y = result.x / aspectRatio;
+			Result.x = float(RegionWidth);
+			Result.y = Result.x / AspectRatio;
 		}
 	}
 
-	return result;
+	return Result;
 }
 
 int FETPScreen::SimpleCompare(size_t Width, size_t Height, unsigned char* FirstData, unsigned char* SecondData, int MaxColorShift)
@@ -150,28 +150,28 @@ int FETPScreen::SimpleCompare(size_t Width, size_t Height, unsigned char* FirstD
 	if (FirstData == nullptr || SecondData == nullptr)
 		return 0;
 
-	int dataLength = static_cast<int>(Width * Height * 4);
-	int count = 0;
-	for (int i = 0; i < dataLength; i += 4)
+	int DataLength = static_cast<int>(Width * Height * 4);
+	int Count = 0;
+	for (int i = 0; i < DataLength; i += 4)
 	{
 		int Difference = abs(FirstData[i] - SecondData[i]);
 		if (Difference > MaxColorShift)
-			count++;
+			Count++;
 
 		Difference = abs(FirstData[i + 1] - SecondData[i + 1]);
 		if (Difference > MaxColorShift)
-			count++;
+			Count++;
 
 		Difference = abs(FirstData[i + 2] - SecondData[i + 2]);
 		if (Difference > MaxColorShift)
-			count++;
+			Count++;
 
 		// Early way out if more than 5 % difference.
-		if (float(count) / float(dataLength) * 100.0f > 5)
+		if (float(Count) / float(DataLength) * 100.0f > 5)
 			return 0;
 	}
 
-	int Similarity = int(100.0f - float(count) / float(dataLength) * 100.0f);
+	int Similarity = int(100.0f - float(Count) / float(DataLength) * 100.0f);
 	return Similarity;
 }
 
@@ -180,189 +180,189 @@ FETPImage* FETPScreen::GetScreenDataAsImage(unsigned int MonitorIndex)
 	return FETPScreenCapture::GetInstance().GetScreenImage(MonitorIndex);
 }
 
-int convertXYtoIndex(size_t width, int x, int y, int imageDepth)
+int ConvertXYToIndex(size_t Width, int x, int y, int ImageDepth)
 {
-	return static_cast<int>((y * width + x) * imageDepth);
+	return static_cast<int>((y * Width + x) * ImageDepth);
 }
 
-std::vector<long long> convertToIntegralImage(size_t width, size_t height, unsigned char* data, int colorDepth)
+std::vector<long long> ConvertToIntegralImage(size_t Width, size_t Height, unsigned char* Data, int ColorDepth)
 {
-	std::vector<long long> result_rgb;
-	std::vector<long long> result_r;
-	std::vector<long long> result_g;
-	std::vector<long long> result_b;
+	std::vector<long long> ResultRGB;
+	std::vector<long long> ResultR;
+	std::vector<long long> ResultG;
+	std::vector<long long> ResultB;
 
-	result_rgb.resize(width * height);
-	result_r.resize(width * height);
-	result_g.resize(width * height);
-	result_b.resize(width * height);
+	ResultRGB.resize(Width * Height);
+	ResultR.resize(Width * Height);
+	ResultG.resize(Width * Height);
+	ResultB.resize(Width * Height);
 
-	int indexCounter = 0;
-	if (colorDepth > 0)
+	int IndexCounter = 0;
+	if (ColorDepth > 0)
 	{
-		for (int i = 0; i < height; i++)
+		for (int i = 0; i < Height; i++)
 		{
-			for (int j = 0; j < width; j++)
+			for (int j = 0; j < Width; j++)
 			{
-				int index = convertXYtoIndex(width, j, i, 4);
-				result_r[indexCounter] = data[index];
+				int Index = ConvertXYToIndex(Width, j, i, 4);
+				ResultR[IndexCounter] = Data[Index];
 
 				if ((j - 1) >= 0)
 				{
-					result_r[indexCounter] += result_r[convertXYtoIndex(width, j - 1, i, 1)];
+					ResultR[IndexCounter] += ResultR[ConvertXYToIndex(Width, j - 1, i, 1)];
 				}
 
 				if ((i - 1) >= 0)
 				{
-					result_r[indexCounter] += result_r[convertXYtoIndex(width, j, i - 1, 1)];
+					ResultR[IndexCounter] += ResultR[ConvertXYToIndex(Width, j, i - 1, 1)];
 				}
 
 				if ((j - 1) >= 0 && (i - 1) >= 0)
 				{
-					result_r[indexCounter] -= result_r[convertXYtoIndex(width, j - 1, i - 1, 1)];
+					ResultR[IndexCounter] -= ResultR[ConvertXYToIndex(Width, j - 1, i - 1, 1)];
 				}
 
-				indexCounter++;
+				IndexCounter++;
 			}
 		}
 	}
 
-	if (colorDepth > 1)
+	if (ColorDepth > 1)
 	{
-		indexCounter = 0;
-		for (int i = 0; i < height; i++)
+		IndexCounter = 0;
+		for (int i = 0; i < Height; i++)
 		{
-			for (int j = 0; j < width; j++)
+			for (int j = 0; j < Width; j++)
 			{
-				int index = convertXYtoIndex(width, j, i, 4);
-				result_g[indexCounter] = data[index + 1];
+				int Index = ConvertXYToIndex(Width, j, i, 4);
+				ResultG[IndexCounter] = Data[Index + 1];
 
 				if ((j - 1) >= 0)
 				{
-					result_g[indexCounter] += result_g[convertXYtoIndex(width, j - 1, i, 1)];
+					ResultG[IndexCounter] += ResultG[ConvertXYToIndex(Width, j - 1, i, 1)];
 				}
 
 				if ((i - 1) >= 0)
 				{
-					result_g[indexCounter] += result_g[convertXYtoIndex(width, j, i - 1, 1)];
+					ResultG[IndexCounter] += ResultG[ConvertXYToIndex(Width, j, i - 1, 1)];
 				}
 
 				if ((j - 1) >= 0 && (i - 1) >= 0)
 				{
-					result_g[indexCounter] -= result_g[convertXYtoIndex(width, j - 1, i - 1, 1)];
+					ResultG[IndexCounter] -= ResultG[ConvertXYToIndex(Width, j - 1, i - 1, 1)];
 				}
 
-				indexCounter++;
+				IndexCounter++;
 			}
 		}
 	}
 
-	if (colorDepth > 2)
+	if (ColorDepth > 2)
 	{
-		indexCounter = 0;
-		for (int i = 0; i < height; i++)
+		IndexCounter = 0;
+		for (int i = 0; i < Height; i++)
 		{
-			for (int j = 0; j < width; j++)
+			for (int j = 0; j < Width; j++)
 			{
-				int index = convertXYtoIndex(width, j, i, 4);
-				result_b[indexCounter] = data[index + 2];
+				int Index = ConvertXYToIndex(Width, j, i, 4);
+				ResultB[IndexCounter] = Data[Index + 2];
 
 				if ((j - 1) >= 0)
 				{
-					result_b[indexCounter] += result_b[convertXYtoIndex(width, j - 1, i, 1)];
+					ResultB[IndexCounter] += ResultB[ConvertXYToIndex(Width, j - 1, i, 1)];
 				}
 
 				if ((i - 1) >= 0)
 				{
-					result_b[indexCounter] += result_b[convertXYtoIndex(width, j, i - 1, 1)];
+					ResultB[IndexCounter] += ResultB[ConvertXYToIndex(Width, j, i - 1, 1)];
 				}
 
 				if ((j - 1) >= 0 && (i - 1) >= 0)
 				{
-					result_b[indexCounter] -= result_b[convertXYtoIndex(width, j - 1, i - 1, 1)];
+					ResultB[IndexCounter] -= ResultB[ConvertXYToIndex(Width, j - 1, i - 1, 1)];
 				}
 
-				indexCounter++;
+				IndexCounter++;
 			}
 		}
 	}
 
-	for (int i = 0; i < result_r.size(); i++)
+	for (int i = 0; i < ResultR.size(); i++)
 	{
-		result_rgb[i] = result_r[i] + result_g[i] + result_b[i];
+		ResultRGB[i] = ResultR[i] + ResultG[i] + ResultB[i];
 	}
 
-	return result_rgb;
+	return ResultRGB;
 }
 
-long long getSubIntegralImage(int x, int y, int subImageW, int subImageH, int totalW, int totalH, std::vector<long long>& integralImage)
+long long GetSubIntegralImage(int x, int y, int SubImageWidth, int SubImageHeight, int TotalWidth, int TotalHeight, std::vector<long long>& IntegralImage)
 {
-	long long result = 0;
+	long long Result = 0;
 
-	subImageW -= 1;
-	subImageH -= 1;
+	SubImageWidth -= 1;
+	SubImageHeight -= 1;
 
-	if (x < 0 || y < 0 || subImageW < 1 || subImageH < 1 || x + subImageW > totalW || y + subImageH > totalH)
-		return result;
+	if (x < 0 || y < 0 || SubImageWidth < 1 || SubImageHeight < 1 || x + SubImageWidth > TotalWidth || y + SubImageHeight > TotalHeight)
+		return Result;
 
-	long long D = integralImage[convertXYtoIndex(totalW, x + subImageW, y + subImageH, 1)];
+	long long D = IntegralImage[ConvertXYToIndex(TotalWidth, x + SubImageWidth, y + SubImageHeight, 1)];
 
 	long long B = 0;
 	if (y - 1 >= 0)
-		B = integralImage[convertXYtoIndex(totalW, x + subImageW, y - 1, 1)];
+		B = IntegralImage[ConvertXYToIndex(TotalWidth, x + SubImageWidth, y - 1, 1)];
 
 	long long C = 0;
 	if (x - 1 >= 0)
-		C = integralImage[convertXYtoIndex(totalW, x - 1, y + subImageH, 1)];
+		C = IntegralImage[ConvertXYToIndex(TotalWidth, x - 1, y + SubImageHeight, 1)];
 
 	long long A = 0;
 	if (x - 1 >= 0 && y - 1 >= 0)
-		A = integralImage[convertXYtoIndex(totalW, x - 1, y - 1, 1)];
+		A = IntegralImage[ConvertXYToIndex(TotalWidth, x - 1, y - 1, 1)];
 
-	result = D - B - C + A;
+	Result = D - B - C + A;
 
-	return result;
+	return Result;
 }
 
 bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data, size_t& X, size_t& Y, float CorrectnessThreshold, int MaxColorShift, int* MaxSimilarity)
 {
 	UpdateScreenData();
 
-	//int dataLenght = width * height * 3;
-	//float maxDifference = 1.0f - (correctnessThreshold / 100.0f);
-	//int persentInPixels = int(dataLenght * maxDifference);
+	//int DataLength = Width * Height * 3;
+	//float MaxDifference = 1.0f - (correctnessThreshold / 100.0f);
+	//int PercentInPixels = int(DataLength * MaxDifference);
 
 	//int maxSimilarity = 0;
-	//int maxSimilarityX = -1;
-	//int maxSimilarityY = -1;
+	//int MaxSimilarityX = -1;
+	//int MaxSimilarityY = -1;
 
 	//int screenW = TEST_PLATFORM.getScreenWidth();
 	//int screenH = TEST_PLATFORM.getScreenHeight();
 
-	//std::vector<long long> screenIntegral = convertToIntegralImage(TEST_PLATFORM.getScreenWidth(), TEST_PLATFORM.getScreenHeight(), screenData, 3);
-	//std::vector<long long> regionIntegral = convertToIntegralImage(width, height, data, 3);
+	//std::vector<long long> screenIntegral = ConvertToIntegralImage(TEST_PLATFORM.getScreenWidth(), TEST_PLATFORM.getScreenHeight(), screenData, 3);
+	//std::vector<long long> regionIntegral = ConvertToIntegralImage(Width, Height, Data, 3);
 
 	//long long lookingFor = regionIntegral.back();
 
-	//float pixelCount = width * height;
+	//float pixelCount = Width * Height;
 	//float threshold = pixelCount * (1.0f - correctnessThreshold / 100.0f);
 
 	//for (size_t i = 0; i < screenH; i++)
 	//{
 	//	for (size_t j = 0; j < screenW; j++)
 	//	{
-	//		if (i + height >= screenH ||
-	//			j + width >= screenW)
+	//		if (i + Height >= screenH ||
+	//			j + Width >= screenW)
 	//			continue;
 
-	//		long long subImage = getSubIntegralImage(j, i, width, height, screenW, screenH, screenIntegral);
+	//		long long subImage = GetSubIntegralImage(j, i, Width, Height, screenW, screenH, screenIntegral);
 	//		long long diff = abs(lookingFor - subImage);
 
 	//		/*if (diff < maxSimilarity)
 	//		{
 	//			maxSimilarity = diff;
-	//			maxSimilarityX = j;
-	//			maxSimilarityY = i;
+	//			MaxSimilarityX = j;
+	//			MaxSimilarityY = i;
 	//		}*/
 
 	//		if (diff == 0/*< threshold*/)
@@ -372,49 +372,49 @@ bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data
 	//			return true;*/
 
 	//			int similarity = 0;
-	//			int count = 0;
+	//			int Count = 0;
 
-	//			for (size_t k = i; k < size_t(i + height); k++)
+	//			for (size_t k = i; k < size_t(i + Height); k++)
 	//			{
-	//				for (size_t l = j; l < size_t(j + width); l++)
+	//				for (size_t l = j; l < size_t(j + Width); l++)
 	//				{
-	//					size_t sourceIndex = convertXYtoIndex(TEST_PLATFORM.getScreenWidth(), l, k, 4);
-	//					//size_t sourceIndex = (k * TEST_PLATFORM.getScreenWidth() + l) * 4;
-	//					size_t Index = convertXYtoIndex(width, l - j, k - i, 4);
-	//					//size_t Index = ((k - i) * width + l - j) * 4;
+	//					size_t SourceIndex = ConvertXYToIndex(TEST_PLATFORM.getScreenWidth(), l, k, 4);
+	//					//size_t SourceIndex = (k * TEST_PLATFORM.getScreenWidth() + l) * 4;
+	//					size_t Index = ConvertXYToIndex(Width, l - j, k - i, 4);
+	//					//size_t Index = ((k - i) * Width + l - j) * 4;
 
-	//					if (abs(data[Index] - screenData[sourceIndex]) > maxColorShift)
-	//						count++;
+	//					if (abs(Data[Index] - screenData[SourceIndex]) > maxColorShift)
+	//						Count++;
 
-	//					if (abs(data[Index + 1] - screenData[sourceIndex + 1] > maxColorShift))
-	//						count++;
+	//					if (abs(Data[Index + 1] - screenData[SourceIndex + 1] > maxColorShift))
+	//						Count++;
 
-	//					if (abs(data[Index + 2] - screenData[sourceIndex + 2] > maxColorShift))
-	//						count++;
+	//					if (abs(Data[Index + 2] - screenData[SourceIndex + 2] > maxColorShift))
+	//						Count++;
 
 	//					// Early way out if more than 5 % difference.
-	//					if (count > persentInPixels)
+	//					if (Count > PercentInPixels)
 	//					{
-	//						count = dataLenght;
+	//						Count = DataLength;
 	//						break;
 	//					}
 	//				}
 
 	//				// Early way out if more than 5 % difference.
-	//				if (count > persentInPixels)
+	//				if (Count > PercentInPixels)
 	//				{
-	//					count = dataLenght;
+	//					Count = DataLength;
 	//					break;
 	//				}
 	//			}
 
-	//			similarity = int(100.0f - float(count) / float(dataLenght) * 100.0f);
+	//			similarity = int(100.0f - float(Count) / float(DataLength) * 100.0f);
 
 	//			if (maxSimilarity < similarity)
 	//			{
 	//				maxSimilarity = similarity;
-	//				maxSimilarityX = j;
-	//				maxSimilarityY = i;
+	//				MaxSimilarityX = j;
+	//				MaxSimilarityY = i;
 	//			}
 
 	//			if (similarity >= correctnessThreshold)
@@ -432,17 +432,17 @@ bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data
 
 
 	// We compare only rgb.
-	int dataLenght = static_cast<int>(Width * Height * 3);
+	int DataLength = static_cast<int>(Width * Height * 3);
 
-	float maxDifference = 1.0f - (CorrectnessThreshold / 100.0f);
-	int persentInPixels = int(dataLenght * maxDifference);
+	float MaxDifference = 1.0f - (CorrectnessThreshold / 100.0f);
+	int PercentInPixels = int(DataLength * MaxDifference);
 
-	int localMaxSimilarity = 0;
-	int maxSimilarityX = -1;
-	int maxSimilarityY = -1;
+	int LocalMaxSimilarity = 0;
+	int MaxSimilarityX = -1;
+	int MaxSimilarityY = -1;
 
-	DWORD totalTimeRegion = 0;
-	int iteration = 0;
+	DWORD TotalTimeRegion = 0;
+	int Iteration = 0;
 
 	for (size_t i = 0; i < GetScreenWidth(); i++)
 	{
@@ -453,47 +453,47 @@ bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data
 				continue;
 
 			int Similarity = 0;
-			int count = 0;
+			int Count = 0;
 
 			for (size_t k = j; k < size_t(j + Height); k++)
 			{
 				for (size_t l = i; l < size_t(i + Width); l++)
 				{
-					size_t sourceIndex = (k * TEST_PLATFORM.GetScreenWidth() + l) * 4;
+					size_t SourceIndex = (k * TEST_PLATFORM.GetScreenWidth() + l) * 4;
 					size_t Index = ((k - j) * Width + l - i) * 4;
 
-					if (abs(Data[Index] - ScreenData[sourceIndex]) > MaxColorShift)
-						count++;
+					if (abs(Data[Index] - ScreenData[SourceIndex]) > MaxColorShift)
+						Count++;
 
-					if (abs(Data[Index + 1] - ScreenData[sourceIndex + 1]) > MaxColorShift)
-						count++;
+					if (abs(Data[Index + 1] - ScreenData[SourceIndex + 1]) > MaxColorShift)
+						Count++;
 
-					if (abs(Data[Index + 2] - ScreenData[sourceIndex + 2]) > MaxColorShift)
-						count++;
+					if (abs(Data[Index + 2] - ScreenData[SourceIndex + 2]) > MaxColorShift)
+						Count++;
 
 					// Early way out if more than 5 % difference.
-					if (count > persentInPixels)
+					if (Count > PercentInPixels)
 					{
-						count = dataLenght;
+						Count = DataLength;
 						break;
 					}
 				}
 
 				// Early way out if more than 5 % difference.
-				if (count > persentInPixels)
+				if (Count > PercentInPixels)
 				{
-					count = dataLenght;
+					Count = DataLength;
 					break;
 				}
 			}
 
-			Similarity = int(100.0f - float(count) / float(dataLenght) * 100.0f);
+			Similarity = int(100.0f - float(Count) / float(DataLength) * 100.0f);
 
-			if (localMaxSimilarity < Similarity)
+			if (LocalMaxSimilarity < Similarity)
 			{
-				localMaxSimilarity = Similarity;
-				maxSimilarityX = static_cast<int>(i);
-				maxSimilarityY = static_cast<int>(j);
+				LocalMaxSimilarity = Similarity;
+				MaxSimilarityX = static_cast<int>(i);
+				MaxSimilarityY = static_cast<int>(j);
 			}
 			
 			if (Similarity >= CorrectnessThreshold)
@@ -502,7 +502,7 @@ bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data
 				Y = j;
 
 				if (MaxSimilarity != nullptr)
-					*MaxSimilarity = localMaxSimilarity;
+					*MaxSimilarity = LocalMaxSimilarity;
 
 				return true;
 			}
@@ -510,7 +510,7 @@ bool FETPScreen::SearchOnScreen(size_t Width, size_t Height, unsigned char* Data
 	}
 
 	if (MaxSimilarity != nullptr)
-		*MaxSimilarity = localMaxSimilarity;
+		*MaxSimilarity = LocalMaxSimilarity;
 
 	return false;
 }
