@@ -25,6 +25,7 @@ void NodeAreasGraphWindow::InitializeResources()
 {
 	WindowIcon = new FETPImage("Resources/WindowIcon.png");
 	BeginIcon = new FETPImage("Resources/beginNodeIcon.png");
+	LinkNodeIcon = new FETPImage("Resources/linkNodeIcon.png");
 
 	WindowIndicator.Icon = WindowIcon->GetTextureID();
 	WindowIndicator.bIsInteractive = false;
@@ -73,6 +74,20 @@ void NodeAreasGraphWindow::InitializeResources()
 		return ACTION_SYSTEM.DoesNodeAreaHaveProblematicAction(Node.As<NodeArea>()->GetID());
 	};
 	NodeAreaGraphUI->AddNodeWidget(FailedActionIndicator);
+
+	LinkNodeIndicator.Icon = LinkNodeIcon->GetTextureID();
+	LinkNodeIndicator.bIsInteractive = false;
+	LinkNodeIndicator.bIsVisibleByDefault = false;
+	LinkNodeIndicator.TooltipText = "Contains link node(s).";
+
+	LinkNodeIndicator.IsVisiblePredicate = [](SceneGraphUI::NodeHandle Node) -> bool {
+		NodeArea* CurrentNodeArea = Node.As<NodeArea>();
+		if (CurrentNodeArea == nullptr)
+			return false;
+
+		return !CurrentNodeArea->GetNodesByStringType("LinkNode").empty();
+	};
+	NodeAreaGraphUI->AddNodeWidget(LinkNodeIndicator);
 }
 
 void NodeAreasGraphWindow::Clear()

@@ -1,6 +1,7 @@
 #include "Windows/TestsOverviewWindow.h"
 #include "Windows/TextInputPopup.h"
 #include "Windows/ActionEditPopup.h"
+#include "Windows/LinkAreaSelectionPopup.h"
 using namespace FocalEngine;
 
 #include "tesseract/baseapi.h"
@@ -11,7 +12,6 @@ void OnFinishRecordingCallback(std::vector<FETPAction*>& RecordedActions)
 	if (RecordedActions.size() != 0)
 	{
 		PreviewWindow::GetInstance().Show();
-		//ACTION_SYSTEM.PlaceStructuredNodes(RecordedActions, PreviewWindow::GetInstance().CurrentNodeArea);
 		RecordedActions.clear();
 	}
 }
@@ -225,46 +225,20 @@ void MainWindowRender()
 	
 	TextInputPopup::GetInstance().Render();
 	ActionEditPopup::GetInstance().Render();
+	LinkAreaSelectionPopup::GetInstance().Render();
 
 	NODE_AREA_WINDOW_MANAGER.Render();
 
 	ACTION_SYSTEM.Update();
 
-	if (ImGui::Button("Load Old File"))
+	/*if (ImGui::Button("Load Old File"))
 	{
 		VisNodeSys::NodeArea* NewNodeArea = NODE_SYSTEM.CreateNodeArea();
 		NewNodeArea->LoadFromFile("C:\\Users\\kberegovyi\\Downloads\\InstanceEntites\\InstanceEntites\\Add_instances\\Add_instances.fetp");
-	}
+	}*/
 
 	TEST_PLATFORM.Update();
 
-	/*if (TEST_MANAGER.GetSelectedTest() != nullptr)
-	{
-		if (FILE_SYSTEM.DoesFileExist("Temporary.png"))
-		{
-			std::vector<unsigned char> RawData;
-			unsigned ImageWidth, ImageHeight;
-			int Error = lodepng::decode(RawData, ImageWidth, ImageHeight, "Temporary.png");
-
-			ImageNode* NewNode = nullptr;
-			if (Error == 0)
-			{
-				NewNode = new ImageNode();
-				unsigned char* tempData = new unsigned char[ImageWidth * ImageHeight * 4];
-				memcpy_s(tempData, ImageWidth * ImageHeight * 4, RawData.data(), ImageWidth * ImageHeight * 4);
-				NewNode->SetImage(new FETPImage(tempData, ImageWidth, ImageHeight));
-				delete[] tempData;
-
-				NewNode->SetPosition(ImVec2(200, 200));
-				NodeAreaWindow* FocusedNodeAreaWindow = NODE_AREA_WINDOW_MANAGER.GetInFocusNodeAreaWindow();
-				if (FocusedNodeAreaWindow != nullptr && FocusedNodeAreaWindow->GetNodeArea() != nullptr)
-					FocusedNodeAreaWindow->GetNodeArea()->AddNode(NewNode);
-			}
-
-			FILE_SYSTEM.DeleteFile("Temporary.png");
-		}
-	}*/
-	
 	RenderMainMenu();
 	RenderAboutWindow();
 }
@@ -307,83 +281,6 @@ void OnGlobalMouseAction(MouseAction MouseAction)
 
 double MouseX, MouseY;
 double MouseDownX, MouseDownY;
-//FEWindow* FirstFullScreenWindow = nullptr;
-//size_t MonitorIndex = 0;
-//FETPImage* CapturedScreenshot = nullptr;
-//FETPImage* DarkenedCapturedScreenshot = nullptr;
-//void FirstMonitorScreenshotWindowRender()
-//{
-//	if (FirstFullScreenWindow == nullptr)
-//		return;
-//
-//	if (CapturedScreenshot == nullptr)
-//	{
-//		CapturedScreenshot = FETPScreenCapture::GetInstance().GetScreenImage(unsigned int(MonitorIndex));
-//		DarkenedCapturedScreenshot = new FETPImage(*CapturedScreenshot);
-//
-//		DarkenedCapturedScreenshot->ModifyPixels([](unsigned char& R, unsigned char& G, unsigned char& B) {
-//			R /= 2;
-//			G /= 2;
-//			B /= 2;
-//		});
-//	}
-//
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//	if (MouseCursor == nullptr)
-//		MouseCursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-//	glfwSetCursor(FirstFullScreenWindow->GetGlfwWindow(), MouseCursor);
-//
-//	int Width, Height;
-//	FirstFullScreenWindow->GetSize(&Width, &Height);
-//
-//	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-//	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-//	ImGui::SetNextWindowPos(ImVec2(0, 0));
-//	ImGui::SetNextWindowSize(ImVec2(float(Width), float(Height)));
-//	ImGui::Begin("FullScreenWindow", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar /*| ImGuiWindowFlags_NoInputs*/ | ImGuiWindowFlags_NoDecoration);
-//
-//	ImVec2 UV0 = ImVec2(0, 0);
-//	ImVec2 UV1 = ImVec2(1, 1);
-//	ImVec2 Size = ImVec2(float(Width), float(Height));
-//	if (DarkenedCapturedScreenshot != nullptr)
-//		ImGui::Image(DarkenedCapturedScreenshot->GetTextureID(), Size, UV0, UV1);
-//
-//	/*if (ImGui::Button("Cancel"))
-//	{
-//		APPLICATION.CloseWindow(FirstFullScreenWindow);
-//		FirstFullScreenWindow = nullptr;
-//		delete BackGround;
-//		BackGround = nullptr;
-//	}*/
-//
-//	ImGui::End();
-//
-//	ImGui::PopStyleVar();
-//	ImGui::PopStyleVar();
-//
-//	//ImGui::ShowDemoWindow();
-//}
-//
-//void FirstMonitorScreenshotWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
-//{
-//	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
-//	{
-//		APPLICATION.CloseWindow(FirstFullScreenWindow);
-//		FirstFullScreenWindow = nullptr;
-//		delete CapturedScreenshot;
-//		CapturedScreenshot = nullptr;
-//	}
-//}
-
-//void SpecialWindowKeyCallback(int Key, int Scancode, int Action, int Mods)
-//{
-//	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS)
-//	{
-//		bNeedToCreateWindow = true;
-//	}
-//}
-
 std::string FileToBase64(const std::string& FilePath, size_t ChunkSize = 8000)
 {
 	std::ifstream File(FilePath, std::ios::binary);
@@ -439,75 +336,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return ImageHoldingTexture->GetTextureID();
 	});
 	NODE_SYSTEM.Initialize();
-
-	//auto SecondWindow = APPLICATION.AddWindow(800, 600, "Test Window");
-	//SecondWindow->AddOnKeyCallback(SpecialWindowKeyCallback);
-
-	// FE_FIX_ME: Temporary check of tesseract OCR functionality. Remove it later.
-	//tesseract::TessBaseAPI ocr;
-	//int res = ocr.Init("ThirdParty/tesseract/traineddata", "eng"); // path to tessdata folder
-	////ocr.SetPageSegMode(tesseract::PSM_SINGLE_LINE);
-	//ocr.SetPageSegMode(tesseract::PSM_AUTO_OSD);
-
-	//// From screenshot/image file
-	//Pix* image = pixRead("Untitled2.png");
-	//ocr.SetImage(image);
-	//std::string text = ocr.GetUTF8Text();
-	//pixDestroy(&image);
+	NODE_SYSTEM.AssociateSocketTypeToColor("STRING", ImColor(241, 0, 165));
+	NODE_SYSTEM.AssociateSocketTypeToColor("IMAGE", ImColor(0, 174, 239));
 
 	while (APPLICATION.IsNotTerminated())
 	{
-		//if (bNeedToCreateWindow)
-		//{
-		//	bNeedToCreateWindow = false;
-
-		//	auto Monitor = APPLICATION.GetWindow(0)->DetermineCurrentMonitor();
-		//	MonitorIndex = APPLICATION.MonitorInfoToMonitorIndex(&Monitor);
-
-		//	FirstFullScreenWindow = APPLICATION.AddFullScreenWindow(&Monitor);
-		//	FirstFullScreenWindow->SetRenderFunction(FirstMonitorScreenshotWindowRender);
-		//	FirstFullScreenWindow->AddOnKeyCallback(FirstMonitorScreenshotWindowKeyCallback);
-
-		//	FirstFullScreenWindow->AddOnMouseMoveCallback([&](double X, double Y) {
-		//		MouseX = X;
-		//		MouseY = Y;
-		//		//MessageBoxA(NULL, ("X: " + std::to_string(X) + " Y: " + std::to_string(Y)).c_str(), "Mouse Position", MB_OK);
-		//	});
-
-		//	FirstFullScreenWindow->AddOnMouseButtonCallback([&](int Button, int Action, int Mods) {
-		//		if (Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_PRESS)
-		//		{
-		//			MouseDownX = MouseX;
-		//			MouseDownY = MouseY;
-		//		}
-		//		else if (Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_RELEASE)
-		//		{
-		//			if (TEST_MANAGER.GetSelectedTest() != nullptr)
-		//			{
-		//				double MouseUpX = MouseX;
-		//				double MouseUpY = MouseY;
-
-		//				FETPImage* Image = CapturedScreenshot->GetRegion(int(MouseDownX), int(MouseDownY), int(abs(MouseDownX - MouseUpX)), int(abs(MouseDownY - MouseUpY)));
-		//				if (Image != nullptr)
-		//					lodepng::encode("Temporary.png", Image->GetRawData(), Image->GetWidth(), Image->GetHeight());
-		//			}
-
-		//			APPLICATION.CloseWindow(FirstFullScreenWindow);
-		//			FirstFullScreenWindow = nullptr;
-		//			delete CapturedScreenshot;
-		//			CapturedScreenshot = nullptr;
-		//		}
-		//	});
-
-		//	FirstFullScreenWindow->AddOnMouseButtonCallback([&](int Button, int Action, int Mods) {
-		//		if (Button == GLFW_MOUSE_BUTTON_LEFT && Action == GLFW_PRESS)
-		//		{
-		//			//MessageBoxA(NULL, ("X: " + std::to_string(MouseX) + " Y: " + std::to_string(MouseY)).c_str(), "Mouse Position", MB_OK);
-		//			//NeedToCreateWindow = true;
-		//		}
-		//	});
-		//}
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		APPLICATION.BeginFrame();
 

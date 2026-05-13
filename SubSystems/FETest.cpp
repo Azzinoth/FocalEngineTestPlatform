@@ -78,6 +78,8 @@ void FETest::Load()
 
 	NODE_SYSTEM.Clear();
 	NODE_SYSTEM.LoadFromFile(FilePath);
+	NODE_SYSTEM.AssociateSocketTypeToColor("STRING", ImColor(241, 0, 165));
+	NODE_SYSTEM.AssociateSocketTypeToColor("IMAGE", ImColor(0, 174, 239));
 
 	// Load additional test data.
 	std::ifstream FileData;

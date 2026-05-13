@@ -3,17 +3,16 @@ using namespace VisNodeSys;
 
 bool BeginNode::bIsRegistered = []()
 {
-	NODE_FACTORY.RegisterNodeType("BeginNode",
-		[]() -> Node* {
-			return new BeginNode();
-		},
+	auto Creator = []() -> Node* {
+		return new BeginNode();
+	};
 
-		[](const Node& CurrentNode) -> Node* {
-			const BeginNode& NodeToCopy = static_cast<const BeginNode&>(CurrentNode);
-			return new BeginNode(NodeToCopy);
-		}
-	);
+	auto Copier = [](const Node& CurrentNode) -> Node* {
+		const BeginNode& NodeToCopy = static_cast<const BeginNode&>(CurrentNode);
+		return new BeginNode(NodeToCopy);
+	};
 
+	NODE_FACTORY.RegisterNodeType("BeginNode", Creator, Copier);
 	return true;
 }();
 

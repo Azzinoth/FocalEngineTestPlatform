@@ -63,7 +63,9 @@ public:
 	SINGLETON_PUBLIC_PART(FEPTActionSystem)
 
 	void SwitchRecordMode();
-	bool Run(FETest* TestToRun);
+	bool Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode = nullptr);
+
+	FETest* GetCurrentlyRunningTest() const { return CurrentlyRunning; }
 
 	void NewKeyboardAction(KeyboardAction KeyAction);
 	void NewMouseAction(MouseAction NewMouseAction);

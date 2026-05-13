@@ -1,6 +1,7 @@
 #include "NodeAreaWindow.h"
 #include "../TextInputPopup.h"
 #include "../ActionEditPopup.h"
+#include "../LinkAreaSelectionPopup.h"
 using namespace VisNodeSys;
 
 NodeAreaWindow::NodeAreaWindow(VisNodeSys::NodeArea* NodeAreaToWorkWith)
@@ -105,54 +106,300 @@ void NodeAreaWindow::RenderMainContextMenu()
 		{
 			VisNodeSys::Node* NewNode = nullptr;
 
-			if (ImGui::MenuItem("Sleep"))
+			if (ImGui::BeginMenu("Timing"))
 			{
-				NewNode = new SleepNode();
-			}
-
-			if (ImGui::MenuItem("Timer"))
-			{
-				NewNode = new TimerNode();
-			}
-
-			if (ImGui::MenuItem("Image"))
-			{
-				NewNode = new ImageNode();
-			}
-
-			if (ImGui::MenuItem("Image Search"))
-			{
-				NewNode = new ImageSearchNode();
-			}
-
-			if (ImGui::MenuItem("Application Launch..."))
-			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
-
-				if (!Path.empty())
+				if (ImGui::MenuItem("Sleep"))
 				{
-					LunchApplicationNode* TemporaryNewNode = new LunchApplicationNode();
-					TemporaryNewNode->SetPath(Path);
+					NewNode = new SleepNode();
+				}
+
+				if (ImGui::MenuItem("Timer"))
+				{
+					NewNode = new TimerNode();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Images"))
+			{
+				if (ImGui::MenuItem("Image Literal"))
+				{
+					NewNode = new ImageLiteralNode();
+				}
+
+				if (ImGui::MenuItem("Image Variable"))
+				{
+					NewNode = new ImageVariableNode();
+				}
+
+				if (ImGui::MenuItem("Image Load"))
+				{
+					NewNode = new ImageLoadNode();
+				}
+
+				if (ImGui::MenuItem("Image Save"))
+				{
+					NewNode = new ImageSaveNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Image Search"))
+				{
+					NewNode = new ImageSearchNode();
+				}
+
+				if (ImGui::MenuItem("Recognize Text"))
+				{
+					NewNode = new RecognizeTextNode();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Strings"))
+			{
+				if (ImGui::MenuItem("String Literal"))
+				{
+					NewNode = new StringLiteralNode();
+				}
+
+				if (ImGui::MenuItem("String Variable"))
+				{
+					NewNode = new StringVariableNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Is String Empty"))
+				{
+					NewNode = new IsStringEmptyNode();
+				}
+
+				if (ImGui::MenuItem("Is String Number"))
+				{
+					NewNode = new IsStringNumberNode();
+				}
+
+				if (ImGui::MenuItem("Is String Integer"))
+				{
+					NewNode = new IsStringIntegerNode();
+				}
+
+				if (ImGui::MenuItem("String Equals"))
+				{
+					NewNode = new StringEqualsNode();
+				}
+
+				if (ImGui::MenuItem("String Contains"))
+				{
+					NewNode = new StringContainsNode();
+				}
+
+				if (ImGui::MenuItem("String Starts With"))
+				{
+					NewNode = new StringStartsWithNode();
+				}
+
+				if (ImGui::MenuItem("String Ends With"))
+				{
+					NewNode = new StringEndsWithNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("String Length"))
+				{
+					NewNode = new StringLengthNode();
+				}
+
+				if (ImGui::MenuItem("String To Int"))
+				{
+					NewNode = new StringToIntNode();
+				}
+
+				if (ImGui::MenuItem("String To Float"))
+				{
+					NewNode = new StringToFloatNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("String Concatenate"))
+				{
+					NewNode = new StringConcatenateNode();
+				}
+
+				if (ImGui::MenuItem("String Substring"))
+				{
+					NewNode = new StringSubstringNode();
+				}
+
+				if (ImGui::MenuItem("String Replace"))
+				{
+					NewNode = new StringReplaceNode();
+				}
+
+				if (ImGui::MenuItem("String To Upper"))
+				{
+					NewNode = new StringToUpperNode();
+				}
+
+				if (ImGui::MenuItem("String To Lower"))
+				{
+					NewNode = new StringToLowerNode();
+				}
+
+				if (ImGui::MenuItem("String Trim"))
+				{
+					NewNode = new StringTrimNode();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("System"))
+			{
+				if (ImGui::MenuItem("Launch Application"))
+				{
+					NewNode = new LaunchApplicationNode();
+				}
+
+				if (ImGui::MenuItem("Launch Application..."))
+				{
+					LaunchApplicationNode* TemporaryNewNode = new LaunchApplicationNode();
+					std::string Path;
+					FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
+					if (!Path.empty())
+						TemporaryNewNode->SetPath(Path);
 					NewNode = TemporaryNewNode;
 				}
+
+				ImGui::EndMenu();
 			}
 
-			if (ImGui::MenuItem("Create New Link Node..."))
+			if (ImGui::MenuItem("Create Link Node..."))
 			{
-				VisNodeSys::NodeArea* NewArea = NODE_SYSTEM.CreateNodeArea();
-				
-				std::pair<std::string, std::string> LinkIDs;
-				NODE_SYSTEM.LinkNodeAreas(CurrentlyActiveNodeArea->GetID(), NewArea->GetID(), &LinkIDs);
+				std::string SourceAreaID = CurrentlyActiveNodeArea->GetID();
+				ImVec2 DropPosition = MousePositionWhenContextMenuWasOpened;
+				LinkAreaSelectionPopup::GetInstance().Show(SourceAreaID, [SourceAreaID, DropPosition](VisNodeSys::NodeArea* ChosenArea)
+				{
+					VisNodeSys::NodeArea* SourceArea = NODE_SYSTEM.GetNodeAreaByID(SourceAreaID);
+					if (SourceArea == nullptr)
+						return;
 
-				VisNodeSys::Node* NewLinkNode = NODE_SYSTEM.GetNodeByID(LinkIDs.first);
-				NewLinkNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+					VisNodeSys::NodeArea* TargetArea = ChosenArea;
+					if (TargetArea == nullptr)
+						TargetArea = NODE_SYSTEM.CreateNodeArea();
+
+					std::pair<std::string, std::string> LinkIDs;
+					if (!NODE_SYSTEM.LinkNodeAreas(SourceArea->GetID(), TargetArea->GetID(), &LinkIDs))
+						return;
+
+					VisNodeSys::Node* NewLinkNode = NODE_SYSTEM.GetNodeByID(LinkIDs.first);
+					if (NewLinkNode != nullptr)
+						NewLinkNode->SetPosition(DropPosition);
+				});
 			}
 
 			if (ImGui::MenuItem("Create New SubArea Node..."))
 			{
 				VisNodeSys::Node* NewSubAreaNode = NODE_SYSTEM.CreateSubAreaNode(CurrentlyActiveNodeArea->GetID());
 				NewSubAreaNode->SetPosition(MousePositionWhenContextMenuWasOpened);
+			}
+
+			if (ImGui::BeginMenu("File System"))
+			{
+				if (ImGui::MenuItem("Extract File Name"))
+				{
+					NewNode = new ExtractFileNameNode();
+				}
+
+				if (ImGui::MenuItem("Extract File Extension"))
+				{
+					NewNode = new ExtractFileExtensionNode();
+				}
+
+				if (ImGui::MenuItem("Extract Directory Path"))
+				{
+					NewNode = new ExtractDirectoryPathNode();
+				}
+
+				if (ImGui::MenuItem("Get Absolute Path"))
+				{
+					NewNode = new GetAbsolutePathNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Does File Exist"))
+				{
+					NewNode = new DoesFileExistNode();
+				}
+
+				if (ImGui::MenuItem("Does Directory Exist"))
+				{
+					NewNode = new DoesDirectoryExistNode();
+				}
+
+				if (ImGui::MenuItem("Get File Size"))
+				{
+					NewNode = new GetFileSizeNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Get Current Working Path"))
+				{
+					NewNode = new GetCurrentWorkingPathNode();
+				}
+
+				if (ImGui::MenuItem("Get Test Working Path"))
+				{
+					NewNode = new GetTestWorkingPathNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Copy File"))
+				{
+					NewNode = new CopyFileNode();
+				}
+
+				if (ImGui::MenuItem("Rename File"))
+				{
+					NewNode = new RenameFileNode();
+				}
+
+				if (ImGui::MenuItem("Delete File"))
+				{
+					NewNode = new DeleteFileNode();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Create Directory"))
+				{
+					NewNode = new CreateDirectoryNode();
+				}
+
+				if (ImGui::MenuItem("Copy Directory"))
+				{
+					NewNode = new CopyDirectoryNode();
+				}
+
+				if (ImGui::MenuItem("Rename Directory"))
+				{
+					NewNode = new RenameDirectoryNode();
+				}
+
+				if (ImGui::MenuItem("Delete Directory"))
+				{
+					NewNode = new DeleteDirectoryNode();
+				}
+
+				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("Input Simulation"))
@@ -248,6 +495,13 @@ void NodeAreaWindow::RenderMainContextMenu()
 	}
 	else if (HoveredNode != nullptr)
 	{
+		if (ImGui::MenuItem("Run From Here"))
+		{
+			FETest* OwningTest = TEST_MANAGER.GetSelectedTest();
+			if (OwningTest != nullptr)
+				ACTION_SYSTEM.Run(OwningTest, HoveredNode);
+		}
+
 		if (ImGui::MenuItem("Copy NodeID to clipboard"))
 		{
 			ImGui::SetClipboardText(HoveredNode->GetID().c_str());

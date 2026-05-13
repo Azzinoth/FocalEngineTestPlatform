@@ -14,6 +14,7 @@ class NodeAreasGraphWindow
 
     FETPImage* WindowIcon = nullptr;
     FETPImage* BeginIcon = nullptr;
+    FETPImage* LinkNodeIcon = nullptr;
 
 	bool bLastFrameWasInvisible = true;
 
@@ -37,6 +38,7 @@ class NodeAreasGraphWindow
     SceneGraphUI::NodeWidget WindowIndicator;
     SceneGraphUI::NodeWidget BeginIndicator;
     SceneGraphUI::NodeWidget FailedActionIndicator;
+    SceneGraphUI::NodeWidget LinkNodeIndicator;
 public:
     SINGLETON_PUBLIC_PART(NodeAreasGraphWindow)
 

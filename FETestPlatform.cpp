@@ -5,7 +5,7 @@ using namespace FocalEngine;
 #include "VersionInfo/FEVersionInfo.h"
 #include "Windows/NodeArea/NodeAreaWindowManager.h"
 #include "SubSystems/TestManager.h"
-#include "SubSystems/NodeSystem/CustomNodes/ImageNode.h"
+#include "SubSystems/NodeSystem/CustomNodes/Images/ImageLiteralNode.h"
 
 FE_DEFINE_VERSION_INFO(FETestPlatform_)
 
@@ -249,7 +249,7 @@ void FETestPlatform::KeyboardInputUpdate()
 		}
 	}
 
-	ImageNode* NewNode = new ImageNode();
+	ImageLiteralNode* NewNode = new ImageLiteralNode();
 	NewNode->SetImage(Image);
 	MouseLocalPosition -= NewNode->GetSize() / 2.0f;
 	NewNode->SetPosition(MouseLocalPosition);

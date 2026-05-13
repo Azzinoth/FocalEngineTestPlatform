@@ -20,9 +20,12 @@ std::vector<FETPAction*> FEPTActionSystem::GetActionsFromNode(VisNodeSys::Node* 
 	return Result;
 }
 
-bool FEPTActionSystem::Run(FETest* TestToRun)
+bool FEPTActionSystem::Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode)
 {
-	if (TestToRun == nullptr || TestToRun->GetBeginNode() == nullptr || TestToRun->EntryPointNodeArea == nullptr)
+	VisNodeSys::Node* StartNode = ForceStartNode != nullptr ? ForceStartNode : TestToRun->GetBeginNode();
+	VisNodeSys::NodeArea* StartArea = ForceStartNode != nullptr ? ForceStartNode->GetParentArea() : TestToRun->EntryPointNodeArea;
+
+	if (StartNode == nullptr || StartArea == nullptr)
 	{
 		CurrentlyRunning = nullptr;
 		return false;
@@ -50,10 +53,12 @@ bool FEPTActionSystem::Run(FETest* TestToRun)
 	CurrentTestResult->Parent = CurrentlyRunning;
 	CurrentTestResult->StartTime = GetTickCount();
 
-	CurrentlyRunning->BeforeBegin();
+	// Skip BeforeStart actions (file copies, dir deletes, etc.) on partial runs.
+	if (ForceStartNode == nullptr)
+		CurrentlyRunning->BeforeBegin();
 
-	CurrentlyRunning->EntryPointNodeArea->SetExecutionEntryNode(CurrentlyRunning->GetBeginNode());
-	CurrentlyRunning->EntryPointNodeArea->ExecuteNodeNetwork();
+	StartArea->SetExecutionEntryNode(StartNode);
+	StartArea->ExecuteNodeNetwork();
 	CurrentTestResult->bIsSuccessful = true;
 	CurrentTestResult->EndTime = GetTickCount();
 	CurrentlyRunning->AddResult(CurrentTestResult);

@@ -69,42 +69,140 @@ file(GLOB SubWindows_SRC
 	"Windows/TestStartPreparationsWindow.cpp"
 	"Windows/TextInputPopup.h"
 	"Windows/TextInputPopup.cpp"
+	"Windows/LinkAreaSelectionPopup.h"
+	"Windows/LinkAreaSelectionPopup.cpp"
 )
 
 file(GLOB VisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/BeginNode.h"
 	"SubSystems/NodeSystem/CustomNodes/BeginNode.cpp"
+)
 
-	"SubSystems/NodeSystem/CustomNodes/TimerNode.h"
-	"SubSystems/NodeSystem/CustomNodes/TimerNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/SleepNode.h"
-	"SubSystems/NodeSystem/CustomNodes/SleepNode.cpp"
+file(GLOB VisualNodeSystem_CustomNodes_Images_SRC
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLiteralNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLiteralNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageVariableNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageVariableNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLoadNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLoadNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSaveNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSaveNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSearchNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSearchNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/RecognizeTextNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/RecognizeTextNode.cpp"
+)
 
-	"SubSystems/NodeSystem/CustomNodes/ImageNode.h"
-	"SubSystems/NodeSystem/CustomNodes/ImageNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.h"
-	"SubSystems/NodeSystem/CustomNodes/ImageSearchNode.cpp"
+file(GLOB VisualNodeSystem_CustomNodes_Timing_SRC
+	"SubSystems/NodeSystem/CustomNodes/Timing/SleepNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Timing/SleepNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Timing/TimerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Timing/TimerNode.cpp"
+)
 
-	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseMoveNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDownNode.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonDownNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUpNode.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseLeftButtonUpNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonDownNode.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonDownNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonUpNode.h"
-	"SubSystems/NodeSystem/CustomNodes/MouseRightButtonUpNode.cpp"
+file(GLOB VisualNodeSystem_CustomNodes_System_SRC
+	"SubSystems/NodeSystem/CustomNodes/System/LaunchApplicationNode.h"
+	"SubSystems/NodeSystem/CustomNodes/System/LaunchApplicationNode.cpp"
+)
 
-	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyDownNode.h"
-	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyDownNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyUpNode.h"
-	"SubSystems/NodeSystem/CustomNodes/KeyboardKeyUpNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/TextInputNode.h"
-	"SubSystems/NodeSystem/CustomNodes/TextInputNode.cpp"
+file(GLOB VisualNodeSystem_CustomNodes_Strings_SRC
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLiteralNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLiteralNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringVariableNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringVariableNode.cpp"
 
-	"SubSystems/NodeSystem/CustomNodes/LunchApplicationNode.h"
-	"SubSystems/NodeSystem/CustomNodes/LunchApplicationNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringNumberNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringNumberNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringEmptyNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringEmptyNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringIntegerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringIntegerNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEqualsNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEqualsNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringContainsNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringContainsNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringStartsWithNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringStartsWithNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEndsWithNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEndsWithNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLengthNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLengthNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToIntNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToIntNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToFloatNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToFloatNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringConcatenateNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringConcatenateNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringSubstringNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringSubstringNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringReplaceNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringReplaceNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToUpperNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToUpperNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToLowerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToLowerNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringTrimNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringTrimNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_FileSystem_SRC
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileNameNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileNameNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileExtensionNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileExtensionNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractDirectoryPathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractDirectoryPathNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetAbsolutePathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetAbsolutePathNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesFileExistNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesFileExistNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesDirectoryExistNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesDirectoryExistNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetFileSizeNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetFileSizeNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetCurrentWorkingPathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetCurrentWorkingPathNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetTestWorkingPathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetTestWorkingPathNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyFileNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyFileNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameFileNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameFileNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteFileNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteFileNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CreateDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CreateDirectoryNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyDirectoryNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameDirectoryNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteDirectoryNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_InputSimulation_SRC
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseMoveNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseMoveNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonUpNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonUpNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyUpNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/TextInputNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/TextInputNode.cpp"
 )
 
 # *************** SUB_SYSTEM ***************
@@ -157,6 +255,12 @@ add_executable(FETestPlatform WIN32
 							  ${SubWindows_SRC}
 							  ${NodeAreaWindows_SRC}
 							  ${VisualNodeSystem_CustomNodes_SRC}
+							  ${VisualNodeSystem_CustomNodes_Images_SRC}
+							  ${VisualNodeSystem_CustomNodes_Timing_SRC}
+							  ${VisualNodeSystem_CustomNodes_System_SRC}
+							  ${VisualNodeSystem_CustomNodes_Strings_SRC}
+							  ${VisualNodeSystem_CustomNodes_FileSystem_SRC}
+							  ${VisualNodeSystem_CustomNodes_InputSimulation_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
 							  # *************** THIRD_PARTY ***************
@@ -200,6 +304,12 @@ source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWra
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
 source_group("Source Files/Windows/NodeArea" FILES ${NodeAreaWindows_SRC})
 source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${VisualNodeSystem_CustomNodes_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/Images" FILES ${VisualNodeSystem_CustomNodes_Images_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/Timing" FILES ${VisualNodeSystem_CustomNodes_Timing_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/System" FILES ${VisualNodeSystem_CustomNodes_System_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/Strings" FILES ${VisualNodeSystem_CustomNodes_Strings_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/FileSystem" FILES ${VisualNodeSystem_CustomNodes_FileSystem_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/InputSimulation" FILES ${VisualNodeSystem_CustomNodes_InputSimulation_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
 # *************** THIRD_PARTY ***************
