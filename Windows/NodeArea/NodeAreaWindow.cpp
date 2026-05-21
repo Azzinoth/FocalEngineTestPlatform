@@ -150,6 +150,11 @@ void NodeAreaWindow::RenderMainContextMenu()
 					NewNode = new ImageSearchNode();
 				}
 
+				if (ImGui::MenuItem("Screenshot"))
+				{
+					NewNode = new ScreenshotNode();
+				}
+
 				if (ImGui::MenuItem("Recognize Text"))
 				{
 					NewNode = new RecognizeTextNode();

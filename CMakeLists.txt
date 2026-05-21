@@ -89,6 +89,8 @@ file(GLOB VisualNodeSystem_CustomNodes_Images_SRC
 	"SubSystems/NodeSystem/CustomNodes/Images/ImageSaveNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/Images/ImageSearchNode.h"
 	"SubSystems/NodeSystem/CustomNodes/Images/ImageSearchNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ScreenshotNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ScreenshotNode.cpp"
 	"SubSystems/NodeSystem/CustomNodes/Images/RecognizeTextNode.h"
 	"SubSystems/NodeSystem/CustomNodes/Images/RecognizeTextNode.cpp"
 )

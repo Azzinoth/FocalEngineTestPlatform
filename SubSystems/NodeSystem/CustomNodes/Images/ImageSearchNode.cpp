@@ -66,7 +66,8 @@ ImageSearchNode::ImageSearchNode(const ImageSearchNode& Other) : BaseExecutionFl
 
 ImageSearchNode::~ImageSearchNode()
 {
-	delete LastResult.CroppedRegion;
+	for (LastSearchResult& Result : LastResults)
+		delete Result.CroppedRegion;
 }
 
 Json::Value ImageSearchNode::ToJson()
@@ -146,15 +147,17 @@ void ImageSearchNode::Draw()
 	YPosition += 38.0f * Zoom;
 	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(35.0f * Zoom);
-	size_t MonitorCount = FocalEngine::APPLICATION.GetMonitors().size();
+	int MonitorCount = int(FocalEngine::APPLICATION.GetMonitors().size());
 	int TemporaryMonitorIndex = MonitorIndex;
 	ImGui::DragInt("##MonitorIndex", &TemporaryMonitorIndex, 1, -1, 100);
 
-	if (MonitorIndex >= MonitorCount)
-		MonitorIndex = int(MonitorCount - 1);
+	if (TemporaryMonitorIndex >= MonitorCount)
+		TemporaryMonitorIndex = MonitorCount - 1;
 
-	if (TemporaryMonitorIndex != MonitorIndex)
-		MonitorIndex = TemporaryMonitorIndex;
+	if (TemporaryMonitorIndex < -1)
+		TemporaryMonitorIndex = -1;
+
+	MonitorIndex = TemporaryMonitorIndex;
 	
 	float IconSize = 24.0f * Zoom;
 	float NodeCenterX = PositionBeforeDraw.x + GetSize().x / 2.0f * Zoom;
@@ -195,27 +198,37 @@ void ImageSearchNode::Draw()
 
 	if (ImGui::BeginPopup("##ImageSearchLastResult"))
 	{
-		if (LastResult.CroppedRegion == nullptr)
+		if (LastResults.empty())
 		{
 			ImGui::Text("No search has been performed yet.");
 		}
 		else
 		{
-			ImGui::Text("Status: %s", LastResult.bMatchFound ? "Match found" : "No match (best similarity)");
-			ImGui::Text("Position: (%.0f, %.0f)", LastResult.Position.x, LastResult.Position.y);
-			ImGui::Text("Score: %.2f%%", LastResult.BestMatchScore * 100.0f);
-			ImGui::Text("Monitor: %d", LastResult.MonitorIndex);
-			ImGui::Separator();
-
-			float MaxWidth = 400.0f;
-			float ImageWidth = float(LastResult.CroppedRegion->GetWidth());
-			float ImageHeight = float(LastResult.CroppedRegion->GetHeight());
-			if (ImageWidth > MaxWidth)
+			for (size_t i = 0; i < LastResults.size(); i++)
 			{
-				ImageHeight *= MaxWidth / ImageWidth;
-				ImageWidth = MaxWidth;
+				const LastSearchResult& Result = LastResults[i];
+				bool bIsBest = (int(i) == BestResultIndex);
+
+				ImGui::Text("Monitor %d%s: %s", Result.MonitorIndex, bIsBest ? " (best)" : "", Result.bMatchFound ? "Match found" : "No match (best similarity)");
+				ImGui::Text("  Position: (%.0f, %.0f)", Result.Position.x, Result.Position.y);
+				ImGui::Text("  Score: %.2f%%", Result.BestMatchScore * 100.0f);
+
+				if (Result.CroppedRegion != nullptr)
+				{
+					float MaxWidth = 400.0f;
+					float ImageWidth = float(Result.CroppedRegion->GetWidth());
+					float ImageHeight = float(Result.CroppedRegion->GetHeight());
+					if (ImageWidth > MaxWidth)
+					{
+						ImageHeight *= MaxWidth / ImageWidth;
+						ImageWidth = MaxWidth;
+					}
+					ImGui::Image(Result.CroppedRegion->GetTextureID(), ImVec2(ImageWidth, ImageHeight), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+				}
+
+				if (i + 1 < LastResults.size())
+					ImGui::Separator();
 			}
-			ImGui::Image(LastResult.CroppedRegion->GetTextureID(), ImVec2(ImageWidth, ImageHeight), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 		}
 		ImGui::EndPopup();
 	}
@@ -247,10 +260,13 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			if (TemporaryData != nullptr)
 			{
 				int MonitorCount = int(FocalEngine::APPLICATION.GetMonitors().size());
-				unsigned int TemporaryMonitorIndex = *reinterpret_cast<unsigned int*>(TemporaryData);
+				int TemporaryMonitorIndex = *reinterpret_cast<int*>(TemporaryData);
 
-				if (TemporaryMonitorIndex >= unsigned int(MonitorCount))
-					TemporaryMonitorIndex = unsigned int(MonitorCount - 1);
+				if (TemporaryMonitorIndex >= MonitorCount)
+					TemporaryMonitorIndex = MonitorCount - 1;
+
+				if (TemporaryMonitorIndex < -1)
+					TemporaryMonitorIndex = -1;
 
 				MonitorIndex = TemporaryMonitorIndex;
 			}
@@ -294,8 +310,10 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			MonitorsToTry.push_back(MonitorIndex);
 		}
 
-		delete LastResult.CroppedRegion;
-		LastResult = LastSearchResult();
+		for (LastSearchResult& OldResult : LastResults)
+			delete OldResult.CroppedRegion;
+		LastResults.clear();
+		BestResultIndex = -1;
 		bFound = false;
 		FoundPosition = glm::vec2(-1.0f);
 
@@ -306,10 +324,6 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			FETPComputeShaderCompare::ComparisonResult ComparisonData = {};
 			if (CurrentScreenshot != nullptr)
 				ComparisonData = COMPUTE_SHADER_COMPARE.FindSubImage(CurrentScreenshot, ImageToLookFor, Similarity, MaxColorShift);
-
-			FETPImage* TestScreenshotFor = new FETPImage("C:/Users/kberegovyi/Downloads/FocalEngineTestPlatform_DEV_05_05_2026_2/Screen_test.png");
-			FETPComputeShaderCompare::ComparisonResult ComparisonData_TEST = {};
-			ComparisonData_TEST = COMPUTE_SHADER_COMPARE.FindSubImage(TestScreenshotFor, ImageToLookFor, Similarity, MaxColorShift);
 
 			bool bMatch = ComparisonData.MatchFound != 0;
 
@@ -323,16 +337,17 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 			GLuint MatchPositionX = bMatch ? ComparisonData.MatchPosition[0] : ComparisonData.BestMatchPosition[0];
 			GLuint MatchPositionY = bMatch ? ComparisonData.MatchPosition[1] : ComparisonData.BestMatchPosition[1];
 
-			// Keep the best result we have seen across monitors (or just the only one in single-monitor mode).
-			if (bMatch || Score > LastResult.BestMatchScore)
-			{
-				delete LastResult.CroppedRegion;
-				LastResult.bMatchFound = bMatch;
-				LastResult.Position = glm::vec2(float(MatchPositionX), float(MatchPositionY));
-				LastResult.BestMatchScore = Score;
-				LastResult.MonitorIndex = MonitorsToTry[i];
-				LastResult.CroppedRegion = MakeCroppedRegion(CurrentScreenshot, MatchPositionX, MatchPositionY);
-			}
+			LastSearchResult NewResult;
+			NewResult.bMatchFound = bMatch;
+			NewResult.Position = glm::vec2(float(MatchPositionX), float(MatchPositionY));
+			NewResult.BestMatchScore = Score;
+			NewResult.MonitorIndex = MonitorsToTry[i];
+			NewResult.CroppedRegion = MakeCroppedRegion(CurrentScreenshot, MatchPositionX, MatchPositionY);
+			LastResults.push_back(NewResult);
+
+			int CurrentIndex = int(LastResults.size()) - 1;
+			if (BestResultIndex < 0 || bMatch || Score > LastResults[BestResultIndex].BestMatchScore)
+				BestResultIndex = CurrentIndex;
 
 			if (bMatch)
 			{

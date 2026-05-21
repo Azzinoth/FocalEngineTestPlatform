@@ -17,6 +17,7 @@
 #include "NodeSystem/CustomNodes/Images/ImageLoadNode.h"
 #include "NodeSystem/CustomNodes/Images/ImageSaveNode.h"
 #include "NodeSystem/CustomNodes/Images/ImageSearchNode.h"
+#include "NodeSystem/CustomNodes/Images/ScreenshotNode.h"
 #include "NodeSystem/CustomNodes/Images/RecognizeTextNode.h"
 #include "NodeSystem/CustomNodes/Strings/StringLiteralNode.h"
 #include "NodeSystem/CustomNodes/Strings/StringVariableNode.h"

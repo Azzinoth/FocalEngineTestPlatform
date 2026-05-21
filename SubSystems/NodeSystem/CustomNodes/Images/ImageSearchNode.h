@@ -35,7 +35,8 @@ class ImageSearchNode : public BaseExecutionFlowNode
 		FETPImage* CroppedRegion = nullptr;
 	};
 
-	LastSearchResult LastResult;
+	std::vector<LastSearchResult> LastResults;
+	int BestResultIndex = -1;
 
 	std::function<void* ()> MonitorIndexDataGetter = [this]() -> void* {
 		return &FoundMonitorIndex;
@@ -50,7 +51,9 @@ class ImageSearchNode : public BaseExecutionFlowNode
 	};
 
 	std::function<void* ()> ImageDataGetter = [this]() -> void* {
-		return LastResult.CroppedRegion;
+		if (BestResultIndex < 0 || BestResultIndex >= int(LastResults.size()))
+			return nullptr;
+		return LastResults[BestResultIndex].CroppedRegion;
 	};
 
 	ACTION_NODE_STATUS Status = ACTION_NODE_STATUS::WasNotExecuted;
