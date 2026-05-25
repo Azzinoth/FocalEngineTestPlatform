@@ -64,12 +64,6 @@ bool DoesFileExistNode::FromJson(Json::Value Json)
 void DoesFileExistNode::Draw()
 {
 	Node::Draw();
-
-	float Zoom = ParentArea->GetZoomFactor();
-
-	ImVec2 OriginPosition = ImGui::GetCursorScreenPos();
-	ImGui::SetCursorScreenPos(ImVec2(OriginPosition.x + 25.0f * Zoom, OriginPosition.y + 40.0f * Zoom));
-	ImGui::Text("%s", Result ? "true" : "false");
 }
 
 void DoesFileExistNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)

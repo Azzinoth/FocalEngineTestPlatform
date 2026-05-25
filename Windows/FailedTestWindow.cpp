@@ -41,8 +41,13 @@ void FailedTestWindow::Render()
 	if (!IsVisible())
 		return;
 
-	ImGui::Text(("Fail action ID: " + Result->FailedAction->GetID()).c_str());
+	if (Result->FailedAction != nullptr)
+		ImGui::Text(("Fail action ID: " + Result->FailedAction->GetID()).c_str());
+
 	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(Result->FailReason)).c_str());
+
+	if (!Result->FailMessage.empty())
+		ImGui::Text(("Fail message: " + Result->FailMessage).c_str());
 
 	if (Result->FailReason == FE_TEST_FAIL_SCREENSHOOT_COMPARE)
 	{

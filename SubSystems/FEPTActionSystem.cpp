@@ -31,6 +31,9 @@ bool FEPTActionSystem::Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode)
 		return false;
 	}
 
+	bUserRequestedFail = false;
+	UserFailMessage.clear();
+
 	NodeAreaIDToHadProblematicAction.clear();
 	std::vector<std::string> NodeAreaIDs = NODE_SYSTEM.GetNodeAreaIDList();
 	for (size_t i = 0; i < NodeAreaIDs.size(); i++)
@@ -88,8 +91,24 @@ bool FEPTActionSystem::Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode)
 			}
 		}
 	}
-	
+
+	if (bUserRequestedFail)
+	{
+		CurrentTestResult->bIsSuccessful = false;
+		CurrentTestResult->FailReason = FE_TEST_FAIL_USER_REQUESTED;
+		CurrentTestResult->FailMessage = UserFailMessage;
+	}
+
 	return true;
+}
+
+void FEPTActionSystem::MarkCurrentTestFailed(std::string Message)
+{
+	if (CurrentlyRunning == nullptr)
+		return;
+
+	bUserRequestedFail = true;
+	UserFailMessage = Message;
 }
 
 static void LayoutNodesInSnakingGrid(const std::vector<VisNodeSys::Node*>& Nodes,

@@ -4,6 +4,7 @@
 
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
 #include "NodeSystem/CustomNodes/BeginNode.h"
+#include "NodeSystem/CustomNodes/FailTestNode.h"
 #include "NodeSystem/CustomNodes/Timing/TimerNode.h"
 #include "NodeSystem/CustomNodes/Timing/SleepNode.h"
 #include "NodeSystem/CustomNodes/InputSimulation/MouseMoveNode.h"
@@ -64,7 +65,8 @@ enum FE_TEST_FAIL_REASON
 	FE_TEST_NO_FAIL = 0,
 	FE_TEST_FAIL_INTERNAL_ERROR = 1,
 	FE_TEST_FAIL_SCREENSHOOT_COMPARE = 2,
-	FE_TEST_FAIL_CANT_FIND_FILE = 3
+	FE_TEST_FAIL_CANT_FIND_FILE = 3,
+	FE_TEST_FAIL_USER_REQUESTED = 4
 };
 
 struct FETestScreenshotCompareResult
@@ -126,6 +128,7 @@ public:
 	bool bIsSuccessful = true;
 	FETPAction* FailedAction = nullptr;
 	FE_TEST_FAIL_REASON FailReason = FE_TEST_NO_FAIL;
+	std::string FailMessage;
 
 	FETestScreenshotCompareResult* GetScreenshotCompareResult()
 	{
@@ -165,7 +168,13 @@ public:
 				return "CANT_FIND_FILE";
 				break;
 			}
-		
+
+			case FE_TEST_FAIL_USER_REQUESTED:
+			{
+				return "USER_REQUESTED";
+				break;
+			}
+
 			default:
 				break;
 		}

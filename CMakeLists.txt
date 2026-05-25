@@ -76,6 +76,8 @@ file(GLOB SubWindows_SRC
 file(GLOB VisualNodeSystem_CustomNodes_SRC
 	"SubSystems/NodeSystem/CustomNodes/BeginNode.h"
 	"SubSystems/NodeSystem/CustomNodes/BeginNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FailTestNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FailTestNode.cpp"
 )
 
 file(GLOB VisualNodeSystem_CustomNodes_Images_SRC

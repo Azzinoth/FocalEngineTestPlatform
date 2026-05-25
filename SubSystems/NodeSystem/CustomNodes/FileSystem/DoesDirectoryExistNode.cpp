@@ -64,12 +64,6 @@ bool DoesDirectoryExistNode::FromJson(Json::Value Json)
 void DoesDirectoryExistNode::Draw()
 {
 	Node::Draw();
-
-	float Zoom = ParentArea->GetZoomFactor();
-
-	ImVec2 OriginPosition = ImGui::GetCursorScreenPos();
-	ImGui::SetCursorScreenPos(ImVec2(OriginPosition.x + 25.0f * Zoom, OriginPosition.y + 40.0f * Zoom));
-	ImGui::Text("%s", Result ? "true" : "false");
 }
 
 void DoesDirectoryExistNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocket, NODE_SOCKET_EVENT EventType)

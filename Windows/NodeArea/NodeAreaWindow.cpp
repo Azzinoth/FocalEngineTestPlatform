@@ -106,6 +106,16 @@ void NodeAreaWindow::RenderMainContextMenu()
 		{
 			VisNodeSys::Node* NewNode = nullptr;
 
+			if (ImGui::BeginMenu("Test Control"))
+			{
+				if (ImGui::MenuItem("Fail Test"))
+				{
+					NewNode = new FailTestNode();
+				}
+
+				ImGui::EndMenu();
+			}
+
 			if (ImGui::BeginMenu("Timing"))
 			{
 				if (ImGui::MenuItem("Sleep"))

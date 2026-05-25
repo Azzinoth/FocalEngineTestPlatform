@@ -56,6 +56,9 @@ class FEPTActionSystem
 	FETest* CurrentlyRunning = nullptr;
 	FETestResult* CurrentTestResult = nullptr;
 
+	bool bUserRequestedFail = false;
+	std::string UserFailMessage;
+
 	FETPAction* CopyAction(FETPAction* Other);
 
 	std::unordered_map<std::string, bool> NodeAreaIDToHadProblematicAction;
@@ -66,6 +69,8 @@ public:
 	bool Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode = nullptr);
 
 	FETest* GetCurrentlyRunningTest() const { return CurrentlyRunning; }
+
+	void MarkCurrentTestFailed(std::string Message);
 
 	void NewKeyboardAction(KeyboardAction KeyAction);
 	void NewMouseAction(MouseAction NewMouseAction);
