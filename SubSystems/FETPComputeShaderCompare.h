@@ -5,61 +5,71 @@
 static const char* const ComputeShaderText = R"(
 	#version 430
 
-	uniform sampler2D u_screenshotTexture;
-	uniform sampler2D u_subImageTexture;
-	uniform ivec2 u_screenshotSize;
-	uniform ivec2 u_subImageSize;
-	uniform float u_matchPercentage;
-	uniform float u_colorTolerance;
+	uniform sampler2D ScreenshotTexture;
+	uniform sampler2D SubImageTexture;
+	uniform ivec2 ScreenshotSize;
+	uniform ivec2 SubImageSize;
+	uniform float MatchPercentage;
+	uniform float ColorTolerance;
 
 	layout (std430, binding = 0) buffer Result
 	{
-		uint match_found;
-		uint match_position[2];
+		uint MatchFound;
+		uint MatchPosition[2];
+		uint BestMatchScore;
+		uint BestMatchPosition[2];
 	};
 
 	layout (local_size_x = 16, local_size_y = 16) in;
 
-	bool compareColors(vec4 a, vec4 b, float tolerance)
+	bool CompareColors(vec4 ColorA, vec4 ColorB, float Tolerance)
 	{
-		return all(lessThanEqual(abs(a - b), vec4(tolerance)));
+		return all(lessThanEqual(abs(ColorA - ColorB), vec4(Tolerance)));
 	}
 
 	void main()
 	{
-		ivec2 global_id = ivec2(gl_GlobalInvocationID.xy);
+		ivec2 GlobalID = ivec2(gl_GlobalInvocationID.xy);
 
-		if (global_id.x + u_subImageSize.x <= u_screenshotSize.x &&
-			global_id.y + u_subImageSize.y <= u_screenshotSize.y)
+		if (GlobalID.x + SubImageSize.x <= ScreenshotSize.x &&
+			GlobalID.y + SubImageSize.y <= ScreenshotSize.y)
 		{
-			if (match_found == 1)
+			if (MatchFound == 1)
 				return;
 
-			uint totalPixels = 0u;
-			uint matchPixels = 0u;
+			uint TotalPixels = 0u;
+			uint MatchedPixels = 0u;
 
-			for (int y = 0; y < u_subImageSize.y; y++)
+			for (int Y = 0; Y < SubImageSize.y; Y++)
 			{
-				for (int x = 0; x < u_subImageSize.x; x++)
+				for (int X = 0; X < SubImageSize.x; X++)
 				{
-					vec4 screenshotColor = texelFetch(u_screenshotTexture, global_id + ivec2(x, y), 0);
-					vec4 subImageColor = texelFetch(u_subImageTexture, ivec2(x, y), 0);
-					totalPixels++;
+					vec4 ScreenshotColor = texelFetch(ScreenshotTexture, GlobalID + ivec2(X, Y), 0);
+					vec4 SubImageColor = texelFetch(SubImageTexture, ivec2(X, Y), 0);
+					TotalPixels++;
 
-					if (compareColors(screenshotColor, subImageColor, u_colorTolerance))
+					if (CompareColors(ScreenshotColor, SubImageColor, ColorTolerance))
 					{
-						matchPixels++;
+						MatchedPixels++;
 					}
 				}
 			}
 
-			float matchRatio = float(matchPixels) / float(totalPixels);
+			float MatchRatio = float(MatchedPixels) / float(TotalPixels);
 
-			if (matchRatio >= u_matchPercentage)
+			uint Score = uint(MatchRatio * 1000000.0);
+			uint PreviousBestScore = atomicMax(BestMatchScore, Score);
+			if (Score > PreviousBestScore)
 			{
-				atomicExchange(match_found, 1);
-				atomicExchange(match_position[0], global_id.x);
-				atomicExchange(match_position[1], global_id.y);
+				atomicExchange(BestMatchPosition[0], uint(GlobalID.x));
+				atomicExchange(BestMatchPosition[1], uint(GlobalID.y));
+			}
+
+			if (MatchRatio >= MatchPercentage)
+			{
+				atomicExchange(MatchFound, 1);
+				atomicExchange(MatchPosition[0], GlobalID.x);
+				atomicExchange(MatchPosition[1], GlobalID.y);
 			}
 		}
 	}
@@ -70,15 +80,18 @@ class FETPComputeShaderCompare
 public:
 	SINGLETON_PUBLIC_PART(FETPComputeShaderCompare)
 
-	glm::vec2 FindSubImage(FETPImage* ScreenTexture, FETPImage* ImageToFind, float correctnessThreshold, int maxColorShift);
-private:
-	SINGLETON_PRIVATE_PART(FETPComputeShaderCompare)
-
 	struct ComparisonResult
 	{
 		GLuint MatchFound;
 		GLuint MatchPosition[2];
+		GLuint BestMatchScore;
+		GLuint BestMatchPosition[2];
 	};
+
+	ComparisonResult FindSubImage(FETPImage* ScreenTexture, FETPImage* ImageToFind, float CorrectnessThreshold, int MaxColorShift);
+	ComparisonResult FindSubImageOnCPU(FETPImage* ScreenTexture, FETPImage* ImageToFind, float CorrectnessThreshold, int MaxColorShift);
+private:
+	SINGLETON_PRIVATE_PART(FETPComputeShaderCompare)
 
     GLuint ProgramID;
 	GLint ScreenshotSizeLocation;
@@ -97,4 +110,4 @@ private:
 	GLuint LoadShader(const char* ShaderText, const GLuint ShaderType);
 };
 
-#define COMPUTE_SHADER_COMPARE FETPComputeShaderCompare::getInstance()
+#define COMPUTE_SHADER_COMPARE FETPComputeShaderCompare::GetInstance()

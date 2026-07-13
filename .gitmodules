@@ -4,3 +4,6 @@
 [submodule "FEBasicApplication"]
 	path = SubSystems/FEBasicApplication
 	url = https://github.com/Azzinoth/FEBasicApplication/
+[submodule "SubSystems/FESceneGraphUI"]
+	path = SubSystems/FESceneGraphUI
+	url = https://github.com/Azzinoth/FESceneGraphUI

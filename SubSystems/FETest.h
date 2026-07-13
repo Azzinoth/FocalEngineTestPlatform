@@ -3,51 +3,91 @@
 #include "FEFileSystem.h"
 
 #include "FEDearImguiWrapper/FEDearImguiWrapper.h"
-#include "NodeSystem/CustomNodes/intNode.h"
-#include "NodeSystem/CustomNodes/floatNode.h"
-#include "NodeSystem/CustomNodes/vec2Node.h"
-#include "NodeSystem/CustomNodes/vec2AddNode.h"
-#include "NodeSystem/CustomNodes/boolNode.h"
-#include "NodeSystem/CustomNodes/branchNode.h"
-#include "NodeSystem/CustomNodes/sequenceNode.h"
-#include "NodeSystem/CustomNodes/timerNode.h"
-#include "NodeSystem/CustomNodes/sleepNode.h"
-#include "NodeSystem/CustomNodes/beginNode.h"
-#include "NodeSystem/CustomNodes/mouseMoveNode.h"
-#include "NodeSystem/CustomNodes/mouseLeftButtonDown.h"
-#include "NodeSystem/CustomNodes/mouseLeftButtonUp.h"
-#include "NodeSystem/CustomNodes/imageNode.h"
-#include "NodeSystem/CustomNodes/imageSearchNode.h"
-#include "NodeSystem/CustomNodes/combinedActionNode.h"
-#include "NodeSystem/CustomNodes/regionNode.h"
+#include "NodeSystem/CustomNodes/BeginNode.h"
+#include "NodeSystem/CustomNodes/FailTestNode.h"
+#include "NodeSystem/CustomNodes/Timing/TimerNode.h"
+#include "NodeSystem/CustomNodes/Timing/SleepNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/MouseMoveNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonDownNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonUpNode.h"
+
+#include "NodeSystem/CustomNodes/InputSimulation/MouseRightButtonDownNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/MouseRightButtonUpNode.h"
+#include "NodeSystem/CustomNodes/Images/ImageLiteralNode.h"
+#include "NodeSystem/CustomNodes/Images/ImageVariableNode.h"
+#include "NodeSystem/CustomNodes/Images/ImageLoadNode.h"
+#include "NodeSystem/CustomNodes/Images/ImageSaveNode.h"
+#include "NodeSystem/CustomNodes/Images/ImageSearchNode.h"
+#include "NodeSystem/CustomNodes/Images/ScreenshotNode.h"
+#include "NodeSystem/CustomNodes/Images/RecognizeTextNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringLiteralNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringVariableNode.h"
+#include "NodeSystem/CustomNodes/Strings/IsStringNumberNode.h"
+#include "NodeSystem/CustomNodes/Strings/IsStringEmptyNode.h"
+#include "NodeSystem/CustomNodes/Strings/IsStringIntegerNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringEqualsNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringContainsNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringStartsWithNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringEndsWithNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringLengthNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringToIntNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringToFloatNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringConcatenateNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringSubstringNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringReplaceNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringToUpperNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringToLowerNode.h"
+#include "NodeSystem/CustomNodes/Strings/StringTrimNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/ExtractFileNameNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/ExtractFileExtensionNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/ExtractDirectoryPathNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/GetAbsolutePathNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/DoesFileExistNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/DoesDirectoryExistNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/GetFileSizeNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/GetCurrentWorkingPathNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/GetTestWorkingPathNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/CopyFileNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/RenameFileNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/DeleteFileNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/CreateDirectoryNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/CopyDirectoryNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/RenameDirectoryNode.h"
+#include "NodeSystem/CustomNodes/FileSystem/DeleteDirectoryNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/KeyboardKeyDownNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/KeyboardKeyUpNode.h"
+#include "NodeSystem/CustomNodes/InputSimulation/TextInputNode.h"
+#include "NodeSystem/CustomNodes/System/LaunchApplicationNode.h"
+#include "../Windows/NodeArea/NodeAreaWindowManager.h"
 
 enum FE_TEST_FAIL_REASON
 {
 	FE_TEST_NO_FAIL = 0,
 	FE_TEST_FAIL_INTERNAL_ERROR = 1,
 	FE_TEST_FAIL_SCREENSHOOT_COMPARE = 2,
-	FE_TEST_FAIL_CANT_FIND_FILE = 3
+	FE_TEST_FAIL_CANT_FIND_FILE = 3,
+	FE_TEST_FAIL_USER_REQUESTED = 4
 };
 
-struct FETestScreenshootCompareResult
+struct FETestScreenshotCompareResult
 {
-	FETPImage* expected = nullptr;
-	FETPImage* screenshoot = nullptr;
-	FETPImage* difference = nullptr;
-	int similarity = 0;
+	FETPImage* Expected = nullptr;
+	FETPImage* Screenshot = nullptr;
+	FETPImage* Difference = nullptr;
+	int Similarity = 0;
 
-	FETestScreenshootCompareResult(FETPImage* Expected, FETPImage* Screenshoot, FETPImage* Difference, int Similarity)
+	FETestScreenshotCompareResult(FETPImage* Expected, FETPImage* Screenshot, FETPImage* Difference, int Similarity)
 	{
-		expected = Expected;
-		screenshoot = Screenshoot;
-		difference = Difference;
-		similarity = Similarity;
+		this->Expected = Expected;
+		this->Screenshot = Screenshot;
+		this->Difference = Difference;
+		this->Similarity = Similarity;
 	}
 
-	~FETestScreenshootCompareResult()
+	~FETestScreenshotCompareResult()
 	{
-		delete screenshoot;
-		delete difference;
+		delete Screenshot;
+		delete Difference;
 	}
 };
 
@@ -64,45 +104,46 @@ enum FE_BEFORE_TEST_ACTION_TYPE
 
 struct FETestBeforeAction
 {
-	FE_BEFORE_TEST_ACTION_TYPE type;
+	FE_BEFORE_TEST_ACTION_TYPE Type;
 
-	std::string path;
-	std::string newObjectName;
+	std::string Path;
+	std::string NewObjectName;
 };
 
 class FETest;
 struct FETestResult
 {
 private:
-	FETestScreenshootCompareResult* screenshootCompare = nullptr;
+	FETestScreenshotCompareResult* ScreenshotCompare = nullptr;
 public:
 	~FETestResult()
 	{
-		delete screenshootCompare;
+		delete ScreenshotCompare;
 	}
 
-	FETest* parent = nullptr;
-	DWORD startTime = 0;
-	DWORD endTime = 0;
+	FETest* Parent = nullptr;
+	DWORD StartTime = 0;
+	DWORD EndTime = 0;
 
-	bool success = true;
-	FETPAction* failedAction = nullptr;
-	FE_TEST_FAIL_REASON failReason = FE_TEST_NO_FAIL;
+	bool bIsSuccessful = true;
+	FETPAction* FailedAction = nullptr;
+	FE_TEST_FAIL_REASON FailReason = FE_TEST_NO_FAIL;
+	std::string FailMessage;
 
-	FETestScreenshootCompareResult* getScreenshootCompareResult()
+	FETestScreenshotCompareResult* GetScreenshotCompareResult()
 	{
-		return screenshootCompare;
+		return ScreenshotCompare;
 	}
 
-	void setScreenshootCompareResult(FETestScreenshootCompareResult* newValue)
+	void setScreenshotCompareResult(FETestScreenshotCompareResult* NewValue)
 	{
-		delete screenshootCompare;
-		screenshootCompare = newValue;
+		delete ScreenshotCompare;
+		ScreenshotCompare = NewValue;
 	}
 
-	static std::string FETestFailReasonToString(FE_TEST_FAIL_REASON reasonType)
+	static std::string FETestFailReasonToString(FE_TEST_FAIL_REASON ReasonType)
 	{
-		switch (reasonType)
+		switch (ReasonType)
 		{
 			case FE_TEST_NO_FAIL:
 			{
@@ -127,7 +168,13 @@ public:
 				return "CANT_FIND_FILE";
 				break;
 			}
-		
+
+			case FE_TEST_FAIL_USER_REQUESTED:
+			{
+				return "USER_REQUESTED";
+				break;
+			}
+
 			default:
 				break;
 		}
@@ -136,67 +183,65 @@ public:
 	}
 };
 
-class testEditorWinow;
-class testsOverviewWindow;
-class testPropertiesWindow;
+class TestEditorWindow;
+class TestsOverviewWindow;
+class TestPropertiesWindow;
 class FETest
 {
-	friend testEditorWinow;
-	friend testsOverviewWindow;
-	friend testPropertiesWindow;
+	friend TestEditorWindow;
+	friend TestsOverviewWindow;
+	friend TestPropertiesWindow;
 
-	std::string name;
-	int loopCount = 1;
-	float speedFactor = 1.0f;
+	std::string Name;
+	int LoopCount = 1;
+	float SpeedFactor = 1.0f;
+	
+	VisNodeSys::NodeArea* DummyRootNodeArea = nullptr;
+	BeginNode* Begin = nullptr;
+	std::vector<FETestResult*> Results;
 
-	beginNode* begin = nullptr;
-	std::vector<FETestResult*> results;
-
-	void validateImagePathesInFile(std::string filePath);
-	Json::Value validateImagePathesInNodeArea(std::string nodeAreaText);
-	void validateImagePathes(VisNodeSys::NodeArea* nodeArea = nullptr, std::string filePath = "");
-
-	std::unordered_map<std::string, std::string> macrosToReplace;
+	std::unordered_map<std::string, std::string> MacrosToReplace;
 public:
 	FETest();
 	~FETest();
 
-	static ImColor* defaultConnectionColor;
-	static ImColor* mainPathConnectionColor;
+	static ImColor* DefaultConnectionColor;
+	static ImColor* MainPathConnectionColor;
 
-	std::vector<FETestBeforeAction*> beforeStart;
+	std::vector<FETestBeforeAction*> BeforeStart;
 	
-	std::string filePath;
-	VisNodeSys::NodeArea* nodeArea;
+	std::string FilePath;
+	VisNodeSys::NodeArea* EntryPointNodeArea = nullptr;
 
-	beginNode* getBeginNode();
-	void reColorMainTestPath();
+	VisNodeSys::NodeArea* GetDummyRootNodeArea() const;
+	BeginNode* GetBeginNode();
+	void ReColorMainTestPath();
 
-	void save(const char* fileName);
-	void load();
+	void Save(const char* FilePath);
+	void Load();
 
-	void addResult(FETestResult* newResult);
-	FETestResult* getLastTestResult();
+	void AddResult(FETestResult* NewResult);
+	FETestResult* GetLastTestResult();
 
-	std::string getName();
-	void setName(std::string newValue);
+	std::string GetName();
+	void SetName(std::string NewValue);
 
-	float getSpeedFactor();
-	void setSpeedFactor(float newValue);
+	float GetSpeedFactor();
+	void SetSpeedFactor(float NewValue);
 
-	int getLoopCount();
-	void setLoopCount(int newValue);
+	int GetLoopCount();
+	void SetLoopCount(int NewValue);
 
-	void addBeforeStartAction(FETestBeforeAction* action);
-	void beforeBegin();
+	void AddBeforeStartAction(FETestBeforeAction* Action);
+	void BeforeBegin();
 
-	void addMacro(std::string macro, std::string replaceWith);
-	bool replaceMacro(std::string& text);
+	void AddMacro(std::string Macro, std::string ReplaceWith);
+	bool ReplaceMacro(std::string& Text);
 	//void getReplaceWith(std::string macro);
 
-	static std::string FEBeforeTestActionTypeToString(FE_BEFORE_TEST_ACTION_TYPE action)
+	static std::string FEBeforeTestActionTypeToString(FE_BEFORE_TEST_ACTION_TYPE Action)
 	{
-		switch (action)
+		switch (Action)
 		{
 			case FE_BEFORE_TEST_ACTION_NONE:
 			{
@@ -247,29 +292,29 @@ public:
 		return "FE_NULL";
 	}
 
-	static FE_BEFORE_TEST_ACTION_TYPE stringToFEBeforeTestActionType(std::string text)
+	static FE_BEFORE_TEST_ACTION_TYPE StringToFEBeforeTestActionType(std::string Text)
 	{
-		if (text == "CREATE_FILE")
+		if (Text == "CREATE_FILE")
 		{
 			return FE_BEFORE_TEST_ACTION_CREATE_FILE;
 		}
-		else if (text == "CREATE_DIRECTORY")
+		else if (Text == "CREATE_DIRECTORY")
 		{
 			return FE_BEFORE_TEST_ACTION_CREATE_DIRECTORY;
 		}
-		else if (text == "COPY_FILE")
+		else if (Text == "COPY_FILE")
 		{
 			return FE_BEFORE_TEST_ACTION_COPY_FILE;
 		}
-		else if (text == "COPY_DIRECTORY")
+		else if (Text == "COPY_DIRECTORY")
 		{
 			return FE_BEFORE_TEST_ACTION_COPY_DIRECTORY;
 		}
-		else if (text == "DELETE_FILE")
+		else if (Text == "DELETE_FILE")
 		{
 			return FE_BEFORE_TEST_ACTION_DELETE_FILE;
 		}
-		else if (text == "DELETE_DIRECTORY")
+		else if (Text == "DELETE_DIRECTORY")
 		{
 			return FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY;
 		}

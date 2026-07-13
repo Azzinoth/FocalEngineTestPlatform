@@ -1,431 +1,256 @@
 #include "FETest.h"
 using namespace VisNodeSys;
 
-ImColor* FETest::defaultConnectionColor = new ImColor(200, 200, 200);
-ImColor* FETest::mainPathConnectionColor = new ImColor(150, 255, 150);
+ImColor* FETest::DefaultConnectionColor = new ImColor(200, 200, 200);
+ImColor* FETest::MainPathConnectionColor = new ImColor(150, 255, 150);
 
 FETest::FETest()
 {
-	nodeArea = NODE_SYSTEM.CreateNodeArea();
+	DummyRootNodeArea = NODE_SYSTEM.CreateNodeArea();
 
-	begin = new beginNode();
-	begin->SetName("Begin node");
-	begin->SetPosition(ImVec2(300.0f, 430.0f));
+	EntryPointNodeArea = NODE_SYSTEM.CreateNodeArea();
+	EntryPointNodeArea->SetName("Main Node Area");
+	EntryPointNodeArea->SetSaveExecutedNodes(true);
 
-	nodeArea->AddNode(begin);
+	Begin = new BeginNode();
+	Begin->SetName("Begin node");
+	Begin->SetPosition(ImVec2(300.0f, 430.0f));
 
-	//addMacro("$(RESOURCES)", "C:\\Users\\Kindr\\Desktop\\Tests\\Resources - Copy\\");
-	//addMacro("$(RESOURC234ES)", "C:\\Users\\Kin4dr\\Desktop\\Test435s\\Resources - Copy\\");
-	//addMacro("$(RESOURCES1)", "C:\\Users\\Kin5345dr\\Desktop345\\Tests\\Reso345urces - Copy\\");
+	EntryPointNodeArea->AddNode(Begin);
 }
 
 FETest::~FETest()
 {
-	delete begin;
+	//delete Begin;
 }
 
-void FETest::save(const char* fileName)
+NodeArea* FETest::GetDummyRootNodeArea() const
 {
-	filePath = fileName;
-	// Before saving node area we should check if all images in nodes have correct file path.
-	validateImagePathes();
-	nodeArea->SaveToFile(fileName);
-
-	Json::Value root;
-	std::ofstream saveFile;
-
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.getFileName(fileName);
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(fileName);
-	saveFile.open(directoryPath + fileNameWithoutExtension + ".fetpTestInfo");
-
-	root["name"] = name;
-	root["speedFactor"] = speedFactor;
-
-	Json::Value beforeStartActions;
-	for (size_t i = 0; i < beforeStart.size(); i++)
-	{
-		beforeStartActions[std::to_string(i)]["type"] = FETest::FEBeforeTestActionTypeToString(beforeStart[i]->type);
-		beforeStartActions[std::to_string(i)]["path"] = beforeStart[i]->path;
-		beforeStartActions[std::to_string(i)]["newObjectName"] = beforeStart[i]->newObjectName;
-	}
-	root["beforeStartActions"] = beforeStartActions;
-
-	Json::Value macros;
-
-	auto currentMacro = macrosToReplace.begin();
-	while (currentMacro != macrosToReplace.end())
-	{
-		macros[currentMacro->first] = currentMacro->second;
-		currentMacro++;
-	}
-	root["macros"] = macros;
-
-	Json::StreamWriterBuilder builder;
-	const std::string json_file = Json::writeString(builder, root);
-
-	saveFile << json_file;
-	saveFile.close();
+	return DummyRootNodeArea;
 }
 
-void FETest::load()
+void FETest::Save(const char* FilePath)
 {
-	if (filePath == "")
+	NODE_SYSTEM.SaveToFile(FilePath);
+
+	Json::Value Root;
+	std::ofstream SaveFile;
+
+	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath, false);
+	std::string DirectoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath);
+	SaveFile.open(DirectoryPath + "/" + FileNameWithoutExtension + ".FETPTestInfo");
+
+	Root["Name"] = Name;
+	Root["DummyRootNodeArea"] = DummyRootNodeArea->GetID();
+	Root["EntryPointNodeAreaID"] = EntryPointNodeArea->GetID();
+	Root["BeginNodeID"] = Begin->GetID();
+	Root["SpeedFactor"] = SpeedFactor;
+
+	Json::Value BeforeStartActions;
+	for (size_t i = 0; i < BeforeStart.size(); i++)
+	{
+		BeforeStartActions[std::to_string(i)]["Type"] = FETest::FEBeforeTestActionTypeToString(BeforeStart[i]->Type);
+		BeforeStartActions[std::to_string(i)]["Path"] = BeforeStart[i]->Path;
+		BeforeStartActions[std::to_string(i)]["NewObjectName"] = BeforeStart[i]->NewObjectName;
+	}
+	Root["BeforeStartActions"] = BeforeStartActions;
+
+	Json::Value Macros;
+	auto CurrentMacro = MacrosToReplace.begin();
+	while (CurrentMacro != MacrosToReplace.end())
+	{
+		Macros[CurrentMacro->first] = CurrentMacro->second;
+		CurrentMacro++;
+	}
+	Root["Macros"] = Macros;
+
+	Json::StreamWriterBuilder Builder;
+	const std::string JsonFile = Json::writeString(Builder, Root);
+
+	SaveFile << JsonFile;
+	SaveFile.close();
+}
+
+void FETest::Load()
+{
+	if (FilePath.empty())
 		return;
 
-	validateImagePathesInFile(filePath);
-	
-	nodeArea->Clear();
-	nodeArea->LoadFromFile(filePath.c_str());
-
-	auto result = nodeArea->GetNodesByType("beginNode");
-	if (result.size() == 1)
-		begin = reinterpret_cast<beginNode*>(result[0]);
-
-	reColorMainTestPath();
+	NODE_SYSTEM.Clear();
+	NODE_SYSTEM.LoadFromFile(FilePath);
+	NODE_SYSTEM.AssociateSocketTypeToColor("STRING", ImColor(241, 0, 165));
+	NODE_SYSTEM.AssociateSocketTypeToColor("IMAGE", ImColor(0, 174, 239));
 
 	// Load additional test data.
-	std::ifstream dataFile;
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.getFileName(filePath.c_str());
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-	dataFile.open(directoryPath + fileNameWithoutExtension + ".fetpTestInfo");
+	std::ifstream FileData;
+	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str(), false);
+	std::string DirectoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
+	FileData.open(DirectoryPath + "/" + FileNameWithoutExtension + ".fetpTestInfo");
 
-	std::string additionalFileData((std::istreambuf_iterator<char>(dataFile)), std::istreambuf_iterator<char>());
-	dataFile.close();
+	std::string AdditionalFileData((std::istreambuf_iterator<char>(FileData)), std::istreambuf_iterator<char>());
+	FileData.close();
 
-	Json::Value root;
-	JSONCPP_STRING err;
-	Json::CharReaderBuilder builder;
+	Json::Value Root;
+	JSONCPP_STRING Error;
+	Json::CharReaderBuilder Builder;
 
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	if (!reader->parse(additionalFileData.c_str(), additionalFileData.c_str() + additionalFileData.size(), &root, &err))
+	const std::unique_ptr<Json::CharReader> Reader(Builder.newCharReader());
+	if (!Reader->parse(AdditionalFileData.c_str(), AdditionalFileData.c_str() + AdditionalFileData.size(), &Root, &Error))
 		return;
 
-	name = root["name"].asCString();
-	speedFactor = root["speedFactor"].asFloat();
+	Name = Root["Name"].asCString();
+	std::string DummyRootNodeAreaID = Root["DummyRootNodeArea"].asCString();
+	std::string EntryPointNodeAreaID = Root["EntryPointNodeAreaID"].asCString();
+	std::string BeginNodeID = Root["BeginNodeID"].asCString();
+	DummyRootNodeArea = NODE_SYSTEM.GetNodeAreaByID(DummyRootNodeAreaID);
+	EntryPointNodeArea = NODE_SYSTEM.GetNodeAreaByID(EntryPointNodeAreaID);
+	Begin = reinterpret_cast<BeginNode*>(EntryPointNodeArea->GetNodeByID(BeginNodeID));
+	ReColorMainTestPath();
+	SpeedFactor = Root["SpeedFactor"].asFloat();
 
-	std::vector<Json::String> actionList = root["beforeStartActions"].getMemberNames();
-	beforeStart.resize(actionList.size());
-	for (size_t i = 0; i < actionList.size(); i++)
+	std::vector<Json::String> ActionList = Root["BeforeStartActions"].getMemberNames();
+	BeforeStart.resize(ActionList.size());
+	for (size_t i = 0; i < ActionList.size(); i++)
 	{
-		FETestBeforeAction* action = new FETestBeforeAction();
-		action->type = FETest::stringToFEBeforeTestActionType(root["beforeStartActions"][actionList[i]]["type"].asCString());
-		action->path = root["beforeStartActions"][actionList[i]]["path"].asCString();
-		action->newObjectName = root["beforeStartActions"][actionList[i]]["newObjectName"].asCString();
+		FETestBeforeAction* Action = new FETestBeforeAction();
+		Action->Type = FETest::StringToFEBeforeTestActionType(Root["BeforeStartActions"][ActionList[i]]["Type"].asCString());
+		Action->Path = Root["BeforeStartActions"][ActionList[i]]["Path"].asCString();
+		Action->NewObjectName = Root["BeforeStartActions"][ActionList[i]]["NewObjectName"].asCString();
 
-		beforeStart[atoi(actionList[i].c_str())] = action;
+		BeforeStart[atoi(ActionList[i].c_str())] = Action;
 	}
 
-	std::vector<Json::String> macrosList = root["macros"].getMemberNames();
-	for (size_t i = 0; i < macrosList.size(); i++)
+	std::vector<Json::String> MacrosList = Root["Macros"].getMemberNames();
+	for (size_t i = 0; i < MacrosList.size(); i++)
 	{
-		addMacro(macrosList[i], root["macros"][macrosList[i]].asCString());
+		AddMacro(MacrosList[i], Root["Macros"][MacrosList[i]].asCString());
 	}
 }
 
-beginNode* FETest::getBeginNode()
+BeginNode* FETest::GetBeginNode()
 {
-	return begin;
+	return Begin;
 }
 
-void FETest::reColorMainTestPath()
+void FETest::ReColorMainTestPath()
 {
 	// Change style of all connections to default.
-	nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-		size_t outSocketCount = node->OutSocketCount();
-		for (size_t i = 0; i < outSocketCount; i++)
+	EntryPointNodeArea->RunOnEachNode([](VisNodeSys::Node* Node) {
+		size_t OutSocketCount = Node->GetOutputSocketCount();
+		for (size_t i = 0; i < OutSocketCount; i++)
 		{
-			ConnectionStyle TempStyle;
-			node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
-			TempStyle.bMarchingAntsEffect = false;
-			node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
+			ConnectionStyle TemporaryStyle;
+			Node->GetParentArea()->GetConnectionStyle(Node, true, i, TemporaryStyle);
+			TemporaryStyle.bMarchingAntsEffect = false;
+			Node->GetParentArea()->SetConnectionStyle(Node, true, i, TemporaryStyle);
 		}
 	});
 
 	// Start at begin node at change each connection color from it.
-	if (getBeginNode() == nullptr)
+	if (GetBeginNode() == nullptr)
 		return;
 
-	nodeArea->RunOnEachConnectedNode(getBeginNode(),
-		[](VisNodeSys::Node* node) {
-			size_t outSocketCount = node->OutSocketCount();
-			for (size_t i = 0; i < outSocketCount; i++)
+	EntryPointNodeArea->RunOnEachConnectedNode(GetBeginNode(),
+		[](VisNodeSys::Node* Node) {
+			size_t OutSocketCount = Node->GetOutputSocketCount();
+			for (size_t i = 0; i < OutSocketCount; i++)
 			{
-				ConnectionStyle TempStyle;
-				node->GetParentArea()->GetConnectionStyle(node, true, i, TempStyle);
-				TempStyle.bMarchingAntsEffect = true;
-				node->GetParentArea()->SetConnectionStyle(node, true, i, TempStyle);
+				ConnectionStyle TemporaryStyle;
+				Node->GetParentArea()->GetConnectionStyle(Node, true, i, TemporaryStyle);
+				TemporaryStyle.bMarchingAntsEffect = true;
+				Node->GetParentArea()->SetConnectionStyle(Node, true, i, TemporaryStyle);
 			}
 		}
 	);
 }
 
-void FETest::addResult(FETestResult* newResult)
+void FETest::AddResult(FETestResult* NewResult)
 {
-	if (newResult == nullptr)
+	if (NewResult == nullptr)
 		return;
 
-	results.push_back(newResult);
+	Results.push_back(NewResult);
 }
 
-FETestResult* FETest::getLastTestResult()
+FETestResult* FETest::GetLastTestResult()
 {
-	if (results.size() == 0)
+	if (Results.size() == 0)
 		return nullptr;
 
-	return results.back();
+	return Results.back();
 }
 
-float FETest::getSpeedFactor()
+float FETest::GetSpeedFactor()
 {
-	return speedFactor;
+	return SpeedFactor;
 }
 
-void FETest::setSpeedFactor(float newValue)
+void FETest::SetSpeedFactor(float NewValue)
 {
-	if (newValue < 0.1f || newValue > 10.0f)
+	if (NewValue < 0.1f || NewValue > 10.0f)
 		return;
 
-	speedFactor = newValue;
+	SpeedFactor = NewValue;
 }
 
-std::string FETest::getName()
+std::string FETest::GetName()
 {
-	return name;
+	return Name;
 }
 
-void FETest::setName(std::string newValue)
+void FETest::SetName(std::string NewValue)
 {
-	name = newValue;
+	Name = NewValue;
 }
 
-void FETest::addBeforeStartAction(FETestBeforeAction* action)
+void FETest::AddBeforeStartAction(FETestBeforeAction* Action)
 {
-	beforeStart.push_back(action);
+	BeforeStart.push_back(Action);
 }
 
-void FETest::beforeBegin()
+void FETest::BeforeBegin()
 {
-	for (size_t i = 0; i < beforeStart.size(); i++)
+	for (size_t i = 0; i < BeforeStart.size(); i++)
 	{
-		if (beforeStart[i]->type == FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY)
+		if (BeforeStart[i]->Type == FE_BEFORE_TEST_ACTION_DELETE_DIRECTORY)
 		{
-			FocalEngine::FILE_SYSTEM.deleteFolder(beforeStart[i]->path.c_str());
+			FocalEngine::FILE_SYSTEM.DeleteDirectory(BeforeStart[i]->Path.c_str());
 		}
 	}
 }
 
-void FETest::validateImagePathes(NodeArea* nodeArea, std::string filePath)
+void FETest::AddMacro(std::string Macro, std::string ReplaceWith)
 {
-	if (nodeArea == nullptr)
-		nodeArea = this->nodeArea;
+	MacrosToReplace[Macro] = ReplaceWith;
+}
 
-	if (filePath == "")
-		filePath = this->filePath;
-
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-	std::vector<VisNodeSys::Node*> list = nodeArea->GetNodesByType("globalActionNode");
-	std::unordered_map<std::string, bool> actionSeenIDs;
-	for (size_t i = 0; i < list.size(); i++)
+bool FETest::ReplaceMacro(std::string& Text)
+{
+	bool bWasChanged = false;
+	auto CurrentMacro = MacrosToReplace.begin();
+	while (CurrentMacro != MacrosToReplace.end())
 	{
-		globalActionNode* node = reinterpret_cast<globalActionNode*>(list[i]);
-
-		if (actionSeenIDs.find(node->GetData()->getID()) != actionSeenIDs.end())
-			node->GetData()->setID(FocalEngine::APPLICATION.GetUniqueHexID());
-		actionSeenIDs[node->GetData()->getID()] = true;
-
-		if (node->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
+		size_t Index = Text.find(CurrentMacro->first);
+		if (Index != std::string::npos)
 		{
-			ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(node->GetData());
-			for (size_t j = 0; j < action->imagesInfo.size(); j++)
-			{
-				if (action->imagesInfo[j]->image != nullptr)
-				{
-					std::string fileName = directoryPath + "screenshot_";
-					fileName += action->getID();
-					fileName += "_" + std::to_string(j) + "_";
-					fileName += ".png";
-
-					action->imagesInfo[j]->image->setFullPath(fileName);
-				}
-
-				if (action->imagesInfo[j]->partialImage != nullptr)
-				{
-					std::string fileName = directoryPath + "partial_";
-					fileName += action->getID();
-					fileName += "_" + std::to_string(j) + "_";
-					fileName += ".png";
-
-					action->imagesInfo[j]->partialImage->setFullPath(fileName);
-				}
-			}
+			Text.replace(Index, CurrentMacro->first.size(), CurrentMacro->second);
+			bWasChanged = true;
 		}
+		CurrentMacro++;
 	}
 
-	// Validate nodes in node regions.
-	/*std::vector<FEVisualNode*> regionList = nodeArea->getNodesByType("regionNode");
-	for (size_t i = 0; i < regionList.size(); i++)
-	{
-		regionNode* node = reinterpret_cast<regionNode*>(regionList[i]);
-		
-		if (node->getData() != nullptr)
-			validateImagePathes(node->getData(), filePath);
-	}*/
-
-	// Validate nodes IDs in node regions with IDs in main node area.
-	std::vector<VisNodeSys::Node*> regionList = nodeArea->GetNodesByType("regionNode");
-	for (size_t i = 0; i < regionList.size(); i++)
-	{
-		regionNode* rNode = reinterpret_cast<regionNode*>(regionList[i]);
-
-		if (rNode->GetData() != nullptr)
-		{
-			std::vector<VisNodeSys::Node*> list = rNode->GetData()->GetNodesByType("globalActionNode");
-			for (size_t j = 0; j < list.size(); j++)
-			{
-				globalActionNode* node = reinterpret_cast<globalActionNode*>(list[j]);
-
-				if (actionSeenIDs.find(node->GetData()->getID()) != actionSeenIDs.end())
-					node->GetData()->setID(FocalEngine::APPLICATION.GetUniqueHexID());
-				actionSeenIDs[node->GetData()->getID()] = true;
-
-				if (node->GetData()->getType() == FETP_SCREENSHOOT_COMPARE_ACTION)
-				{
-					ScreenshootCompareAction* action = reinterpret_cast<ScreenshootCompareAction*>(node->GetData());
-					for (size_t k = 0; k < action->imagesInfo.size(); k++)
-					{
-						if (action->imagesInfo[k]->image != nullptr)
-						{
-							std::string fileName = directoryPath + "screenshot_";
-							fileName += action->getID();
-							fileName += "_" + std::to_string(k) + "_";
-							fileName += ".png";
-
-							action->imagesInfo[k]->image->setFullPath(fileName);
-						}
-
-						if (action->imagesInfo[k]->partialImage != nullptr)
-						{
-							std::string fileName = directoryPath + "partial_";
-							fileName += action->getID();
-							fileName += "_" + std::to_string(k) + "_";
-							fileName += ".png";
-
-							action->imagesInfo[k]->partialImage->setFullPath(fileName);
-						}
-					}
-				}
-			}
-		}
-	}
+	return bWasChanged;
 }
 
-Json::Value FETest::validateImagePathesInNodeArea(std::string nodeAreaText)
+int FETest::GetLoopCount()
 {
-	Json::Value root;
-	JSONCPP_STRING err;
-	Json::CharReaderBuilder builder;
-
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	if (!reader->parse(nodeAreaText.c_str(), nodeAreaText.c_str() + nodeAreaText.size(), &root, &err))
-		return root;
-
-	std::string newPath = std::string(FocalEngine::FILE_SYSTEM.getDirectoryPath(this->filePath.c_str()));
-
-	std::vector<Json::String> nodesList = root["nodes"].getMemberNames();
-	for (size_t i = 0; i < nodesList.size(); i++)
-	{
-		std::string nodeType = root["nodes"][std::to_string(i)]["nodeType"].asCString();
-		if (nodeType == "globalActionNode")
-		{
-			if (root["nodes"][std::to_string(i)]["action"]["internalType"].asInt() == FETP_SCREENSHOOT_COMPARE_ACTION)
-			{
-				std::vector<Json::String> compareImageInfosList = root["nodes"][std::to_string(i)]["action"]["compareImageInfos"].getMemberNames();
-				for (size_t j = 0; j < compareImageInfosList.size(); j++)
-				{
-					std::string fileName = newPath + "screenshot_";
-					fileName += root["nodes"][std::to_string(i)]["action"]["ID"].asCString();
-					fileName += "_" + std::to_string(j) + "_";
-					fileName += ".png";
-
-					root["nodes"][std::to_string(i)]["action"]["compareImageInfos"][std::to_string(j)]["screenshot_fullPath"] = fileName;
-
-					if (root["nodes"][std::to_string(i)]["action"]["compareImageInfos"][std::to_string(j)].isMember("partial_fileName"))
-					{
-						std::string fileName = newPath + "partial_";
-						fileName += root["nodes"][std::to_string(i)]["action"]["ID"].asCString();
-						fileName += "_" + std::to_string(j) + "_";
-						fileName += ".png";
-
-						root["nodes"][std::to_string(i)]["action"]["compareImageInfos"][std::to_string(j)]["partial_fullPath"] = fileName;
-					}
-				}
-			}
-		}
-		else if (nodeType == "regionNode")
-		{
-			Json::StreamWriterBuilder saveBuilder;
-			root["nodes"][std::to_string(i)]["nodeArea"] = Json::writeString(saveBuilder, validateImagePathesInNodeArea(root["nodes"][std::to_string(i)]["nodeArea"].asCString()));
-		}
-	}
-
-	return root;
+	return LoopCount;
 }
 
-void FETest::validateImagePathesInFile(std::string filePath)
+void FETest::SetLoopCount(int NewValue)
 {
-	if (filePath == "")
-		return;
+	if (NewValue <= 0)
+		NewValue = 1;
 
-	std::ifstream nodesFile;
-	nodesFile.open(filePath);
-
-	std::string fileData((std::istreambuf_iterator<char>(nodesFile)), std::istreambuf_iterator<char>());
-	nodesFile.close();
-
-	Json::Value result = validateImagePathesInNodeArea(fileData);
-
-	std::ofstream reSaveNodes;
-	reSaveNodes.open(filePath);
-
-	Json::StreamWriterBuilder saveBuilder;
-	const std::string json_file = Json::writeString(saveBuilder, result);
-
-	reSaveNodes << json_file;
-	reSaveNodes.close();
-}
-
-void FETest::addMacro(std::string macro, std::string replaceWith)
-{
-	macrosToReplace[macro] = replaceWith;
-}
-
-bool FETest::replaceMacro(std::string& text)
-{
-	bool wasChanged = false;
-	auto currentMacro = macrosToReplace.begin();
-	while (currentMacro != macrosToReplace.end())
-	{
-		size_t index = text.find(currentMacro->first);
-		if (index != std::string::npos)
-		{
-			text.replace(index, currentMacro->first.size(), currentMacro->second);
-			wasChanged = true;
-		}
-		currentMacro++;
-	}
-
-	return wasChanged;
-}
-
-int FETest::getLoopCount()
-{
-	return loopCount;
-}
-
-void FETest::setLoopCount(int newValue)
-{
-	if (newValue <= 0)
-		newValue = 1;
-
-	loopCount = newValue;
+	LoopCount = NewValue;
 }

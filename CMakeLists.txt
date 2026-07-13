@@ -6,10 +6,12 @@ set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 # set the project name
 project(FETestPlatform LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set different compiler flags depending on build type
-set(CMAKE_CXX_FLAGS_DEBUG "/MP /ZI /W3 /Od /MDd /JMC /sdl /FC /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D _WINDOWS /D _DEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "/MP /W3 /O2 /Oi /Gy /sdl /FC /GL /OPT:REF /OPT:ICF /D WIN32 /D IMGUI_IMPL_OPENGL_LOADER_GLEW /D NDEBUG /D _WINDOWS")
+set(CMAKE_CXX_FLAGS_DEBUG "/MP /Zi /MTd /INCREMENTAL:NO /DEBUG /Od")
+set(CMAKE_CXX_FLAGS_RELEASE "/MP /MT")
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
@@ -20,11 +22,19 @@ if(NOT TARGET FEBasicApplication)
   add_subdirectory(SubSystems/FEBasicApplication)
 endif()
 
-# Force your path to Dear ImGui
+# Force your path to Dear ImGui.
 set(DEAR_IMGUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui CACHE PATH "Path to Dear ImGui directory." FORCE)
+
+# Force to build execution flow nodes.
+set(VISUAL_NODE_SYSTEM_BUILD_EXECUTION_FLOW_NODES ON CACHE BOOL "Build the Visual Node System with execution flow nodes module" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DVISUAL_NODE_SYSTEM_BUILD_EXECUTION_FLOW_NODES")
 
 if(NOT TARGET VisualNodeSystem)
 	add_subdirectory(SubSystems/NodeSystem/VisualNodeSystem)
+endif()
+
+if(NOT TARGET FESceneGraphUI)
+    add_subdirectory(SubSystems/FESceneGraphUI)
 endif()
 
 # *************** EDITOR ***************
@@ -33,70 +43,170 @@ file(GLOB FEDearImguiWrapper_SRC
 	"SubSystems/FEDearImguiWrapper/FEDearImguiWrapper.h"
 )
 
+file(GLOB NodeAreaWindows_SRC
+	"Windows/NodeArea/NodeAreaWindow.h"
+	"Windows/NodeArea/NodeAreaWindow.cpp"
+	"Windows/NodeArea/NodeAreaGraphBackend.h"
+	"Windows/NodeArea/NodeAreaGraphBackend.cpp"
+	"Windows/NodeArea/GraphWindow.h"
+	"Windows/NodeArea/GraphWindow.cpp"
+	"Windows/NodeArea/NodeAreaWindowManager.h"
+	"Windows/NodeArea/NodeAreaWindowManager.cpp"
+)
+
 file(GLOB SubWindows_SRC
-	"Windows/actionEditPopup.cpp"
-	"Windows/actionEditPopup.h"
-	"Windows/failedTestWindow.cpp"
-	"Windows/failedTestWindow.h"
-	"Windows/nodeRegionWindow.h"
-	"Windows/nodeRegionWindow.cpp"
-	"Windows/previewWindow.h"
-	"Windows/previewWindow.cpp"
-	"Windows/screenshootEditor.h"
-	"Windows/screenshootEditor.cpp"
-	"Windows/testEditorWindow.h"
-	"Windows/testEditorWindow.cpp"
-	"Windows/testPropertiesWindow.h"
-	"Windows/testPropertiesWindow.cpp"
-	"Windows/testsOverviewWindow.h"
-	"Windows/testsOverviewWindow.cpp"
-	"Windows/testStartPreparationsWindow.h"
-	"Windows/testStartPreparationsWindow.cpp"
-	"Windows/textInputPopup.h"
-	"Windows/textInputPopup.cpp"
+	"Windows/ActionEditPopup.cpp"
+	"Windows/ActionEditPopup.h"
+	"Windows/FailedTestWindow.cpp"
+	"Windows/FailedTestWindow.h"
+	"Windows/PreviewWindow.h"
+	"Windows/PreviewWindow.cpp"
+	"Windows/TestPropertiesWindow.h"
+	"Windows/TestPropertiesWindow.cpp"
+	"Windows/TestsOverviewWindow.h"
+	"Windows/TestsOverviewWindow.cpp"
+	"Windows/TestStartPreparationsWindow.h"
+	"Windows/TestStartPreparationsWindow.cpp"
+	"Windows/TextInputPopup.h"
+	"Windows/TextInputPopup.cpp"
+	"Windows/LinkAreaSelectionPopup.h"
+	"Windows/LinkAreaSelectionPopup.cpp"
 )
 
 file(GLOB VisualNodeSystem_CustomNodes_SRC
-	"SubSystems/NodeSystem/CustomNodes/basicLogicNode.h"
-	"SubSystems/NodeSystem/CustomNodes/basicLogicNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/boolNode.h"
-	"SubSystems/NodeSystem/CustomNodes/boolNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/intNode.h"
-	"SubSystems/NodeSystem/CustomNodes/intNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/floatNode.h"
-	"SubSystems/NodeSystem/CustomNodes/floatNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/vec2Node.h"
-	"SubSystems/NodeSystem/CustomNodes/vec2Node.cpp"
-	"SubSystems/NodeSystem/CustomNodes/vec2AddNode.h"
-	"SubSystems/NodeSystem/CustomNodes/vec2AddNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/branchNode.h"
-	"SubSystems/NodeSystem/CustomNodes/branchNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/sequenceNode.h"
-	"SubSystems/NodeSystem/CustomNodes/sequenceNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/timerNode.h"
-	"SubSystems/NodeSystem/CustomNodes/timerNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/sleepNode.h"
-	"SubSystems/NodeSystem/CustomNodes/sleepNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/beginNode.h"
-	"SubSystems/NodeSystem/CustomNodes/beginNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/mouseMoveNode.h"
-	"SubSystems/NodeSystem/CustomNodes/mouseMoveNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonDown.h"
-	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonDown.cpp"
-	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonUp.h"
-	"SubSystems/NodeSystem/CustomNodes/mouseLeftButtonUp.cpp"
-	"SubSystems/NodeSystem/CustomNodes/imageNode.h"
-	"SubSystems/NodeSystem/CustomNodes/imageNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/imageSearchNode.h"
-	"SubSystems/NodeSystem/CustomNodes/imageSearchNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.h"
-	"SubSystems/NodeSystem/CustomNodes/combinedActionNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/endNode.h"
-	"SubSystems/NodeSystem/CustomNodes/endNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/globalActionNode.h"
-	"SubSystems/NodeSystem/CustomNodes/globalActionNode.cpp"
-	"SubSystems/NodeSystem/CustomNodes/regionNode.h"
-	"SubSystems/NodeSystem/CustomNodes/regionNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/BeginNode.h"
+	"SubSystems/NodeSystem/CustomNodes/BeginNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FailTestNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FailTestNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_Images_SRC
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLiteralNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLiteralNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageVariableNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageVariableNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLoadNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageLoadNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSaveNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSaveNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSearchNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ImageSearchNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/ScreenshotNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/ScreenshotNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Images/RecognizeTextNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Images/RecognizeTextNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_Timing_SRC
+	"SubSystems/NodeSystem/CustomNodes/Timing/SleepNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Timing/SleepNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Timing/TimerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Timing/TimerNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_System_SRC
+	"SubSystems/NodeSystem/CustomNodes/System/LaunchApplicationNode.h"
+	"SubSystems/NodeSystem/CustomNodes/System/LaunchApplicationNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_Strings_SRC
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLiteralNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLiteralNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringVariableNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringVariableNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringNumberNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringNumberNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringEmptyNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringEmptyNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringIntegerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/IsStringIntegerNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEqualsNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEqualsNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringContainsNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringContainsNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringStartsWithNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringStartsWithNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEndsWithNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringEndsWithNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLengthNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringLengthNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToIntNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToIntNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToFloatNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToFloatNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringConcatenateNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringConcatenateNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringSubstringNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringSubstringNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringReplaceNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringReplaceNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToUpperNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToUpperNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToLowerNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringToLowerNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringTrimNode.h"
+	"SubSystems/NodeSystem/CustomNodes/Strings/StringTrimNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_FileSystem_SRC
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileNameNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileNameNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileExtensionNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractFileExtensionNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractDirectoryPathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/ExtractDirectoryPathNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetAbsolutePathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetAbsolutePathNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesFileExistNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesFileExistNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesDirectoryExistNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DoesDirectoryExistNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetFileSizeNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetFileSizeNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetCurrentWorkingPathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetCurrentWorkingPathNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetTestWorkingPathNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/GetTestWorkingPathNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyFileNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyFileNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameFileNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameFileNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteFileNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteFileNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CreateDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CreateDirectoryNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/CopyDirectoryNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/RenameDirectoryNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteDirectoryNode.h"
+	"SubSystems/NodeSystem/CustomNodes/FileSystem/DeleteDirectoryNode.cpp"
+)
+
+file(GLOB VisualNodeSystem_CustomNodes_InputSimulation_SRC
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseMoveNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseMoveNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseLeftButtonUpNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/MouseRightButtonUpNode.cpp"
+
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyDownNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyDownNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyUpNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/KeyboardKeyUpNode.cpp"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/TextInputNode.h"
+	"SubSystems/NodeSystem/CustomNodes/InputSimulation/TextInputNode.cpp"
 )
 
 # *************** SUB_SYSTEM ***************
@@ -147,7 +257,14 @@ add_executable(FETestPlatform WIN32
 							  # *************** EDITOR ***************
 							  ${FEDearImguiWrapper_SRC}
 							  ${SubWindows_SRC}
+							  ${NodeAreaWindows_SRC}
 							  ${VisualNodeSystem_CustomNodes_SRC}
+							  ${VisualNodeSystem_CustomNodes_Images_SRC}
+							  ${VisualNodeSystem_CustomNodes_Timing_SRC}
+							  ${VisualNodeSystem_CustomNodes_System_SRC}
+							  ${VisualNodeSystem_CustomNodes_Strings_SRC}
+							  ${VisualNodeSystem_CustomNodes_FileSystem_SRC}
+							  ${VisualNodeSystem_CustomNodes_InputSimulation_SRC}
 							  # *************** SUB_SYSTEM ***************
 							  ${SubSystems_SRC}
 							  # *************** THIRD_PARTY ***************
@@ -160,19 +277,43 @@ set_target_properties(FETestPlatform PROPERTIES
                       /MANIFEST:embed
                       /MANIFESTINPUT:\"${CMAKE_SOURCE_DIR}/FETestPlatform.manifest\"")
 
-target_link_libraries(FETestPlatform FEBasicApplication)
-target_link_libraries(FETestPlatform VisualNodeSystem)
+set(Tesseract_Debug   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/lib/Debug/tesseract55d.lib)
+set(Tesseract_Release ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/lib/Release/tesseract55.lib)
 
-target_link_libraries(FETestPlatform glew32s.lib)
-target_link_libraries(FETestPlatform glfw3.lib)
-target_link_libraries(FETestPlatform glfw3dll.lib)
-target_link_libraries(FETestPlatform opengl32.lib)
+set(Leptonica_Debug   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/leptonica/lib/Debug/leptonica-1.87.0d.lib)
+set(Leptonica_Release ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/leptonica/lib/Release/leptonica-1.87.0.lib)
+
+target_link_libraries(FETestPlatform 
+	PRIVATE 
+		FEBasicApplication
+		VisualNodeSystem
+		FESceneGraphUI
+	PUBLIC 
+		debug	  ${Tesseract_Debug}
+		optimized ${Tesseract_Release}
+		debug	  ${Leptonica_Debug}
+		optimized ${Leptonica_Release}
+)
+
+#target_link_libraries(FETestPlatform FEBasicApplication)
+#target_link_libraries(FETestPlatform VisualNodeSystem)
+
+if(USE_STATIC_RUNTIME)
+    add_definitions(-DGLEW_STATIC)
+endif()
 
 source_group("Source Files" FILES ${source_SRC})
 # *************** EDITOR ***************
 source_group("Source Files/SubSystems/FEDearImguiWrapper" FILES ${FEDearImguiWrapper_SRC})
 source_group("Source Files/Windows" FILES ${SubWindows_SRC})
+source_group("Source Files/Windows/NodeArea" FILES ${NodeAreaWindows_SRC})
 source_group("Source Files/SubSystems/NodeSystem/CustomNodes" FILES ${VisualNodeSystem_CustomNodes_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/Images" FILES ${VisualNodeSystem_CustomNodes_Images_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/Timing" FILES ${VisualNodeSystem_CustomNodes_Timing_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/System" FILES ${VisualNodeSystem_CustomNodes_System_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/Strings" FILES ${VisualNodeSystem_CustomNodes_Strings_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/FileSystem" FILES ${VisualNodeSystem_CustomNodes_FileSystem_SRC})
+source_group("Source Files/SubSystems/NodeSystem/CustomNodes/InputSimulation" FILES ${VisualNodeSystem_CustomNodes_InputSimulation_SRC})
 # *************** SUB_SYSTEM ***************
 source_group("Source Files/SubSystems" FILES ${SubSystems_SRC})
 # *************** THIRD_PARTY ***************
@@ -188,4 +329,27 @@ include_directories(
 	${VISUAL_NODE_SYSTEM_THIRDPARTY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/SubSystems/FEBasicApplication/ThirdParty/imgui
 	"ThirdParty/"
+)
+
+add_custom_command(TARGET FETestPlatform POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/lib/$<CONFIG>/tesseract55$<$<CONFIG:Debug>:d>.dll"
+		"$<TARGET_FILE_DIR:FETestPlatform>"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/leptonica/lib/$<CONFIG>/leptonica-1.87.0$<$<CONFIG:Debug>:d>.dll"
+		"$<TARGET_FILE_DIR:FETestPlatform>"
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tesseract/dependency_dlls/$<CONFIG>/"
+		"$<TARGET_FILE_DIR:FETestPlatform>"
+		COMMENT "Copying all other Tesseract dependency DLLs to the build directory"
+)
+
+add_custom_command(TARGET FETestPlatform PRE_BUILD
+    COMMAND ${CMAKE_COMMAND}
+        -D PROJECT_VERSION_PREFIX=FETestPlatform_
+        -D PROJECT_VERSION_MAJOR=0
+        -D PROJECT_VERSION_MINOR=0
+        -D PROJECT_VERSION_PATCH=7
+        -D PROJECT_VERSION_DIR=${CMAKE_CURRENT_SOURCE_DIR}/VersionInfo
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/VersionInfo/UpdateProjectVersion.cmake
 )

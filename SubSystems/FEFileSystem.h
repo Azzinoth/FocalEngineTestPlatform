@@ -1,48 +1,78 @@
 #pragma once
 
 #include "FECoreIncludes.h"
+#include "FocalEngineAPI.h"
+#include <filesystem>
 
 #ifdef FE_WIN_32
-	#include <direct.h> // file system
-	#include <shobjidl.h> // openDialog
-	#include <shlwapi.h> // PathFindExtensionA
-	#pragma comment(lib, "shlwapi.lib") // PathFindExtensionA
+#include <shobjidl.h> // OpenDialog
 #endif
 
 namespace FocalEngine
 {
-	class FEFileSystem
+	class FOCAL_ENGINE_API FEFileSystem
 	{
 	public:
 		SINGLETON_PUBLIC_PART(FEFileSystem)
 
-		bool checkFile(const char* path);
-		std::string getFileExtension(const char* path);
-		bool isFolder(const char* path);
-		bool createFolder(const char* path);
-		bool deleteFolder(const char* path);
-		std::vector<std::string> getFolderList(const char* path);
-		std::vector<std::string> getFileList(const char* path);
-		bool changeFileName(const char* path, const char* newPath);
-		bool deleteFile(const char* path);
+			bool DoesFileExist(const std::string& Path);
+		bool RenameFile(const std::string& Path, const std::string& NewPath);
+		bool CopyFile(const std::string& Path, const std::string& NewPath);
+		bool DeleteFile(const std::string& Path);
+		std::vector<std::string> GetFileList(const std::string& Path);
+		size_t GetFileSize(const std::string& Path);
+		// Returns last write time in nanoseconds since epoch.
+		uint64_t GetFileLastWriteTime(const std::string& Path);
+		bool WaitForFileAccess(const std::string& FilePath, int TimeoutInMS = 1000);
 
-		char* getDirectoryPath(const char* fullPath);
-		char* getFileName(const char* fullPath);
+		std::string GetFileExtension(const std::string& Path);
+		std::string GetDirectoryPath(const std::string& FullPath);
+		std::string GetFileName(const std::string& FullPath, bool bWithExtension = true);
+		std::string GetAbsolutePath(const std::string& Path);
+
+		bool DoesDirectoryExist(const std::string& Path);
+		bool RenameDirectory(const std::string& Path, const std::string& NewPath);
+		bool CreateDirectory(const std::string& Path);
+		bool CopyDirectory(const std::string& Path, const std::string& NewPath);
+		bool DeleteDirectory(const std::string& Path);
+
+		std::vector<std::string> GetFilesInDirectory(const std::string& Path, bool bRecursive = false);
+		std::vector<std::string> GetFileNamesInDirectory(const std::string& Path, bool bRecursive = false);
+		std::vector<std::string> GetDirectoryList(const std::string& Path);
+
+		std::vector<std::string> GetFolderChain(const std::string& Path);
+
+		struct TextReplacementRule
+		{
+			// Pattern to identify the line where replacement should occur
+			std::string ContextPattern;
+			// Text to be replaced
+			std::string TargetText;
+			std::string ReplacementText;
+		};
+
+		bool PerformTextReplacements(const std::string& FilePath, const std::vector<TextReplacementRule>& Rules);
 
 #ifdef FE_WIN_32
-		void showFileOpenDialog(std::string& path, const COMDLG_FILTERSPEC* filter, int filterCount = 1);
-		void showFolderOpenDialog(std::string& path);
+		void ShowFileOpenDialog(std::string& Path, const COMDLG_FILTERSPEC* Filter, int FilterCount = 1, const std::string& InitialDirectory = "");
+		void ShowFolderOpenDialog(std::string& Path);
 
-		void showFileSaveDialog(std::string& path, const COMDLG_FILTERSPEC* filter, int filterCount = 1);
-		std::string getApplicationPath();
+		void ShowFileSaveDialog(std::string& Path, const COMDLG_FILTERSPEC* Filter, int FilterCount = 1, int* ChosenFilterIndex = nullptr);
+		std::string GetExecutablePath();
 #endif
-
+		std::string GetCurrentWorkingPath();
+		std::string ReadFEString(std::fstream& File);
 	private:
 		SINGLETON_PRIVATE_PART(FEFileSystem)
 #ifdef FE_WIN_32
-		std::string PWSTRtoString(PWSTR wString);
+			std::string PWSTRtoString(PWSTR WString);
 #endif
 	};
 
-	#define FILE_SYSTEM FEFileSystem::getInstance()
+#ifdef FOCAL_ENGINE_SHARED
+	extern "C" __declspec(dllexport) void* GetFileSystem();
+#define FILE_SYSTEM (*static_cast<FEFileSystem*>(GetFileSystem()))
+#else
+#define FILE_SYSTEM FEFileSystem::GetInstance()
+#endif
 }

@@ -11,12 +11,14 @@
 *.suo
 *.dylib
 *.sln
+*.slnx
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
 imgui.ini
 *.txt
 cmake_install.cmake
+FETestPlatform_Version.h
 
 #Folders
 Debug/

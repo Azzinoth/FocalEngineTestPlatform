@@ -1,9 +1,8 @@
 #include "TestManager.h"
 using namespace VisNodeSys;
 
-TestManager* TestManager::Instance = nullptr;
-VisNodeSys::Node* TestManager::foundNode = nullptr;
-FETPAction* TestManager::searchedAction = nullptr;
+VisNodeSys::Node* TestManager::FoundNode = nullptr;
+FETPAction* TestManager::SearchedAction = nullptr;
 
 TestManager::TestManager()
 {
@@ -15,288 +14,297 @@ TestManager::~TestManager()
 
 }
 
-void TestManager::addTest(std::string filePath)
+void TestManager::AddTest(std::string FilePath)
 {
-	if (filePath != "")
+	FETest* NewTest = new FETest();
+	if (FilePath != "")
 	{
-		FETest* newTest = new FETest();
-		newTest->setName(FocalEngine::FILE_SYSTEM.getFileName(filePath.c_str()));
-		newTest->filePath = filePath;
+		NewTest->SetName(FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str()));
+		NewTest->FilePath = FilePath;
 
-		newTest->load();
-
-		list.push_back(newTest);
+		NewTest->Load();
 	}
 	else
 	{
-		FETest* newTest = new FETest();
-		newTest->setName(getNewTestName());
-
-		list.push_back(newTest);
-	}
-}
-
-VisNodeSys::Node* TestManager::getNodeByAction(FETPAction* action)
-{
-	if (action == nullptr)
-		return nullptr;
-
-	foundNode = nullptr;
-	searchedAction = action;
-
-	for (size_t i = 0; i < list.size(); i++)
-	{
-		if (list[i]->nodeArea == nullptr)
-			continue;
-
-		list[i]->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-			if (node->GetType() == "globalActionNode")
-			{
-				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
-				if (actionNode->GetData()->getID() == searchedAction->getID())
-				{
-					foundNode = node;
-				}
-			}
-			else if (node->GetType() == "combinedActionNode")
-			{
-				combinedActionNode* actionNode = reinterpret_cast<combinedActionNode*>(node);
-
-				std::vector<FETPAction*> actionList = actionNode->GetData();
-				for (size_t j = 0; j < actionList.size(); j++)
-				{
-					if (actionList[j]->getID() == searchedAction->getID())
-					{
-						foundNode = node;
-					}
-				}
-			}
-		});
-
-		if (foundNode != nullptr)
-		{
-			searchedAction = nullptr;
-			return foundNode;
-		}
-			
+		NewTest->SetName(GetNewTestName());
 	}
 
-	searchedAction = nullptr;
-	return nullptr;
+	Tests.push_back(NewTest);
 }
 
-FETest* TestManager::getTestByAction(FETPAction* action)
+//VisNodeSys::Node* TestManager::GetNodeByAction(FETPAction* Action)
+//{
+//	if (Action == nullptr)
+//		return nullptr;
+//
+//	FoundNode = nullptr;
+//	SearchedAction = Action;
+//
+//	for (size_t i = 0; i < Tests.size(); i++)
+//	{
+//		if (Tests[i]->NodeArea == nullptr)
+//			continue;
+//
+//		Tests[i]->NodeArea->RunOnEachNode([](VisNodeSys::Node* Node) {
+//			if (Node->GetType() == "GlobalActionNode")
+//			{
+//				GlobalActionNode* ActionNode = reinterpret_cast<GlobalActionNode*>(Node);
+//				if (ActionNode->GetData()->GetID() == SearchedAction->GetID())
+//				{
+//					FoundNode = Node;
+//				}
+//			}
+//			else if (Node->GetType() == "CombinedActionNode")
+//			{
+//				CombinedActionNode* ActionNode = reinterpret_cast<CombinedActionNode*>(Node);
+//
+//				std::vector<FETPAction*> ActionList = ActionNode->GetData();
+//				for (size_t j = 0; j < ActionList.size(); j++)
+//				{
+//					if (ActionList[j]->GetID() == SearchedAction->GetID())
+//					{
+//						FoundNode = Node;
+//					}
+//				}
+//			}
+//		});
+//
+//		if (FoundNode != nullptr)
+//		{
+//			SearchedAction = nullptr;
+//			return FoundNode;
+//		}
+//			
+//	}
+//
+//	SearchedAction = nullptr;
+//	return nullptr;
+//}
+
+//FETest* TestManager::GetTestByAction(FETPAction* Action)
+//{
+//	if (Action == nullptr)
+//		return nullptr;
+//
+//	FoundNode = nullptr;
+//	SearchedAction = Action;
+//
+//	for (size_t i = 0; i < Tests.size(); i++)
+//	{
+//		if (Tests[i]->NodeArea == nullptr)
+//			continue;
+//
+//		Tests[i]->NodeArea->RunOnEachNode([](VisNodeSys::Node* Node) {
+//			if (Node->GetType() == "GlobalActionNode")
+//			{
+//				GlobalActionNode* actionNode = reinterpret_cast<GlobalActionNode*>(Node);
+//				if (actionNode->GetData()->GetID() == SearchedAction->GetID())
+//				{
+//					FoundNode = Node;
+//				}
+//			}
+//			else if (Node->GetType() == "CombinedActionNode")
+//			{
+//				CombinedActionNode* ActionNode = reinterpret_cast<CombinedActionNode*>(Node);
+//
+//				std::vector<FETPAction*> ActionList = ActionNode->GetData();
+//				for (size_t j = 0; j < ActionList.size(); j++)
+//				{
+//					if (ActionList[j]->GetID() == SearchedAction->GetID())
+//					{
+//						FoundNode = Node;
+//					}
+//				}
+//			}
+//		});
+//
+//		if (FoundNode != nullptr)
+//		{
+//			FoundNode = nullptr;
+//			SearchedAction = nullptr;
+//			return Tests[i];
+//		}
+//	}
+//
+//	SearchedAction = nullptr;
+//	return nullptr;
+//}
+
+std::string TestManager::GetNewTestName()
 {
-	if (action == nullptr)
-		return nullptr;
+	std::string NewName = "New test_";
+	size_t Index = 0;
 
-	foundNode = nullptr;
-	searchedAction = action;
-
-	for (size_t i = 0; i < list.size(); i++)
-	{
-		if (list[i]->nodeArea == nullptr)
-			continue;
-
-		list[i]->nodeArea->RunOnEachNode([](VisNodeSys::Node* node) {
-			if (node->GetType() == "globalActionNode")
-			{
-				globalActionNode* actionNode = reinterpret_cast<globalActionNode*>(node);
-				if (actionNode->GetData()->getID() == searchedAction->getID())
-				{
-					foundNode = node;
-				}
-			}
-			else if (node->GetType() == "combinedActionNode")
-			{
-				combinedActionNode* actionNode = reinterpret_cast<combinedActionNode*>(node);
-
-				std::vector<FETPAction*> actionList = actionNode->GetData();
-				for (size_t j = 0; j < actionList.size(); j++)
-				{
-					if (actionList[j]->getID() == searchedAction->getID())
-					{
-						foundNode = node;
-					}
-				}
-			}
-		});
-
-		if (foundNode != nullptr)
-		{
-			foundNode = nullptr;
-			searchedAction = nullptr;
-			return list[i];
-		}
-	}
-
-	searchedAction = nullptr;
-	return nullptr;
+	while (!IsTestNameFree(NewName + std::to_string(Index)))
+		Index++;
+	
+	return NewName + std::to_string(Index);
 }
 
-std::string TestManager::getNewTestName()
+bool TestManager::IsTestNameFree(std::string Name)
 {
-	std::string newName = "new test_";
-	size_t index = 0;
-
-	while (!isTestNameFree(newName + std::to_string(index)))
+	for (size_t i = 0; i < Tests.size(); i++)
 	{
-		index++;
-	}
-
-	return newName + std::to_string(index);
-}
-
-bool TestManager::isTestNameFree(std::string name)
-{
-	for (size_t i = 0; i < list.size(); i++)
-	{
-		if (list[i]->getName() == name)
+		if (Tests[i]->GetName() == Name)
 			return false;
 	}
 
 	return true;
 }
 
-void TestManager::setSelelectedTestIndex(size_t index)
+void TestManager::SetSelectedTestIndex(size_t Index)
 {
-	if (index < list.size())
-		selelectedTestIndex = index;
+	if (Index < Tests.size())
+		SelectedTestIndex = Index;
 }
 
-size_t TestManager::getSelectedTestIndex()
+size_t TestManager::GetSelectedTestIndex()
 {
-	return selelectedTestIndex;
+	return SelectedTestIndex;
 }
 
-FETest* TestManager::getSelectedTest()
+FETest* TestManager::GetSelectedTest()
 {
-	if (selelectedTestIndex < list.size())
-		return list[selelectedTestIndex];
+	if (SelectedTestIndex < Tests.size())
+		return Tests[SelectedTestIndex];
 
 	return nullptr;
 }
 
-void TestManager::removeTest(FETest* test)
+void TestManager::RemoveTest(FETest* Test)
 {
-	for (size_t i = 0; i < list.size(); i++)
+	for (size_t i = 0; i < Tests.size(); i++)
 	{
-		if (list[i] == test)
-			removeTest(i);
+		if (Tests[i] == Test)
+		{
+			RemoveTest(i);
+			return;
+		}
 	}
 }
 
-void TestManager::removeTest(size_t testIndex)
+void TestManager::RemoveTest(size_t TestIndex)
 {
-	if (testIndex >= list.size())
+	if (TestIndex >= Tests.size())
 		return;
 
-	if (selelectedTestIndex == testIndex)
-		selelectedTestIndex = 0;
+	if (SelectedTestIndex == TestIndex)
+		SelectedTestIndex = 0;
 
-	list.erase(list.begin() + testIndex);
+	delete Tests[TestIndex];
+	Tests.erase(Tests.begin() + TestIndex);
 }
 
-void TestManager::renameTest(FETest* test, std::string newName)
+void TestManager::RenameTest(FETest* Test, std::string NewName)
 {
-	for (size_t i = 0; i < list.size(); i++)
+	for (size_t i = 0; i < Tests.size(); i++)
 	{
-		if (list[i] == test)
+		if (Tests[i] == Test)
 		{
-			if (isTestNameFree(newName))
-				list[i]->setName(newName);
+			if (IsTestNameFree(NewName))
+				Tests[i]->SetName(NewName);
 
 			return;
 		}
 	}
 }
 
-void TestManager::renameTest(size_t testIndex, std::string newName)
+void TestManager::RenameTest(size_t TestIndex, std::string NewName)
 {
-	if (testIndex >= list.size())
+	if (TestIndex >= Tests.size())
 		return;
 
-	if (isTestNameFree(newName))
-		list[testIndex]->setName(newName);
+	if (IsTestNameFree(NewName))
+		Tests[TestIndex]->SetName(NewName);
 }
 
-void TestManager::saveAsTestSet(std::string filePath)
+void TestManager::SaveAsTestSet(std::string FilePath)
 {
-	if (list.size() == 0)
+	if (Tests.size() == 0)
 		return;
 
-	Json::Value root;
-	std::ofstream saveFile;
+	Json::Value Root;
+	std::ofstream SaveFile;
 
-	std::string fileNameWithoutExtension = FocalEngine::FILE_SYSTEM.getFileName(filePath.c_str());
-	std::string directoryPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-	saveFile.open(directoryPath + fileNameWithoutExtension + ".fetests");
+	std::string FileNameWithoutExtension = FocalEngine::FILE_SYSTEM.GetFileName(FilePath.c_str());
+	std::string DirectoryPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
+	SaveFile.open(DirectoryPath + FileNameWithoutExtension + ".fetests");
 
-	root["name"] = "noName";
+	Root["name"] = "noName";
 
-	Json::Value Tests;
-	for (size_t i = 0; i < list.size(); i++)
+	Json::Value TestsData;
+	for (size_t i = 0; i < Tests.size(); i++)
 	{
-		Tests[std::to_string(i)]["path"] = list[i]->filePath;
-		Tests[std::to_string(i)]["name"] = list[i]->getName();
+		TestsData[std::to_string(i)]["path"] = Tests[i]->FilePath;
+		TestsData[std::to_string(i)]["name"] = Tests[i]->GetName();
 	}
-	root["tests"] = Tests;
+	Root["tests"] = TestsData;
 
-	Json::StreamWriterBuilder builder;
-	const std::string json_file = Json::writeString(builder, root);
+	Json::StreamWriterBuilder Builder;
+	const std::string JsonFile = Json::writeString(Builder, Root);
 
-	saveFile << json_file;
-	saveFile.close();
+	SaveFile << JsonFile;
+	SaveFile.close();
 }
 
-void TestManager::openTestSet(std::string filePath)
+void TestManager::OpenTestSet(std::string FilePath)
 {
-	if (filePath == "")
+	if (FilePath == "")
 		return;
 
-	std::ifstream testSetFile;
-	testSetFile.open(filePath);
+	std::ifstream TestSetFile;
+	TestSetFile.open(FilePath);
 
-	std::string fileData((std::istreambuf_iterator<char>(testSetFile)), std::istreambuf_iterator<char>());
-	testSetFile.close();
+	std::string FileData((std::istreambuf_iterator<char>(TestSetFile)), std::istreambuf_iterator<char>());
+	TestSetFile.close();
 
-	Json::Value root;
-	JSONCPP_STRING err;
-	Json::CharReaderBuilder builder;
+	Json::Value Root;
+	JSONCPP_STRING Error;
+	Json::CharReaderBuilder Builder;
 
-	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-	if (!reader->parse(fileData.c_str(), fileData.c_str() + fileData.size(), &root, &err))
+	const std::unique_ptr<Json::CharReader> Reader(Builder.newCharReader());
+	if (!Reader->parse(FileData.c_str(), FileData.c_str() + FileData.size(), &Root, &Error))
 		return;
 
-	std::vector<Json::String> testList = root["tests"].getMemberNames();
-	for (size_t i = 0; i < testList.size(); i++)
+	std::vector<Json::String> TestList = Root["tests"].getMemberNames();
+	for (size_t i = 0; i < TestList.size(); i++)
 	{
-		std::string originalPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(root["tests"][testList[i].c_str()]["path"].asCString());
+		std::string OriginalPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(Root["tests"][TestList[i].c_str()]["path"].asCString());
 
-		std::string originalDirectory = "";
-		int seenDelimiterCount = 0;
-		for (size_t j = originalPath.size() - 1; j > 0; j--)
+		std::string OriginalDirectory = "";
+		int SeenDelimiterCount = 0;
+		for (size_t j = OriginalPath.size() - 1; j > 0; j--)
 		{
-			if (seenDelimiterCount == 1)
-				originalDirectory.insert(originalDirectory.begin(), originalPath[j]);
+			if (SeenDelimiterCount == 1)
+				OriginalDirectory.insert(OriginalDirectory.begin(), OriginalPath[j]);
 
-			if (originalPath[j] == '\\')
+			if (OriginalPath[j] == '\\')
 			{
-				seenDelimiterCount++;
-				if (seenDelimiterCount == 2)
+				SeenDelimiterCount++;
+				if (SeenDelimiterCount == 2)
 				{
-					originalDirectory.erase(originalDirectory.begin());
+					OriginalDirectory.erase(OriginalDirectory.begin());
 					break;
 				}
 			}
 		}
 
-		std::string localPath = FocalEngine::FILE_SYSTEM.getDirectoryPath(filePath.c_str());
-		localPath += originalDirectory;
-		localPath += "\\";
-		localPath += FocalEngine::FILE_SYSTEM.getFileName(root["tests"][testList[i].c_str()]["path"].asCString());
-		localPath += ".fetp";
+		std::string LocalPath = FocalEngine::FILE_SYSTEM.GetDirectoryPath(FilePath.c_str());
+		LocalPath += OriginalDirectory;
+		LocalPath += "\\";
+		LocalPath += FocalEngine::FILE_SYSTEM.GetFileName(Root["tests"][TestList[i].c_str()]["path"].asCString());
+		LocalPath += ".fetp";
 
-		TEST_MANAGER.addTest(localPath);
+		TEST_MANAGER.AddTest(LocalPath);
 	}
+}
+
+void TestManager::Clear()
+{
+	for (size_t i = 0; i < Tests.size(); i++)
+		delete Tests[i];
+
+	Tests.clear();
+	SelectedTestIndex = 0;
+	NODE_SYSTEM.Clear();
 }

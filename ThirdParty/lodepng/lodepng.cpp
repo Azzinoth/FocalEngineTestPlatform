@@ -2447,15 +2447,15 @@ unsigned lodepng_chunk_length(const unsigned char* chunk) {
   return lodepng_read32bitInt(&chunk[0]);
 }
 
-void lodepng_chunk_type(char type[5], const unsigned char* chunk) {
+void lodepng_chunk_type(char Type[5], const unsigned char* chunk) {
   unsigned i;
-  for(i = 0; i != 4; ++i) type[i] = (char)chunk[4 + i];
-  type[4] = 0; /*null termination char*/
+  for(i = 0; i != 4; ++i) Type[i] = (char)chunk[4 + i];
+  Type[4] = 0; /*null termination char*/
 }
 
-unsigned char lodepng_chunk_type_equals(const unsigned char* chunk, const char* type) {
-  if(lodepng_strlen(type) != 4) return 0;
-  return (chunk[4] == type[0] && chunk[5] == type[1] && chunk[6] == type[2] && chunk[7] == type[3]);
+unsigned char lodepng_chunk_type_equals(const unsigned char* chunk, const char* Type) {
+  if(lodepng_strlen(Type) != 4) return 0;
+  return (chunk[4] == Type[0] && chunk[5] == Type[1] && chunk[6] == Type[2] && chunk[7] == Type[3]);
 }
 
 unsigned char lodepng_chunk_ancillary(const unsigned char* chunk) {
@@ -2525,18 +2525,18 @@ const unsigned char* lodepng_chunk_next_const(const unsigned char* chunk, const 
   }
 }
 
-unsigned char* lodepng_chunk_find(unsigned char* chunk, unsigned char* end, const char type[5]) {
+unsigned char* lodepng_chunk_find(unsigned char* chunk, unsigned char* end, const char Type[5]) {
   for(;;) {
     if(chunk >= end || end - chunk < 12) return 0; /* past file end: chunk + 12 > end */
-    if(lodepng_chunk_type_equals(chunk, type)) return chunk;
+    if(lodepng_chunk_type_equals(chunk, Type)) return chunk;
     chunk = lodepng_chunk_next(chunk, end);
   }
 }
 
-const unsigned char* lodepng_chunk_find_const(const unsigned char* chunk, const unsigned char* end, const char type[5]) {
+const unsigned char* lodepng_chunk_find_const(const unsigned char* chunk, const unsigned char* end, const char Type[5]) {
   for(;;) {
     if(chunk >= end || end - chunk < 12) return 0; /* past file end: chunk + 12 > end */
-    if(lodepng_chunk_type_equals(chunk, type)) return chunk;
+    if(lodepng_chunk_type_equals(chunk, Type)) return chunk;
     chunk = lodepng_chunk_next_const(chunk, end);
   }
 }
@@ -2566,7 +2566,7 @@ the data is at chunk + 8. To finalize chunk, add the data, then use
 lodepng_chunk_generate_crc */
 static unsigned lodepng_chunk_init(unsigned char** chunk,
                                    ucvector* out,
-                                   unsigned length, const char* type) {
+                                   unsigned length, const char* Type) {
   size_t new_length = out->size;
   if(lodepng_addofl(new_length, length, &new_length)) return 77;
   if(lodepng_addofl(new_length, 12, &new_length)) return 77;
@@ -2577,16 +2577,16 @@ static unsigned lodepng_chunk_init(unsigned char** chunk,
   lodepng_set32bitInt(*chunk, length);
 
   /*2: chunk name (4 letters)*/
-  lodepng_memcpy(*chunk + 4, type, 4);
+  lodepng_memcpy(*chunk + 4, Type, 4);
 
   return 0;
 }
 
 /* like lodepng_chunk_create but with custom allocsize */
 static unsigned lodepng_chunk_createv(ucvector* out,
-                                      unsigned length, const char* type, const unsigned char* data) {
+                                      unsigned length, const char* Type, const unsigned char* data) {
   unsigned char* chunk;
-  CERROR_TRY_RETURN(lodepng_chunk_init(&chunk, out, length, type));
+  CERROR_TRY_RETURN(lodepng_chunk_init(&chunk, out, length, Type));
 
   /*3: the data*/
   lodepng_memcpy(chunk + 8, data, length);
@@ -2598,9 +2598,9 @@ static unsigned lodepng_chunk_createv(ucvector* out,
 }
 
 unsigned lodepng_chunk_create(unsigned char** out, size_t* outsize,
-                              unsigned length, const char* type, const unsigned char* data) {
+                              unsigned length, const char* Type, const unsigned char* data) {
   ucvector v = ucvector_init(*out, *outsize);
-  unsigned error = lodepng_chunk_createv(&v, length, type, data);
+  unsigned error = lodepng_chunk_createv(&v, length, Type, data);
   *out = v.data;
   *outsize = v.size;
   return error;
@@ -2979,10 +2979,10 @@ unsigned lodepng_add_itext(LodePNGInfo* info, const char* key, const char* langt
 }
 
 /* same as set but does not delete */
-static unsigned lodepng_assign_icc(LodePNGInfo* info, const char* name, const unsigned char* profile, unsigned profile_size) {
+static unsigned lodepng_assign_icc(LodePNGInfo* info, const char* Name, const unsigned char* profile, unsigned profile_size) {
   if(profile_size == 0) return 100; /*invalid ICC profile size*/
 
-  info->iccp_name = alloc_string(name);
+  info->iccp_name = alloc_string(Name);
   info->iccp_profile = (unsigned char*)lodepng_malloc(profile_size);
 
   if(!info->iccp_name || !info->iccp_profile) return 83; /*alloc fail*/
@@ -2993,11 +2993,11 @@ static unsigned lodepng_assign_icc(LodePNGInfo* info, const char* name, const un
   return 0; /*ok*/
 }
 
-unsigned lodepng_set_icc(LodePNGInfo* info, const char* name, const unsigned char* profile, unsigned profile_size) {
+unsigned lodepng_set_icc(LodePNGInfo* info, const char* Name, const unsigned char* profile, unsigned profile_size) {
   if(info->iccp_name) lodepng_clear_icc(info);
   info->iccp_defined = 1;
 
-  return lodepng_assign_icc(info, name, profile, profile_size);
+  return lodepng_assign_icc(info, Name, profile, profile_size);
 }
 
 void lodepng_clear_icc(LodePNGInfo* info) {
@@ -4495,7 +4495,7 @@ static unsigned readChunk_iTXt(LodePNGInfo* info, const LodePNGDecompressSetting
   unsigned error = 0;
   unsigned i;
 
-  unsigned length, begin, compressed;
+  unsigned length, Begin, compressed;
   char *key = 0, *langtag = 0, *transkey = 0;
 
   while(!error) /*not really a while loop, only used to break on error*/ {
@@ -4522,42 +4522,42 @@ static unsigned readChunk_iTXt(LodePNGInfo* info, const LodePNGDecompressSetting
     there's no null termination char, if the text is empty for the next 3 texts*/
 
     /*read the langtag*/
-    begin = length + 3;
+    Begin = length + 3;
     length = 0;
-    for(i = begin; i < chunkLength && data[i] != 0; ++i) ++length;
+    for(i = Begin; i < chunkLength && data[i] != 0; ++i) ++length;
 
     langtag = (char*)lodepng_malloc(length + 1);
     if(!langtag) CERROR_BREAK(error, 83); /*alloc fail*/
 
-    lodepng_memcpy(langtag, data + begin, length);
+    lodepng_memcpy(langtag, data + Begin, length);
     langtag[length] = 0;
 
     /*read the transkey*/
-    begin += length + 1;
+    Begin += length + 1;
     length = 0;
-    for(i = begin; i < chunkLength && data[i] != 0; ++i) ++length;
+    for(i = Begin; i < chunkLength && data[i] != 0; ++i) ++length;
 
     transkey = (char*)lodepng_malloc(length + 1);
     if(!transkey) CERROR_BREAK(error, 83); /*alloc fail*/
 
-    lodepng_memcpy(transkey, data + begin, length);
+    lodepng_memcpy(transkey, data + Begin, length);
     transkey[length] = 0;
 
     /*read the actual text*/
-    begin += length + 1;
+    Begin += length + 1;
 
-    length = (unsigned)chunkLength < begin ? 0 : (unsigned)chunkLength - begin;
+    length = (unsigned)chunkLength < Begin ? 0 : (unsigned)chunkLength - Begin;
 
     if(compressed) {
       unsigned char* str = 0;
       size_t size = 0;
       /*will fail if zlib error, e.g. if length is too small*/
-      error = zlib_decompress(&str, &size, 0, &data[begin],
+      error = zlib_decompress(&str, &size, 0, &data[Begin],
                               length, zlibsettings);
       if(!error) error = lodepng_add_itext_sized(info, key, langtag, transkey, (char*)str, size);
       lodepng_free(str);
     } else {
-      error = lodepng_add_itext_sized(info, key, langtag, transkey, (char*)(data + begin), length);
+      error = lodepng_add_itext_sized(info, key, langtag, transkey, (char*)(data + Begin), length);
     }
 
     break;
@@ -5436,48 +5436,48 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
   if(bpp == 0) return 31; /*error: invalid color type*/
 
   if(strategy >= LFS_ZERO && strategy <= LFS_FOUR) {
-    unsigned char type = (unsigned char)strategy;
+    unsigned char Type = (unsigned char)strategy;
     for(y = 0; y != h; ++y) {
       size_t outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
       size_t inindex = linebytes * y;
-      out[outindex] = type; /*filter type byte*/
-      filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
+      out[outindex] = Type; /*filter type byte*/
+      filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, Type);
       prevline = &in[inindex];
     }
   } else if(strategy == LFS_MINSUM) {
     /*adaptive filtering*/
     unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
     size_t smallest = 0;
-    unsigned char type, bestType = 0;
+    unsigned char Type, bestType = 0;
 
-    for(type = 0; type != 5; ++type) {
-      attempt[type] = (unsigned char*)lodepng_malloc(linebytes);
-      if(!attempt[type]) error = 83; /*alloc fail*/
+    for(Type = 0; Type != 5; ++Type) {
+      attempt[Type] = (unsigned char*)lodepng_malloc(linebytes);
+      if(!attempt[Type]) error = 83; /*alloc fail*/
     }
 
     if(!error) {
       for(y = 0; y != h; ++y) {
         /*try the 5 filter types*/
-        for(type = 0; type != 5; ++type) {
+        for(Type = 0; Type != 5; ++Type) {
           size_t sum = 0;
-          filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
+          filterScanline(attempt[Type], &in[y * linebytes], prevline, linebytes, bytewidth, Type);
 
           /*calculate the sum of the result*/
-          if(type == 0) {
-            for(x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[type][x]);
+          if(Type == 0) {
+            for(x = 0; x != linebytes; ++x) sum += (unsigned char)(attempt[Type][x]);
           } else {
             for(x = 0; x != linebytes; ++x) {
               /*For differences, each byte should be treated as signed, values above 127 are negative
               (converted to signed char). Filtertype 0 isn't a difference though, so use unsigned there.
               This means filtertype 0 is almost never chosen, but that is justified.*/
-              unsigned char s = attempt[type][x];
+              unsigned char s = attempt[Type][x];
               sum += s < 128 ? s : (255U - s);
             }
           }
 
           /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
-          if(type == 0 || sum < smallest) {
-            bestType = type;
+          if(Type == 0 || sum < smallest) {
+            bestType = Type;
             smallest = sum;
           }
         }
@@ -5490,33 +5490,33 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
       }
     }
 
-    for(type = 0; type != 5; ++type) lodepng_free(attempt[type]);
+    for(Type = 0; Type != 5; ++Type) lodepng_free(attempt[Type]);
   } else if(strategy == LFS_ENTROPY) {
     unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
     size_t bestSum = 0;
-    unsigned type, bestType = 0;
+    unsigned Type, bestType = 0;
     unsigned count[256];
 
-    for(type = 0; type != 5; ++type) {
-      attempt[type] = (unsigned char*)lodepng_malloc(linebytes);
-      if(!attempt[type]) error = 83; /*alloc fail*/
+    for(Type = 0; Type != 5; ++Type) {
+      attempt[Type] = (unsigned char*)lodepng_malloc(linebytes);
+      if(!attempt[Type]) error = 83; /*alloc fail*/
     }
 
     if(!error) {
       for(y = 0; y != h; ++y) {
         /*try the 5 filter types*/
-        for(type = 0; type != 5; ++type) {
+        for(Type = 0; Type != 5; ++Type) {
           size_t sum = 0;
-          filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
+          filterScanline(attempt[Type], &in[y * linebytes], prevline, linebytes, bytewidth, Type);
           lodepng_memset(count, 0, 256 * sizeof(*count));
-          for(x = 0; x != linebytes; ++x) ++count[attempt[type][x]];
-          ++count[type]; /*the filter type itself is part of the scanline*/
+          for(x = 0; x != linebytes; ++x) ++count[attempt[Type][x]];
+          ++count[Type]; /*the filter type itself is part of the scanline*/
           for(x = 0; x != 256; ++x) {
             sum += ilog2i(count[x]);
           }
           /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
-          if(type == 0 || sum > bestSum) {
-            bestType = type;
+          if(Type == 0 || sum > bestSum) {
+            bestType = Type;
             bestSum = sum;
           }
         }
@@ -5529,14 +5529,14 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
       }
     }
 
-    for(type = 0; type != 5; ++type) lodepng_free(attempt[type]);
+    for(Type = 0; Type != 5; ++Type) lodepng_free(attempt[Type]);
   } else if(strategy == LFS_PREDEFINED) {
     for(y = 0; y != h; ++y) {
       size_t outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
       size_t inindex = linebytes * y;
-      unsigned char type = settings->predefined_filters[y];
-      out[outindex] = type; /*filter type byte*/
-      filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, type);
+      unsigned char Type = settings->predefined_filters[y];
+      out[outindex] = Type; /*filter type byte*/
+      filterScanline(&out[outindex + 1], &in[inindex], prevline, linebytes, bytewidth, Type);
       prevline = &in[inindex];
     }
   } else if(strategy == LFS_BRUTE_FORCE) {
@@ -5546,7 +5546,7 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
     size_t size[5];
     unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
     size_t smallest = 0;
-    unsigned type = 0, bestType = 0;
+    unsigned Type = 0, bestType = 0;
     unsigned char* dummy;
     LodePNGCompressSettings zlibsettings;
     lodepng_memcpy(&zlibsettings, &settings->zlibsettings, sizeof(LodePNGCompressSettings));
@@ -5559,25 +5559,25 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
     images only, so disable it*/
     zlibsettings.custom_zlib = 0;
     zlibsettings.custom_deflate = 0;
-    for(type = 0; type != 5; ++type) {
-      attempt[type] = (unsigned char*)lodepng_malloc(linebytes);
-      if(!attempt[type]) error = 83; /*alloc fail*/
+    for(Type = 0; Type != 5; ++Type) {
+      attempt[Type] = (unsigned char*)lodepng_malloc(linebytes);
+      if(!attempt[Type]) error = 83; /*alloc fail*/
     }
     if(!error) {
       for(y = 0; y != h; ++y) /*try the 5 filter types*/ {
-        for(type = 0; type != 5; ++type) {
+        for(Type = 0; Type != 5; ++Type) {
           unsigned testsize = (unsigned)linebytes;
           /*if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row*/
 
-          filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
-          size[type] = 0;
+          filterScanline(attempt[Type], &in[y * linebytes], prevline, linebytes, bytewidth, Type);
+          size[Type] = 0;
           dummy = 0;
-          zlib_compress(&dummy, &size[type], attempt[type], testsize, &zlibsettings);
+          zlib_compress(&dummy, &size[Type], attempt[Type], testsize, &zlibsettings);
           lodepng_free(dummy);
           /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
-          if(type == 0 || size[type] < smallest) {
-            bestType = type;
-            smallest = size[type];
+          if(Type == 0 || size[Type] < smallest) {
+            bestType = Type;
+            smallest = size[Type];
           }
         }
         prevline = &in[y * linebytes];
@@ -5585,7 +5585,7 @@ static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, 
         for(x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
       }
     }
-    for(type = 0; type != 5; ++type) lodepng_free(attempt[type]);
+    for(Type = 0; Type != 5; ++Type) lodepng_free(attempt[Type]);
   }
   else return 88; /* unknown filter strategy */
 

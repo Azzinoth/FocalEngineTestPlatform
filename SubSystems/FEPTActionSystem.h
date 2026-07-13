@@ -2,17 +2,17 @@
 
 #include "../SubSystems/TestManager.h"
 
-const COMDLG_FILTERSPEC applicationLoadFilter[] =
+const COMDLG_FILTERSPEC ApplicationLoadFilter[] =
 {
 	{ L"exe files (*.exe)", L"*.exe" }
 };
 
-const COMDLG_FILTERSPEC saveFileFilter[] =
+const COMDLG_FILTERSPEC SaveFileFilter[] =
 {
 	{ L"fetp files (*.fetp)", L"*.fetp" }
 };
 
-const COMDLG_FILTERSPEC openFETPFileFilter[] =
+const COMDLG_FILTERSPEC OpenFETPFileFilter[] =
 {
 	{ L"fetp files (*.fetp)", L"*.fetp" }
 };
@@ -27,72 +27,73 @@ class FEPTActionSystem
 {
 	SINGLETON_PRIVATE_PART(FEPTActionSystem)
 
-	friend class testEditorWinow;
+	friend class TestEditorWindow;
 	friend class FETest;
 
-	bool recording = false;
+	bool bIsRecording = false;
 
-	std::vector<FETPAction*> recordedActions;
-	std::vector<KeyboardAction> lastKeyboarActions;
+	std::vector<FETPAction*> RecordedActions;
+	std::vector<KeyboardAction> LastKeyboardActions;
 
-	bool actionsRecordLastFrame = false;
-	DWORD lastTimeRecordModeWasChanged = 0;
+	bool bWasRecordingLastFrame = false;
+	DWORD LastRecordModeChangeTimestamp = 0;
 
-	std::vector<KeyboardAction> keysToDelete;
-	std::unordered_map<DWORD, bool> pressedKeys;
+	std::vector<KeyboardAction> KeysToDelete;
+	std::unordered_map<DWORD, bool> PressedKeysMap;
 
-	DWORD lastTimeScreenshootWasTaken = 0;
+	DWORD LastScreenshotTimestamp = 0;
 
-	KeyboardAction altTempStorage;
-	KeyboardAction lastLeftAltUp;
+	KeyboardAction AltTemporaryStorage;
+	KeyboardAction LastLeftAltUp;
 
-	void findAndDeleteKeys();
-	void addAction(FETPAction* newAction);
+	void FindAndDeleteKeys();
+	void AddAction(FETPAction* NewAction);
 
-	VisNodeSys::Node* getNextNode(VisNodeSys::Node* currentNode);
-	std::vector<FETPAction*> getActionsFromNode(VisNodeSys::Node* currentNode);
-	bool execute(std::vector<FETPAction*> action);
+	std::vector<FETPAction*> GetActionsFromNode(VisNodeSys::Node* CurrentNode);
 
-	FETPImage* imageToUse(compareImageInfo* imageInfo);
-	bool execute(ScreenshootCompareAction* action);
+	std::function<void(std::vector<FETPAction*>&)> OnFinishRecordingCallback = nullptr;
 
-	std::function<void(std::vector<FETPAction*>&)> finishRecordingCallback = nullptr;
+	FETest* CurrentlyRunning = nullptr;
+	FETestResult* CurrentTestResult = nullptr;
 
-	FETest* currentlyRunning = nullptr;
-	FETestResult* currentTestResult = nullptr;
+	bool bUserRequestedFail = false;
+	std::string UserFailMessage;
 
-	FETPAction* copyAction(FETPAction* src);
+	FETPAction* CopyAction(FETPAction* Other);
+
+	std::unordered_map<std::string, bool> NodeAreaIDToHadProblematicAction;
 public:
 	SINGLETON_PUBLIC_PART(FEPTActionSystem)
 
-	void takeScreenshoot();
-	void recordModeSwitch();
-	bool run(FETest* testToRun);
+	void SwitchRecordMode();
+	bool Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode = nullptr);
 
-	void newKeyboardAction(KeyboardAction keyAction);
-	void newMouseAction(MouseAction mouseAction);
-	void newAction(FETPAction* newAction);
+	FETest* GetCurrentlyRunningTest() const { return CurrentlyRunning; }
 
-	void placeStructuredNodes(std::vector<FETPAction*> actions, VisNodeSys::NodeArea* nodeArea, bool copyActions = false);
+	void MarkCurrentTestFailed(std::string Message);
 
-	void update();
+	void NewKeyboardAction(KeyboardAction KeyAction);
+	void NewMouseAction(MouseAction NewMouseAction);
+	void NewAction(FETPAction* NewAction);
 
-	FETPAction* getAction(size_t index);
+	void Update();
 
-	void filterActions(size_t startIndex, std::function<bool (FETPAction*, int)> filerFunction, std::vector<FETPAction*>& output, bool stopOnFirstNonMatch = true);
-	static bool mouseMoveActionFilter(FETPAction* action, int outputCount);
-	static bool mouseLeftButtonActionFilter(FETPAction* action, int outputCount);
-	static bool mouseRightButtonActionFilter(FETPAction* action, int outputCount);
-	static bool mouseWheelActionFilter(FETPAction* action, int outputCount);
-	static bool keyboardTextActionFilter(FETPAction* action, int outputCount);
-	static bool keyboardPressActionFilter(FETPAction* action, int outputCount);
+	FETPAction* GetAction(size_t Index);
 
-	VisNodeSys::Node* tryToPackActions(size_t& index);
+	void FilterActions(size_t StartIndex, std::function<bool (FETPAction*, int)> FilterFunction, std::vector<FETPAction*>& Output, bool StopOnFirstNonMatch = true);
+	static bool MouseMoveActionFilter(FETPAction* Action, int OutputCount);
+	static bool MouseLeftButtonActionFilter(FETPAction* Action, int OutputCount);
+	static bool MouseRightButtonActionFilter(FETPAction* Action, int OutputCount);
+	static bool MouseWheelActionFilter(FETPAction* Action, int OutputCount);
+	static bool KeyboardTextActionFilter(FETPAction* Action, int OutputCount);
+	static bool KeyboardPressActionFilter(FETPAction* Action, int OutputCount);
 
-	void setFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> callback);
+	void SetOnFinishRecordingCallback(std::function<void(std::vector<FETPAction*>&)> Callback);
 
-	std::string extractText(std::vector<FETPAction*> actions);
-	std::vector<FETPAction*> generateInputTextActions(std::string text, int avarageDelay);
+	std::string ExtractText(std::vector<FETPAction*> Actions);
+	void ConvertActionsToNodes(std::vector<FETPAction*> Actions, VisNodeSys::NodeArea* TargetNodeArea);
+
+	bool DoesNodeAreaHaveProblematicAction(std::string NodeAreaID);
 };
 
-#define ACTION_SYSTEM FEPTActionSystem::getInstance()
+#define ACTION_SYSTEM FEPTActionSystem::GetInstance()

@@ -4,233 +4,164 @@
 
 struct KeyboardAction : public FETPAction
 {
-	int nCode = 0;
-	WPARAM wParam;
-	KBDLLHOOKSTRUCT additionalInfo;
-	bool shiftPressed = false;
-	bool capsLockActivated = false;
-	//BYTE keyboardState[256];
+	int HookCode = 0;
+	WPARAM EventType;
+	KBDLLHOOKSTRUCT HookInfo;
+	bool bShiftPressed = false;
+	bool bCapsLockActivated = false;
 
 	KeyboardAction() : FETPAction(FETP_KEYBOARD_ACTION)
 	{
-		this->wParam = 0;
-		ZeroMemory(&additionalInfo, sizeof(KBDLLHOOKSTRUCT));
-
-		/*for (size_t i = 0; i < 256; i++)
-		{
-			keyboardState[i] = 0;
-		}*/
+		this->EventType = 0;
+		ZeroMemory(&HookInfo, sizeof(KBDLLHOOKSTRUCT));
 		//GetKeyboardState
 		// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeyboardstate
 	}
 
-	KeyboardAction(int nCode, WPARAM wParam, LPARAM lParam, bool shiftPressed, bool capsLockActivated) : FETPAction(FETP_KEYBOARD_ACTION)
+	KeyboardAction(int HookCode, WPARAM EventType, LPARAM EventDataPointer, bool bShiftPressed, bool bCapsLockActivated) : FETPAction(FETP_KEYBOARD_ACTION)
 	{
-		ZeroMemory(&additionalInfo, sizeof(KBDLLHOOKSTRUCT));
+		ZeroMemory(&HookInfo, sizeof(KBDLLHOOKSTRUCT));
 
-		this->nCode = nCode;
-		this->wParam = wParam;
-		this->shiftPressed = shiftPressed;
-		this->capsLockActivated = capsLockActivated;
+		this->HookCode = HookCode;
+		this->EventType = EventType;
+		this->bShiftPressed = bShiftPressed;
+		this->bCapsLockActivated = bCapsLockActivated;
 
-		if (lParam != 0)
+		if (EventDataPointer != 0)
 		{
-			this->additionalInfo = *reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
-			time = this->additionalInfo.time;
+			this->HookInfo = *reinterpret_cast<KBDLLHOOKSTRUCT*>(EventDataPointer);
+			Time = this->HookInfo.time;
 		}
 	}
 
-	KeyboardAction(const KeyboardAction& ref) : FETPAction(FETP_KEYBOARD_ACTION)
+	KeyboardAction(const KeyboardAction& Other) : FETPAction(FETP_KEYBOARD_ACTION)
 	{
-		ZeroMemory(&additionalInfo, sizeof(KBDLLHOOKSTRUCT));
+		ZeroMemory(&HookInfo, sizeof(KBDLLHOOKSTRUCT));
 
-		this->nCode = ref.nCode;
-		this->wParam = ref.wParam;
-		this->shiftPressed = ref.shiftPressed;
-		this->capsLockActivated = ref.capsLockActivated;
+		this->HookCode = Other.HookCode;
+		this->EventType = Other.EventType;
+		this->bShiftPressed = Other.bShiftPressed;
+		this->bCapsLockActivated = Other.bCapsLockActivated;
 
-		this->additionalInfo = ref.additionalInfo;
-		time = this->additionalInfo.time;
+		this->HookInfo = Other.HookInfo;
+		Time = this->HookInfo.time;
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
-		Json::Value result = FETPAction::toJson();
+		Json::Value Result = FETPAction::ToJson();
 
-		result["nCode"] = nCode;
-		result["wParam"] = wParam;
+		Result["nCode"] = HookCode;
+		Result["wParam"] = EventType;
 
-		result["shiftPressed"] = shiftPressed;
-		result["capsLockActivated"] = capsLockActivated;
+		Result["shiftPressed"] = bShiftPressed;
+		Result["capsLockActivated"] = bCapsLockActivated;
 
-		result["additionalInfo"]["dwExtraInfo"] = long long(additionalInfo.dwExtraInfo);
-		result["additionalInfo"]["flags"] = unsigned int(additionalInfo.flags);
-		result["additionalInfo"]["vkCode"] = unsigned int(additionalInfo.vkCode);
-		result["additionalInfo"]["scanCode"] = unsigned int(additionalInfo.scanCode);
+		Result["additionalInfo"]["dwExtraInfo"] = long long(HookInfo.dwExtraInfo);
+		Result["additionalInfo"]["flags"] = unsigned int(HookInfo.flags);
+		Result["additionalInfo"]["vkCode"] = unsigned int(HookInfo.vkCode);
+		Result["additionalInfo"]["scanCode"] = unsigned int(HookInfo.scanCode);
 
-		return result;
+		return Result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value Json)
 	{
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(Json);
 
-		nCode = json["nCode"].asInt();
-		wParam = json["wParam"].asInt();
+		HookCode = Json["nCode"].asInt();
+		EventType = Json["wParam"].asInt();
 
-		shiftPressed = json["shiftPressed"].asBool();
-		capsLockActivated = json["capsLockActivated"].asBool();
+		bShiftPressed = Json["shiftPressed"].asBool();
+		bCapsLockActivated = Json["capsLockActivated"].asBool();
 		
-		additionalInfo.dwExtraInfo = json["additionalInfo"]["dwExtraInfo"].asUInt();
-		additionalInfo.flags = json["additionalInfo"]["flags"].asUInt();
-		additionalInfo.vkCode = json["additionalInfo"]["vkCode"].asUInt();
-		additionalInfo.scanCode = json["additionalInfo"]["scanCode"].asUInt();
+		HookInfo.dwExtraInfo = Json["additionalInfo"]["dwExtraInfo"].asUInt();
+		HookInfo.flags = Json["additionalInfo"]["flags"].asUInt();
+		HookInfo.vkCode = Json["additionalInfo"]["vkCode"].asUInt();
+		HookInfo.scanCode = Json["additionalInfo"]["scanCode"].asUInt();
 	}
 };
 
 struct MouseAction : public FETPAction
 {
-	int nCode;
-	WPARAM wParam;
-	MSLLHOOKSTRUCT additionalInfo;
-	size_t screenWidth;
-	size_t screenHeight;
+	int HookCode;
+	WPARAM EventType;
+	MSLLHOOKSTRUCT HookInfo;
+	size_t ScreenWidth;
+	size_t ScreenHeight;
 
 	MouseAction() : FETPAction(FETP_MOUSE_ACTION)
 	{
-		time = 0;
-		nCode = 0;
-		wParam = WM_MOUSEMOVE;
+		Time = 0;
+		HookCode = 0;
+		EventType = WM_MOUSEMOVE;
 
-		MSLLHOOKSTRUCT temp;
-		ZeroMemory(&temp, sizeof(MSLLHOOKSTRUCT));
-		this->additionalInfo = temp;
+		ZeroMemory(&this->HookInfo, sizeof(MSLLHOOKSTRUCT));
 
-		screenWidth = SCREEN_SYSTEM.getScreenWidth();
-		screenHeight = SCREEN_SYSTEM.getScreenHeight();
+		ScreenWidth = SCREEN_SYSTEM.GetScreenWidth();
+		ScreenHeight = SCREEN_SYSTEM.GetScreenHeight();
 	}
 
-	MouseAction(int nCode, WPARAM wParam, LPARAM lParam) : FETPAction(FETP_MOUSE_ACTION)
+	MouseAction(int HookCode, WPARAM EventType, LPARAM EventDataPointer) : FETPAction(FETP_MOUSE_ACTION)
 	{
-		this->nCode = nCode;
-		this->wParam = wParam;
+		this->HookCode = HookCode;
+		this->EventType = EventType;
 
-		if (lParam != 0)
+		if (EventDataPointer != 0)
 		{
-			this->additionalInfo = *reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
-			time = this->additionalInfo.time;
+			this->HookInfo = *reinterpret_cast<MSLLHOOKSTRUCT*>(EventDataPointer);
+			Time = this->HookInfo.time;
 		}
 
-		screenWidth = SCREEN_SYSTEM.getScreenWidth();
-		screenHeight = SCREEN_SYSTEM.getScreenHeight();
+		ScreenWidth = SCREEN_SYSTEM.GetScreenWidth();
+		ScreenHeight = SCREEN_SYSTEM.GetScreenHeight();
 	}
 
-	MouseAction(const MouseAction& ref) : FETPAction(FETP_MOUSE_ACTION)
+	MouseAction(const MouseAction& Other) : FETPAction(FETP_MOUSE_ACTION)
 	{
-		nCode = ref.nCode;
-		wParam = ref.wParam;
-		screenWidth = ref.screenWidth;
-		screenHeight = ref.screenHeight;
+		HookCode = Other.HookCode;
+		EventType = Other.EventType;
+		ScreenWidth = Other.ScreenWidth;
+		ScreenHeight = Other.ScreenHeight;
 
-		additionalInfo = ref.additionalInfo;
-		time = additionalInfo.time;
+		HookInfo = Other.HookInfo;
+		Time = HookInfo.time;
 	}
 
-	Json::Value toJson()
+	Json::Value ToJson()
 	{
-		Json::Value result = FETPAction::toJson();
+		Json::Value Result = FETPAction::ToJson();
 
-		result["nCode"] = nCode;
-		result["wParam"] = wParam;
+		Result["nCode"] = HookCode;
+		Result["wParam"] = EventType;
 
-		result["screenWidht"] = screenWidth;
-		result["screenHeight"] = screenHeight;
+		Result["screenWidht"] = ScreenWidth;
+		Result["screenHeight"] = ScreenHeight;
 
-		result["additionalInfo"]["dwExtraInfo"] = long long(additionalInfo.dwExtraInfo);
-		result["additionalInfo"]["flags"] = unsigned int(additionalInfo.flags);
-		result["additionalInfo"]["mouseData"] = unsigned int(additionalInfo.mouseData);
-		result["additionalInfo"]["pt"]["x"] = unsigned int(additionalInfo.pt.x);
-		result["additionalInfo"]["pt"]["y"] = unsigned int(additionalInfo.pt.y);
+		Result["additionalInfo"]["dwExtraInfo"] = long long(HookInfo.dwExtraInfo);
+		Result["additionalInfo"]["flags"] = unsigned int(HookInfo.flags);
+		Result["additionalInfo"]["mouseData"] = unsigned int(HookInfo.mouseData);
+		Result["additionalInfo"]["pt"]["x"] = unsigned int(HookInfo.pt.x);
+		Result["additionalInfo"]["pt"]["y"] = unsigned int(HookInfo.pt.y);
 
-		return result;
+		return Result;
 	}
 
-	void fromJson(Json::Value json)
+	void FromJson(Json::Value Json)
 	{
-		FETPAction::fromJson(json);
+		FETPAction::FromJson(Json);
 
-		nCode = json["nCode"].asInt();
-		wParam = json["wParam"].asInt();
+		HookCode = Json["nCode"].asInt();
+		EventType = Json["wParam"].asInt();
 
-		screenWidth = json["screenWidth"].asInt();
-		screenHeight = json["screenHeight"].asInt();
+		ScreenWidth = Json["screenWidth"].asInt();
+		ScreenHeight = Json["screenHeight"].asInt();
 
-		additionalInfo.dwExtraInfo = json["additionalInfo"]["dwExtraInfo"].asUInt();
-		additionalInfo.flags = json["additionalInfo"]["flags"].asUInt();
-		additionalInfo.mouseData = json["additionalInfo"]["mouseData"].asUInt();
-		additionalInfo.pt.x = json["additionalInfo"]["pt"]["x"].asUInt();
-		additionalInfo.pt.y = json["additionalInfo"]["pt"]["y"].asUInt();
-	}
-};
-
-struct LunchApplicationAction : public FETPAction
-{
-	std::string applicationPath;
-
-	LunchApplicationAction() : FETPAction(FETP_LUNCH_APPLICATION_ACTION)
-	{
-		applicationPath = "";
-	}
-
-	LunchApplicationAction(const LunchApplicationAction& src) : FETPAction(src)
-	{
-		applicationPath = src.applicationPath;
-	}
-
-	LunchApplicationAction(std::string applicationPath) : FETPAction(FETP_LUNCH_APPLICATION_ACTION)
-	{
-		this->applicationPath = applicationPath;
-	}
-
-	Json::Value toJson()
-	{
-		Json::Value result = FETPAction::toJson();
-		result["applicationPath"] = applicationPath;
-		return result;
-	}
-
-	void fromJson(Json::Value json)
-	{
-		FETPAction::fromJson(json);
-		applicationPath = json["applicationPath"].asCString();
-	}
-};
-
-struct SleepAction : public FETPAction
-{
-	int sleepFor;
-
-	SleepAction() : FETPAction(FETP_SLEEP_ACTION)
-	{
-		sleepFor = 10;
-	}
-
-	SleepAction(int timeToSleep) : FETPAction(FETP_SLEEP_ACTION)
-	{
-		this->sleepFor = timeToSleep;
-	}
-
-	Json::Value toJson()
-	{
-		Json::Value result = FETPAction::toJson();
-		result["sleepFor"] = sleepFor;
-		return result;
-	}
-
-	void fromJson(Json::Value json)
-	{
-		FETPAction::fromJson(json);
-		sleepFor = json["sleepFor"].asInt();
+		HookInfo.dwExtraInfo = Json["additionalInfo"]["dwExtraInfo"].asUInt();
+		HookInfo.flags = Json["additionalInfo"]["flags"].asUInt();
+		HookInfo.mouseData = Json["additionalInfo"]["mouseData"].asUInt();
+		HookInfo.pt.x = Json["additionalInfo"]["pt"]["x"].asUInt();
+		HookInfo.pt.y = Json["additionalInfo"]["pt"]["y"].asUInt();
 	}
 };
 
@@ -239,40 +170,41 @@ class FETPInput
 public:
 	SINGLETON_PUBLIC_PART(FETPInput)
 
-	void initialize();
+	void Initialize();
 
-	void mouseMoveTo(int x, int y);
-	void mouseDown(bool leftbutton = true);
-	void mouseUp(bool leftbutton = true);
+	void SimulateMouseMoveTo(int X, int Y, int MonitorIndex = -1);
+	void SimulateMouseDown(bool bLeftButton = true);
+	void SimulateMouseUp(bool bLeftButton = true);
 
-	void mouseWheel(short wheelRotation);
+	void SimulateMouseWheel(short WheelRotationDelta);
 
-	void keyEvent(WPARAM type, DWORD vkCode);
+	void SimulateKeyEvent(WPARAM Type, DWORD VirtualKeyCode);
+	void SimulateTextInput(std::string Text, int AverageDelay = 10);
 
-	void setGlobalKeyboardCallback(std::function<void(KeyboardAction keyAction)> func);
-	void setGlobalMouseCallback(std::function<void(MouseAction mouseAction)> func);
+	void SetGlobalKeyboardCallback(std::function<void(KeyboardAction Action)> Function);
+	void SetGlobalMouseCallback(std::function<void(MouseAction Action)> Function);
 
-	void update();
+	void Update();
 
-	char getChar(KeyboardAction* action);
+	char GetCharFromAction(KeyboardAction* Action);
 private:
 	SINGLETON_PRIVATE_PART(FETPInput)
 
-	static HHOOK keyboardHookPTR;
-	static std::vector<KeyboardAction> tempKeyboarActions;
-	static std::mutex keyboarActionsMutex;
+	static HHOOK KeyboardHookHandle;
+	static std::vector<KeyboardAction> KeyboardActionBuffer;
+	static std::mutex KeyboardBufferMutex;
 
-	static HHOOK mouseHookPTR;
-	static std::vector<MouseAction> tempMouseActions;
-	static std::mutex mouseActionsMutex;
+	static HHOOK MouseHookHandle;
+	static std::vector<MouseAction> MouseActionBuffer;
+	static std::mutex MouseBufferMutex;
 
-	static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK mouseHook(int nCode, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK ProcessKeyboardHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer);
+	static LRESULT CALLBACK ProcessMouseHookEvent(int HookCode, WPARAM EventType, LPARAM EventDataPointer);
 
-	void updateHooks();
+	void ProcessBufferedActions();
 
-	std::function<void(KeyboardAction keyAction)> clientGlobalKeyboardCallback = nullptr;
-	std::function<void(MouseAction keyAction)> clientGlobalMouseCallback = nullptr;
+	std::function<void(KeyboardAction Action)> ClientGlobalKeyboardCallback = nullptr;
+	std::function<void(MouseAction Action)> ClientGlobalMouseCallback = nullptr;
 };
 
-#define INPUT_SYSTEM FETPInput::getInstance()
+#define INPUT_SYSTEM FETPInput::GetInstance()

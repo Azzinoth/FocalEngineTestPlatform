@@ -8,34 +8,36 @@ class TestManager
 private:
 	SINGLETON_PRIVATE_PART(TestManager)
 
-	static VisNodeSys::Node* foundNode;
-	static FETPAction* searchedAction;
+	static VisNodeSys::Node* FoundNode;
+	static FETPAction* SearchedAction;
 
-	bool isTestNameFree(std::string name);
-	size_t selelectedTestIndex = 0;
+	bool IsTestNameFree(std::string Name);
+	size_t SelectedTestIndex = 0;
 public:
 	SINGLETON_PUBLIC_PART(TestManager)
 
-	void addTest(std::string filePath = "");
-	std::vector<FETest*> list;
+	void AddTest(std::string FilePath = "");
+	std::vector<FETest*> Tests;
 
-	void renameTest(FETest* test, std::string newName);
-	void renameTest(size_t testIndex, std::string newName);
+	void Clear();
 
-	void removeTest(FETest* test);
-	void removeTest(size_t testIndex);
+	void RenameTest(FETest* Test, std::string NewName);
+	void RenameTest(size_t TestIndex, std::string NewName);
 
-	VisNodeSys::Node* getNodeByAction(FETPAction* action);
-	FETest* getTestByAction(FETPAction* action);
+	void RemoveTest(FETest* Test);
+	void RemoveTest(size_t TestIndex);
 
-	std::string getNewTestName();
-	void setSelelectedTestIndex(size_t index);
-	size_t getSelectedTestIndex();
+	//VisNodeSys::Node* GetNodeByAction(FETPAction* Action);
+	//FETest* GetTestByAction(FETPAction* Action);
 
-	FETest* getSelectedTest();
+	std::string GetNewTestName();
+	void SetSelectedTestIndex(size_t Index);
+	size_t GetSelectedTestIndex();
 
-	void saveAsTestSet(std::string filePath);
-	void openTestSet(std::string filePath);
+	FETest* GetSelectedTest();
+
+	void SaveAsTestSet(std::string FilePath);
+	void OpenTestSet(std::string FilePath);
 };
 
-#define TEST_MANAGER TestManager::getInstance()
+#define TEST_MANAGER TestManager::GetInstance()

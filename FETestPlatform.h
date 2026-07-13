@@ -3,6 +3,7 @@
 #include "SubSystems/FEFileSystem.h"
 
 class FETPInput;
+class FETPImage;
 
 class FETestPlatform
 {
@@ -10,33 +11,48 @@ class FETestPlatform
 public:
 	SINGLETON_PUBLIC_PART(FETestPlatform)
 
-	void createWindow();
-	bool isWindowOpened();
+	void Initialize();
+	void CreateMainWindow();
+	void SetUpDocking();
 
-	void beginFrame();
-	void endFrame();
+	size_t GetScreenWidth();
+	size_t GetScreenHeight();
 
-	size_t getScreenWidth();
-	size_t getScreenHeight();
+	void SetWindowTitle(std::string NewTitle);
 
-	size_t getWindowWidth();
-	size_t getWindowHeight();
+	std::string GetFullVersion();
 
-	void setWindowTitle(std::string newTitle);
-	void minimizeWindow();
-	void restoreWindow();
+	void Update();
 
-	void setKeyboardCallback(std::function<void(int key, int scancode, int action, int mods)> func);
+	FETPImage* GetInfoIconWhite() const { return InfoIconWhite; }
+	FETPImage* GetInfoIconBlue() const { return InfoIconBlue; }
+	FETPImage* GetInfoIconGreen() const { return InfoIconGreen; }
+	FETPImage* GetInfoIconYellow() const { return InfoIconYellow; }
+	FETPImage* GetInfoIconRed() const { return InfoIconRed; }
+
 private:
 	SINGLETON_PRIVATE_PART(FETestPlatform)
 
-	size_t screenW = 0;
-	size_t screenH = 0;
-	void setImguiStyle();
-	void screenDataInitialization();
+	size_t ScreenWidth = 0;
+	size_t ScreenHeight = 0;
 
-	static void keyboardCallback(int key, int scancode, int action, int mods);
-	static std::function<void(int key, int scancode, int action, int mods)> clientKeyboardCallback;
+	bool bHadImGuiIniFileAtStartup = false;
+
+	FETPImage* InfoIconWhite = nullptr;
+	FETPImage* InfoIconBlue = nullptr;
+	FETPImage* InfoIconGreen = nullptr;
+	FETPImage* InfoIconYellow = nullptr;
+	FETPImage* InfoIconRed = nullptr;
+
+	void SetImguiStyle();
+	void ScreenDataInitialization();
+
+	std::string GetVersion();
+	int GetBuildNumber();
+	std::string GetBuildTimestamp();
+	std::string GetBuildInfo();
+
+	void KeyboardInputUpdate();
 };
 
-#define TEST_PLATFORM FETestPlatform::getInstance()
+#define TEST_PLATFORM FETestPlatform::GetInstance()
