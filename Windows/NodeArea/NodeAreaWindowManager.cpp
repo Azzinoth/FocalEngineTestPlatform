@@ -70,7 +70,7 @@ NodeAreaWindow* NodeAreaWindowManager::GetNodeAreaWindow(VisNodeSys::NodeArea* N
 	return nullptr;
 }
 
-void NodeAreaWindowManager::SetFocusedNodeAreaID(std::string NewFocusedNodeAreaID)
+void NodeAreaWindowManager::SetFocusedNodeAreaID(const FEUUID& NewFocusedNodeAreaID)
 {
 	FocusedNodeAreaID = NewFocusedNodeAreaID;
 }
@@ -85,7 +85,7 @@ bool NodeAreaWindowManager::SetInFocusNodeAreaWindow(NodeAreaWindow* NodeAreaWin
 {
 	if (NodeAreaWindow == nullptr)
 	{
-		FocusedNodeAreaID = "";
+		FocusedNodeAreaID = FEUUID();
 		return true;
 	}
 

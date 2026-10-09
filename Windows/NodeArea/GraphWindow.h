@@ -25,7 +25,7 @@ class NodeAreasGraphWindow
 
     SceneGraphUI::TreeView* NodeAreaGraphUI = nullptr;
     NodeAreaGraphBackend* GraphBackend = nullptr;
-	std::string LastFrameRootNodeID = "";
+	FocalEngine::FEUUID LastFrameRootNodeID;
     static void OnNodeClicked(SceneGraphUI::NodeHandle Node, ImGuiMouseButton_ MouseButton);
 	static void OnNodeDoubleClicked(SceneGraphUI::NodeHandle Node, ImGuiMouseButton_ MouseButton);
     static bool IsSelected(SceneGraphUI::NodeHandle Node);

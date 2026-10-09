@@ -61,7 +61,7 @@ class FEPTActionSystem
 
 	FETPAction* CopyAction(FETPAction* Other);
 
-	std::unordered_map<std::string, bool> NodeAreaIDToHadProblematicAction;
+	std::unordered_map<FocalEngine::FEUUID, bool> NodeAreaIDToHadProblematicAction;
 public:
 	SINGLETON_PUBLIC_PART(FEPTActionSystem)
 
@@ -93,7 +93,7 @@ public:
 	std::string ExtractText(std::vector<FETPAction*> Actions);
 	void ConvertActionsToNodes(std::vector<FETPAction*> Actions, VisNodeSys::NodeArea* TargetNodeArea);
 
-	bool DoesNodeAreaHaveProblematicAction(std::string NodeAreaID);
+	bool DoesNodeAreaHaveProblematicAction(const FocalEngine::FEUUID& NodeAreaID);
 };
 
 #define ACTION_SYSTEM FEPTActionSystem::GetInstance()

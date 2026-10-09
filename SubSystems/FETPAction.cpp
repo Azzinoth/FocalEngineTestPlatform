@@ -5,7 +5,7 @@ FETPAction::FETPAction(FETP_ACTION_TYPE Type)
 {
 	InternalType = Type;
 	Time = 0;
-	ID = APPLICATION.GetUniqueHexID();
+	ID = UNIQUE_ID.GenerateID();
 }
 
 FETPAction::FETPAction(const FETPAction& Other)
@@ -33,27 +33,27 @@ Json::Value FETPAction::ToJson()
 {
 	Json::Value Result;
 
-	Result["ID"] = ID;
+	Result["ID"] = UNIQUE_ID.ToString(ID);
 	Result["internalType"] = InternalType;
 	Result["time"] = unsigned int(Time);
 
 	return Result;
 }
 
-std::string FETPAction::GetID()
+FEUUID FETPAction::GetID()
 {
 	return ID;
 }
 
 void FETPAction::FromJson(Json::Value JsonData)
 {
-	ID = JsonData["ID"].asCString();
+	ID = UNIQUE_ID.FromStringLegacyCompatible(JsonData["ID"].asString());
 
 	InternalType = FETP_ACTION_TYPE(JsonData["internalType"].asInt());
 	Time = JsonData["time"].asUInt();
 }
 
-void FETPAction::SetID(std::string NewID)
+void FETPAction::SetID(const FEUUID& NewID)
 {
 	ID = NewID;
 }

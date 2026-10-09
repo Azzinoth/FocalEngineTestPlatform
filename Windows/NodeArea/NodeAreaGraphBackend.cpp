@@ -21,7 +21,7 @@ FETest* NodeAreaGraphBackend::GetCurrentTest() const
 	return CurrentTest;
 }
 
-void NodeAreaGraphBackend::SetRootNodeAreaID(std::string NewRootNodeAreaID)
+void NodeAreaGraphBackend::SetRootNodeAreaID(const FEUUID& NewRootNodeAreaID)
 {
     RootNodeAreaID = NewRootNodeAreaID;
 }
@@ -50,8 +50,8 @@ std::vector<SceneGraphUI::NodeHandle> NodeAreaGraphBackend::GetChildren(SceneGra
         if (EntryPointNodeArea != nullptr)
             Result.push_back({ EntryPointNodeArea, this });
 
-		std::vector<std::string> NodeAreaIDList = NODE_SYSTEM.GetNodeAreaIDList();
-        for (const std::string& NodeAreaID : NodeAreaIDList)
+		std::vector<FEUUID> NodeAreaIDList = NODE_SYSTEM.GetNodeAreaIDList();
+        for (const FEUUID& NodeAreaID : NodeAreaIDList)
         {
             NodeArea* NodeAreaWithoutParent = NODE_SYSTEM.GetNodeAreaByID(NodeAreaID);
             if (NodeAreaWithoutParent == nullptr)
@@ -86,7 +86,7 @@ SceneGraphUI::NodeHandle NodeAreaGraphBackend::GetParent(SceneGraphUI::NodeHandl
 	return { CurrentNodeArea->GetParent(), this };
 }
 
-SceneGraphUI::NodeHandle NodeAreaGraphBackend::GetNodeByID(const std::string& ID)
+SceneGraphUI::NodeHandle NodeAreaGraphBackend::GetNodeByID(const FEUUID& ID)
 {
     NodeArea* FoundNodeArea = NODE_SYSTEM.GetNodeAreaByID(ID);
     if (FoundNodeArea == nullptr)
@@ -95,7 +95,7 @@ SceneGraphUI::NodeHandle NodeAreaGraphBackend::GetNodeByID(const std::string& ID
 	return { FoundNodeArea, this };
 }
 
-std::string NodeAreaGraphBackend::GetNodeID(SceneGraphUI::NodeHandle Node)
+FEUUID NodeAreaGraphBackend::GetNodeID(SceneGraphUI::NodeHandle Node)
 {
 	return Node.As<NodeArea>()->GetID();
 }

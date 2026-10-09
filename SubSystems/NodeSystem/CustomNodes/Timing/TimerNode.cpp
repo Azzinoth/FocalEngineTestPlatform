@@ -78,14 +78,14 @@ bool TimerNode::FromJson(Json::Value Json)
 
 int TimerNode::GetTimeLeft()
 {
-	Data -= static_cast<int>(TIME.EndTimeStamp(GetID()));
+	Data -= static_cast<int>(TIME.EndTimeStamp(UNIQUE_ID.ToString(GetID())));
 	if (Data < 0)
 	{
 		Data = 0;
 	}
 	else
 	{
-		TIME.BeginTimeStamp(GetID());
+		TIME.BeginTimeStamp(UNIQUE_ID.ToString(GetID()));
 	}
 		
 	return Data;
@@ -99,7 +99,7 @@ void TimerNode::SetTimeLeft(int TimeInMS)
 	Data = TimeInMS;
 	bHasInitialized = true;
 
-	TIME.BeginTimeStamp(GetID());
+	TIME.BeginTimeStamp(UNIQUE_ID.ToString(GetID()));
 }
 
 void TimerNode::Draw()

@@ -42,7 +42,7 @@ void FailedTestWindow::Render()
 		return;
 
 	if (Result->FailedAction != nullptr)
-		ImGui::Text(("Fail action ID: " + Result->FailedAction->GetID()).c_str());
+		ImGui::Text(("Fail action ID: " + FocalEngine::UNIQUE_ID.ToString(Result->FailedAction->GetID())).c_str());
 
 	ImGui::Text(("Fail reason: " + FETestResult::FETestFailReasonToString(Result->FailReason)).c_str());
 

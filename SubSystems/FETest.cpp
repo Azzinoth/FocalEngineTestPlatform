@@ -41,9 +41,9 @@ void FETest::Save(const char* FilePath)
 	SaveFile.open(DirectoryPath + "/" + FileNameWithoutExtension + ".FETPTestInfo");
 
 	Root["Name"] = Name;
-	Root["DummyRootNodeArea"] = DummyRootNodeArea->GetID();
-	Root["EntryPointNodeAreaID"] = EntryPointNodeArea->GetID();
-	Root["BeginNodeID"] = Begin->GetID();
+	Root["DummyRootNodeArea"] = FocalEngine::UNIQUE_ID.ToString(DummyRootNodeArea->GetID());
+	Root["EntryPointNodeAreaID"] = FocalEngine::UNIQUE_ID.ToString(EntryPointNodeArea->GetID());
+	Root["BeginNodeID"] = FocalEngine::UNIQUE_ID.ToString(Begin->GetID());
 	Root["SpeedFactor"] = SpeedFactor;
 
 	Json::Value BeforeStartActions;
@@ -99,9 +99,9 @@ void FETest::Load()
 		return;
 
 	Name = Root["Name"].asCString();
-	std::string DummyRootNodeAreaID = Root["DummyRootNodeArea"].asCString();
-	std::string EntryPointNodeAreaID = Root["EntryPointNodeAreaID"].asCString();
-	std::string BeginNodeID = Root["BeginNodeID"].asCString();
+	const FEUUID DummyRootNodeAreaID = FocalEngine::UNIQUE_ID.FromStringLegacyCompatible(Root["DummyRootNodeArea"].asString());
+	const FEUUID EntryPointNodeAreaID = FocalEngine::UNIQUE_ID.FromStringLegacyCompatible(Root["EntryPointNodeAreaID"].asString());
+	const FEUUID BeginNodeID = FocalEngine::UNIQUE_ID.FromStringLegacyCompatible(Root["BeginNodeID"].asString());
 	DummyRootNodeArea = NODE_SYSTEM.GetNodeAreaByID(DummyRootNodeAreaID);
 	EntryPointNodeArea = NODE_SYSTEM.GetNodeAreaByID(EntryPointNodeAreaID);
 	Begin = reinterpret_cast<BeginNode*>(EntryPointNodeArea->GetNodeByID(BeginNodeID));

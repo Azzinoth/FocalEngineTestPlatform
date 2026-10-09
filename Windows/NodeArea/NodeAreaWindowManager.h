@@ -6,12 +6,12 @@ class NodeAreaWindowManager
 	friend class NodeAreaWindow;
 	SINGLETON_PRIVATE_PART(NodeAreaWindowManager)
 
-	std::unordered_map<std::string, NodeAreaWindow*> NodeAreaWindows;
+	std::unordered_map<FocalEngine::FEUUID, NodeAreaWindow*> NodeAreaWindows;
 
-	std::string FocusedNodeAreaID;
-	void SetFocusedNodeAreaID(std::string NewFocusedNodeAreaID);
+	FocalEngine::FEUUID FocusedNodeAreaID;
+	void SetFocusedNodeAreaID(const FocalEngine::FEUUID& NewFocusedNodeAreaID);
 
-	std::unordered_map<std::string, bool> SeenNodeAreaID;
+	std::unordered_map<FocalEngine::FEUUID, bool> SeenNodeAreaID;
 public:
 	SINGLETON_PUBLIC_PART(NodeAreaWindowManager)
 

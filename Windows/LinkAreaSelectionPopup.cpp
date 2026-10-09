@@ -10,7 +10,7 @@ LinkAreaSelectionPopup::~LinkAreaSelectionPopup()
 {
 }
 
-void LinkAreaSelectionPopup::Show(const std::string& SourceAreaID, std::function<void(VisNodeSys::NodeArea* ChosenArea)> Function)
+void LinkAreaSelectionPopup::Show(const FocalEngine::FEUUID& SourceAreaID, std::function<void(VisNodeSys::NodeArea* ChosenArea)> Function)
 {
 	if (Function == nullptr)
 		return;
@@ -77,7 +77,7 @@ void LinkAreaSelectionPopup::Render()
 		ImGui::Separator();
 
 		std::string FilterString = Filter;
-		std::vector<std::string> AreaIDList = NODE_SYSTEM.GetNodeAreaIDList();
+		std::vector<FocalEngine::FEUUID> AreaIDList = NODE_SYSTEM.GetNodeAreaIDList();
 		bool bAnyShown = false;
 		for (size_t i = 0; i < AreaIDList.size(); i++)
 		{
@@ -92,14 +92,14 @@ void LinkAreaSelectionPopup::Render()
 			if (DisplayName.empty())
 				DisplayName = "(unnamed)";
 
-			std::string ShortID = AreaIDList[i].substr(0, 8);
+			std::string ShortID = FocalEngine::UNIQUE_ID.ToString(AreaIDList[i]).substr(0, 8);
 			std::string Label = DisplayName + "  [" + ShortID + "]";
 
 			if (!ContainsCaseInsensitive(Label, FilterString))
 				continue;
 
 			bAnyShown = true;
-			if (ImGui::Selectable((Label + "##" + AreaIDList[i]).c_str()))
+			if (ImGui::Selectable((Label + "##" + FocalEngine::UNIQUE_ID.ToString(AreaIDList[i])).c_str()))
 			{
 				Callback(Area);
 				Exit();
@@ -135,7 +135,7 @@ void LinkAreaSelectionPopup::Render()
 void LinkAreaSelectionPopup::Exit()
 {
 	Callback = nullptr;
-	CurrentAreaID.clear();
+	CurrentAreaID = FocalEngine::FEUUID();
 	strcpy_s(Filter, "");
 	ImGuiModalPopup::Close();
 }

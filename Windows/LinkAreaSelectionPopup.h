@@ -7,7 +7,7 @@ class LinkAreaSelectionPopup : public ImGuiModalPopup
 	SINGLETON_PRIVATE_PART(LinkAreaSelectionPopup)
 
 	std::function<void(VisNodeSys::NodeArea* ChosenArea)> Callback;
-	std::string CurrentAreaID;
+	FocalEngine::FEUUID CurrentAreaID;
 	char Filter[256];
 	ImVec2 PopupSize = ImVec2(400, 380);
 
@@ -15,6 +15,6 @@ class LinkAreaSelectionPopup : public ImGuiModalPopup
 public:
 	SINGLETON_PUBLIC_PART(LinkAreaSelectionPopup)
 
-	void Show(const std::string& SourceAreaID, std::function<void(VisNodeSys::NodeArea* ChosenArea)> Function);
+	void Show(const FocalEngine::FEUUID& SourceAreaID, std::function<void(VisNodeSys::NodeArea* ChosenArea)> Function);
 	void Render() override;
 };

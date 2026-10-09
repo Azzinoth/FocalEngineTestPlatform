@@ -1,4 +1,5 @@
 #include "SleepNode.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool SleepNode::bIsRegistered = []()
@@ -74,7 +75,7 @@ void SleepNode::Draw()
 	ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 	ImGui::SetNextItemWidth(100 * Zoom);
 	ImGui::BeginDisabled(Input.size() > 1 && Input[1]->GetConnectedSockets().size() > 0);
-	ImGui::InputInt(("##SleepNodeDuration" + GetID()).c_str(), &SleepDurationMs);
+	ImGui::InputInt(("##SleepNodeDuration" + FocalEngine::UNIQUE_ID.ToString(GetID())).c_str(), &SleepDurationMs);
 	ImGui::EndDisabled();
 }
 

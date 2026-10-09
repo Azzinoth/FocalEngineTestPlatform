@@ -102,7 +102,7 @@ void RecognizeTextNode::Draw()
 	ImVec2 OriginPosition = ImGui::GetCursorScreenPos();
 	ImGui::SetCursorScreenPos(ImVec2(OriginPosition.x + 25.0f * Zoom, OriginPosition.y + 40.0f * Zoom));
 	ImGui::SetNextItemWidth(160.0f * Zoom);
-	if (ImGui::Combo(("##PSM" + GetID()).c_str(), &CurrentIndex, ModeNames, ModeCount))
+	if (ImGui::Combo(("##PSM" + FocalEngine::UNIQUE_ID.ToString(GetID())).c_str(), &CurrentIndex, ModeNames, ModeCount))
 		PageSegmentationMode = ModeValues[CurrentIndex];
 }
 

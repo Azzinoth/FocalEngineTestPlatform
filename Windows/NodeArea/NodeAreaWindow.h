@@ -7,7 +7,7 @@ class NodeAreaWindow : public FEImGuiWindow
 {
 	friend class NodeAreaWindowManager;
 
-	std::string NodeAreaID;
+	FocalEngine::FEUUID NodeAreaID;
 	int FrameCountSinceOpen = 0;
 	bool bShouldDockToCentralNode = false;
 	bool bShouldCenterViewOnOpen = false;

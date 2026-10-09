@@ -30,14 +30,14 @@ class FETPAction
 	friend class Node;
 	friend FETest;
 
-	void SetID(std::string NewID);
+	void SetID(const FocalEngine::FEUUID& NewID);
 public:
 	FETPAction(FETP_ACTION_TYPE Type = FETP_BASE_ACTION);
 	FETPAction(const FETPAction& Other);
 
 	virtual ~FETPAction();
 
-	std::string GetID();
+	FocalEngine::FEUUID GetID();
 
 	FETP_ACTION_TYPE GetType();
 	// FIX ME! Change it to use uint64_t and FETime.
@@ -78,5 +78,5 @@ public:
 	}
 protected:
 	FETP_ACTION_TYPE InternalType;
-	std::string ID;
+	FocalEngine::FEUUID ID;
 };

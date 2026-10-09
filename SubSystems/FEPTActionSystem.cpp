@@ -35,7 +35,7 @@ bool FEPTActionSystem::Run(FETest* TestToRun, VisNodeSys::Node* ForceStartNode)
 	UserFailMessage.clear();
 
 	NodeAreaIDToHadProblematicAction.clear();
-	std::vector<std::string> NodeAreaIDs = NODE_SYSTEM.GetNodeAreaIDList();
+	std::vector<FEUUID> NodeAreaIDs = NODE_SYSTEM.GetNodeAreaIDList();
 	for (size_t i = 0; i < NodeAreaIDs.size(); i++)
 	{
 		NodeArea* CurrentNodeArea = NODE_SYSTEM.GetNodeAreaByID(NodeAreaIDs[i]);
@@ -681,7 +681,7 @@ std::string FEPTActionSystem::ExtractText(std::vector<FETPAction*> Actions)
 //	return true;
 //}
 
-bool FEPTActionSystem::DoesNodeAreaHaveProblematicAction(std::string NodeAreaID)
+bool FEPTActionSystem::DoesNodeAreaHaveProblematicAction(const FEUUID& NodeAreaID)
 {
 	if (NodeAreaIDToHadProblematicAction.find(NodeAreaID) != NodeAreaIDToHadProblematicAction.end())
 		return NodeAreaIDToHadProblematicAction[NodeAreaID];

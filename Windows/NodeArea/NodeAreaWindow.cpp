@@ -65,7 +65,7 @@ void NodeAreaWindow::Render()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
-	std::string Caption = CurrentNodeArea->GetName() + "##" + CurrentNodeArea->GetID();
+	std::string Caption = CurrentNodeArea->GetName() + "##" + FocalEngine::UNIQUE_ID.ToString(CurrentNodeArea->GetID());
 	SetCaption(Caption);
 
 	//CurrentNodeArea->SetMainContextMenuFunction(RenderMainContextMenu);
@@ -296,7 +296,7 @@ void NodeAreaWindow::RenderMainContextMenu()
 
 			if (ImGui::MenuItem("Create Link Node..."))
 			{
-				std::string SourceAreaID = CurrentlyActiveNodeArea->GetID();
+				FEUUID SourceAreaID = CurrentlyActiveNodeArea->GetID();
 				ImVec2 DropPosition = MousePositionWhenContextMenuWasOpened;
 				LinkAreaSelectionPopup::GetInstance().Show(SourceAreaID, [SourceAreaID, DropPosition](VisNodeSys::NodeArea* ChosenArea)
 				{
@@ -308,7 +308,7 @@ void NodeAreaWindow::RenderMainContextMenu()
 					if (TargetArea == nullptr)
 						TargetArea = NODE_SYSTEM.CreateNodeArea();
 
-					std::pair<std::string, std::string> LinkIDs;
+					std::pair<FEUUID, FEUUID> LinkIDs;
 					if (!NODE_SYSTEM.LinkNodeAreas(SourceArea->GetID(), TargetArea->GetID(), &LinkIDs))
 						return;
 
@@ -519,7 +519,7 @@ void NodeAreaWindow::RenderMainContextMenu()
 
 		if (ImGui::MenuItem("Copy NodeID to clipboard"))
 		{
-			ImGui::SetClipboardText(HoveredNode->GetID().c_str());
+			ImGui::SetClipboardText(FocalEngine::UNIQUE_ID.ToString(HoveredNode->GetID()).c_str());
 		}
 
 		if (HoveredNode->GetType() == "LinkNode")

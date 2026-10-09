@@ -193,7 +193,7 @@ void ImageSearchNode::Draw()
 	}
 
 	ImGui::SetCursorScreenPos(ImVec2(InfoButtonX, InfoButtonY));
-	if (ImGui::ImageButton(("##Show Info " + GetID()).c_str(), CurrentIcon->GetTextureID(), ImVec2(IconSize, IconSize)))
+	if (ImGui::ImageButton(("##Show Info " + FocalEngine::UNIQUE_ID.ToString(GetID())).c_str(), CurrentIcon->GetTextureID(), ImVec2(IconSize, IconSize)))
 		ImGui::OpenPopup("##ImageSearchLastResult");
 
 	if (ImGui::BeginPopup("##ImageSearchLastResult"))
