@@ -136,13 +136,13 @@ void ImageLoadNode::Draw()
 	ImGui::SetCursorScreenPos(ImVec2(ButtonX, StartY + 78.0f * Zoom));
 	if (ImGui::Button("Browse..."))
 	{
-		std::string NewPath;
 		std::string InitialDirectory;
 		if (!Data.empty() && FocalEngine::FILE_SYSTEM.DoesFileExist(Data))
 			InitialDirectory = FocalEngine::FILE_SYSTEM.GetDirectoryPath(Data);
-		FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(NewPath, PNGLoadFilter, 1, InitialDirectory);
-		if (!NewPath.empty())
-			SetPath(NewPath);
+		FocalEngine::FILE_SYSTEM.OpenFileDialog(PNGLoadFilter, [this](const std::string& NewPath) {
+			if (!NewPath.empty())
+				SetPath(NewPath);
+		}, InitialDirectory);
 	}
 }
 

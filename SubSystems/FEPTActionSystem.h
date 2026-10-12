@@ -2,24 +2,24 @@
 
 #include "../SubSystems/TestManager.h"
 
-const COMDLG_FILTERSPEC ApplicationLoadFilter[] =
+const std::vector<FocalEngine::FEFileSystem::FileDialogFilter> ApplicationLoadFilter =
 {
-	{ L"exe files (*.exe)", L"*.exe" }
+	{ "exe files (*.exe)", { "exe" } }
 };
 
-const COMDLG_FILTERSPEC SaveFileFilter[] =
+const std::vector<FocalEngine::FEFileSystem::FileDialogFilter> SaveFileFilter =
 {
-	{ L"fetp files (*.fetp)", L"*.fetp" }
+	{ "fetp files (*.fetp)", { "fetp" } }
 };
 
-const COMDLG_FILTERSPEC OpenFETPFileFilter[] =
+const std::vector<FocalEngine::FEFileSystem::FileDialogFilter> OpenFETPFileFilter =
 {
-	{ L"fetp files (*.fetp)", L"*.fetp" }
+	{ "fetp files (*.fetp)", { "fetp" } }
 };
 
-const COMDLG_FILTERSPEC FETestsFileFilter[] =
+const std::vector<FocalEngine::FEFileSystem::FileDialogFilter> FETestsFileFilter =
 {
-	{ L"FETest set files (*.fetests)", L"*.fetests" }
+	{ "FETest set files (*.fetests)", { "fetests" } }
 };
 
 struct FETestResult;

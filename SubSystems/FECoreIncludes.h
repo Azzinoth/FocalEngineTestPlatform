@@ -27,8 +27,6 @@
 
 #include "../ThirdParty/lodepng/lodepng.h"
 
-#define FE_WIN_32
-
 #ifdef FE_DEBUG_ENABLED
 #define FE_GL_ERROR(glCall)                \
 	{                                      \

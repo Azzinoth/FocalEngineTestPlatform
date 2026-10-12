@@ -133,11 +133,10 @@ void ImageLiteralNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 		if (ImGui::Button("Load Image"))
 		{
-			std::string Path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, PNGLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.OpenFileDialog(PNGLoadFilter, [this](const std::string& Path) {
+				if (Path.empty())
+					return;
 
-			if (Path != "")
-			{
 				std::vector<unsigned char> ImageRawData;
 				unsigned ImageWidth, ImageHeight;
 				int ErrorCode = lodepng::decode(ImageRawData, ImageWidth, ImageHeight, Path);
@@ -149,7 +148,7 @@ void ImageLiteralNode::Draw()
 					SetImage(new FETPImage(TemporaryData, ImageWidth, ImageHeight));
 					delete[] TemporaryData;
 				}
-			}
+			});
 		}
 	}
 	else
@@ -165,11 +164,10 @@ void ImageLiteralNode::Draw()
 		ImGui::SetCursorScreenPos(ImVec2(XPosition, YPosition));
 		if (ImGui::Button("Load different image"))
 		{
-			std::string Path;
-			FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, PNGLoadFilter, 1);
+			FocalEngine::FILE_SYSTEM.OpenFileDialog(PNGLoadFilter, [this](const std::string& Path) {
+				if (Path.empty())
+					return;
 
-			if (Path != "")
-			{
 				std::vector<unsigned char> ImageRawData;
 				unsigned ImageWidth, ImageHeight;
 				int ErrorCode = lodepng::decode(ImageRawData, ImageWidth, ImageHeight, Path);
@@ -181,7 +179,7 @@ void ImageLiteralNode::Draw()
 					SetImage(new FETPImage(TemporaryData, ImageWidth, ImageHeight));
 					delete[] TemporaryData;
 				}
-			}
+			});
 		}
 	}
 }

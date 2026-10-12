@@ -181,11 +181,10 @@ void TestsOverviewWindow::RenderMainMenu()
 		{
 			if (ImGui::MenuItem("Load test set..."))
 			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, FETestsFileFilter, 1);
-
-				if (!Path.empty())
-					TEST_MANAGER.OpenTestSet(Path);
+				FocalEngine::FILE_SYSTEM.OpenFileDialog(FETestsFileFilter, [](const std::string& Path) {
+					if (!Path.empty())
+						TEST_MANAGER.OpenTestSet(Path);
+				});
 			}
 
 			if (TEST_MANAGER.Tests.size() == 0)
@@ -193,11 +192,10 @@ void TestsOverviewWindow::RenderMainMenu()
 
 			if (ImGui::MenuItem("Save test set...") && TEST_MANAGER.Tests.size() > 0)
 			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, FETestsFileFilter, 1);
-
-				if (!Path.empty())
+				FocalEngine::FILE_SYSTEM.SaveFileDialog("", FETestsFileFilter, [](const std::string& Path, int ChosenFilterIndex) {
 					TEST_MANAGER.SaveAsTestSet(Path);
+					return true;
+				});
 			}
 
 			if (TEST_MANAGER.Tests.size() == 0)

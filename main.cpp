@@ -115,17 +115,13 @@ void RenderMainMenu()
 
 			if (ImGui::MenuItem("Save test...") && TEST_MANAGER.GetSelectedTest() != nullptr)
 			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, SaveFileFilter, 1);
-
-				if (Path != "")
-				{
+				FocalEngine::FILE_SYSTEM.SaveFileDialog("", SaveFileFilter, [SelectedTest = TEST_MANAGER.GetSelectedTest()](std::string Path, int ChosenFilterIndex) {
 					if (Path.find(".fetp") == std::string::npos)
 						Path += ".fetp";
 
-					TEST_MANAGER.GetSelectedTest()->Save(Path.c_str());
-					//NODE_SYSTEM.SaveToFile(Path);
-				}
+					SelectedTest->Save(Path.c_str());
+					return true;
+				});
 			}
 
 			if (TEST_MANAGER.GetSelectedTest() == nullptr)
@@ -133,31 +129,27 @@ void RenderMainMenu()
 
 			if (ImGui::MenuItem("Load test..."))
 			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, OpenFETPFileFilter, 1);
+				FocalEngine::FILE_SYSTEM.OpenFileDialog(OpenFETPFileFilter, [](const std::string& Path) {
+					if (Path.empty())
+						return;
 
-				if (Path != "")
-				{
 					TEST_MANAGER.AddTest(Path);
 					TEST_MANAGER.SetSelectedTestIndex(TEST_MANAGER.Tests.size() - 1);
 
-					//NODE_SYSTEM.LoadFromFile(Path);
-
 					if (TEST_MANAGER.Tests.back()->EntryPointNodeArea != nullptr)
 						NODE_AREA_WINDOW_MANAGER.CreateNodeAreaWindow(TEST_MANAGER.Tests.back()->EntryPointNodeArea);
-				}
+				});
 			}
 
 			if (ImGui::MenuItem("Load nodes..."))
 			{
-				std::string Path;
-				FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, NULL, 0);
+				FocalEngine::FILE_SYSTEM.OpenFileDialog({}, [](const std::string& Path) {
+					if (Path.empty())
+						return;
 
-				if (Path != "")
-				{
 					PreviewWindow::GetInstance().Show();
 					PreviewWindow::GetInstance().CurrentNodeArea->LoadFromFile(Path.c_str());
-				}
+				});
 			}
 
 			if (ImGui::MenuItem("Close All"))

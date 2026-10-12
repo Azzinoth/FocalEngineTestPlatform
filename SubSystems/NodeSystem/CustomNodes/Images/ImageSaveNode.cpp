@@ -2,9 +2,9 @@
 #include "../../../../ThirdParty/lodepng/lodepng.h"
 using namespace VisNodeSys;
 
-static const COMDLG_FILTERSPEC PNGSaveFilter[] =
+static const std::vector<FocalEngine::FEFileSystem::FileDialogFilter> PNGSaveFilter =
 {
-	{ L"png files (*.png)", L"*.png" }
+	{ "png files (*.png)", { "png" } }
 };
 
 bool ImageSaveNode::bIsRegistered = []()
@@ -137,10 +137,11 @@ void ImageSaveNode::Draw()
 	ImGui::SetCursorScreenPos(ImVec2(ButtonX, StartY + 78.0f * Zoom));
 	if (ImGui::Button("Browse..."))
 	{
-		std::string NewPath;
-		FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(NewPath, PNGSaveFilter, 1);
-		if (!NewPath.empty())
+		// Only the path is chosen here, the image is written when the node executes.
+		FocalEngine::FILE_SYSTEM.SaveFileDialog("", PNGSaveFilter, [this](const std::string& NewPath, int ChosenFilterIndex) {
 			SetPath(NewPath);
+			return true;
+		});
 	}
 }
 

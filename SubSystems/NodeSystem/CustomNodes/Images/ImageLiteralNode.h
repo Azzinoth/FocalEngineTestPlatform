@@ -3,9 +3,9 @@
 #include "../../../NodeSystem/VisualNodeSystem/VisualNodeSystem.h"
 #include "../../FETPInput.h"
 
-const COMDLG_FILTERSPEC PNGLoadFilter[] =
+const std::vector<FocalEngine::FEFileSystem::FileDialogFilter> PNGLoadFilter =
 {
-	{ L"png files (*.png)", L"*.png" }
+	{ "png files (*.png)", { "png" } }
 };
 
 class ImageLiteralNode : public BaseExecutionFlowNode

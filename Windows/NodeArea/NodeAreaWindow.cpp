@@ -284,10 +284,10 @@ void NodeAreaWindow::RenderMainContextMenu()
 				if (ImGui::MenuItem("Launch Application..."))
 				{
 					LaunchApplicationNode* TemporaryNewNode = new LaunchApplicationNode();
-					std::string Path;
-					FocalEngine::FILE_SYSTEM.ShowFileOpenDialog(Path, ApplicationLoadFilter, 1);
-					if (!Path.empty())
-						TemporaryNewNode->SetPath(Path);
+					FocalEngine::FILE_SYSTEM.OpenFileDialog(ApplicationLoadFilter, [TemporaryNewNode](const std::string& Path) {
+						if (!Path.empty())
+							TemporaryNewNode->SetPath(Path);
+					});
 					NewNode = TemporaryNewNode;
 				}
 
@@ -574,13 +574,9 @@ void NodeAreaWindow::RenderMainContextMenu()
 
 		if (ImGui::MenuItem("Save Selected Nodes..."))
 		{
-			std::string Path;
-			FocalEngine::FILE_SYSTEM.ShowFileSaveDialog(Path, NULL, 0);
-
-			if (Path != "")
-			{
-				CurrentlyActiveNodeArea->SaveNodesToFile(Path.c_str(), SelectedList);
-			}
+			FocalEngine::FILE_SYSTEM.SaveFileDialog("", {}, [CurrentlyActiveNodeArea, SelectedList](const std::string& Path, int ChosenFilterIndex) {
+				return CurrentlyActiveNodeArea->SaveNodesToFile(Path.c_str(), SelectedList);
+			});
 		}
 
 		/*if (ImGui::MenuItem("Place in a grid"))
