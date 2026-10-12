@@ -1,5 +1,5 @@
 #include "CreateDirectoryNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool CreateDirectoryNode::bIsRegistered = []()
@@ -75,7 +75,7 @@ void CreateDirectoryNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* Connect
 				PathInput = *reinterpret_cast<std::string*>(TemporaryData);
 		}
 
-		Result = FocalEngine::FILE_SYSTEM.CreateDirectory(PathInput);
+		Result = FocalEngine::FILE_SYSTEM.MakeDirectory(PathInput);
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

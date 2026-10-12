@@ -1,5 +1,5 @@
 #include "GetAbsolutePathNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool GetAbsolutePathNode::bIsRegistered = []()

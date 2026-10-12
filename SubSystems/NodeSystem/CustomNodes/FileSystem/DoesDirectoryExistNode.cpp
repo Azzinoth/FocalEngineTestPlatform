@@ -1,5 +1,5 @@
 #include "DoesDirectoryExistNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool DoesDirectoryExistNode::bIsRegistered = []()

@@ -1,5 +1,5 @@
 #include "GetTestWorkingPathNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 #include "../../../FEPTActionSystem.h"
 using namespace VisNodeSys;
 

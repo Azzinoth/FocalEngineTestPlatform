@@ -1,5 +1,5 @@
 #include "ExtractDirectoryPathNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool ExtractDirectoryPathNode::bIsRegistered = []()

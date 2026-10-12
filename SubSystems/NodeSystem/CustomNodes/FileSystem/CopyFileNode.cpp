@@ -1,5 +1,5 @@
 #include "CopyFileNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool CopyFileNode::bIsRegistered = []()
@@ -84,7 +84,7 @@ void CopyFileNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSocke
 				DestinationInput = *reinterpret_cast<std::string*>(TemporaryData);
 		}
 
-		Result = FocalEngine::FILE_SYSTEM.CopyFile(SourceInput, DestinationInput);
+		Result = FocalEngine::FILE_SYSTEM.CopyFileTo(SourceInput, DestinationInput);
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

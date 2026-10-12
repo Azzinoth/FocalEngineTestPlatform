@@ -1,5 +1,5 @@
 #include "DeleteFileNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool DeleteFileNode::bIsRegistered = []()
@@ -75,7 +75,7 @@ void DeleteFileNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSoc
 				PathInput = *reinterpret_cast<std::string*>(TemporaryData);
 		}
 
-		Result = FocalEngine::FILE_SYSTEM.DeleteFile(PathInput);
+		Result = FocalEngine::FILE_SYSTEM.RemoveFile(PathInput);
 
 		if (Output[0]->GetConnectedSockets().size() > 0)
 			ParentArea->TriggerSocketEvent(Output[0], Output[0]->GetConnectedSockets()[0], EXECUTE);

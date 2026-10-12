@@ -1,5 +1,5 @@
 #include "CopyDirectoryNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool CopyDirectoryNode::bIsRegistered = []()

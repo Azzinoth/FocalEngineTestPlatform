@@ -1,5 +1,5 @@
 #include "DeleteDirectoryNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool DeleteDirectoryNode::bIsRegistered = []()

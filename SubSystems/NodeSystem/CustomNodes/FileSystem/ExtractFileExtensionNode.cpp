@@ -1,5 +1,5 @@
 #include "ExtractFileExtensionNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool ExtractFileExtensionNode::bIsRegistered = []()

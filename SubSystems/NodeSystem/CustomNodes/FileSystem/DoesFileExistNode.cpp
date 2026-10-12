@@ -1,5 +1,5 @@
 #include "DoesFileExistNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool DoesFileExistNode::bIsRegistered = []()

@@ -1,5 +1,5 @@
 #include "GetCurrentWorkingPathNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool GetCurrentWorkingPathNode::bIsRegistered = []()

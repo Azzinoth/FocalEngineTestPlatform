@@ -1,5 +1,5 @@
 #include "GetFileSizeNode.h"
-#include "../../../FEFileSystem.h"
+#include "../../../FECoreIncludes.h"
 using namespace VisNodeSys;
 
 bool GetFileSizeNode::bIsRegistered = []()

@@ -213,8 +213,6 @@ file(GLOB VisualNodeSystem_CustomNodes_InputSimulation_SRC
 
 file(GLOB SubSystems_SRC
 	"SubSystems/FECoreIncludes.h"
-	"SubSystems/FEFileSystem.cpp"
-	"SubSystems/FEFileSystem.h"
 	"SubSystems/FEPTActionSystem.cpp"
 	"SubSystems/FEPTActionSystem.h"
 	"SubSystems/FETest.cpp"
