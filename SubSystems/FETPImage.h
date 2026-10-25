@@ -14,6 +14,7 @@ public:
 	static FETPImage* FromClipboard();
 
 	void Initialize(unsigned char* RawData, int Width, int Height);
+	void Initialize(unsigned char* RawData, int Width, int Height, GLenum SourceFormat, int RowPitchInBytes, bool bGenerateMipmaps);
 
 	GLuint GetTextureID();
 

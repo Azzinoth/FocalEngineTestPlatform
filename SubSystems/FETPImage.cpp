@@ -155,6 +155,11 @@ FETPImage* FETPImage::FromClipboard()
 
 void FETPImage::Initialize(unsigned char* RawData, int Width, int Height)
 {
+	Initialize(RawData, Width, Height, GL_RGBA, Width * 4, true);
+}
+
+void FETPImage::Initialize(unsigned char* RawData, int Width, int Height, GLenum SourceFormat, int RowPitchInBytes, bool bGenerateMipmaps)
+{
 	if (RawData == nullptr || Width < 1 || Width > 8196 || Height < 1 || Height > 8196)
 		return;
 
@@ -163,14 +168,18 @@ void FETPImage::Initialize(unsigned char* RawData, int Width, int Height)
 	this->Height = Height;
 
 	glBindTexture(GL_TEXTURE_2D, TextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, RawData);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, RowPitchInBytes / 4);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, SourceFormat, GL_UNSIGNED_BYTE, RawData);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	// Without mipmaps a mipmap min filter would leave the texture incomplete.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bGenerateMipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (bGenerateMipmaps)
+		glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 GLuint FETPImage::GetTextureID()

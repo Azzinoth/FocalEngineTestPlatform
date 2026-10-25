@@ -12,7 +12,7 @@ class FETPScreenCapture
 public:
 	SINGLETON_PUBLIC_PART(FETPScreenCapture)
 
-	FETPImage* GetScreenImage(unsigned int MonitorIndex = 0);
+	FETPImage* GetScreenImage(unsigned int MonitorIndex = 0, bool bGenerateMipmaps = true);
 private:
 	SINGLETON_PRIVATE_PART(FETPScreenCapture)
 
@@ -22,15 +22,21 @@ private:
         OutputDuplication(ID3D11Device* Device, unsigned int MonitorIndex = 0);
     };
 
+	struct MonitorCapture
+	{
+		IDXGIOutputDuplication* Duplication = nullptr;
+		ID3D11Texture2D* StagingTexture = nullptr;
+		bool bHasFrame = false;
+	};
+
 	ID3D11Device* Device = nullptr;
 	ID3D11DeviceContext* DeviceContext = nullptr;
 	D3D_FEATURE_LEVEL FeatureLevel;
 
 	void InitializeDirectX();
 
-	void GetDesktopImage(IDXGIOutputDuplication* OutputDuplication);
-	ID3D11Texture2D* DesktopImageTexture = nullptr;
-
-	ID3D11Texture2D* StagingTexture = nullptr;
-	std::vector<ID3D11Texture2D*> PerMonitorStagingTextures;
+	std::vector<MonitorCapture> Monitors;
+	bool InitializeMonitor(unsigned int MonitorIndex);
+	void ReleaseMonitor(unsigned int MonitorIndex);
+	HRESULT UpdateMonitorFrame(unsigned int MonitorIndex);
 };

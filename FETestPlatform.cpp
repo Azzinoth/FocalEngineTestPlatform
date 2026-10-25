@@ -128,6 +128,9 @@ void FETestPlatform::Initialize()
 	InfoIconRed = new FETPImage("Resources//information-button_R.png");
 
 	NODE_AREAS_GRAPH_WINDOW.InitializeResources();
+
+	// Start desktop duplication early, so the first screenshot does not have to wait for a desktop update.
+	FETPScreenCapture::GetInstance();
 }
 
 void FETestPlatform::CreateMainWindow()

@@ -24,7 +24,8 @@ FETPComputeShaderCompare::FETPComputeShaderCompare()
 	InitialData.BestMatchPosition[0] = -1;
 	InitialData.BestMatchPosition[1] = -1;
 
-	FE_GL_ERROR(glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(InitialData), &InitialData, GL_DYNAMIC_DRAW));
+	// Immutable storage without map bits keeps the buffer in video memory, so the shader atomics stay on the GPU.
+	FE_GL_ERROR(glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(InitialData), &InitialData, GL_DYNAMIC_STORAGE_BIT));
 	FE_GL_ERROR(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, MatchBuffer));
 }
 
@@ -99,27 +100,27 @@ FETPComputeShaderCompare::ComparisonResult FETPComputeShaderCompare::FindSubImag
 	FE_GL_ERROR(glMemoryBarrier(GL_ALL_BARRIER_BITS));
 
 	FE_GL_ERROR(glBindBuffer(GL_SHADER_STORAGE_BUFFER, MatchBuffer));
-	void* BufferPointer = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	ComparisonResult ResultData;
+	FE_GL_ERROR(glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(ResultData), &ResultData));
 
-	ComparisonResult* ResultData = (ComparisonResult*)BufferPointer;
-	Result.MatchFound = ResultData->MatchFound;
-	if (ResultData->MatchFound)
+	Result.MatchFound = ResultData.MatchFound;
+	if (ResultData.MatchFound)
 	{
-		Result.MatchPosition[0] = ResultData->MatchPosition[0];
-		Result.MatchPosition[1] = ResultData->MatchPosition[1];
+		Result.MatchPosition[0] = ResultData.MatchPosition[0];
+		Result.MatchPosition[1] = ResultData.MatchPosition[1];
 	}
-	Result.BestMatchScore = ResultData->BestMatchScore;
-	Result.BestMatchPosition[0] = ResultData->BestMatchPosition[0];
-	Result.BestMatchPosition[1] = ResultData->BestMatchPosition[1];
+	Result.BestMatchScore = ResultData.BestMatchScore;
+	Result.BestMatchPosition[0] = ResultData.BestMatchPosition[0];
+	Result.BestMatchPosition[1] = ResultData.BestMatchPosition[1];
 
-	ResultData->MatchFound = 0;
-	ResultData->MatchPosition[0] = 0;
-	ResultData->MatchPosition[1] = 0;
-	ResultData->BestMatchScore = 0;
-	ResultData->BestMatchPosition[0] = -1;
-	ResultData->BestMatchPosition[1] = -1;
-
-	FE_GL_ERROR(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
+	ComparisonResult ResetData;
+	ResetData.MatchFound = 0;
+	ResetData.MatchPosition[0] = 0;
+	ResetData.MatchPosition[1] = 0;
+	ResetData.BestMatchScore = 0;
+	ResetData.BestMatchPosition[0] = static_cast<GLuint>(-1);
+	ResetData.BestMatchPosition[1] = static_cast<GLuint>(-1);
+	FE_GL_ERROR(glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(ResetData), &ResetData));
 
 	return Result;
 }

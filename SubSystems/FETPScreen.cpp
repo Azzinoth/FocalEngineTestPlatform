@@ -175,9 +175,9 @@ int FETPScreen::SimpleCompare(size_t Width, size_t Height, unsigned char* FirstD
 	return Similarity;
 }
 
-FETPImage* FETPScreen::GetScreenDataAsImage(unsigned int MonitorIndex)
+FETPImage* FETPScreen::GetScreenDataAsImage(unsigned int MonitorIndex, bool bGenerateMipmaps)
 {
-	return FETPScreenCapture::GetInstance().GetScreenImage(MonitorIndex);
+	return FETPScreenCapture::GetInstance().GetScreenImage(MonitorIndex, bGenerateMipmaps);
 }
 
 int ConvertXYToIndex(size_t Width, int x, int y, int ImageDepth)

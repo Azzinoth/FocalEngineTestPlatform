@@ -9,7 +9,7 @@ public:
 	SINGLETON_PUBLIC_PART(FETPScreen)
 
 	unsigned char* GetScreenData();
-	FETPImage* GetScreenDataAsImage(unsigned int MonitorIndex);
+	FETPImage* GetScreenDataAsImage(unsigned int MonitorIndex, bool bGenerateMipmaps = true);
 	void GetScreenRegion(unsigned char* Data, int Left, int Top, int Width, int Height, bool bUpdateScreenDataFlag = true);
 
 	size_t GetScreenWidth();

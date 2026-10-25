@@ -319,7 +319,8 @@ void ImageSearchNode::SocketEvent(NodeSocket* OwnSocket, NodeSocket* ConnectedSo
 
 		for (int i = 0; i < MonitorsToTry.size(); i++)
 		{
-			FETPImage* CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(unsigned int(MonitorsToTry[i]));
+			// Screenshot is only searched and then deleted, so it does not need mipmaps.
+			FETPImage* CurrentScreenshot = SCREEN_SYSTEM.GetScreenDataAsImage(unsigned int(MonitorsToTry[i]), false);
 
 			FETPComputeShaderCompare::ComparisonResult ComparisonData = {};
 			if (CurrentScreenshot != nullptr)
