@@ -46,7 +46,7 @@ Json::Value KeyboardKeyDownNode::ToJson()
 	return Result;
 }
 
-bool KeyboardKeyDownNode::FromJson(Json::Value Json)
+bool KeyboardKeyDownNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

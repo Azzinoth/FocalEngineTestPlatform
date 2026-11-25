@@ -48,7 +48,7 @@ Json::Value DoesDirectoryExistNode::ToJson()
 	return Node::ToJson();
 }
 
-bool DoesDirectoryExistNode::FromJson(Json::Value Json)
+bool DoesDirectoryExistNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

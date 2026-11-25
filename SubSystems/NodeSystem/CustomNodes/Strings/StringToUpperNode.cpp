@@ -47,7 +47,7 @@ Json::Value StringToUpperNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringToUpperNode::FromJson(Json::Value Json)
+bool StringToUpperNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

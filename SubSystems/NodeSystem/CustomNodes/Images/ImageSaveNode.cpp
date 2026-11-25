@@ -61,7 +61,7 @@ Json::Value ImageSaveNode::ToJson()
 	return Result;
 }
 
-bool ImageSaveNode::FromJson(Json::Value Json)
+bool ImageSaveNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

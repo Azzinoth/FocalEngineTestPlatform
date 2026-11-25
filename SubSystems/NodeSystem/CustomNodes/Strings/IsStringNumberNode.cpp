@@ -51,7 +51,7 @@ Json::Value IsStringNumberNode::ToJson()
 	return Node::ToJson();
 }
 
-bool IsStringNumberNode::FromJson(Json::Value Json)
+bool IsStringNumberNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

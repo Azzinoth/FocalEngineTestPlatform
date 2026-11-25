@@ -55,7 +55,7 @@ Json::Value TimerNode::ToJson()
 	return Result;
 }
 
-bool TimerNode::FromJson(Json::Value Json)
+bool TimerNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

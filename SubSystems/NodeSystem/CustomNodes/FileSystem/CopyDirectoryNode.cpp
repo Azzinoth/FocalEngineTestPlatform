@@ -49,7 +49,7 @@ Json::Value CopyDirectoryNode::ToJson()
 	return Node::ToJson();
 }
 
-bool CopyDirectoryNode::FromJson(Json::Value Json)
+bool CopyDirectoryNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

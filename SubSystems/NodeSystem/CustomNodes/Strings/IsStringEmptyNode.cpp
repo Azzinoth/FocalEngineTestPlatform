@@ -47,7 +47,7 @@ Json::Value IsStringEmptyNode::ToJson()
 	return Node::ToJson();
 }
 
-bool IsStringEmptyNode::FromJson(Json::Value Json)
+bool IsStringEmptyNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -48,7 +48,7 @@ Json::Value ExtractDirectoryPathNode::ToJson()
 	return Node::ToJson();
 }
 
-bool ExtractDirectoryPathNode::FromJson(Json::Value Json)
+bool ExtractDirectoryPathNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -47,7 +47,7 @@ Json::Value GetTestWorkingPathNode::ToJson()
 	return Node::ToJson();
 }
 
-bool GetTestWorkingPathNode::FromJson(Json::Value Json)
+bool GetTestWorkingPathNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -20,5 +20,5 @@ public:
 	ExtractFileExtensionNode(const ExtractFileExtensionNode& Other);
 
 	Json::Value ToJson();
-	bool FromJson(Json::Value Json);
+	bool FromJson(const Json::Value& Json);
 };

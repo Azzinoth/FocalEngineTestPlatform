@@ -49,7 +49,7 @@ Json::Value StringReplaceNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringReplaceNode::FromJson(Json::Value Json)
+bool StringReplaceNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

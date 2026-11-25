@@ -48,7 +48,7 @@ Json::Value CreateDirectoryNode::ToJson()
 	return Node::ToJson();
 }
 
-bool CreateDirectoryNode::FromJson(Json::Value Json)
+bool CreateDirectoryNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -64,7 +64,7 @@ Json::Value RecognizeTextNode::ToJson()
 	return Result;
 }
 
-bool RecognizeTextNode::FromJson(Json::Value Json)
+bool RecognizeTextNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

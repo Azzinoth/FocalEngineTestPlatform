@@ -48,7 +48,7 @@ Json::Value GetAbsolutePathNode::ToJson()
 	return Node::ToJson();
 }
 
-bool GetAbsolutePathNode::FromJson(Json::Value Json)
+bool GetAbsolutePathNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

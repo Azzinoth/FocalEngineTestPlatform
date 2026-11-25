@@ -47,7 +47,7 @@ Json::Value StringToLowerNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringToLowerNode::FromJson(Json::Value Json)
+bool StringToLowerNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

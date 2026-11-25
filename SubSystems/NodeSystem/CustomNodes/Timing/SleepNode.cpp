@@ -47,7 +47,7 @@ Json::Value SleepNode::ToJson()
 	return Result;
 }
 
-bool SleepNode::FromJson(Json::Value Json)
+bool SleepNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

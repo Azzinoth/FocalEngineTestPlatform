@@ -48,7 +48,7 @@ Json::Value DeleteFileNode::ToJson()
 	return Node::ToJson();
 }
 
-bool DeleteFileNode::FromJson(Json::Value Json)
+bool DeleteFileNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

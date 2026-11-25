@@ -48,7 +48,7 @@ Json::Value StringToFloatNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringToFloatNode::FromJson(Json::Value Json)
+bool StringToFloatNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

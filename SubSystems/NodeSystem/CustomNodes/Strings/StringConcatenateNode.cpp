@@ -48,7 +48,7 @@ Json::Value StringConcatenateNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringConcatenateNode::FromJson(Json::Value Json)
+bool StringConcatenateNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

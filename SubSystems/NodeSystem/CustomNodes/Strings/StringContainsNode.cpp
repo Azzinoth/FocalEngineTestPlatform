@@ -48,7 +48,7 @@ Json::Value StringContainsNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringContainsNode::FromJson(Json::Value Json)
+bool StringContainsNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

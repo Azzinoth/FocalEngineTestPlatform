@@ -47,7 +47,7 @@ Json::Value StringTrimNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringTrimNode::FromJson(Json::Value Json)
+bool StringTrimNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -51,7 +51,7 @@ Json::Value ExtractFileNameNode::ToJson()
 	return Node::ToJson();
 }
 
-bool ExtractFileNameNode::FromJson(Json::Value Json)
+bool ExtractFileNameNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

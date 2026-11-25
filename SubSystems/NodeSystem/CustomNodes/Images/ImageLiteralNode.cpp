@@ -66,7 +66,7 @@ Json::Value ImageLiteralNode::ToJson()
 	return Result;
 }
 
-bool ImageLiteralNode::FromJson(Json::Value Json)
+bool ImageLiteralNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

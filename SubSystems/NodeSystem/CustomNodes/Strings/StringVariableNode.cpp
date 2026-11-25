@@ -52,7 +52,7 @@ Json::Value StringVariableNode::ToJson()
 	return Result;
 }
 
-bool StringVariableNode::FromJson(Json::Value Json)
+bool StringVariableNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

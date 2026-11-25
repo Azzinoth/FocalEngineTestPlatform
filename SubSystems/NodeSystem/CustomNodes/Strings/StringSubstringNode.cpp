@@ -49,7 +49,7 @@ Json::Value StringSubstringNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringSubstringNode::FromJson(Json::Value Json)
+bool StringSubstringNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

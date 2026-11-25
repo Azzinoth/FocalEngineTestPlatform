@@ -57,7 +57,7 @@ Json::Value MouseMoveNode::ToJson()
 	return Result;
 }
 
-bool MouseMoveNode::FromJson(Json::Value Json)
+bool MouseMoveNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

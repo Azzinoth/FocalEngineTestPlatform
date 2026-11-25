@@ -62,7 +62,7 @@ Json::Value ScreenshotNode::ToJson()
 	return Result;
 }
 
-bool ScreenshotNode::FromJson(Json::Value Json)
+bool ScreenshotNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

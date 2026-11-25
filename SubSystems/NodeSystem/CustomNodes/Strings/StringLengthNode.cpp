@@ -47,7 +47,7 @@ Json::Value StringLengthNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringLengthNode::FromJson(Json::Value Json)
+bool StringLengthNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

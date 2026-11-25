@@ -48,7 +48,7 @@ Json::Value GetFileSizeNode::ToJson()
 	return Node::ToJson();
 }
 
-bool GetFileSizeNode::FromJson(Json::Value Json)
+bool GetFileSizeNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

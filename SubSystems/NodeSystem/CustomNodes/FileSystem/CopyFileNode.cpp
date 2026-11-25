@@ -49,7 +49,7 @@ Json::Value CopyFileNode::ToJson()
 	return Node::ToJson();
 }
 
-bool CopyFileNode::FromJson(Json::Value Json)
+bool CopyFileNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

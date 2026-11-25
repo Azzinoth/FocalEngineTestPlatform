@@ -46,7 +46,7 @@ Json::Value GetCurrentWorkingPathNode::ToJson()
 	return Node::ToJson();
 }
 
-bool GetCurrentWorkingPathNode::FromJson(Json::Value Json)
+bool GetCurrentWorkingPathNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

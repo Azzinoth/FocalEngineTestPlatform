@@ -56,7 +56,7 @@ Json::Value LaunchApplicationNode::ToJson()
 	return Result;
 }
 
-bool LaunchApplicationNode::FromJson(Json::Value Json)
+bool LaunchApplicationNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

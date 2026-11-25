@@ -60,7 +60,7 @@ Json::Value ImageLoadNode::ToJson()
 	return Result;
 }
 
-bool ImageLoadNode::FromJson(Json::Value Json)
+bool ImageLoadNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

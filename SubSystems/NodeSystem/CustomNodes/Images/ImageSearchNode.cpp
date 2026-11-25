@@ -86,7 +86,7 @@ Json::Value ImageSearchNode::ToJson()
 	return Result;
 }
 
-bool ImageSearchNode::FromJson(Json::Value Json)
+bool ImageSearchNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

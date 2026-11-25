@@ -20,7 +20,7 @@ public:
 	StringVariableNode(const StringVariableNode& Other);
 
 	Json::Value ToJson();
-	bool FromJson(Json::Value Json);
+	bool FromJson(const Json::Value& Json);
 
 	std::string GetData() const;
 	void SetData(std::string NewValue);

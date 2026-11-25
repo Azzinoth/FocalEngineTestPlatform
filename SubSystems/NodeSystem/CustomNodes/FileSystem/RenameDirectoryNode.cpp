@@ -49,7 +49,7 @@ Json::Value RenameDirectoryNode::ToJson()
 	return Node::ToJson();
 }
 
-bool RenameDirectoryNode::FromJson(Json::Value Json)
+bool RenameDirectoryNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

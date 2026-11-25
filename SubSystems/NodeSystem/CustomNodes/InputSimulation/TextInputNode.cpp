@@ -48,7 +48,7 @@ Json::Value TextInputNode::ToJson()
 	return Result;
 }
 
-bool TextInputNode::FromJson(Json::Value Json)
+bool TextInputNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -48,7 +48,7 @@ Json::Value StringToIntNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringToIntNode::FromJson(Json::Value Json)
+bool StringToIntNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

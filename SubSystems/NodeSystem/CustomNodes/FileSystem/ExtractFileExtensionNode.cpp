@@ -48,7 +48,7 @@ Json::Value ExtractFileExtensionNode::ToJson()
 	return Node::ToJson();
 }
 
-bool ExtractFileExtensionNode::FromJson(Json::Value Json)
+bool ExtractFileExtensionNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

@@ -48,7 +48,7 @@ Json::Value DoesFileExistNode::ToJson()
 	return Node::ToJson();
 }
 
-bool DoesFileExistNode::FromJson(Json::Value Json)
+bool DoesFileExistNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

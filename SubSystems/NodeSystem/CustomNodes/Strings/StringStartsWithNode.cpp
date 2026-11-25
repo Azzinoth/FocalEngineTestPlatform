@@ -48,7 +48,7 @@ Json::Value StringStartsWithNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringStartsWithNode::FromJson(Json::Value Json)
+bool StringStartsWithNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

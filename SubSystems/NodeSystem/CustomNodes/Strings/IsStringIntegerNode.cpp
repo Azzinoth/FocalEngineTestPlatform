@@ -48,7 +48,7 @@ Json::Value IsStringIntegerNode::ToJson()
 	return Node::ToJson();
 }
 
-bool IsStringIntegerNode::FromJson(Json::Value Json)
+bool IsStringIntegerNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)

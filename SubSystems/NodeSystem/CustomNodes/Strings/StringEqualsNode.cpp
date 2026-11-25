@@ -48,7 +48,7 @@ Json::Value StringEqualsNode::ToJson()
 	return Node::ToJson();
 }
 
-bool StringEqualsNode::FromJson(Json::Value Json)
+bool StringEqualsNode::FromJson(const Json::Value& Json)
 {
 	bool bResult = Node::FromJson(Json);
 	if (!bResult)
